@@ -24,13 +24,21 @@
 
 import AttributeMap from './AttributeMap'
 import AttributePool from "./AttributePool";
-import {} from './attributes';
+import {attribsFromString} from './attributes';
 import {padUtils as padutils} from "./pad_utils";
-import Op from './Op'
+import Op, {OpCode} from './Op'
 import {numToString, parseNum} from './ChangesetUtils'
 import {StringAssembler} from "./StringAssembler";
 import {OpIter} from "./OpIter";
 import {Attribute} from "./types/Attribute";
+import {SmartOpAssembler} from "./SmartOpAssembler";
+import {TextLinesMutator} from "./TextLinesMutator";
+import {ChangeSet} from "./types/ChangeSet";
+import {AText} from "./types/AText";
+import {ChangeSetBuilder} from "./types/ChangeSetBuilder";
+import {Builder} from "./Builder";
+import {StringIterator} from "./StringIterator";
+import {MergingOpAssembler} from "./MergingOpAssembler";
 
 /**
  * A `[key, value]` pair of strings describing a text attribute.
@@ -235,16 +243,16 @@ export const opsFromText = function* (opcode: "" | "=" | "+" | "-" | undefined, 
  * @returns {string} the checked Changeset
  */
 export const checkRep = (cs: string) => {
-  const unpacked = exports.unpack(cs);
+  const unpacked = unpack(cs);
   const oldLen = unpacked.oldLen;
   const newLen = unpacked.newLen;
   const ops = unpacked.ops;
   let charBank = unpacked.charBank;
 
-  const assem = exports.smartOpAssembler();
+  const assem = new SmartOpAssembler();
   let oldPos = 0;
   let calcNewLen = 0;
-  for (const o of exports.deserializeOps(ops)) {
+  for (const o of deserializeOps(ops)) {
     switch (o.opcode) {
       case '=':
         oldPos += o.chars;
@@ -277,7 +285,7 @@ export const checkRep = (cs: string) => {
   assert(calcNewLen === newLen, 'Invalid changeset: claimed length does not match actual length');
   assert(charBank === '', 'Invalid changeset: excess characters in the charBank');
   assem.endDocument();
-  const normalized = exports.pack(oldLen, calcNewLen, assem.toString(), unpacked.charBank);
+  const normalized = pack(oldLen, calcNewLen, assem.toString(), unpacked.charBank);
   assert(normalized === cs, 'Invalid changeset: not in canonical form');
   return cs;
 };
@@ -302,323 +310,6 @@ export const checkRep = (cs: string) => {
  *     `Array.prototype.splice()`.
  */
 
-/**
- * Class to iterate and modify texts which have several lines. It is used for applying Changesets on
- * arrays of lines.
- *
- * Mutation operations have the same constraints as exports operations with respect to newlines, but
- * not the other additional constraints (i.e. ins/del ordering, forbidden no-ops, non-mergeability,
- * final newline). Can be used to mutate lists of strings where the last char of each string is not
- * actually a newline, but for the purposes of N and L values, the caller should pretend it is, and
- * for things to work right in that case, the input to the `insert` method should be a single line
- * with no newlines.
- */
-class TextLinesMutator {
-  /**
-   * @param {(string[]|StringArrayLike)} lines - Lines to mutate (in place).
-   */
-  constructor(lines) {
-    this._lines = lines;
-    /**
-     * this._curSplice holds values that will be passed as arguments to this._lines.splice() to
-     * insert, delete, or change lines:
-     *   - this._curSplice[0] is an index into the this._lines array.
-     *   - this._curSplice[1] is the number of lines that will be removed from the this._lines array
-     *     starting at the index.
-     *   - The other elements represent mutated (changed by ops) lines or new lines (added by ops)
-     *     to insert at the index.
-     *
-     * @type {[number, number?, ...string[]?]}
-     */
-    this._curSplice = [0, 0];
-    this._inSplice = false;
-    // position in lines after curSplice is applied:
-    this._curLine = 0;
-    this._curCol = 0;
-    // invariant: if (inSplice) then (curLine is in curSplice[0] + curSplice.length - {2,3}) &&
-    //            curLine >= curSplice[0]
-    // invariant: if (inSplice && (curLine >= curSplice[0] + curSplice.length - 2)) then
-    //            curCol == 0
-  }
-
-  /**
-   * Get a line from `lines` at given index.
-   *
-   * @param {number} idx - an index
-   * @returns {string}
-   */
-  _linesGet(idx) {
-    if ('get' in this._lines) {
-      return this._lines.get(idx);
-    } else {
-      return this._lines[idx];
-    }
-  }
-
-  /**
-   * Return a slice from `lines`.
-   *
-   * @param {number} start - the start index
-   * @param {number} end - the end index
-   * @returns {string[]}
-   */
-  _linesSlice(start, end) {
-    // can be unimplemented if removeLines's return value not needed
-    if (this._lines.slice) {
-      return this._lines.slice(start, end);
-    } else {
-      return [];
-    }
-  }
-
-  /**
-   * Return the length of `lines`.
-   *
-   * @returns {number}
-   */
-  _linesLength() {
-    if (typeof this._lines.length === 'number') {
-      return this._lines.length;
-    } else {
-      return this._lines.length();
-    }
-  }
-
-  /**
-   * Starts a new splice.
-   */
-  _enterSplice() {
-    this._curSplice[0] = this._curLine;
-    this._curSplice[1] = 0;
-    // TODO(doc) when is this the case?
-    //           check all enterSplice calls and changes to curCol
-    if (this._curCol > 0) this._putCurLineInSplice();
-    this._inSplice = true;
-  }
-
-  /**
-   * Changes the lines array according to the values in curSplice and resets curSplice. Called via
-   * close or TODO(doc).
-   */
-  _leaveSplice() {
-    this._lines.splice(...this._curSplice);
-    this._curSplice.length = 2;
-    this._curSplice[0] = this._curSplice[1] = 0;
-    this._inSplice = false;
-  }
-
-  /**
-   * Indicates if curLine is already in the splice. This is necessary because the last element in
-   * curSplice is curLine when this line is currently worked on (e.g. when skipping or inserting).
-   *
-   * @returns {boolean} true if curLine is in splice
-   */
-  _isCurLineInSplice() {
-    // The value of `this._curSplice[1]` does not matter when determining the return value because
-    // `this._curLine` refers to the line number *after* the splice is applied (so after those lines
-    // are deleted).
-    return this._curLine - this._curSplice[0] < this._curSplice.length - 2;
-  }
-
-  /**
-   * Incorporates current line into the splice and marks its old position to be deleted.
-   *
-   * @returns {number} the index of the added line in curSplice
-   */
-  _putCurLineInSplice() {
-    if (!this._isCurLineInSplice()) {
-      this._curSplice.push(this._linesGet(this._curSplice[0] + this._curSplice[1]));
-      this._curSplice[1]++;
-    }
-    // TODO should be the same as this._curSplice.length - 1
-    return 2 + this._curLine - this._curSplice[0];
-  }
-
-  /**
-   * It will skip some newlines by putting them into the splice.
-   *
-   * @param {number} L -
-   * @param {boolean} includeInSplice - Indicates that attributes are present.
-   */
-  skipLines(L, includeInSplice) {
-    if (!L) return;
-    if (includeInSplice) {
-      if (!this._inSplice) this._enterSplice();
-      // TODO(doc) should this count the number of characters that are skipped to check?
-      for (let i = 0; i < L; i++) {
-        this._curCol = 0;
-        this._putCurLineInSplice();
-        this._curLine++;
-      }
-    } else {
-      if (this._inSplice) {
-        if (L > 1) {
-          // TODO(doc) figure out why single lines are incorporated into splice instead of ignored
-          this._leaveSplice();
-        } else {
-          this._putCurLineInSplice();
-        }
-      }
-      this._curLine += L;
-      this._curCol = 0;
-    }
-    // tests case foo in remove(), which isn't otherwise covered in current impl
-  }
-
-  /**
-   * Skip some characters. Can contain newlines.
-   *
-   * @param {number} N - number of characters to skip
-   * @param {number} L - number of newlines to skip
-   * @param {boolean} includeInSplice - indicates if attributes are present
-   */
-  skip(N, L, includeInSplice) {
-    if (!N) return;
-    if (L) {
-      this.skipLines(L, includeInSplice);
-    } else {
-      if (includeInSplice && !this._inSplice) this._enterSplice();
-      if (this._inSplice) {
-        // although the line is put into splice curLine is not increased, because
-        // only some chars are skipped, not the whole line
-        this._putCurLineInSplice();
-      }
-      this._curCol += N;
-    }
-  }
-
-  /**
-   * Remove whole lines from lines array.
-   *
-   * @param {number} L - number of lines to remove
-   * @returns {string}
-   */
-  removeLines(L) {
-    if (!L) return '';
-    if (!this._inSplice) this._enterSplice();
-
-    /**
-     * Gets a string of joined lines after the end of the splice.
-     *
-     * @param {number} k - number of lines
-     * @returns {string} joined lines
-     */
-    const nextKLinesText = (k) => {
-      const m = this._curSplice[0] + this._curSplice[1];
-      return this._linesSlice(m, m + k).join('');
-    };
-
-    let removed = '';
-    if (this._isCurLineInSplice()) {
-      if (this._curCol === 0) {
-        removed = this._curSplice[this._curSplice.length - 1];
-        this._curSplice.length--;
-        removed += nextKLinesText(L - 1);
-        this._curSplice[1] += L - 1;
-      } else {
-        removed = nextKLinesText(L - 1);
-        this._curSplice[1] += L - 1;
-        const sline = this._curSplice.length - 1;
-        removed = this._curSplice[sline].substring(this._curCol) + removed;
-        this._curSplice[sline] = this._curSplice[sline].substring(0, this._curCol) +
-            this._linesGet(this._curSplice[0] + this._curSplice[1]);
-        this._curSplice[1] += 1;
-      }
-    } else {
-      removed = nextKLinesText(L);
-      this._curSplice[1] += L;
-    }
-    return removed;
-  }
-
-  /**
-   * Remove text from lines array.
-   *
-   * @param {number} N - characters to delete
-   * @param {number} L - lines to delete
-   * @returns {string}
-   */
-  remove(N, L) {
-    if (!N) return '';
-    if (L) return this.removeLines(L);
-    if (!this._inSplice) this._enterSplice();
-    // although the line is put into splice, curLine is not increased, because
-    // only some chars are removed not the whole line
-    const sline = this._putCurLineInSplice();
-    const removed = this._curSplice[sline].substring(this._curCol, this._curCol + N);
-    this._curSplice[sline] = this._curSplice[sline].substring(0, this._curCol) +
-        this._curSplice[sline].substring(this._curCol + N);
-    return removed;
-  }
-
-  /**
-   * Inserts text into lines array.
-   *
-   * @param {string} text - the text to insert
-   * @param {number} L - number of newlines in text
-   */
-  insert(text, L) {
-    if (!text) return;
-    if (!this._inSplice) this._enterSplice();
-    if (L) {
-      const newLines = exports.splitTextLines(text);
-      if (this._isCurLineInSplice()) {
-        const sline = this._curSplice.length - 1;
-        /** @type {string} */
-        const theLine = this._curSplice[sline];
-        const lineCol = this._curCol;
-        // Insert the chars up to `curCol` and the first new line.
-        this._curSplice[sline] = theLine.substring(0, lineCol) + newLines[0];
-        this._curLine++;
-        newLines.splice(0, 1);
-        // insert the remaining new lines
-        this._curSplice.push(...newLines);
-        this._curLine += newLines.length;
-        // insert the remaining chars from the "old" line (e.g. the line we were in
-        // when we started to insert new lines)
-        this._curSplice.push(theLine.substring(lineCol));
-        this._curCol = 0; // TODO(doc) why is this not set to the length of last line?
-      } else {
-        this._curSplice.push(...newLines);
-        this._curLine += newLines.length;
-      }
-    } else {
-      // There are no additional lines. Although the line is put into splice, curLine is not
-      // increased because there may be more chars in the line (newline is not reached).
-      const sline = this._putCurLineInSplice();
-      if (!this._curSplice[sline]) {
-        const err = new Error(
-            'curSplice[sline] not populated, actual curSplice contents is ' +
-            `${JSON.stringify(this._curSplice)}. Possibly related to ` +
-            'https://github.com/ether/etherpad-lite/issues/2802');
-        console.error(err.stack || err.toString());
-      }
-      this._curSplice[sline] = this._curSplice[sline].substring(0, this._curCol) + text +
-          this._curSplice[sline].substring(this._curCol);
-      this._curCol += text.length;
-    }
-  }
-
-  /**
-   * Checks if curLine (the line we are in when curSplice is applied) is the last line in `lines`.
-   *
-   * @returns {boolean} indicates if there are lines left
-   */
-  hasMore() {
-    let docLines = this._linesLength();
-    if (this._inSplice) {
-      docLines += this._curSplice.length - 2 - this._curSplice[1];
-    }
-    return this._curLine < docLines;
-  }
-
-  /**
-   * Closes the splice
-   */
-  close() {
-    if (this._inSplice) this._leaveSplice();
-  }
-}
 
 /**
  * Apply operations to other operations.
@@ -641,12 +332,12 @@ class TextLinesMutator {
  *         either `opOut` must be nullish or `opOut.opcode` must be the empty string.
  * @returns {string} the integrated changeset
  */
-const applyZip = (in1, in2, func) => {
-  const ops1 = exports.deserializeOps(in1);
-  const ops2 = exports.deserializeOps(in2);
+const applyZip = (in1: string, in2: string, func: Function): string => {
+  const ops1 = deserializeOps(in1);
+  const ops2 = deserializeOps(in2);
   let next1 = ops1.next();
   let next2 = ops2.next();
-  const assem = exports.smartOpAssembler();
+  const assem = new SmartOpAssembler();
   while (!next1.done || !next2.done) {
     if (!next1.done && !next1.value.opcode) next1 = ops1.next();
     if (!next2.done && !next2.value.opcode) next2 = ops2.next();
@@ -666,15 +357,15 @@ const applyZip = (in1, in2, func) => {
  * @param {string} cs - The encoded changeset.
  * @returns {Changeset}
  */
-exports.unpack = (cs) => {
+export const unpack = (cs: string): ChangeSet => {
   const headerRegex = /Z:([0-9a-z]+)([><])([0-9a-z]+)|/;
   const headerMatch = headerRegex.exec(cs);
   if ((!headerMatch) || (!headerMatch[0])) error(`Not a changeset: ${cs}`);
-  const oldLen = parseNum(headerMatch[1]);
-  const changeSign = (headerMatch[2] === '>') ? 1 : -1;
-  const changeMag = parseNum(headerMatch[3]);
+  const oldLen = parseNum(headerMatch![1]);
+  const changeSign = (headerMatch![2] === '>') ? 1 : -1;
+  const changeMag = parseNum(headerMatch![3]);
   const newLen = oldLen + changeSign * changeMag;
-  const opsStart = headerMatch[0].length;
+  const opsStart = headerMatch![0].length;
   let opsEnd = cs.indexOf('$');
   if (opsEnd < 0) opsEnd = cs.length;
   return {
@@ -694,12 +385,12 @@ exports.unpack = (cs) => {
  * @param {string} bank - Characters for insert operations.
  * @returns {string} The encoded changeset.
  */
-exports.pack = (oldLen, newLen, opsStr, bank) => {
+export const pack = (oldLen: number, newLen: number, opsStr: string, bank: string): string => {
   const lenDiff = newLen - oldLen;
-  const lenDiffStr = (lenDiff >= 0 ? `>${exports.numToString(lenDiff)}`
-    : `<${exports.numToString(-lenDiff)}`);
+  const lenDiffStr = (lenDiff >= 0 ? `>${numToString(lenDiff)}`
+    : `<${numToString(-lenDiff)}`);
   const a = [];
-  a.push('Z:', exports.numToString(oldLen), lenDiffStr, opsStr, '$', bank);
+  a.push('Z:', numToString(oldLen), lenDiffStr, opsStr, '$', bank);
   return a.join('');
 };
 
@@ -710,13 +401,13 @@ exports.pack = (oldLen, newLen, opsStr, bank) => {
  * @param {string} str - String to which a Changeset should be applied
  * @returns {string}
  */
-exports.applyToText = (cs, str) => {
-  const unpacked = exports.unpack(cs);
+export const applyToText = (cs: string, str: string): string => {
+  const unpacked = unpack(cs);
   assert(str.length === unpacked.oldLen, `mismatched apply: ${str.length} / ${unpacked.oldLen}`);
-  const bankIter = exports.stringIterator(unpacked.charBank);
-  const strIter = exports.stringIterator(str);
+  const bankIter = new StringIterator(unpacked.charBank);
+  const strIter = new StringIterator(str);
   const assem = new StringAssembler();
-  for (const op of exports.deserializeOps(unpacked.ops)) {
+  for (const op of deserializeOps(unpacked.ops)) {
     switch (op.opcode) {
       case '+':
       // op is + and op.lines 0: no newlines must be in op.chars
@@ -754,11 +445,11 @@ exports.applyToText = (cs, str) => {
  * @param {string} cs - the changeset to apply
  * @param {string[]} lines - The lines to which the changeset needs to be applied
  */
-exports.mutateTextLines = (cs, lines) => {
-  const unpacked = exports.unpack(cs);
-  const bankIter = exports.stringIterator(unpacked.charBank);
+const mutateTextLines = (cs: string, lines:string[]) => {
+  const unpacked = unpack(cs);
+  const bankIter = new StringIterator(unpacked.charBank);
   const mut = new TextLinesMutator(lines);
-  for (const op of exports.deserializeOps(unpacked.ops)) {
+  for (const op of deserializeOps(unpacked.ops)) {
     switch (op.opcode) {
       case '+':
         mut.insert(bankIter.take(op.chars), op.lines);
@@ -783,7 +474,7 @@ exports.mutateTextLines = (cs, lines) => {
  * @param {AttributePool.ts} pool - attribute pool
  * @returns {string}
  */
-exports.composeAttributes = (att1, att2, resultIsMutation, pool) => {
+export const composeAttributes = (att1: string, att2: string, resultIsMutation: boolean, pool?: AttributePool|null): string => {
   // att1 and att2 are strings like "*3*f*1c", asMutation is a boolean.
   // Sometimes attribute (key,value) pairs are treated as attribute presence
   // information, while other times they are treated as operations that
@@ -817,7 +508,7 @@ exports.composeAttributes = (att1, att2, resultIsMutation, pool) => {
  * @param {AttributePool.ts} pool - Can be null if definitely not needed.
  * @returns {Op} The result of applying `csOp` to `attOp`.
  */
-const slicerZipperFunc = (attOp, csOp, pool) => {
+export const slicerZipperFunc = (attOp: Op, csOp: Op, pool: AttributePool|null):Op => {
   const opOut = new Op();
   if (!attOp.opcode) {
     copyOp(csOp, opOut);
@@ -852,7 +543,7 @@ const slicerZipperFunc = (attOp, csOp, pool) => {
         '-': '-',
         '=': '=',
       },
-    }[attOp.opcode][csOp.opcode];
+    }[attOp.opcode][csOp.opcode] as OpCode;
     const [fullyConsumedOp, partiallyConsumedOp] = [attOp, csOp].sort((a, b) => a.chars - b.chars);
     opOut.chars = fullyConsumedOp.chars;
     opOut.lines = fullyConsumedOp.lines;
@@ -861,7 +552,7 @@ const slicerZipperFunc = (attOp, csOp, pool) => {
       // normally be the empty string. However, padDiff.js adds attributes to remove ops and needs
       // them preserved so they are copied here.
       ? csOp.attribs
-      : exports.composeAttributes(attOp.attribs, csOp.attribs, attOp.opcode === '=', pool);
+      : composeAttributes(attOp.attribs, csOp.attribs, attOp.opcode === '=', pool);
     partiallyConsumedOp.chars -= fullyConsumedOp.chars;
     partiallyConsumedOp.lines -= fullyConsumedOp.lines;
     if (!partiallyConsumedOp.chars) partiallyConsumedOp.opcode = '';
@@ -878,120 +569,9 @@ const slicerZipperFunc = (attOp, csOp, pool) => {
  * @param {AttributePool.ts} pool - the attibutes pool
  * @returns {string}
  */
-exports.applyToAttribution = (cs, astr, pool) => {
-  const unpacked = exports.unpack(cs);
-  return applyZip(astr, unpacked.ops, (op1, op2) => slicerZipperFunc(op1, op2, pool));
-};
-
-/**
- * Applies a changeset to an array of attribute lines.
- *
- * @param {string} cs - The encoded changeset.
- * @param {Array<string>} lines - Attribute lines. Modified in place.
- * @param {AttributePool.ts} pool - Attribute pool.
- */
-exports.mutateAttributionLines = (cs, lines, pool) => {
-  const unpacked = exports.unpack(cs);
-  const csOps = exports.deserializeOps(unpacked.ops);
-  let csOpsNext = csOps.next();
-  const csBank = unpacked.charBank;
-  let csBankIndex = 0;
-  // treat the attribution lines as text lines, mutating a line at a time
-  const mut = new TextLinesMutator(lines);
-
-  /**
-   * The Ops in the current line from `lines`.
-   *
-   * @type {?Generator<Op>}
-   */
-  let lineOps = null;
-  let lineOpsNext = null;
-
-  const lineOpsHasNext = () => lineOpsNext && !lineOpsNext.done;
-  /**
-   * Returns false if we are on the last attribute line in `lines` and there is no additional op in
-   * that line.
-   *
-   * @returns {boolean} True if there are more ops to go through.
-   */
-  const isNextMutOp = () => lineOpsHasNext() || mut.hasMore();
-
-  /**
-   * @returns {Op} The next Op from `lineIter`. If there are no more Ops, `lineIter` is reset to
-   *     iterate over the next line, which is consumed from `mut`. If there are no more lines,
-   *     returns a null Op.
-   */
-  const nextMutOp = () => {
-    if (!lineOpsHasNext() && mut.hasMore()) {
-      // There are more attribute lines in `lines` to do AND either we just started so `lineIter` is
-      // still null or there are no more ops in current `lineIter`.
-      const line = mut.removeLines(1);
-      lineOps = exports.deserializeOps(line);
-      lineOpsNext = lineOps.next();
-    }
-    if (!lineOpsHasNext()) return new Op(); // No more ops and no more lines.
-    const op = lineOpsNext.value;
-    lineOpsNext = lineOps.next();
-    return op;
-  };
-  let lineAssem = null;
-
-  /**
-   * Appends an op to `lineAssem`. In case `lineAssem` includes one single newline, adds it to the
-   * `lines` mutator.
-   */
-  const outputMutOp = (op) => {
-    if (!lineAssem) {
-      lineAssem = exports.mergingOpAssembler();
-    }
-    lineAssem.append(op);
-    if (op.lines <= 0) return;
-    assert(op.lines === 1, `Can't have op.lines of ${op.lines} in attribution lines`);
-    // ship it to the mut
-    mut.insert(lineAssem.toString(), 1);
-    lineAssem = null;
-  };
-
-  let csOp = new Op();
-  let attOp = new Op();
-  while (csOp.opcode || !csOpsNext.done || attOp.opcode || isNextMutOp()) {
-    if (!csOp.opcode && !csOpsNext.done) {
-      // coOp done, but more ops in cs.
-      csOp = csOpsNext.value;
-      csOpsNext = csOps.next();
-    }
-    if (!csOp.opcode && !attOp.opcode && !lineAssem && !lineOpsHasNext()) {
-      break; // done
-    } else if (csOp.opcode === '=' && csOp.lines > 0 && !csOp.attribs && !attOp.opcode &&
-               !lineAssem && !lineOpsHasNext()) {
-      // Skip multiple lines without attributes; this is what makes small changes not order of the
-      // document size.
-      mut.skipLines(csOp.lines);
-      csOp.opcode = '';
-    } else if (csOp.opcode === '+') {
-      const opOut = copyOp(csOp);
-      if (csOp.lines > 1) {
-        // Copy the first line from `csOp` to `opOut`.
-        const firstLineLen = csBank.indexOf('\n', csBankIndex) + 1 - csBankIndex;
-        csOp.chars -= firstLineLen;
-        csOp.lines--;
-        opOut.lines = 1;
-        opOut.chars = firstLineLen;
-      } else {
-        // Either one or no newlines in '+' `csOp`, copy to `opOut` and reset `csOp`.
-        csOp.opcode = '';
-      }
-      outputMutOp(opOut);
-      csBankIndex += opOut.chars;
-    } else {
-      if (!attOp.opcode && isNextMutOp()) attOp = nextMutOp();
-      const opOut = slicerZipperFunc(attOp, csOp, pool);
-      if (opOut.opcode) outputMutOp(opOut);
-    }
-  }
-
-  assert(!lineAssem, `line assembler not finished:${cs}`);
-  mut.close();
+export const applyToAttribution = (cs: string, astr: string, pool: AttributePool): string => {
+  const unpacked = unpack(cs);
+  return applyZip(astr, unpacked.ops, (op1: Op, op2:Op) => slicerZipperFunc(op1, op2, pool));
 };
 
 /**
@@ -1000,20 +580,20 @@ exports.mutateAttributionLines = (cs, lines, pool) => {
  * @param {string[]} theAlines - collection of Attribution lines
  * @returns {string} joined Attribution lines
  */
-exports.joinAttributionLines = (theAlines) => {
-  const assem = exports.mergingOpAssembler();
+export const joinAttributionLines = (theAlines: string[]): string => {
+  const assem = new MergingOpAssembler();
   for (const aline of theAlines) {
-    for (const op of exports.deserializeOps(aline)) assem.append(op);
+    for (const op of deserializeOps(aline)) assem.append(op);
   }
   return assem.toString();
 };
 
-exports.splitAttributionLines = (attrOps, text) => {
-  const assem = exports.mergingOpAssembler();
-  const lines = [];
+export const splitAttributionLines = (attrOps: string, text: string) => {
+  const assem = new MergingOpAssembler();
+  const lines: string[] = [];
   let pos = 0;
 
-  const appendOp = (op) => {
+  const appendOp = (op:Op) => {
     assem.append(op);
     if (op.lines > 0) {
       lines.push(assem.toString());
@@ -1022,7 +602,7 @@ exports.splitAttributionLines = (attrOps, text) => {
     pos += op.chars;
   };
 
-  for (const op of exports.deserializeOps(attrOps)) {
+  for (const op of deserializeOps(attrOps)) {
     let numChars = op.chars;
     let numLines = op.lines;
     while (numLines > 1) {
@@ -1050,7 +630,7 @@ exports.splitAttributionLines = (attrOps, text) => {
  * @param {string} text - text to split
  * @returns {string[]}
  */
-exports.splitTextLines = (text) => text.match(/[^\n]*(?:\n|[^\n]$)/g);
+export const splitTextLines = (text:string) => text.match(/[^\n]*(?:\n|[^\n]$)/g);
 
 /**
  * Compose two Changesets.
@@ -1060,18 +640,18 @@ exports.splitTextLines = (text) => text.match(/[^\n]*(?:\n|[^\n]$)/g);
  * @param {AttributePool.ts} pool - Attribs pool
  * @returns {string}
  */
-exports.compose = (cs1, cs2, pool) => {
-  const unpacked1 = exports.unpack(cs1);
-  const unpacked2 = exports.unpack(cs2);
+export const compose = (cs1: string, cs2:string, pool: AttributePool): string => {
+  const unpacked1 = unpack(cs1);
+  const unpacked2 = unpack(cs2);
   const len1 = unpacked1.oldLen;
   const len2 = unpacked1.newLen;
   assert(len2 === unpacked2.oldLen, 'mismatched composition of two changesets');
   const len3 = unpacked2.newLen;
-  const bankIter1 = exports.stringIterator(unpacked1.charBank);
-  const bankIter2 = exports.stringIterator(unpacked2.charBank);
+  const bankIter1 = new StringIterator(unpacked1.charBank);
+  const bankIter2 = new StringIterator(unpacked2.charBank);
   const bankAssem = new StringAssembler();
 
-  const newOps = applyZip(unpacked1.ops, unpacked2.ops, (op1, op2) => {
+  const newOps = applyZip(unpacked1.ops, unpacked2.ops, (op1: Op, op2: Op) => {
     const op1code = op1.opcode;
     const op2code = op2.opcode;
     if (op1code === '+' && op2code === '-') {
@@ -1088,7 +668,7 @@ exports.compose = (cs1, cs2, pool) => {
     return opOut;
   });
 
-  return exports.pack(len1, len3, newOps, bankAssem.toString());
+  return pack(len1, len3, newOps, bankAssem.toString());
 };
 
 /**
@@ -1099,13 +679,13 @@ exports.compose = (cs1, cs2, pool) => {
  * @param {AttributePool.ts} pool - Attribute pool
  * @returns {Function}
  */
-exports.attributeTester = (attribPair, pool) => {
-  const never = (attribs) => false;
+export const attributeTester = (attribPair: Attribute, pool: AttributePool): Function => {
+  const never = (attribs: Attribute[]) => false;
   if (!pool) return never;
   const attribNum = pool.putAttrib(attribPair, true);
   if (attribNum < 0) return never;
-  const re = new RegExp(`\\*${exports.numToString(attribNum)}(?!\\w)`);
-  return (attribs) => re.test(attribs);
+  const re = new RegExp(`\\*${numToString(attribNum)}(?!\\w)`);
+  return (attribs: string) => re.test(attribs);
 };
 
 /**
@@ -1114,7 +694,7 @@ exports.attributeTester = (attribPair, pool) => {
  * @param {number} N - length of the identity changeset
  * @returns {string}
  */
-exports.identity = (N) => exports.pack(N, N, '', '');
+export const identity = (N: number): string => pack(N, N, '', '');
 
 /**
  * Creates a Changeset which works on oldFullText and removes text from spliceStart to
@@ -1129,21 +709,21 @@ exports.identity = (N) => exports.pack(N, N, '', '');
  * @param {AttributePool.ts} [pool] - Attribute pool.
  * @returns {string}
  */
-exports.makeSplice = (orig, start, ndel, ins, attribs, pool) => {
+export const makeSplice = (orig: string, start: number, ndel: number, ins: string, attribs: string | Attribute[] | undefined, pool: AttributePool | null | undefined): string => {
   if (start < 0) throw new RangeError(`start index must be non-negative (is ${start})`);
   if (ndel < 0) throw new RangeError(`characters to delete must be non-negative (is ${ndel})`);
   if (start > orig.length) start = orig.length;
   if (ndel > orig.length - start) ndel = orig.length - start;
   const deleted = orig.substring(start, start + ndel);
-  const assem = exports.smartOpAssembler();
+  const assem = new SmartOpAssembler();
   const ops = (function* () {
     yield* opsFromText('=', orig.substring(0, start));
     yield* opsFromText('-', deleted);
-    yield* opsFromText('+', ins, attribs, pool);
+    yield* opsFromText('+', ins as string, attribs, pool);
   })();
   for (const op of ops) assem.append(op);
   assem.endDocument();
-  return exports.pack(orig.length, orig.length + ins.length - ndel, assem.toString(), ins);
+  return pack(orig.length, orig.length + ins.length - ndel, assem.toString(), ins);
 };
 
 /**
@@ -1153,15 +733,15 @@ exports.makeSplice = (orig, start, ndel, ins, attribs, pool) => {
  * @param {string} cs - Changeset
  * @returns {[number, number, string][]}
  */
-const toSplices = (cs) => {
-  const unpacked = exports.unpack(cs);
+const toSplices = (cs: string): [number, number, string][] => {
+  const unpacked = unpack(cs);
   /** @type {[number, number, string][]} */
-  const splices = [];
+  const splices: [number, number, string][] = [];
 
   let oldPos = 0;
-  const charIter = exports.stringIterator(unpacked.charBank);
+  const charIter = new StringIterator(unpacked.charBank);
   let inSplice = false;
-  for (const op of exports.deserializeOps(unpacked.ops)) {
+  for (const op of deserializeOps(unpacked.ops)) {
     if (op.opcode === '=') {
       oldPos += op.chars;
       inSplice = false;
@@ -1189,7 +769,7 @@ const toSplices = (cs) => {
  * @param {number} insertionsAfter -
  * @returns {[number, number]}
  */
-exports.characterRangeFollow = (cs, startChar, endChar, insertionsAfter) => {
+export const characterRangeFollow = (cs: string, startChar: number, endChar: number, insertionsAfter: number):[number, number] => {
   let newStartChar = startChar;
   let newEndChar = endChar;
   let lengthChangeSoFar = 0;
@@ -1239,7 +819,7 @@ exports.characterRangeFollow = (cs, startChar, endChar, insertionsAfter) => {
  * @param {AttributePool} newPool - new attributes pool
  * @returns {string} the new Changeset
  */
-exports.moveOpsToNewPool = (cs, oldPool, newPool) => {
+export const moveOpsToNewPool = (cs: string, oldPool: AttributePool, newPool: AttributePool): string => {
   // works on exports or attribution string
   let dollarPos = cs.indexOf('$');
   if (dollarPos < 0) {
@@ -1265,8 +845,8 @@ exports.moveOpsToNewPool = (cs, oldPool, newPool) => {
  * @param {string} text - text to insert
  * @returns {string}
  */
-exports.makeAttribution = (text) => {
-  const assem = exports.smartOpAssembler();
+export const makeAttribution = (text: string) => {
+  const assem = new SmartOpAssembler();
   for (const op of opsFromText('+', text)) assem.append(op);
   return assem.toString();
 };
@@ -1279,7 +859,7 @@ exports.makeAttribution = (text) => {
  * @param {string} cs - changeset
  * @param {Function} func - function to call
  */
-exports.eachAttribNumber = (cs, func) => {
+export const eachAttribNumber = (cs: string, func: Function) => {
   padutils.warnDeprecated(
       'Changeset.eachAttribNumber() is deprecated; use attributes.decodeAttribString() instead');
   let dollarPos = cs.indexOf('$');
@@ -1305,16 +885,16 @@ exports.eachAttribNumber = (cs, func) => {
  *     Changeset
  * @returns {string}
  */
-exports.filterAttribNumbers = (cs, filter) => exports.mapAttribNumbers(cs, filter);
+export const filterAttribNumbers = (cs: string, filter: Function) => mapAttribNumbers(cs, filter);
 
 /**
- * Does exactly the same as exports.filterAttribNumbers.
+ * Does exactly the same as filterAttribNumbers.
  *
  * @param {string} cs -
  * @param {Function} func -
  * @returns {string}
  */
-exports.mapAttribNumbers = (cs, func) => {
+export const mapAttribNumbers = (cs: string, func: Function): string => {
   let dollarPos = cs.indexOf('$');
   if (dollarPos < 0) {
     dollarPos = cs.length;
@@ -1352,9 +932,9 @@ exports.mapAttribNumbers = (cs, func) => {
  *     attributes
  * @returns {AText}
  */
-exports.makeAText = (text, attribs) => ({
+export const makeAText = (text: string, attribs: string): AText => ({
   text,
-  attribs: (attribs || exports.makeAttribution(text)),
+  attribs: (attribs || makeAttribution(text)),
 });
 
 /**
@@ -1365,9 +945,9 @@ exports.makeAText = (text, attribs) => ({
  * @param {AttributePool.ts} pool - Attribute Pool to add to
  * @returns {AText}
  */
-exports.applyToAText = (cs, atext, pool) => ({
-  text: exports.applyToText(cs, atext.text),
-  attribs: exports.applyToAttribution(cs, atext.attribs, pool),
+export const applyToAText = (cs: string, atext: AText, pool: AttributePool): AText => ({
+  text: applyToText(cs, atext.text),
+  attribs: applyToAttribution(cs, atext.attribs, pool),
 });
 
 /**
@@ -1376,7 +956,7 @@ exports.applyToAText = (cs, atext, pool) => ({
  * @param {AText} atext -
  * @returns {AText}
  */
-exports.cloneAText = (atext) => {
+export const cloneAText = (atext: AText): AText => {
   if (!atext) error('atext is null');
   return {
     text: atext.text,
@@ -1390,7 +970,7 @@ exports.cloneAText = (atext) => {
  * @param {AText} atext1 -
  * @param {AText} atext2 -
  */
-exports.copyAText = (atext1, atext2) => {
+export const copyAText = (atext1: AText, atext2: AText) => {
   atext2.text = atext1.text;
   atext2.attribs = atext1.attribs;
 };
@@ -1402,10 +982,10 @@ exports.copyAText = (atext1, atext2) => {
  * @yields {Op}
  * @returns {Generator<Op>}
  */
-exports.opsFromAText = function* (atext) {
+export const opsFromAText = function* (atext: AText): Generator<Op> {
   // intentionally skips last newline char of atext
   let lastOp = null;
-  for (const op of exports.deserializeOps(atext.attribs)) {
+  for (const op of deserializeOps(atext.attribs)) {
     if (lastOp != null) yield lastOp;
     lastOp = op;
   }
@@ -1433,11 +1013,16 @@ exports.opsFromAText = function* (atext) {
  * @param {AText} atext -
  * @param assem - Assembler like SmartOpAssembler TODO add desc
  */
-exports.appendATextToAssembler = (atext, assem) => {
+export const appendATextToAssembler = (atext: AText, assem: SmartOpAssembler) => {
   padutils.warnDeprecated(
       'Changeset.appendATextToAssembler() is deprecated; use Changeset.opsFromAText() instead');
-  for (const op of exports.opsFromAText(atext)) assem.append(op);
+  for (const op of opsFromAText(atext)) assem.append(op);
 };
+
+type WirePrep = {
+  translated: string,
+  pool: AttributePool
+}
 
 /**
  * Creates a clone of a Changeset and it's APool.
@@ -1446,9 +1031,9 @@ exports.appendATextToAssembler = (atext, assem) => {
  * @param {AttributePool.ts} pool -
  * @returns {{translated: string, pool: AttributePool.ts}}
  */
-exports.prepareForWire = (cs, pool) => {
+export const prepareForWire = (cs: string, pool: AttributePool): WirePrep => {
   const newPool = new AttributePool();
-  const newCs = exports.moveOpsToNewPool(cs, pool, newPool);
+  const newCs = moveOpsToNewPool(cs, pool, newPool);
   return {
     translated: newCs,
     pool: newPool,
@@ -1461,17 +1046,17 @@ exports.prepareForWire = (cs, pool) => {
  * @param {string} cs -
  * @returns {boolean}
  */
-exports.isIdentity = (cs) => {
-  const unpacked = exports.unpack(cs);
+export const isIdentity = (cs: string): boolean => {
+  const unpacked = unpack(cs);
   return unpacked.ops === '' && unpacked.oldLen === unpacked.newLen;
 };
 
 /**
  * @deprecated Use an AttributeMap instead.
  */
-const attribsAttributeValue = (attribs, key, pool) => {
+const _attribsAttributeValue = (attribs: string, key: string, pool: AttributePool) => {
   if (!attribs) return '';
-  for (const [k, v] of attributes.attribsFromString(attribs, pool)) {
+  for (const [k, v] of attribsFromString(attribs, pool)) {
     if (k === key) return v;
   }
   return '';
@@ -1486,10 +1071,10 @@ const attribsAttributeValue = (attribs, key, pool) => {
  * @param {AttributePool.ts} pool - attribute pool
  * @returns {string}
  */
-exports.opAttributeValue = (op, key, pool) => {
+export const opAttributeValue = (op: Op, key: string, pool: AttributePool):string => {
   padutils.warnDeprecated(
       'Changeset.opAttributeValue() is deprecated; use an AttributeMap instead');
-  return attribsAttributeValue(op.attribs, key, pool);
+  return _attribsAttributeValue(op.attribs, key, pool);
 };
 
 /**
@@ -1501,104 +1086,13 @@ exports.opAttributeValue = (op, key, pool) => {
  * @param {AttributePool.ts} pool - attribute pool
  * @returns {string}
  */
-exports.attribsAttributeValue = (attribs, key, pool) => {
+export const attribsAttributeValue = (attribs: string, key: string, pool: AttributePool) => {
   padutils.warnDeprecated(
       'Changeset.attribsAttributeValue() is deprecated; use an AttributeMap instead');
-  return attribsAttributeValue(attribs, key, pool);
+  return _attribsAttributeValue(attribs, key, pool);
 };
 
-/**
- * Incrementally builds a Changeset.
- *
- * @typedef {object} Builder
- * @property {Function} insert -
- * @property {Function} keep -
- * @property {Function} keepText -
- * @property {Function} remove -
- * @property {Function} toString -
- */
 
-/**
- * @param {number} oldLen - Old length
- * @returns {Builder}
- */
-exports.builder = (oldLen) => {
-  const assem = exports.smartOpAssembler();
-  const o = new Op();
-  const charBank = new StringAssembler();
-
-  const self = {
-    /**
-     * @param {number} N - Number of characters to keep.
-     * @param {number} L - Number of newlines among the `N` characters. If positive, the last
-     *     character must be a newline.
-     * @param {(string|Attribute[])} attribs - Either [[key1,value1],[key2,value2],...] or '*0*1...'
-     *     (no pool needed in latter case).
-     * @param {?AttributePool.ts} pool - Attribute pool, only required if `attribs` is a list of
-     *     attribute key, value pairs.
-     * @returns {Builder} this
-     */
-    keep: (N, L, attribs, pool) => {
-      o.opcode = '=';
-      o.attribs = typeof attribs === 'string'
-        ? attribs : new AttributeMap(pool).update(attribs || []).toString();
-      o.chars = N;
-      o.lines = (L || 0);
-      assem.append(o);
-      return self;
-    },
-
-    /**
-     * @param {string} text - Text to keep.
-     * @param {(string|Attribute[])} attribs - Either [[key1,value1],[key2,value2],...] or '*0*1...'
-     *     (no pool needed in latter case).
-     * @param {?AttributePool.ts} pool - Attribute pool, only required if `attribs` is a list of
-     *     attribute key, value pairs.
-     * @returns {Builder} this
-     */
-    keepText: (text, attribs, pool) => {
-      for (const op of opsFromText('=', text, attribs, pool)) assem.append(op);
-      return self;
-    },
-
-    /**
-     * @param {string} text - Text to insert.
-     * @param {(string|Attribute[])} attribs - Either [[key1,value1],[key2,value2],...] or '*0*1...'
-     *     (no pool needed in latter case).
-     * @param {?AttributePool.ts} pool - Attribute pool, only required if `attribs` is a list of
-     *     attribute key, value pairs.
-     * @returns {Builder} this
-     */
-    insert: (text, attribs, pool) => {
-      for (const op of opsFromText('+', text, attribs, pool)) assem.append(op);
-      charBank.append(text);
-      return self;
-    },
-
-    /**
-     * @param {number} N - Number of characters to remove.
-     * @param {number} L - Number of newlines among the `N` characters. If positive, the last
-     *     character must be a newline.
-     * @returns {Builder} this
-     */
-    remove: (N, L) => {
-      o.opcode = '-';
-      o.attribs = '';
-      o.chars = N;
-      o.lines = (L || 0);
-      assem.append(o);
-      return self;
-    },
-
-    toString: () => {
-      assem.endDocument();
-      const newLen = oldLen + assem.getLengthChange();
-      return exports.pack(oldLen, newLen, assem.toString(), charBank.toString());
-    },
-  };
-
-  return self;
-};
 
 /**
  * Constructs an attribute string from a sequence of attributes.
@@ -1613,7 +1107,7 @@ exports.builder = (oldLen) => {
  *     ignored if `attribs` is an attribute string.
  * @returns {AttributeString}
  */
-exports.makeAttribsString = (opcode, attribs, pool) => {
+export const makeAttribsString = (opcode: string, attribs: Iterable<[string, string]>|string, pool: AttributePool | null | undefined): string => {
   padutils.warnDeprecated(
       'Changeset.makeAttribsString() is deprecated; ' +
       'use AttributeMap.prototype.toString() or attributes.attribsToString() instead');
@@ -1625,10 +1119,10 @@ exports.makeAttribsString = (opcode, attribs, pool) => {
 /**
  * Like "substring" but on a single-line attribution string.
  */
-exports.subattribution = (astr, start, optEnd) => {
-  const attOps = exports.deserializeOps(astr);
+export const subattribution = (astr: string, start: number, optEnd: number) => {
+  const attOps = deserializeOps(astr);
   let attOpsNext = attOps.next();
-  const assem = exports.smartOpAssembler();
+  const assem = new SmartOpAssembler();
   let attOp = new Op();
   const csOp = new Op();
 
@@ -1636,7 +1130,7 @@ exports.subattribution = (astr, start, optEnd) => {
     if (!csOp.chars) return;
     while (csOp.opcode && (attOp.opcode || !attOpsNext.done)) {
       if (!attOp.opcode) {
-        attOp = attOpsNext.value;
+        attOp = attOpsNext.value as Op;
         attOpsNext = attOps.next();
       }
       if (csOp.opcode && attOp.opcode && csOp.chars >= attOp.chars &&
@@ -1670,13 +1164,18 @@ exports.subattribution = (astr, start, optEnd) => {
   return assem.toString();
 };
 
-exports.inverse = (cs, lines, alines, pool) => {
+export const inverse = (cs: string, lines: string|{
+  get: (idx: number) => string,
+}, alines: string|{
+  get: (idx: number) => string,
+}, pool: AttributePool) => {
   // lines and alines are what the exports is meant to apply to.
   // They may be arrays or objects with .get(i) and .length methods.
   // They include final newlines on lines.
 
-  const linesGet = (idx) => {
-    if (lines.get) {
+  const linesGet = (idx: number) => {
+    // @ts-ignore
+    if ("get" in lines) {
       return lines.get(idx);
     } else {
       return lines[idx];
@@ -1687,8 +1186,9 @@ exports.inverse = (cs, lines, alines, pool) => {
    * @param {number} idx -
    * @returns {string}
    */
-  const alinesGet = (idx) => {
-    if (alines.get) {
+  const alinesGet = (idx: number): string => {
+    // @ts-ignore
+    if ("get" in alines) {
       return alines.get(idx);
     } else {
       return alines[idx];
@@ -1697,17 +1197,17 @@ exports.inverse = (cs, lines, alines, pool) => {
 
   let curLine = 0;
   let curChar = 0;
-  let curLineOps = null;
-  let curLineOpsNext = null;
-  let curLineOpsLine;
+  let curLineOps: null|Generator<Op> = null;
+  let curLineOpsNext:IteratorResult<Op>|null = null;
+  let curLineOpsLine: number;
   let curLineNextOp = new Op('+');
 
-  const unpacked = exports.unpack(cs);
-  const builder = exports.builder(unpacked.newLen);
+  const unpacked = unpack(cs);
+  const builder = new Builder(unpacked.newLen);
 
-  const consumeAttribRuns = (numChars, func /* (len, attribs, endsLine)*/) => {
+  const consumeAttribRuns = (numChars: number, func: Function /* (len, attribs, endsLine)*/) => {
     if (!curLineOps || curLineOpsLine !== curLine) {
-      curLineOps = exports.deserializeOps(alinesGet(curLine));
+      curLineOps = deserializeOps(alinesGet(curLine));
       curLineOpsNext = curLineOps.next();
       curLineOpsLine = curLine;
       let indexIntoLine = 0;
@@ -1723,19 +1223,19 @@ exports.inverse = (cs, lines, alines, pool) => {
     }
 
     while (numChars > 0) {
-      if (!curLineNextOp.chars && curLineOpsNext.done) {
+      if (!curLineNextOp.chars && curLineOpsNext!.done) {
         curLine++;
         curChar = 0;
         curLineOpsLine = curLine;
         curLineNextOp.chars = 0;
-        curLineOps = exports.deserializeOps(alinesGet(curLine));
-        curLineOpsNext = curLineOps.next();
+        curLineOps = deserializeOps(alinesGet(curLine));
+        curLineOpsNext = curLineOps!.next();
       }
       if (!curLineNextOp.chars) {
-        if (curLineOpsNext.done) {
+        if (curLineOpsNext!.done) {
           curLineNextOp = new Op();
         } else {
-          curLineNextOp = curLineOpsNext.value;
+          curLineNextOp = curLineOpsNext!.value;
           curLineOpsNext = curLineOps.next();
         }
       }
@@ -1747,13 +1247,13 @@ exports.inverse = (cs, lines, alines, pool) => {
       curChar += charsToUse;
     }
 
-    if (!curLineNextOp.chars && curLineOpsNext.done) {
+    if (!curLineNextOp.chars && curLineOpsNext!.done) {
       curLine++;
       curChar = 0;
     }
   };
 
-  const skip = (N, L) => {
+  const skip = (N: number, L: number) => {
     if (L) {
       curLine += L;
       curChar = 0;
@@ -1764,7 +1264,7 @@ exports.inverse = (cs, lines, alines, pool) => {
     }
   };
 
-  const nextText = (numChars) => {
+  const nextText = (numChars: number) => {
     let len = 0;
     const assem = new StringAssembler();
     const firstString = linesGet(curLine).substring(curChar);
@@ -1782,9 +1282,11 @@ exports.inverse = (cs, lines, alines, pool) => {
     return assem.toString().substring(0, numChars);
   };
 
-  const cachedStrFunc = (func) => {
-    const cache = {};
-    return (s) => {
+  const cachedStrFunc = (func: Function) => {
+    const cache:{
+      [key: string]: string
+    } = {};
+    return (s: string | number) => {
       if (!cache[s]) {
         cache[s] = func(s);
       }
@@ -1792,11 +1294,11 @@ exports.inverse = (cs, lines, alines, pool) => {
     };
   };
 
-  for (const csOp of exports.deserializeOps(unpacked.ops)) {
+  for (const csOp of deserializeOps(unpacked.ops)) {
     if (csOp.opcode === '=') {
       if (csOp.attribs) {
         const attribs = AttributeMap.fromString(csOp.attribs, pool);
-        const undoBackToAttribs = cachedStrFunc((oldAttribsStr) => {
+        const undoBackToAttribs = cachedStrFunc((oldAttribsStr: string) => {
           const oldAttribs = AttributeMap.fromString(oldAttribsStr, pool);
           const backAttribs = new AttributeMap(pool);
           for (const [key, value] of attribs) {
@@ -1807,7 +1309,7 @@ exports.inverse = (cs, lines, alines, pool) => {
           // are in oldAttribs but not in attribs). I don't know if that is intentional.
           return backAttribs.toString();
         });
-        consumeAttribRuns(csOp.chars, (len, attribs, endsLine) => {
+        consumeAttribRuns(csOp.chars, (len: number, attribs: string, endsLine: number) => {
           builder.keep(len, endsLine ? 1 : 0, undoBackToAttribs(attribs));
         });
       } else {
@@ -1819,33 +1321,33 @@ exports.inverse = (cs, lines, alines, pool) => {
     } else if (csOp.opcode === '-') {
       const textBank = nextText(csOp.chars);
       let textBankIndex = 0;
-      consumeAttribRuns(csOp.chars, (len, attribs, endsLine) => {
+      consumeAttribRuns(csOp.chars, (len: number, attribs: string) => {
         builder.insert(textBank.substr(textBankIndex, len), attribs);
         textBankIndex += len;
       });
     }
   }
 
-  return exports.checkRep(builder.toString());
+  return checkRep(builder.toString());
 };
 
 // %CLIENT FILE ENDS HERE%
-exports.follow = (cs1, cs2, reverseInsertOrder, pool) => {
-  const unpacked1 = exports.unpack(cs1);
-  const unpacked2 = exports.unpack(cs2);
+export const follow = (cs1: string, cs2:string, reverseInsertOrder: boolean, pool: AttributePool) => {
+  const unpacked1 = unpack(cs1);
+  const unpacked2 = unpack(cs2);
   const len1 = unpacked1.oldLen;
   const len2 = unpacked2.oldLen;
   assert(len1 === len2, 'mismatched follow - cannot transform cs1 on top of cs2');
-  const chars1 = exports.stringIterator(unpacked1.charBank);
-  const chars2 = exports.stringIterator(unpacked2.charBank);
+  const chars1 = new StringIterator(unpacked1.charBank);
+  const chars2 = new StringIterator(unpacked2.charBank);
 
   const oldLen = unpacked1.newLen;
   let oldPos = 0;
   let newLen = 0;
 
-  const hasInsertFirst = exports.attributeTester(['insertorder', 'first'], pool);
+  const hasInsertFirst = attributeTester(['insertorder', 'first'], pool);
 
-  const newOps = applyZip(unpacked1.ops, unpacked2.ops, (op1, op2) => {
+  const newOps = applyZip(unpacked1.ops, unpacked2.ops, (op1: Op, op2: Op) => {
     const opOut = new Op();
     if (op1.opcode === '+' || op2.opcode === '+') {
       let whichToDo;
@@ -1968,10 +1470,10 @@ exports.follow = (cs1, cs2, reverseInsertOrder, pool) => {
   });
   newLen += oldLen - oldPos;
 
-  return exports.pack(oldLen, newLen, newOps, unpacked2.charBank);
+  return pack(oldLen, newLen, newOps, unpacked2.charBank);
 };
 
-const followAttributes = (att1, att2, pool) => {
+const followAttributes = (att1: string, att2: string, pool: AttributePool) => {
   // The merge of two sets of attribute changes to the same text
   // takes the lexically-earlier value if there are two values
   // for the same key.  Otherwise, all key/value changes from
@@ -2000,7 +1502,7 @@ const followAttributes = (att1, att2, pool) => {
   return buf.toString();
 };
 
-exports.exportedForTestingOnly = {
+export const exportedForTestingOnly = {
   TextLinesMutator,
   followAttributes,
   toSplices,

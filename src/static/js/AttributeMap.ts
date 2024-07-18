@@ -31,7 +31,7 @@ class AttributeMap extends Map {
    * @param {AttributePool} pool - Attribute pool.
    * @returns {AttributeMap}
    */
-  public static fromString(str: string, pool: AttributePool): AttributeMap {
+  public static fromString(str: string, pool?: AttributePool|null): AttributeMap {
     return new AttributeMap(pool).updateFromString(str);
   }
 

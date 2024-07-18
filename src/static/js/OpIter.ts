@@ -1,4 +1,5 @@
 import Op from "./Op";
+import {clearOp, copyOp, deserializeOps} from "./Changeset";
 
 /**
  * Iterator over a changeset's operations.
@@ -9,19 +10,20 @@ import Op from "./Op";
  */
 export class OpIter {
   private gen
+  private _next: IteratorResult<Op, void>
   /**
    * @param {string} ops - String encoding the change operations to iterate over.
    */
   constructor(ops: string) {
-    this.gen = exports.deserializeOps(ops);
-    this.next = this.gen.next();
+    this.gen = deserializeOps(ops);
+    this._next = this.gen.next();
   }
 
   /**
    * @returns {boolean} Whether there are any remaining operations.
    */
-  hasNext() {
-    return !this.next.done;
+  hasNext(): boolean {
+    return !this._next.done;
   }
 
   /**
@@ -33,10 +35,10 @@ export class OpIter {
    * @returns {Op} The next operation, or an operation with a falsy `opcode` property if there are
    *     no more operations.
    */
-  next(opOut = new Op()) {
+  next(opOut: Op = new Op()): Op {
     if (this.hasNext()) {
-      copyOp(this._next.value, opOut);
-      this._next = this._gen.next();
+      copyOp(this._next.value!, opOut);
+      this._next = this.gen.next();
     } else {
       clearOp(opOut);
     }

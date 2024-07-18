@@ -343,9 +343,9 @@ class PadUtils {
         clear,
       };
     }
-  getCheckbox = (node: JQueryNode) => $(node).is(':checked')
+  getCheckbox = (node: string) => $(node).is(':checked')
   setCheckbox =
-    (node: JQueryNode, value: string) => {
+    (node: JQueryNode, value: boolean) => {
       if (value) {
         $(node).attr('checked', 'checked');
       } else {

@@ -19,6 +19,7 @@ export type PadType = {
     getRevisionDate: (rev: number)=>Promise<number>,
     getRevisionChangeset: (rev: number)=>Promise<AChangeSet>,
     appendRevision: (changeset: AChangeSet, author: string)=>Promise<void>,
+    settings:any
 }
 
 

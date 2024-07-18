@@ -1,3 +1,6 @@
+export type OpCode = ''|'='|'+'|'-';
+
+
 /**
  * An operation to apply to a shared document.
  */
