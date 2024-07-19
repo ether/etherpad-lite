@@ -31,12 +31,13 @@ import {padUtils as padutils} from "./pad_utils";
 import {Ace2Editor} from "./ace";
 import html10n from '../js/vendors/html10n'
 import {MapArrayType} from "../../node/types/MapType";
-import {ClientVarData, ClientVarMessage} from "./types/SocketIOMessage";
+import {ClientVarPayload, PadOption} from "./types/SocketIOMessage";
+import {Pad} from "./pad";
 
 export class PadEditor {
-  private pad?: PadType
-  private settings: undefined| ClientVarData
-  private ace: any
+  private pad?: Pad
+  private settings: undefined| PadOption
+  ace: Ace2Editor|null
   private viewZoom: number
 
   constructor() {
@@ -47,7 +48,7 @@ export class PadEditor {
     this.viewZoom = 100
   }
 
-  init = async (initialViewOptions: MapArrayType<string>, _pad: PadType) => {
+  init = async (initialViewOptions: MapArrayType<boolean>, _pad: Pad) => {
     this.pad = _pad;
     this.settings = this.pad.settings;
     this.ace = new Ace2Editor();
@@ -125,7 +126,7 @@ export class PadEditor {
     });
   }
 
-  setViewOptions = (newOptions: MapArrayType<string>) => {
+  setViewOptions = (newOptions: MapArrayType<boolean>) => {
     const getOption = (key: string, defaultValue: boolean) => {
       const value = String(newOptions[key]);
       if (value === 'true') return true;
@@ -136,25 +137,25 @@ export class PadEditor {
     let v;
 
     v = getOption('rtlIsTrue', ('rtl' === html10n.getDirection()));
-    this.ace.setProperty('rtlIsTrue', v);
+    this.ace!.setProperty('rtlIsTrue', v);
     padutils.setCheckbox($('#options-rtlcheck'), v);
 
     v = getOption('showLineNumbers', true);
-    this.ace.setProperty('showslinenumbers', v);
+    this.ace!.setProperty('showslinenumbers', v);
     padutils.setCheckbox($('#options-linenoscheck'), v);
 
     v = getOption('showAuthorColors', true);
-    this.ace.setProperty('showsauthorcolors', v);
+    this.ace!.setProperty('showsauthorcolors', v);
     $('#chattext').toggleClass('authorColors', v);
     $('iframe[name="ace_outer"]').contents().find('#sidedivinner').toggleClass('authorColors', v);
     padutils.setCheckbox($('#options-colorscheck'), v);
 
     // Override from parameters if true
     if (this.settings!.noColors !== false) {
-      this.ace.setProperty('showsauthorcolors', !settings.noColors);
+      this.ace!.setProperty('showsauthorcolors', !this.settings!.noColors);
     }
 
-    this.ace.setProperty('textface', newOptions.padFontFamily || '');
+    this.ace!.setProperty('textface', newOptions.padFontFamily || '');
   }
 
   dispose = () => {
@@ -173,12 +174,12 @@ export class PadEditor {
       this.ace.setEditable(false);
     }
   }
-  restoreRevisionText= (dataFromServer: ClientVarData) => {
+  restoreRevisionText= (dataFromServer: ClientVarPayload) => {
       this.pad!.addHistoricalAuthors(dataFromServer.historicalAuthorData);
-      this.ace.importAText(dataFromServer.atext, dataFromServer.apool, true);
+      this.ace!.importAText(dataFromServer.atext, dataFromServer.apool, true);
     }
 
-  focusOnLine = (ace) => {
+  focusOnLine = (ace: Ace2Editor) => {
     // If a number is in the URI IE #L124 go to that line number
     const lineNumber = window.location.hash.substr(1);
     if (lineNumber) {

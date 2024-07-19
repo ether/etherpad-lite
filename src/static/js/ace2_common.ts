@@ -6,6 +6,8 @@
  * TL;DR COMMENTS ON THIS FILE ARE HIGHLY APPRECIATED
  */
 
+import {MapArrayType} from "../../node/types/MapType";
+
 /**
  * Copyright 2009 Google Inc.
  *
@@ -22,11 +24,13 @@
  * limitations under the License.
  */
 
-const isNodeText = (node) => (node.nodeType === 3);
+export const isNodeText = (node: {
+  nodeType: number
+}) => (node.nodeType === 3);
 
-const getAssoc = (obj, name) => obj[`_magicdom_${name}`];
+export const getAssoc = (obj: MapArrayType<any>, name: string) => obj[`_magicdom_${name}`];
 
-const setAssoc = (obj, name, value) => {
+export const setAssoc = (obj: MapArrayType<any>, name: string, value: string) => {
   // note that in IE designMode, properties of a node can get
   // copied to new nodes that are spawned during editing; also,
   // properties representable in HTML text can survive copy-and-paste
@@ -38,7 +42,7 @@ const setAssoc = (obj, name, value) => {
 // between false and true, a number between 0 and numItems inclusive.
 
 
-const binarySearch = (numItems, func) => {
+export const binarySearch = (numItems: number, func: (num: number)=>boolean) => {
   if (numItems < 1) return 0;
   if (func(0)) return 0;
   if (!func(numItems - 1)) return numItems;
@@ -52,17 +56,10 @@ const binarySearch = (numItems, func) => {
   return high;
 };
 
-const binarySearchInfinite = (expectedLength, func) => {
+export const binarySearchInfinite = (expectedLength: number, func: (num: number)=>boolean) => {
   let i = 0;
   while (!func(i)) i += expectedLength;
   return binarySearch(i, func);
 };
 
-const noop = () => {};
-
-exports.isNodeText = isNodeText;
-exports.getAssoc = getAssoc;
-exports.setAssoc = setAssoc;
-exports.binarySearch = binarySearch;
-exports.binarySearchInfinite = binarySearchInfinite;
-exports.noop = noop;
+export const noop = () => {};

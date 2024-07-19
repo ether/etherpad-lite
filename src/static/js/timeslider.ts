@@ -31,10 +31,10 @@ const hooks = require('./pluginfw/hooks');
 import connect from './socketio'
 import html10n from '../js/vendors/html10n'
 import {Socket} from "socket.io";
-import {ClientVarMessage, SocketIOMessage} from "./types/SocketIOMessage";
+import {ClientVarData, ClientVarMessage, ClientVarPayload, SocketIOMessage} from "./types/SocketIOMessage";
 import {Func} from "mocha";
 
-type ChangeSetLoader = {
+export type ChangeSetLoader = {
   handleMessageFromServer(msg: ClientVarMessage): void
 }
 
@@ -80,7 +80,7 @@ export const init = () => {
     socket.on('message', (message: ClientVarMessage) => {
       if (message.type === 'CLIENT_VARS') {
         handleClientVars(message);
-      } else if (message.accessStatus) {
+      } else if ("accessStatus" in message) {
         $('body').html('<h2>You have no permission to access this pad</h2>');
       } else if (message.type === 'CHANGESET_REQ' || message.type === 'COLLABROOM') {
         changesetLoader.handleMessageFromServer(message);
@@ -111,7 +111,7 @@ const sendSocketMsg = (type: string, data: Object) => {
 
 const fireWhenAllScriptsAreLoaded: Function[] = [];
 
-const handleClientVars = (message: ClientVarMessage) => {
+const handleClientVars = (message: ClientVarData) => {
   // save the client Vars
   window.clientVars = message.data;
 

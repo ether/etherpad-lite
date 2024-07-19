@@ -1,5 +1,8 @@
 'use strict';
 
+import html10n from "./vendors/html10n";
+import {Pad} from "./pad";
+
 /**
  * Copyright 2012 Peter 'Pita' Martischka
  *
@@ -16,10 +19,8 @@
  * limitations under the License.
  */
 
-let pad;
-
-exports.saveNow = () => {
-  pad.collabClient.sendMessage({type: 'SAVE_REVISION'});
+export const saveNow = (pad: Pad) => {
+  pad!.collabClient!.sendMessage({type: 'SAVE_REVISION'});
   window.$.gritter.add({
     // (string | mandatory) the heading of the notification
     title: html10n.get('pad.savedrevs.marked'),
@@ -31,8 +32,4 @@ exports.saveNow = () => {
     time: 3000,
     class_name: 'saved-revision',
   });
-};
-
-exports.init = (_pad) => {
-  pad = _pad;
 };

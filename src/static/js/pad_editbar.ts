@@ -6,6 +6,8 @@
  * TL;DR COMMENTS ON THIS FILE ARE HIGHLY APPRECIATED
  */
 
+import {MapArrayType} from "../../node/types/MapType";
+
 /**
  * Copyright 2009 Google Inc.
  *
@@ -26,13 +28,16 @@ const browser = require('./vendors/browser');
 const hooks = require('./pluginfw/hooks');
 import {padUtils as padutils} from "./pad_utils";
 
-const padeditor = require('./pad_editor').padeditor;
+import {PadEditor, padEditor as padeditor} from "./pad_editor";
+import {Ace2Editor} from "./ace";
+import html10n from "./vendors/html10n";
 const padsavedrevs = require('./pad_savedrevs');
 const _ = require('underscore');
 require('./vendors/nice-select');
 
 class ToolbarItem {
-  constructor(element) {
+  private $el: JQuery<HTMLElement>;
+  constructor(element: JQuery<HTMLElement>) {
     this.$el = element;
   }
 
@@ -46,8 +51,9 @@ class ToolbarItem {
     }
   }
 
-  setValue(val) {
+  setValue(val: boolean) {
     if (this.isSelect()) {
+      // @ts-ignore
       return this.$el.find('select').val(val);
     }
   }
@@ -64,7 +70,7 @@ class ToolbarItem {
     return this.getType() === 'button';
   }
 
-  bind(callback) {
+  bind(callback: (cmd: string|undefined, tb: ToolbarItem)=>void) {
     if (this.isButton()) {
       this.$el.on('click', (event) => {
         $(':focus').trigger('blur');
@@ -79,52 +85,62 @@ class ToolbarItem {
   }
 }
 
-const syncAnimation = (() => {
-  const SYNCING = -100;
-  const DONE = 100;
-  let state = DONE;
-  const fps = 25;
-  const step = 1 / fps;
-  const T_START = -0.5;
-  const T_FADE = 1.0;
-  const T_GONE = 1.5;
-  const animator = padutils.makeAnimationScheduler(() => {
-    if (state === SYNCING || state === DONE) {
-      return false;
-    } else if (state >= T_GONE) {
-      state = DONE;
-      $('#syncstatussyncing').css('display', 'none');
-      $('#syncstatusdone').css('display', 'none');
-      return false;
-    } else if (state < 0) {
-      state += step;
-      if (state >= 0) {
-        $('#syncstatussyncing').css('display', 'none');
-        $('#syncstatusdone').css('display', 'block').css('opacity', 1);
-      }
-      return true;
-    } else {
-      state += step;
-      if (state >= T_FADE) {
-        $('#syncstatusdone').css('opacity', (T_GONE - state) / (T_GONE - T_FADE));
-      }
-      return true;
-    }
-  }, step * 1000);
-  return {
-    syncing: () => {
-      state = SYNCING;
-      $('#syncstatussyncing').css('display', 'block');
-      $('#syncstatusdone').css('display', 'none');
-    },
-    done: () => {
-      state = T_START;
-      animator.scheduleAnimation();
-    },
-  };
-})();
+class SyncAnimation {
+  static SYNCING = -100;
+  static DONE = 100;
+  state = SyncAnimation.DONE;
+  fps = 25;
+  step = 1 / this.fps;
+  static T_START = -0.5;
+  static T_FADE = 1.0;
+  static T_GONE = 1.5;
+  private animator: { scheduleAnimation: () => void };
+  constructor() {
 
-exports.padeditbar = new class {
+    this.animator = padutils.makeAnimationScheduler(() => {
+      if (this.state === SyncAnimation.SYNCING || this.state === SyncAnimation.DONE) {
+        return false;
+      } else if (this.state >= SyncAnimation.T_GONE) {
+        this.state = SyncAnimation.DONE;
+        $('#syncstatussyncing').css('display', 'none');
+        $('#syncstatusdone').css('display', 'none');
+        return false;
+      } else if (this.state < 0) {
+        this.state += this.step;
+        if (this.state >= 0) {
+          $('#syncstatussyncing').css('display', 'none');
+          $('#syncstatusdone').css('display', 'block').css('opacity', 1);
+        }
+        return true;
+      } else {
+        this.state += this.step;
+        if (this.state >= SyncAnimation.T_FADE) {
+          $('#syncstatusdone').css('opacity', (SyncAnimation.T_GONE - this.state) / (SyncAnimation.T_GONE - SyncAnimation.T_FADE));
+        }
+        return true;
+      }
+    }, this.step * 1000);
+  }
+  syncing =  () => {
+    this.state = SyncAnimation.SYNCING;
+    $('#syncstatussyncing').css('display', 'block');
+    $('#syncstatusdone').css('display', 'none');
+  }
+  done = () => {
+    this.state = SyncAnimation.T_START;
+    this.animator.scheduleAnimation();
+  }
+}
+
+const syncAnimation = new SyncAnimation()
+
+type ToolbarCallback = (cmd: string, el: ToolbarItem)=>void
+type ToolbarAceCallback = (cmd: string, ace: any, el: ToolbarItem)=>void
+
+class Padeditbar {
+  private _editbarPosition: number;
+  private commands: MapArrayType<ToolbarCallback| ToolbarAceCallback>;
+  private dropdowns: any[];
   constructor() {
     this._editbarPosition = 0;
     this.commands = {};
@@ -137,7 +153,7 @@ exports.padeditbar = new class {
     $('#editbar [data-key]').each((i, elt) => {
       $(elt).off('click');
       new ToolbarItem($(elt)).bind((command, item) => {
-        this.triggerCommand(command, item);
+        this.triggerCommand(command!, item);
       });
     });
 
@@ -165,12 +181,13 @@ exports.padeditbar = new class {
      * overflow:hidden on parent
      */
     if (!browser.safari) {
+      // @ts-ignore
       $('select').niceSelect();
     }
 
     // When editor is scrolled, we add a class to style the editbar differently
     $('iframe[name="ace_outer"]').contents().on('scroll', (ev) => {
-      $('#editbar').toggleClass('editor-scrolled', $(ev.currentTarget).scrollTop() > 2);
+      $('#editbar').toggleClass('editor-scrolled', $(ev.currentTarget).scrollTop()! > 2);
     });
   }
   isEnabled() { return true; }
@@ -180,25 +197,25 @@ exports.padeditbar = new class {
   enable() {
     $('#editbar').addClass('enabledtoolbar').removeClass('disabledtoolbar');
   }
-  registerCommand(cmd, callback) {
+  registerCommand(cmd: string, callback: (cmd: string, ace: Ace2Editor, item: ToolbarItem)=>void) {
     this.commands[cmd] = callback;
     return this;
   }
-  registerDropdownCommand(cmd, dropdown) {
+  registerDropdownCommand(cmd: string, dropdown?: string) {
     dropdown = dropdown || cmd;
     this.dropdowns.push(dropdown);
     this.registerCommand(cmd, () => {
       this.toggleDropDown(dropdown);
     });
   }
-  registerAceCommand(cmd, callback) {
+  registerAceCommand(cmd: string, callback: ToolbarAceCallback) {
     this.registerCommand(cmd, (cmd, ace, item) => {
       ace.callWithAce((ace) => {
         callback(cmd, ace, item);
       }, cmd, true);
     });
   }
-  triggerCommand(cmd, item) {
+  triggerCommand(cmd: string, item: ToolbarItem) {
     if (this.isEnabled() && this.commands[cmd]) {
       this.commands[cmd](cmd, padeditor.ace, item);
     }
@@ -206,8 +223,8 @@ exports.padeditbar = new class {
   }
 
   // cb is deprecated (this function is synchronous so a callback is unnecessary).
-  toggleDropDown(moduleName, cb = null) {
-    let cbErr = null;
+  toggleDropDown(moduleName: string, cb:Function|null = null) {
+    let cbErr: Error|null = null;
     try {
       // do nothing if users are sticked
       if (moduleName === 'users' && $('#users').hasClass('stickyUsers')) {
@@ -249,12 +266,13 @@ exports.padeditbar = new class {
         }
       }
     } catch (err) {
+      // @ts-ignore
       cbErr = err || new Error(err);
     } finally {
       if (cb) Promise.resolve().then(() => cb(cbErr));
     }
   }
-  setSyncStatus(status) {
+  setSyncStatus(status: string) {
     if (status === 'syncing') {
       syncAnimation.syncing();
     } else if (status === 'done') {
@@ -269,7 +287,7 @@ exports.padeditbar = new class {
     if ($('#readonlyinput').is(':checked')) {
       const urlParts = padUrl.split('/');
       urlParts.pop();
-      const readonlyLink = `${urlParts.join('/')}/${clientVars.readOnlyId}`;
+      const readonlyLink = `${urlParts.join('/')}/${window.clientVars.readOnlyId}`;
       $('#embedinput')
           .val(`<iframe name="embed_readonly" src="${readonlyLink}${params}" ${props}></iframe>`);
       $('#linkinput').val(readonlyLink);
@@ -288,16 +306,16 @@ exports.padeditbar = new class {
     // this is approximate, we cannot measure it because on mobile
     // Layout it takes the full width on the bottom of the page
     const menuRightWidth = 280;
-    if (menuLeft && menuLeft.scrollWidth > $('.toolbar').width() - menuRightWidth ||
-        $('.toolbar').width() < 1000) {
+    if (menuLeft && menuLeft.scrollWidth > $('.toolbar').width()! - menuRightWidth ||
+        $('.toolbar').width()! < 1000) {
       $('body').addClass('mobile-layout');
     }
-    if (menuLeft && menuLeft.scrollWidth > $('.toolbar').width()) {
+    if (menuLeft && menuLeft.scrollWidth > $('.toolbar').width()!) {
       $('.toolbar').addClass('cropped');
     }
   }
 
-  _bodyKeyEvent(evt) {
+  _bodyKeyEvent(evt:  JQuery.KeyDownEvent<HTMLElement, undefined, HTMLElement, HTMLElement>) {
     // If the event is Alt F9 or Escape & we're already in the editbar menu
     // Send the users focus back to the pad
     if ((evt.keyCode === 120 && evt.altKey) || evt.keyCode === 27) {
@@ -313,15 +331,17 @@ exports.padeditbar = new class {
           // Timeslider probably..
           $('#editorcontainerbox').trigger('focus'); // Focus back onto the pad
         } else {
-          padeditor.ace.focus(); // Sends focus back to pad
+          padeditor.ace!.focus(); // Sends focus back to pad
           // The above focus doesn't always work in FF, you have to hit enter afterwards
           evt.preventDefault();
         }
       } else {
         // Focus on the editbar :)
         const firstEditbarElement = $('#editbar button').first();
+        // @ts-ignore
+        const evTarget:JQuery<HTMLElement> = $(evt.currentTarget) as any
 
-        $(evt.currentTarget).trigger('blur');
+        evTarget.trigger('blur');
         firstEditbarElement.trigger('focus');
         evt.preventDefault();
       }
@@ -337,7 +357,8 @@ exports.padeditbar = new class {
       // On left arrow move to next button in editbar
       if (evt.keyCode === 37) {
         // If a dropdown is visible or we're in an input don't move to the next button
-        if ($('.popup').is(':visible') || evt.target.localName === 'input') return;
+        // @ts-ignore
+        if ($('.popup').is(':visible') || evt.target!.localName === 'input') return;
 
         this._editbarPosition--;
         // Allow focus to shift back to end of row and start of row
@@ -348,6 +369,7 @@ exports.padeditbar = new class {
       // On right arrow move to next button in editbar
       if (evt.keyCode === 39) {
         // If a dropdown is visible or we're in an input don't move to the next button
+        // @ts-ignore
         if ($('.popup').is(':visible') || evt.target.localName === 'input') return;
 
         this._editbarPosition++;
@@ -394,14 +416,14 @@ exports.padeditbar = new class {
     });
 
     this.registerCommand('savedRevision', () => {
-      padsavedrevs.saveNow();
+      padsavedrevs.saveNow(pad);
     });
 
     this.registerCommand('showTimeSlider', () => {
       document.location = `${document.location.pathname}/timeslider`;
     });
 
-    const aceAttributeCommand = (cmd, ace) => {
+    const aceAttributeCommand = (cmd: string, ace: any) => {
       ace.ace_toggleAttributeOnSelection(cmd);
     };
     this.registerAceCommand('bold', aceAttributeCommand);
@@ -479,4 +501,6 @@ exports.padeditbar = new class {
       }
     });
   }
-}();
+};
+
+export const padeditbar = new PadEditor()

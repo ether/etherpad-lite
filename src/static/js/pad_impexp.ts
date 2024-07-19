@@ -23,29 +23,27 @@
  */
 
 import html10n from './vendors/html10n';
+import {Pad} from "./pad";
 
-
-const padimpexp = (() => {
-  let pad;
+class PadImpExp {
+  private pad?: Pad;
 
   // /// import
-  const addImportFrames = () => {
+  addImportFrames = () => {
     $('#import .importframe').remove();
     const iframe = $('<iframe>')
-        .css('display', 'none')
-        .attr('name', 'importiframe')
-        .addClass('importframe');
+      .css('display', 'none')
+      .attr('name', 'importiframe')
+      .addClass('importframe');
     $('#import').append(iframe);
-  };
-
-  const fileInputUpdated = () => {
+  }
+  fileInputUpdated = () => {
     $('#importsubmitinput').addClass('throbbold');
     $('#importformfilediv').addClass('importformenabled');
     $('#importsubmitinput').prop('disabled', false);
     $('#importmessagefail').fadeOut('fast');
-  };
-
-  const fileInputSubmit = function (e) {
+  }
+  fileInputSubmit = (e: Event) => {
     e.preventDefault();
     $('#importmessagefail').fadeOut('fast');
     if (!window.confirm(html10n.get('pad.impexp.confirmimport'))) return;
@@ -54,10 +52,13 @@ const padimpexp = (() => {
     $('#importarrow').stop(true, true).hide();
     $('#importstatusball').show();
     (async () => {
+      // @ts-ignore
       const {code, message, data: {directDatabaseAccess} = {}} = await $.ajax({
         url: `${window.location.href.split('?')[0].split('#')[0]}/import`,
         method: 'POST',
-        data: new FormData(this),
+        // FIXME is this correct
+        // @ts-ignore
+        data: new FormData(this.fileInputSubmit),
         processData: false,
         contentType: false,
         dataType: 'json',
@@ -67,7 +68,7 @@ const padimpexp = (() => {
         return {code: 2, message: 'Unknown import error'};
       });
       if (code !== 0) {
-        importErrorMessage(message);
+        this.importErrorMessage(message);
       } else {
         $('#import_export').removeClass('popup-show');
         if (directDatabaseAccess) window.location.reload();
@@ -75,11 +76,11 @@ const padimpexp = (() => {
       $('#importsubmitinput').prop('disabled', false).val(html10n.get('pad.impexp.importbutton'));
       window.setTimeout(() => $('#importfileinput').prop('disabled', false), 0);
       $('#importstatusball').hide();
-      addImportFrames();
+      this.addImportFrames();
     })();
-  };
+  }
 
-  const importErrorMessage = (status) => {
+  importErrorMessage = (status: string) => {
     const known = [
       'convertFailed',
       'uploadFailed',
@@ -89,12 +90,12 @@ const padimpexp = (() => {
     ];
     const msg = html10n.get(`pad.impexp.${known.indexOf(status) !== -1 ? status : 'copypaste'}`);
 
-    const showError = (fade) => {
+    const showError = (fade?: boolean) => {
       const popup = $('#importmessagefail').empty()
-          .append($('<strong>')
-              .css('color', 'red')
-              .text(`${html10n.get('pad.impexp.importfailed')}: `))
-          .append(document.createTextNode(msg));
+        .append($('<strong>')
+          .css('color', 'red')
+          .text(`${html10n.get('pad.impexp.importfailed')}: `))
+        .append(document.createTextNode(msg));
       popup[(fade ? 'fadeIn' : 'show')]();
     };
 
@@ -104,83 +105,83 @@ const padimpexp = (() => {
     } else {
       showError();
     }
-  };
+  }
 
   // /// export
-
-  function cantExport() {
+  cantExport = () => {
     let type = $(this);
     if (type.hasClass('exporthrefpdf')) {
+      // @ts-ignore
       type = 'PDF';
     } else if (type.hasClass('exporthrefdoc')) {
+      // @ts-ignore
       type = 'Microsoft Word';
     } else if (type.hasClass('exporthrefodt')) {
+      // @ts-ignore
       type = 'OpenDocument';
     } else {
+      // @ts-ignore
       type = 'this file';
     }
     alert(html10n.get('pad.impexp.exportdisabled', {type}));
     return false;
   }
 
-  // ///
-  const self = {
-    init: (_pad) => {
-      pad = _pad;
+  init = (_pad: Pad) => {
+    this.pad = _pad;
 
-      // get /p/padname
-      // if /p/ isn't available due to a rewrite we use the clientVars padId
-      const padRootPath = /.*\/p\/[^/]+/.exec(document.location.pathname) || clientVars.padId;
+    // get /p/padname
+    // if /p/ isn't available due to a rewrite we use the clientVars padId
+    const padRootPath = /.*\/p\/[^/]+/.exec(document.location.pathname) || window.clientVars.padId;
 
-      // i10l buttom import
+    // i10l buttom import
+    $('#importsubmitinput').val(html10n.get('pad.impexp.importbutton'));
+    html10n.bind('localized', () => {
       $('#importsubmitinput').val(html10n.get('pad.impexp.importbutton'));
-      html10n.bind('localized', () => {
-        $('#importsubmitinput').val(html10n.get('pad.impexp.importbutton'));
-      });
+    });
 
-      // build the export links
-      $('#exporthtmla').attr('href', `${padRootPath}/export/html`);
-      $('#exportetherpada').attr('href', `${padRootPath}/export/etherpad`);
-      $('#exportplaina').attr('href', `${padRootPath}/export/txt`);
+// build the export links
+    $('#exporthtmla').attr('href', `${padRootPath}/export/html`);
+    $('#exportetherpada').attr('href', `${padRootPath}/export/etherpad`);
+    $('#exportplaina').attr('href', `${padRootPath}/export/txt`);
 
-      // hide stuff thats not avaible if abiword/soffice is disabled
-      if (clientVars.exportAvailable === 'no') {
-        $('#exportworda').remove();
-        $('#exportpdfa').remove();
-        $('#exportopena').remove();
+// hide stuff thats not avaible if abiword/soffice is disabled
+    if (window.clientVars.exportAvailable === 'no') {
+      $('#exportworda').remove();
+      $('#exportpdfa').remove();
+      $('#exportopena').remove();
 
-        $('#importmessageabiword').show();
-      } else if (clientVars.exportAvailable === 'withoutPDF') {
-        $('#exportpdfa').remove();
+      $('#importmessageabiword').show();
+    } else if (window.clientVars.exportAvailable === 'withoutPDF') {
+      $('#exportpdfa').remove();
 
-        $('#exportworda').attr('href', `${padRootPath}/export/doc`);
-        $('#exportopena').attr('href', `${padRootPath}/export/odt`);
+      $('#exportworda').attr('href', `${padRootPath}/export/doc`);
+      $('#exportopena').attr('href', `${padRootPath}/export/odt`);
 
-        $('#importexport').css({height: '142px'});
-        $('#importexportline').css({height: '142px'});
-      } else {
-        $('#exportworda').attr('href', `${padRootPath}/export/doc`);
-        $('#exportpdfa').attr('href', `${padRootPath}/export/pdf`);
-        $('#exportopena').attr('href', `${padRootPath}/export/odt`);
-      }
+      $('#importexport').css({height: '142px'});
+      $('#importexportline').css({height: '142px'});
+    } else {
+      $('#exportworda').attr('href', `${padRootPath}/export/doc`);
+      $('#exportpdfa').attr('href', `${padRootPath}/export/pdf`);
+      $('#exportopena').attr('href', `${padRootPath}/export/odt`);
+    }
 
-      addImportFrames();
-      $('#importfileinput').on('change', fileInputUpdated);
-      $('#importform').off('submit').on('submit', fileInputSubmit);
-      $('.disabledexport').on('click', cantExport);
-    },
-    disable: () => {
-      $('#impexp-disabled-clickcatcher').show();
-      $('#import').css('opacity', 0.5);
-      $('#impexp-export').css('opacity', 0.5);
-    },
-    enable: () => {
-      $('#impexp-disabled-clickcatcher').hide();
-      $('#import').css('opacity', 1);
-      $('#impexp-export').css('opacity', 1);
-    },
-  };
-  return self;
-})();
+    this.addImportFrames();
+    $('#importfileinput').on('change', this.fileInputUpdated);
+    $('#importform').off('submit').on('submit', this.fileInputSubmit);
+    $('.disabledexport').on('click', this.cantExport);
+  }
 
-exports.padimpexp = padimpexp;
+  disable= () => {
+    $('#impexp-disabled-clickcatcher').show();
+    $('#import').css('opacity', 0.5);
+    $('#impexp-export').css('opacity', 0.5);
+  }
+  enable= () => {
+    $('#impexp-disabled-clickcatcher').hide();
+    $('#import').css('opacity', 1);
+    $('#impexp-export').css('opacity', 1);
+  }
+}
+
+export const padImpExp = new PadImpExp();

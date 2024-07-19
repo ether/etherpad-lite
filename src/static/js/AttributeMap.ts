@@ -1,6 +1,7 @@
 'use strict';
 
 import AttributePool from "./AttributePool";
+import {Attribute} from "./types/Attribute";
 
 const attributes = require('./attributes');
 
@@ -66,7 +67,7 @@ class AttributeMap extends Map {
    *     key is removed from this map (if present).
    * @returns {AttributeMap} `this` (for chaining).
    */
-  update(entries: Iterable<[string, string]>, emptyValueIsDelete: boolean = false): AttributeMap {
+  update(entries: Attribute[], emptyValueIsDelete: boolean = false): AttributeMap {
     for (let [k, v] of entries) {
       k = k == null ? '' : String(k);
       v = v == null ? '' : String(v);

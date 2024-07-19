@@ -1,8 +1,10 @@
 'use strict';
 import html10n from './vendors/html10n';
+import {PadOption} from "./types/SocketIOMessage";
+import {Pad} from "./pad";
 
-exports.showCountDownTimerToReconnectOnModal = ($modal, pad) => {
-  if (clientVars.automaticReconnectionTimeout && $modal.is('.with_reconnect_timer')) {
+export const showCountDownTimerToReconnectOnModal = ($modal: JQuery<HTMLElement>, pad: Pad) => {
+  if (window.clientVars.automaticReconnectionTimeout && $modal.is('.with_reconnect_timer')) {
     createCountDownElementsIfNecessary($modal);
 
     const timer = createTimerForModal($modal, pad);
@@ -16,7 +18,7 @@ exports.showCountDownTimerToReconnectOnModal = ($modal, pad) => {
   }
 };
 
-const createCountDownElementsIfNecessary = ($modal) => {
+const createCountDownElementsIfNecessary = ($modal: JQuery<HTMLElement>) => {
   const elementsDoNotExist = $modal.find('#cancelreconnect').length === 0;
   if (elementsDoNotExist) {
     const $defaultMessage = $modal.find('#defaulttext');
@@ -48,16 +50,16 @@ const createCountDownElementsIfNecessary = ($modal) => {
   }
 };
 
-const localize = ($element) => {
+const localize = ($element: JQuery<HTMLElement>) => {
   html10n.translateElement(html10n.translations, $element.get(0));
 };
 
-const createTimerForModal = ($modal, pad) => {
+const createTimerForModal = ($modal: JQuery<HTMLElement>, pad: Pad) => {
   const timeUntilReconnection =
-      clientVars.automaticReconnectionTimeout * reconnectionTries.nextTry();
+      window.clientVars.automaticReconnectionTimeout * reconnectionTries.nextTry();
   const timer = new CountDownTimer(timeUntilReconnection);
 
-  timer.onTick((minutes, seconds) => {
+  timer.onTick((minutes: number, seconds: number) => {
     updateCountDownTimerMessage($modal, minutes, seconds);
   }).onExpire(() => {
     const wasANetworkError = $modal.is('.disconnected');
@@ -72,23 +74,23 @@ const createTimerForModal = ($modal, pad) => {
   return timer;
 };
 
-const disableAutomaticReconnection = ($modal) => {
+const disableAutomaticReconnection = ($modal: JQuery<HTMLElement>) => {
   toggleAutomaticReconnectionOption($modal, true);
 };
-const enableAutomaticReconnection = ($modal) => {
+const enableAutomaticReconnection = ($modal: JQuery<HTMLElement>) => {
   toggleAutomaticReconnectionOption($modal, false);
 };
-const toggleAutomaticReconnectionOption = ($modal, disableAutomaticReconnect) => {
+const toggleAutomaticReconnectionOption = ($modal: JQuery<HTMLElement>, disableAutomaticReconnect: boolean) => {
   $modal.find('#cancelreconnect, .reconnecttimer').toggleClass('hidden', disableAutomaticReconnect);
   $modal.find('#defaulttext').toggleClass('hidden', !disableAutomaticReconnect);
 };
 
-const waitUntilClientCanConnectToServerAndThen = (callback, pad) => {
+const waitUntilClientCanConnectToServerAndThen = (callback: Function, pad: Pad) => {
   whenConnectionIsRestablishedWithServer(callback, pad);
   pad.socket.connect();
 };
 
-const whenConnectionIsRestablishedWithServer = (callback, pad) => {
+const whenConnectionIsRestablishedWithServer = (callback: Function, pad: Pad) => {
   // only add listener for the first try, don't need to add another listener
   // on every unsuccessful try
   if (reconnectionTries.counter === 1) {
@@ -96,15 +98,15 @@ const whenConnectionIsRestablishedWithServer = (callback, pad) => {
   }
 };
 
-const forceReconnection = ($modal) => {
+const forceReconnection = ($modal: JQuery<HTMLElement>) => {
   $modal.find('#forcereconnect').trigger('click');
 };
 
-const updateCountDownTimerMessage = ($modal, minutes, seconds) => {
-  minutes = minutes < 10 ? `0${minutes}` : minutes;
-  seconds = seconds < 10 ? `0${seconds}` : seconds;
+const updateCountDownTimerMessage = ($modal: JQuery<HTMLElement>, minutes: number, seconds: number) => {
+  let minutesFormatted = minutes < 10 ? `0${minutes}` : minutes;
+  let secondsFormatted = seconds < 10 ? `0${seconds}` : seconds;
 
-  $modal.find('.timetoexpire').text(`${minutes}:${seconds}`);
+  $modal.find('.timetoexpire').text(`${minutesFormatted}:${secondsFormatted}`);
 };
 
 // store number of tries to reconnect to server, in order to increase time to wait
@@ -125,71 +127,75 @@ const reconnectionTries = {
 // duration: how many **seconds** until the timer ends
 // granularity (optional): how many **milliseconds**
 // between each 'tick' of timer. Default: 1000ms (1s)
-const CountDownTimer = function (duration, granularity) {
-  this.duration = duration;
-  this.granularity = granularity || 1000;
-  this.running = false;
 
-  this.onTickCallbacks = [];
-  this.onExpireCallbacks = [];
-};
+class CountDownTimer {
+  private duration: number
+  private granularity: number
+  private running: boolean
+  private onTickCallbacks: Function[]
+  private onExpireCallbacks: Function[]
+  private timeoutId: any = 0
+  constructor(duration: number, granularity?: number) {
+    this.duration = duration;
+    this.granularity = granularity || 1000;
+    this.running = false;
 
-CountDownTimer.prototype.start = function () {
-  if (this.running) {
-    return;
+    this.onTickCallbacks = [];
+    this.onExpireCallbacks = [];
   }
-  this.running = true;
-  const start = Date.now();
-  const that = this;
-  let diff;
-  const timer = () => {
-    diff = that.duration - Math.floor((Date.now() - start) / 1000);
-
-    if (diff > 0) {
-      that.timeoutId = setTimeout(timer, that.granularity);
-      that.tick(diff);
-    } else {
-      that.running = false;
-      that.tick(0);
-      that.expire();
+  start =  ()=> {
+    if (this.running) {
+      return;
     }
-  };
-  timer();
-};
+    this.running = true;
+    const start = Date.now();
+    const that = this;
+    let diff;
+    const timer = () => {
+      diff = that.duration - Math.floor((Date.now() - start) / 1000);
 
-CountDownTimer.prototype.tick = function (diff) {
-  const obj = CountDownTimer.parse(diff);
-  this.onTickCallbacks.forEach(function (callback) {
-    callback.call(this, obj.minutes, obj.seconds);
-  }, this);
-};
-CountDownTimer.prototype.expire = function () {
-  this.onExpireCallbacks.forEach(function (callback) {
-    callback.call(this);
-  }, this);
-};
-
-CountDownTimer.prototype.onTick = function (callback) {
-  if (typeof callback === 'function') {
-    this.onTickCallbacks.push(callback);
+      if (diff > 0) {
+        that.timeoutId = setTimeout(timer, that.granularity);
+        that.tick(diff);
+      } else {
+        that.running = false;
+        that.tick(0);
+        that.expire();
+      }
+    };
+    timer();
   }
-  return this;
-};
-
-CountDownTimer.prototype.onExpire = function (callback) {
-  if (typeof callback === 'function') {
-    this.onExpireCallbacks.push(callback);
+  tick =  (diff: number)=> {
+    const obj = this.parse(diff);
+    this.onTickCallbacks.forEach( (callback)=> {
+      callback.call(this, obj.minutes, obj.seconds);
+    }, this);
   }
-  return this;
-};
+  expire =  ()=> {
+    this.onExpireCallbacks.forEach( (callback)=> {
+      callback.call(this);
+    }, this);
+  }
+  onTick =  (callback: Function)=> {
+    if (typeof callback === 'function') {
+      this.onTickCallbacks.push(callback);
+    }
+    return this;
+  }
 
-CountDownTimer.prototype.cancel = function () {
-  this.running = false;
-  clearTimeout(this.timeoutId);
-  return this;
-};
-
-CountDownTimer.parse = (seconds) => ({
-  minutes: (seconds / 60) | 0,
-  seconds: (seconds % 60) | 0,
-});
+  onExpire =  (callback: Function)=> {
+    if (typeof callback === 'function') {
+      this.onExpireCallbacks.push(callback);
+    }
+    return this;
+  }
+  cancel =  () => {
+    this.running = false;
+    clearTimeout(this.timeoutId);
+    return this;
+  }
+  parse = (seconds: number) => ({
+    minutes: (seconds / 60) | 0,
+    seconds: (seconds % 60) | 0,
+  });
+}

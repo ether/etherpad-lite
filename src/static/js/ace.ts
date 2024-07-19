@@ -6,6 +6,8 @@
  */
 
 import {InnerWindow} from "./types/InnerWindow";
+import {AText} from "./types/AText";
+import AttributePool from "./AttributePool";
 
 /**
  * Copyright 2009 Google Inc.
@@ -30,7 +32,8 @@ const hooks = require('./pluginfw/hooks');
 
 const pluginUtils = require('./pluginfw/shared');
 const ace2_inner = require('ep_etherpad-lite/static/js/ace2_inner')
-const debugLog = (...args: string[]|Object[]|null[]) => {};
+const debugLog = (...args: string[] | Object[] | null[]) => {
+};
 const cl_plugins = require('ep_etherpad-lite/static/js/pluginfw/client_plugins')
 const {Cssmanager} = require("./cssmanager");
 // The inner and outer iframe's locations are about:blank, so relative URLs are relative to that.
@@ -58,7 +61,8 @@ const eventFired = async (obj: any, event: string, cleanups: Function[] = [], pr
       reject(err);
     };
     cleanup = () => {
-      cleanup = () => {};
+      cleanup = () => {
+      };
       obj!.removeEventListener(event, successCb);
       obj!.removeEventListener('error', errorCb);
     };
@@ -90,6 +94,26 @@ const frameReady = async (frame: HTMLIFrameElement) => {
 };
 
 export class Ace2Editor {
+  callWithAce(arg0: (ace: any) => void, cmd?: string, flag?: boolean) {
+    throw new Error("Method not implemented.");
+  }
+
+  focus = () => {
+
+  }
+
+  setEditable = (editable: boolean)=>{
+
+  }
+
+  importAText = (atext: AText, apool: AttributePool, flag: boolean)=>{
+
+}
+
+  setProperty = (ev: string, padFontFam: string|boolean)=>{
+
+  }
+
   info = {editor: this};
   loaded = false;
   actionsPendingInit: Function[] = [];
@@ -108,7 +132,7 @@ export class Ace2Editor {
     }
   }
 
-  pendingInit = (func: Function) =>  (...args: any[])=> {
+  pendingInit = (func: Function) => (...args: any[]) => {
     const action = () => func.apply(this, args);
     if (this.loaded) return action();
     this.actionsPendingInit.push(action);
@@ -176,7 +200,7 @@ export class Ace2Editor {
     this.info = null; // prevent IE 6 closure memory leaks
   });
 
-  init = async (containerId: string, initialCode: string)=> {
+  init = async (containerId: string, initialCode: string) => {
     debugLog('Ace2Editor.init()');
     // @ts-ignore
     this.importText(initialCode);
@@ -296,7 +320,7 @@ export class Ace2Editor {
     await innerWindow.Ace2Inner.init(this.info, {
       inner: new Cssmanager(innerStyle.sheet),
       outer: new Cssmanager(outerStyle.sheet),
-      parent: new Cssmanager((document.querySelector('style[title="dynamicsyntax"]')  as HTMLStyleElement)!.sheet),
+      parent: new Cssmanager((document.querySelector('style[title="dynamicsyntax"]') as HTMLStyleElement)!.sheet),
     });
     debugLog('Ace2Editor.init() Ace2Inner.init() returned');
     this.loaded = true;

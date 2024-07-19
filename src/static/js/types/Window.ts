@@ -1,9 +1,12 @@
-import {ClientVarData} from "./SocketIOMessage";
+import {ClientVarData, ClientVarPayload} from "./SocketIOMessage";
+import {Pad} from "../pad";
 
 declare global {
   interface Window {
-    clientVars: ClientVarData;
+    clientVars: ClientVarPayload;
     $: any,
-    customStart?:any
+    customStart?:any,
+    ajlog: string
   }
+  let pad: Pad
 }

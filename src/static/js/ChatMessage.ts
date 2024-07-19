@@ -9,11 +9,11 @@ import {padUtils} from './pad_utils'
  * Supports serialization to JSON.
  */
 class ChatMessage {
-
-  private text: string|null
-  private authorId: string|null
+  customMetadata: any
+  text: string|null
+  public authorId: string|null
   private displayName: string|null
-  private time: number|null
+  time: number|null
   static fromObject(obj: ChatMessage) {
     // The userId property was renamed to authorId, and userName was renamed to displayName. Accept
     // the old names in case the db record was written by an older version of Etherpad.
@@ -108,4 +108,4 @@ class ChatMessage {
   }
 }
 
-module.exports = ChatMessage;
+export default ChatMessage

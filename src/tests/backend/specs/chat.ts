@@ -3,7 +3,7 @@
 import {MapArrayType} from "../../../node/types/MapType";
 import {PluginDef} from "../../../node/types/PartType";
 
-const ChatMessage = require('../../../static/js/ChatMessage');
+import ChatMessage from '../../../static/js/ChatMessage';
 const {Pad} = require('../../../node/db/Pad');
 const assert = require('assert').strict;
 const common = require('../common');
@@ -13,7 +13,7 @@ const pluginDefs = require('../../../static/js/pluginfw/plugin_defs');
 const logger = common.logger;
 
 type CheckFN = ({message, pad, padId}:{
-  message?: typeof ChatMessage,
+  message?: ChatMessage,
   pad?: typeof Pad,
   padId?: string,
 })=>void;
@@ -103,10 +103,10 @@ describe(__filename, function () {
         checkHook('chatNewMessage', ({message}) => {
           assert(message != null);
           assert(message instanceof ChatMessage);
-          assert.equal(message.authorId, authorId);
-          assert.equal(message.text, this.test!.title);
-          assert(message.time >= start);
-          assert(message.time <= Date.now());
+          assert.equal(message!.authorId, authorId);
+          assert.equal(message!.text, this.test!.title);
+          assert(message!.time! >= start);
+          assert(message!.time! <= Date.now());
         }),
         sendChat(socket, {text: this.test!.title}),
       ]);
@@ -153,8 +153,8 @@ describe(__filename, function () {
       const customMetadata = {foo: this.test!.title};
       await Promise.all([
         checkHook('chatNewMessage', ({message}) => {
-          message.text = modifiedText;
-          message.customMetadata = customMetadata;
+          message!.text = modifiedText;
+          message!.customMetadata = customMetadata;
         }),
         (async () => {
           const {message} = await listen('CHAT_MESSAGE');

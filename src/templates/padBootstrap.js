@@ -14,7 +14,7 @@
 
   const basePath = new URL('..', window.location.href).pathname;
   window.$ = window.jQuery = require('../../src/static/js/vendors/jquery');
-  window.browser = require('../../src/static/js/vendors/browser');
+  window.browser = require('../static/js/vendors/browser');
   const pad = require('../../src/static/js/pad');
   pad.baseURL = basePath;
   window.plugins = require('../../src/static/js/pluginfw/client_plugins');
@@ -23,8 +23,8 @@
   // TODO: These globals shouldn't exist.
   window.pad = pad.pad;
   window.chat = require('../../src/static/js/chat').chat;
-  window.padeditbar = require('../../src/static/js/pad_editbar').padeditbar;
-  window.padimpexp = require('../../src/static/js/pad_impexp').padimpexp;
+  window.padeditbar = require('../static/js/pad_editbar').padeditbar;
+  window.padimpexp = require('../static/js/pad_impexp').padimpexp;
   await import('../../src/static/js/skin_variants')
   await import('../../src/static/js/basic_error_handler')
 

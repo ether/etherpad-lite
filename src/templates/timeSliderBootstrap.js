@@ -19,7 +19,7 @@ import * as timeSlider from 'ep_etherpad-lite/static/js/timeslider'
   window.$ = window.jQuery = require('ep_etherpad-lite/static/js/vendors/jquery'); // Expose jQuery #HACK
   require('ep_etherpad-lite/static/js/vendors/gritter')
 
-  window.browser = require('ep_etherpad-lite/static/js/vendors/browser');
+  window.browser = require('src/static/js/vendors/browser');
 
   window.plugins = require('ep_etherpad-lite/static/js/pluginfw/client_plugins');
   const socket = timeSlider.socket;
@@ -31,8 +31,8 @@ import * as timeSlider from 'ep_etherpad-lite/static/js/timeslider'
     /* TODO: These globals shouldn't exist. */
 
   });
-  const padeditbar = require('ep_etherpad-lite/static/js/pad_editbar').padeditbar;
-  const padimpexp = require('ep_etherpad-lite/static/js/pad_impexp').padimpexp;
+  const padeditbar = require('src/static/js/pad_editbar').padeditbar;
+  const padimpexp = require('src/static/js/pad_impexp').padimpexp;
   setBaseURl(baseURL)
   timeSlider.init();
   padeditbar.init()

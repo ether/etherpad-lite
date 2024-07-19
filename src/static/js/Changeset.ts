@@ -1107,7 +1107,7 @@ export const attribsAttributeValue = (attribs: string, key: string, pool: Attrib
  *     ignored if `attribs` is an attribute string.
  * @returns {AttributeString}
  */
-export const makeAttribsString = (opcode: string, attribs: Iterable<[string, string]>|string, pool: AttributePool | null | undefined): string => {
+export const makeAttribsString = (opcode: string, attribs: Attribute[]|string, pool: AttributePool | null | undefined): string => {
   padutils.warnDeprecated(
       'Changeset.makeAttribsString() is deprecated; ' +
       'use AttributeMap.prototype.toString() or attributes.attribsToString() instead');

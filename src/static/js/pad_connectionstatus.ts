@@ -22,45 +22,51 @@
  * limitations under the License.
  */
 
-const padmodals = require('./pad_modals').padmodals;
+import {padModals} from "./pad_modals";
 
-const padconnectionstatus = (() => {
-  let status = {
+class PadConnectionStatus {
+  private status: {
+    what: string,
+    why?: string
+  } = {
     what: 'connecting',
-  };
+  }
 
-  const self = {
-    init: () => {
-      $('button#forcereconnect').on('click', () => {
-        window.location.reload();
-      });
-    },
-    connected: () => {
-      status = {
-        what: 'connected',
-      };
-      padmodals.showModal('connected');
-      padmodals.hideOverlay();
-    },
-    reconnecting: () => {
-      status = {
-        what: 'reconnecting',
-      };
+  init = () => {
+    $('button#forcereconnect').on('click', () => {
+      window.location.reload();
+    });
+  }
 
-      padmodals.showModal('reconnecting');
-      padmodals.showOverlay();
-    },
-    disconnected: (msg) => {
-      if (status.what === 'disconnected') return;
+  connected = () => {
+    this.status = {
+      what: 'connected',
+    };
+    padModals.showModal('connected');
+    padModals.hideOverlay();
+  }
+  reconnecting = () => {
+    this.status = {
+      what: 'reconnecting',
+    };
 
-      status = {
-        what: 'disconnected',
-        why: msg,
-      };
+    padModals.showModal('reconnecting');
+    padModals.showOverlay();
+  }
+  disconnected
+    =
+    (msg: string) => {
+      if (this.status.what === 'disconnected') return;
 
-      // These message IDs correspond to localized strings that are presented to the user. If a new
-      // message ID is added here then a new div must be added to src/templates/pad.html and the
-      // corresponding l10n IDs must be added to the language files in src/locales.
+      this.status =
+        {
+          what: 'disconnected',
+          why: msg,
+        }
+
+// These message IDs correspond to localized strings that are presented to the user. If a new
+// message ID is added here then a new div must be added to src/templates/pad.html and the
+// corresponding l10n IDs must be added to the language files in src/locales.
       const knownReasons = [
         'badChangeset',
         'corruptPad',
@@ -80,13 +86,17 @@ const padconnectionstatus = (() => {
         k = 'disconnected';
       }
 
-      padmodals.showModal(k);
-      padmodals.showOverlay();
-    },
-    isFullyConnected: () => status.what === 'connected',
-    getStatus: () => status,
-  };
-  return self;
-})();
+      padModals.showModal(k);
+      padModals.showOverlay();
+    }
+  isFullyConnected
+    =
+    () => this.status.what === 'connected'
+  getStatus
+    =
+    () => this.status
+}
 
+
+export const padconnectionstatus = new PadConnectionStatus()
 exports.padconnectionstatus = padconnectionstatus;

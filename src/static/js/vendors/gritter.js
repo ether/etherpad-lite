@@ -343,7 +343,6 @@
 				$('#editorcontainerbox').append(this._tpl_wrap_bottom);
 			}
 		}
-
 	}
 
 })(jQuery);

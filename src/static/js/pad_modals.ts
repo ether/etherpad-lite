@@ -6,6 +6,8 @@
  * TL;DR COMMENTS ON THIS FILE ARE HIGHLY APPRECIATED
  */
 
+import {Pad} from "./pad";
+
 /**
  * Copyright 2009 Google Inc.
  *
@@ -23,33 +25,34 @@
  */
 
 const padeditbar = require('./pad_editbar').padeditbar;
-const automaticReconnect = require('./pad_automatic_reconnect');
+import {showCountDownTimerToReconnectOnModal} from './pad_automatic_reconnect'
 
-const padmodals = (() => {
-  let pad = undefined;
-  const self = {
-    init: (_pad) => {
-      pad = _pad;
-    },
-    showModal: (messageId) => {
-      padeditbar.toggleDropDown('none');
-      $('#connectivity .visible').removeClass('visible');
-      $(`#connectivity .${messageId}`).addClass('visible');
+class PadModals {
+  private pad?: Pad
 
-      const $modal = $(`#connectivity .${messageId}`);
-      automaticReconnect.showCountDownTimerToReconnectOnModal($modal, pad);
+  constructor() {
+  }
 
-      padeditbar.toggleDropDown('connectivity');
-    },
-    showOverlay: () => {
-      // Prevent the user to interact with the toolbar. Useful when user is disconnected for example
-      $('#toolbar-overlay').show();
-    },
-    hideOverlay: () => {
-      $('#toolbar-overlay').hide();
-    },
-  };
-  return self;
-})();
+  init = (pad: Pad) => {
+    this.pad = pad
+  }
+  showModal = (messageId: string) => {
+    padeditbar.toggleDropDown('none');
+    $('#connectivity .visible').removeClass('visible');
+    $(`#connectivity .${messageId}`).addClass('visible');
 
-exports.padmodals = padmodals;
+    const $modal = $(`#connectivity .${messageId}`);
+    showCountDownTimerToReconnectOnModal($modal, this.pad!);
+
+    padeditbar.toggleDropDown('connectivity');
+  }
+  showOverlay = () => {
+    // Prevent the user to interact with the toolbar. Useful when user is disconnected for example
+    $('#toolbar-overlay').show();
+  }
+  hideOverlay = () => {
+    $('#toolbar-overlay').hide();
+  }
+}
+
+export const padModals = new PadModals()

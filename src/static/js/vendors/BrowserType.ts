@@ -1,0 +1,37 @@
+export type BrowserType = {
+  webos?: boolean
+  name: string,
+  opera?: boolean,
+  version?: number,
+  yandexbrowser?: boolean,
+  windowsphone?: boolean,
+  msedge?: boolean,
+  msie?: boolean,
+  chromeos?: boolean
+  chromeBook?: boolean
+  chrome?: boolean,
+  sailfish?: boolean,
+  seamonkey?: boolean,
+  firefox?: boolean,
+  firefoxos?: boolean,
+  silk?: boolean,
+  phantom?: boolean,
+  blackberry?: boolean
+  touchpad?: boolean,
+  bada?: boolean,
+  tizen?: boolean,
+  safari?: boolean,
+  webkit?: boolean,
+  gecko?: boolean,
+  android?: boolean,
+  ios?: boolean,
+  windows?: boolean
+  mac?: boolean
+  linux?: boolean
+  osversion?: string
+  tablet?: boolean
+  mobile?: boolean
+  a?: boolean
+  c?: boolean
+  x?: boolean
+}

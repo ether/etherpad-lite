@@ -10,7 +10,7 @@ import {Socket} from "socket.io";
  *     https://socket.io/docs/v2/client-api/#new-Manager-url-options
  * @return socket.io Socket object
  */
-const connect = (etherpadBaseUrl: string, namespace = '/', options = {}):  Socket => {
+const connect = (etherpadBaseUrl: string, namespace = '/', options = {}):  any => {
   // The API for socket.io's io() function is awkward. The documentation says that the first
   // argument is a URL, but it is not the URL of the socket.io endpoint. The URL's path part is used
   // as the name of the socket.io namespace to join, and the rest of the URL (including query
@@ -28,15 +28,10 @@ const connect = (etherpadBaseUrl: string, namespace = '/', options = {}):  Socke
   };
   socketOptions = Object.assign(options, socketOptions);
 
-  const socket = io(namespaceUrl.href, socketOptions) as unknown as Socket;
+  const socket = io(namespaceUrl.href, socketOptions);
 
   socket.on('connect_error', (error) => {
     console.log('Error connecting to pad', error);
-    /*if (socket.io.engine.transports.indexOf('polling') === -1) {
-      console.warn('WebSocket connection failed. Falling back to long-polling.');
-      socket.io.opts.transports = ['websocket','polling'];
-      socket.io.engine.upgrade = false;
-    }*/
   });
 
   return socket;

@@ -1,4 +1,5 @@
 import {MapArrayType} from "./MapType";
+import {PadOption} from "../../static/js/types/SocketIOMessage";
 
 export type PadType = {
     id: string,
@@ -19,7 +20,7 @@ export type PadType = {
     getRevisionDate: (rev: number)=>Promise<number>,
     getRevisionChangeset: (rev: number)=>Promise<AChangeSet>,
     appendRevision: (changeset: AChangeSet, author: string)=>Promise<void>,
-    settings:any
+    settings: PadOption
 }
 
 
