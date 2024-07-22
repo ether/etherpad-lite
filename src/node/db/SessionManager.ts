@@ -20,12 +20,25 @@
  * limitations under the License.
  */
 
-const CustomError = require('../utils/customError');
-const promises = require('../utils/promises');
-const randomString = require('../utils/randomstring');
-const db = require('./DB');
-const groupManager = require('./GroupManager');
-const authorManager = require('./AuthorManager');
+import CustomError from '../utils/customError';
+import {firstSatisfies} from '../utils/promises';
+import {randomString} from '../utils/randomstring';
+import {get, remove, set, setSub} from './DB';
+import {doesGroupExist} from './GroupManager';
+import {doesAuthorExist} from './AuthorManager';
+
+
+type Session = {
+  groupID: string;
+  authorID: string;
+  validUntil: number;
+};
+
+type Author2Sessions = {
+  sessionIDs: {
+    [key: string]: Session;
+  };
+}
 
 /**
  * Finds the author ID for a session with matching ID and group.
@@ -36,7 +49,7 @@ const authorManager = require('./AuthorManager');
  *     sessionCookie, and is bound to a group with the given ID, then this returns the author ID
  *     bound to the session. Otherwise, returns undefined.
  */
-exports.findAuthorID = async (groupID:string, sessionCookie: string) => {
+export const findAuthorID = async (groupID:string, sessionCookie: string) => {
   if (!sessionCookie) return undefined;
   /*
    * Sometimes, RFC 6265-compliant web servers may send back a cookie whose
@@ -64,7 +77,7 @@ exports.findAuthorID = async (groupID:string, sessionCookie: string) => {
   const sessionIDs = sessionCookie.replace(/^"|"$/g, '').split(',');
   const sessionInfoPromises = sessionIDs.map(async (id) => {
     try {
-      return await exports.getSessionInfo(id);
+      return await getSessionInfo(id);
     } catch (err:any) {
       if (err.message === 'sessionID does not exist') {
         console.debug(`SessionManager getAuthorID: no session exists with ID ${id}`);
@@ -79,7 +92,7 @@ exports.findAuthorID = async (groupID:string, sessionCookie: string) => {
     groupID: string;
     validUntil: number;
   }|null) => (si != null && si.groupID === groupID && now < si.validUntil);
-  const sessionInfo = await promises.firstSatisfies(sessionInfoPromises, isMatch);
+  const sessionInfo = await firstSatisfies(sessionInfoPromises, isMatch) as Session;
   if (sessionInfo == null) return undefined;
   return sessionInfo.authorID;
 };
@@ -89,9 +102,9 @@ exports.findAuthorID = async (groupID:string, sessionCookie: string) => {
  * @param {String} sessionID The id of the session
  * @return {Promise<boolean>} Resolves to true if the session exists
  */
-exports.doesSessionExist = async (sessionID: string) => {
+export const doesSessionExist = async (sessionID: string) => {
   // check if the database entry of this session exists
-  const session = await db.get(`session:${sessionID}`);
+  const session = await get(`session:${sessionID}`) as Session;
   return (session != null);
 };
 
@@ -102,15 +115,15 @@ exports.doesSessionExist = async (sessionID: string) => {
  * @param {Number} validUntil The unix timestamp when the session should expire
  * @return {Promise<{sessionID: string}>} the id of the new session
  */
-exports.createSession = async (groupID: string, authorID: string, validUntil: number) => {
+export const createSession = async (groupID: string, authorID: string, validUntil: number) => {
   // check if the group exists
-  const groupExists = await groupManager.doesGroupExist(groupID);
+  const groupExists = await doesGroupExist(groupID);
   if (!groupExists) {
     throw new CustomError('groupID does not exist', 'apierror');
   }
 
   // check if the author exists
-  const authorExists = await authorManager.doesAuthorExist(authorID);
+  const authorExists = await doesAuthorExist(authorID);
   if (!authorExists) {
     throw new CustomError('authorID does not exist', 'apierror');
   }
@@ -144,15 +157,15 @@ exports.createSession = async (groupID: string, authorID: string, validUntil: nu
   const sessionID = `s.${randomString(16)}`;
 
   // set the session into the database
-  await db.set(`session:${sessionID}`, {groupID, authorID, validUntil});
+  await set(`session:${sessionID}`, {groupID, authorID, validUntil} satisfies Session);
 
   // Add the session ID to the group2sessions and author2sessions records after creating the session
   // so that the state is consistent.
   await Promise.all([
     // UeberDB's setSub() method atomically reads the record, updates the appropriate (sub)object
     // property, and writes the result.
-    db.setSub(`group2sessions:${groupID}`, ['sessionIDs', sessionID], 1),
-    db.setSub(`author2sessions:${authorID}`, ['sessionIDs', sessionID], 1),
+    setSub(`group2sessions:${groupID}`, ['sessionIDs', sessionID], 1),
+    setSub(`author2sessions:${authorID}`, ['sessionIDs', sessionID], 1),
   ]);
 
   return {sessionID};
@@ -163,9 +176,9 @@ exports.createSession = async (groupID: string, authorID: string, validUntil: nu
  * @param {String} sessionID The id of the session
  * @return {Promise<Object>} the sessioninfos
  */
-exports.getSessionInfo = async (sessionID:string) => {
+export const getSessionInfo = async (sessionID:string): Promise<Session> => {
   // check if the database entry of this session exists
-  const session = await db.get(`session:${sessionID}`);
+  const session = await get(`session:${sessionID}`) as Session;
 
   if (session == null) {
     // session does not exist
@@ -181,9 +194,9 @@ exports.getSessionInfo = async (sessionID:string) => {
  * @param {String} sessionID The id of the session
  * @return {Promise<void>} Resolves when the session is deleted
  */
-exports.deleteSession = async (sessionID:string) => {
+export const deleteSession = async (sessionID:string): Promise<void> => {
   // ensure that the session exists
-  const session = await db.get(`session:${sessionID}`);
+  const session = await get(`session:${sessionID}`) as Session;
   if (session == null) {
     throw new CustomError('sessionID does not exist', 'apierror');
   }
@@ -196,13 +209,13 @@ exports.deleteSession = async (sessionID:string) => {
     // UeberDB's setSub() method atomically reads the record, updates the appropriate (sub)object
     // property, and writes the result. Setting a property to `undefined` deletes that property
     // (JSON.stringify() ignores such properties).
-    db.setSub(`group2sessions:${groupID}`, ['sessionIDs', sessionID], undefined),
-    db.setSub(`author2sessions:${authorID}`, ['sessionIDs', sessionID], undefined),
+    setSub(`group2sessions:${groupID}`, ['sessionIDs', sessionID], undefined),
+    setSub(`author2sessions:${authorID}`, ['sessionIDs', sessionID], undefined),
   ]);
 
   // Delete the session record after updating group2sessions and author2sessions so that the state
   // is consistent.
-  await db.remove(`session:${sessionID}`);
+  await remove(`session:${sessionID}`);
 };
 
 /**
@@ -210,15 +223,14 @@ exports.deleteSession = async (sessionID:string) => {
  * @param {String} groupID The id of the group
  * @return {Promise<Object>} The sessioninfos of all sessions of this group
  */
-exports.listSessionsOfGroup = async (groupID: string) => {
+export const listSessionsOfGroup = async (groupID: string) => {
   // check that the group exists
-  const exists = await groupManager.doesGroupExist(groupID);
+  const exists = await doesGroupExist(groupID);
   if (!exists) {
     throw new CustomError('groupID does not exist', 'apierror');
   }
 
-  const sessions = await listSessionsWithDBKey(`group2sessions:${groupID}`);
-  return sessions;
+  return await listSessionsWithDBKey(`group2sessions:${groupID}`);
 };
 
 /**
@@ -226,9 +238,9 @@ exports.listSessionsOfGroup = async (groupID: string) => {
  * @param {String} authorID The id of the author
  * @return {Promise<Object>} The sessioninfos of all sessions of this author
  */
-exports.listSessionsOfAuthor = async (authorID: string) => {
+export const listSessionsOfAuthor = async (authorID: string): Promise<object> => {
   // check that the author exists
-  const exists = await authorManager.doesAuthorExist(authorID);
+  const exists = await doesAuthorExist(authorID);
   if (!exists) {
     throw new CustomError('authorID does not exist', 'apierror');
   }
@@ -243,15 +255,15 @@ exports.listSessionsOfAuthor = async (authorID: string) => {
  * @param {String} dbkey The db key to use to get the sessions
  * @return {Promise<*>}
  */
-const listSessionsWithDBKey = async (dbkey: string) => {
+const listSessionsWithDBKey = async (dbkey: string): Promise<any> => {
   // get the group2sessions entry
-  const sessionObject = await db.get(dbkey);
+  const sessionObject = await get(dbkey);
   const sessions = sessionObject ? sessionObject.sessionIDs : null;
 
   // iterate through the sessions and get the sessioninfos
   for (const sessionID of Object.keys(sessions || {})) {
     try {
-      sessions[sessionID] = await exports.getSessionInfo(sessionID);
+      sessions[sessionID] = await getSessionInfo(sessionID);
     } catch (err:any) {
       if (err.name === 'apierror') {
         console.warn(`Found bad session ${sessionID} in ${dbkey}`);

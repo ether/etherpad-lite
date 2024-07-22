@@ -1,13 +1,13 @@
 'use strict';
 
 import {ErrorExtended, RunCMDOptions, RunCMDPromise} from "../types/RunCMDOptions";
-import {ChildProcess} from "node:child_process";
+import {ChildProcess, SpawnOptions} from "node:child_process";
 import {PromiseWithStd} from "../types/PromiseWithStd";
 import {Readable} from "node:stream";
 
-const spawn = require('cross-spawn');
-const log4js = require('log4js');
-const path = require('path');
+import spawn from 'cross-spawn';
+import log4js from 'log4js';
+import path from 'path';
 const settings = require('./Settings');
 
 const logger = log4js.getLogger('runCmd');
@@ -74,7 +74,7 @@ const logLines = (readable: undefined | Readable | null, logLineFn: (arg0: (stri
  *   - `stderr`: Similar to `stdout` but for stderr.
  *   - `child`: The ChildProcess object.
  */
-module.exports = exports = (args: string[], opts:RunCMDOptions = {}) => {
+export default (args: string[], opts:RunCMDOptions = {}) => {
   logger.debug(`Executing command: ${args.join(' ')}`);
 
   opts = {cwd: settings.root, ...opts};
@@ -123,7 +123,7 @@ module.exports = exports = (args: string[], opts:RunCMDOptions = {}) => {
   // process's `exit` handler so that we get a useful stack trace.
   const procFailedErr: Error & ErrorExtended = new Error();
 
-  const proc: ChildProcess = spawn(args[0], args.slice(1), opts);
+  const proc: ChildProcess = spawn(args[0], args.slice(1), opts as SpawnOptions);
   const streams:[undefined, Readable|null, Readable|null] = [undefined, proc.stdout, proc.stderr];
 
   let px: { reject: any; resolve: any; };

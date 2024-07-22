@@ -142,11 +142,11 @@ class ContentCollector {
   private selEnd = [-1, -1];
   private collectStyles: boolean;
   private apool: AttributePool;
-  private className2Author: (c: string) => string;
+  private className2Author?: (c: string) => string;
   private breakLine?: boolean
   private abrowser?: null|BrowserDetector;
 
-  constructor(collectStyles: boolean, abrowser: null, apool: AttributePool, className2Author: (c: string)=>string) {
+  constructor(collectStyles: boolean, abrowser: null, apool: AttributePool, className2Author?: (c: string)=>string) {
     this.blockElems = {
       div: 1,
       p: 1,
@@ -352,7 +352,7 @@ class ContentCollector {
     this.incrementAttrib(state, na);
   }
 
-  collectContent =  (node: ContentElem, state: ContentCollectorState)=> {
+  collectContent =  (node: ContentElem, state?: ContentCollectorState)=> {
     let unsupportedElements = null;
     if (!state) {
       state = {
@@ -764,3 +764,5 @@ class ContentCollector {
     };
   }
 }
+
+export default ContentCollector

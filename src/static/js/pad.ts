@@ -410,7 +410,7 @@ export class Pad {
     collabDiagnosticInfo?: any
   };
   private initTime: number;
-  private clientTimeOffset: null | number;
+  public clientTimeOffset: null | number;
   _messageQ: MessageQueue;
   private padOptions: PadOption;
   settings: PadSettings = {

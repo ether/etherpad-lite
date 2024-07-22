@@ -1,3 +1,5 @@
+import {UserSettingsObject} from "./UserSettingsObject";
+
 export type SocketClientRequest = {
     session: {
         user: {
@@ -5,6 +7,7 @@ export type SocketClientRequest = {
             readOnly: boolean;
             padAuthorizations: {
                 [key: string]: string;
+                user: UserSettingsObject
             }
         }
     }

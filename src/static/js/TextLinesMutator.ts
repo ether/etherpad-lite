@@ -19,7 +19,7 @@ export class TextLinesMutator {
   /**
    * @param {(string[]|StringArrayLike)} lines - Lines to mutate (in place).
    */
-  constructor(lines: string[]) {
+  constructor(lines: string[]| RegExpMatchArray ) {
     this.lines = lines;
     /**
      * this._curSplice holds values that will be passed as arguments to this._lines.splice() to

@@ -15,35 +15,36 @@
  * limitations under the License.
  */
 
-const Stream = require('./Stream');
-const assert = require('assert').strict;
-const authorManager = require('../db/AuthorManager');
-const hooks = require('../../static/js/pluginfw/hooks');
-const padManager = require('../db/PadManager');
+import Stream from './Stream';
+import {strict as assert} from 'assert'
+import {getAuthor} from '../db/AuthorManager';
+import {aCallAll} from '../../static/js/pluginfw/hooks';
+import {getPad} from '../db/PadManager';
+import {findKeys, get} from "../db/DB";
 
-exports.getPadRaw = async (padId:string, readOnlyId:string) => {
+export const getPadRaw = async (padId:string, readOnlyId:string) => {
   const dstPfx = `pad:${readOnlyId || padId}`;
   const [pad, customPrefixes] = await Promise.all([
-    padManager.getPad(padId),
-    hooks.aCallAll('exportEtherpadAdditionalContent'),
+    getPad(padId),
+    aCallAll('exportEtherpadAdditionalContent'),
   ]);
   const pluginRecords = await Promise.all(customPrefixes.map(async (customPrefix:string) => {
     const srcPfx = `${customPrefix}:${padId}`;
     const dstPfx = `${customPrefix}:${readOnlyId || padId}`;
     assert(!srcPfx.includes('*'));
-    const srcKeys = await pad.db.findKeys(`${srcPfx}:*`, null);
+    const srcKeys = await findKeys(`${srcPfx}:*`, null);
     return (function* () {
-      yield [dstPfx, pad.db.get(srcPfx)];
+      yield [dstPfx, get(srcPfx)];
       for (const k of srcKeys) {
         assert(k.startsWith(`${srcPfx}:`));
-        yield [`${dstPfx}${k.slice(srcPfx.length)}`, pad.db.get(k)];
+        yield [`${dstPfx}${k.slice(srcPfx.length)}`, get(k)];
       }
     })();
   }));
   const records = (function* () {
     for (const authorId of pad.getAllAuthors()) {
       yield [`globalAuthor:${authorId}`, (async () => {
-        const authorEntry = await authorManager.getAuthor(authorId);
+        const authorEntry = await getAuthor(authorId);
         if (!authorEntry) return undefined; // Becomes unset when converted to JSON.
         if (authorEntry.padIDs) authorEntry.padIDs = readOnlyId || padId;
         return authorEntry;
@@ -55,7 +56,7 @@ exports.getPadRaw = async (padId:string, readOnlyId:string) => {
   })();
   const data = {[dstPfx]: pad};
   for (const [dstKey, p] of new Stream(records).batch(100).buffer(99)) data[dstKey] = await p;
-  await hooks.aCallAll('exportEtherpad', {
+  await aCallAll('exportEtherpad', {
     pad,
     data,
     dstPadId: readOnlyId || padId,

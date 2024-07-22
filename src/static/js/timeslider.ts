@@ -32,8 +32,7 @@ import connect from './socketio'
 import html10n from '../js/vendors/html10n'
 import {Socket} from "socket.io";
 import {ClientVarData, ClientVarMessage, ClientVarPayload, SocketIOMessage} from "./types/SocketIOMessage";
-import {Func} from "mocha";
-
+import {Revision} from "./broadcast_revisions";
 export type ChangeSetLoader = {
   handleMessageFromServer(msg: ClientVarMessage): void
 }
@@ -111,19 +110,20 @@ const sendSocketMsg = (type: string, data: Object) => {
 
 const fireWhenAllScriptsAreLoaded: Function[] = [];
 
-const handleClientVars = (message: ClientVarData) => {
+const handleClientVars = async (message: ClientVarData) => {
   // save the client Vars
   window.clientVars = message.data;
 
   if (window.clientVars.sessionRefreshInterval) {
     const ping =
-        () => $.ajax('../../_extendExpressSessionLifetime', {method: 'PUT'}).catch(() => {});
+      () => $.ajax('../../_extendExpressSessionLifetime', {method: 'PUT'}).catch(() => {
+      });
     setInterval(ping, window.clientVars.sessionRefreshInterval);
   }
 
-  if(window.clientVars.mode === "development") {
+  if (window.clientVars.mode === "development") {
     console.warn('Enabling development mode with live update')
-    socket.on('liveupdate', ()=>{
+    socket.on('liveupdate', () => {
       console.log('Doing live reload')
       location.reload()
     })
@@ -131,11 +131,11 @@ const handleClientVars = (message: ClientVarData) => {
 
   // load all script that doesn't work without the clientVars
   BroadcastSlider = require('./broadcast_slider')
-      .loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded);
+    .loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded);
 
-  require('./broadcast_revisions').loadBroadcastRevisionsJS();
+  await import('./broadcast_revisions')
   changesetLoader = require('./broadcast')
-      .loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, BroadcastSlider);
+    .loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, BroadcastSlider);
 
   // initialize export ui
   require('./pad_impexp').padimpexp.init();

@@ -50,7 +50,7 @@ type ButtonGroupType = {
 }
 
 class ButtonGroup {
-    private buttons: Button[]
+    private readonly buttons: Button[]
 
     constructor() {
         this.buttons = []
@@ -99,7 +99,8 @@ class Button {
     }
 
     public static load(btnName: string) {
-        const button = module.exports.availableButtons[btnName];
+        // @ts-ignore
+      const button = toolbar.availableButtons[btnName];
         try {
             if (button.constructor === Button || button.constructor === SelectButton) {
                 return button;
@@ -189,7 +190,7 @@ class Separator {
     }
 }
 
-module.exports = {
+const toolbar =  {
     availableButtons: {
         bold: defaultButtonAttributes('bold'),
         italic: defaultButtonAttributes('italic'),
@@ -261,7 +262,8 @@ module.exports = {
     },
 
     registerButton(buttonName: string, buttonInfo: any) {
-        this.availableButtons[buttonName] = buttonInfo;
+        // @ts-ignore
+      this.availableButtons[buttonName] = buttonInfo;
     },
 
     button: (attributes: AttributeObj) => new Button(attributes),
@@ -304,3 +306,5 @@ module.exports = {
         return groups.join(this.separator());
     },
 };
+
+export default toolbar

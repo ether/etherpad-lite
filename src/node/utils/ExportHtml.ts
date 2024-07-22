@@ -1,6 +1,7 @@
 'use strict';
 import {AText, PadType} from "../types/PadType";
 import {MapArrayType} from "../types/MapType";
+import Pad from "../db/Pad";
 
 /**
  * Copyright 2009 Google Inc.
@@ -18,18 +19,19 @@ import {MapArrayType} from "../types/MapType";
  * limitations under the License.
  */
 
-const Changeset = require('../../static/js/Changeset');
-const attributes = require('../../static/js/attributes');
-const padManager = require('../db/PadManager');
-const _ = require('underscore');
+import {deserializeOps, splitAttributionLines, subattribution} from '../../static/js/Changeset';
+import {decodeAttribString} from '../../static/js/attributes';
+import {getPad} from '../db/PadManager';
+import _ from 'underscore';
 const Security = require('security');
-const hooks = require('../../static/js/pluginfw/hooks');
-const eejs = require('../eejs');
-const _analyzeLine = require('./ExportHelper')._analyzeLine;
-const _encodeWhitespace = require('./ExportHelper')._encodeWhitespace;
+import {aCallAll} from '../../static/js/pluginfw/hooks';
+import {requireP} from '../eejs';
+import {_analyzeLine, _encodeWhitespace} from './ExportHelper'
+import {StringIterator} from "../../static/js/StringIterator";
+import {StringAssembler} from "../../static/js/StringAssembler";
 const padutils = require('../../static/js/pad_utils').padutils;
 
-const getPadHTML = async (pad: PadType, revNum: string) => {
+export const getPadHTML = async (pad: Pad, revNum: number) => {
   let atext = pad.atext;
 
   // fetch revision atext
@@ -41,17 +43,17 @@ const getPadHTML = async (pad: PadType, revNum: string) => {
   return await getHTMLFromAtext(pad, atext);
 };
 
-const getHTMLFromAtext = async (pad:PadType, atext: AText, authorColors?: string[]) => {
+export const getHTMLFromAtext = async (pad:Pad, atext: AText, authorColors?: string[]) => {
   const apool = pad.apool();
   const textLines = atext.text.slice(0, -1).split('\n');
-  const attribLines = Changeset.splitAttributionLines(atext.attribs, atext.text);
+  const attribLines = splitAttributionLines(atext.attribs, atext.text);
 
   const tags = ['h1', 'h2', 'strong', 'em', 'u', 's'];
   const props = ['heading1', 'heading2', 'bold', 'italic', 'underline', 'strikethrough'];
 
   await Promise.all([
     // prepare tags stored as ['tag', true] to be exported
-    hooks.aCallAll('exportHtmlAdditionalTags', pad).then((newProps: string[]) => {
+    aCallAll('exportHtmlAdditionalTags', pad).then((newProps: string[]) => {
       newProps.forEach((prop) => {
         tags.push(prop);
         props.push(prop);
@@ -59,7 +61,7 @@ const getHTMLFromAtext = async (pad:PadType, atext: AText, authorColors?: string
     }),
     // prepare tags stored as ['tag', 'value'] to be exported. This will generate HTML with tags
     // like <span data-tag="value">
-    hooks.aCallAll('exportHtmlAdditionalTagsWithData', pad).then((newProps: string[]) => {
+    aCallAll('exportHtmlAdditionalTagsWithData', pad).then((newProps: string[]) => {
       newProps.forEach((prop) => {
         tags.push(`span data-${prop[0]}="${prop[1]}"`);
         props.push(prop);
@@ -80,6 +82,7 @@ const getHTMLFromAtext = async (pad:PadType, atext: AText, authorColors?: string
     css += '<style>\n';
 
     for (const a of Object.keys(apool.numToAttrib)) {
+      // @ts-ignore
       const attr = apool.numToAttrib[a];
 
       // skip non author attributes
@@ -115,20 +118,21 @@ const getHTMLFromAtext = async (pad:PadType, atext: AText, authorColors?: string
       // see hook exportHtmlAdditionalTagsWithData
       attrib = propName;
     }
+    // @ts-ignore
     const propTrueNum = apool.putAttrib(attrib, true);
     if (propTrueNum >= 0) {
       anumMap[propTrueNum] = i;
     }
   });
 
-  const getLineHTML = (text: string, attribs: string[]) => {
+  const getLineHTML = (text: string, attribs: string) => {
     // Use order of tags (b/i/u) as order of nesting, for simplicity
     // and decent nesting.  For example,
     // <b>Just bold<b> <b><i>Bold and italics</i></b> <i>Just italics</i>
     // becomes
     // <b>Just bold <i>Bold and italics</i></b> <i>Just italics</i>
-    const taker = Changeset.stringIterator(text);
-    const assem = Changeset.stringAssembler();
+    const taker = new StringIterator(text);
+    const assem = new StringAssembler();
     const openTags:string[] = [];
 
     const getSpanClassFor = (i: string) => {
@@ -204,7 +208,7 @@ const getHTMLFromAtext = async (pad:PadType, atext: AText, authorColors?: string
         return;
       }
 
-      const ops = Changeset.deserializeOps(Changeset.subattribution(attribs, idx, idx + numChars));
+      const ops = deserializeOps(subattribution(attribs, idx, idx + numChars));
       idx += numChars;
 
       // this iterates over every op string and decides which tags to open or to close
@@ -213,7 +217,7 @@ const getHTMLFromAtext = async (pad:PadType, atext: AText, authorColors?: string
         const usedAttribs:string[] = [];
 
         // mark all attribs as used
-        for (const a of attributes.decodeAttribString(o.attribs)) {
+        for (const a of decodeAttribString(o.attribs)) {
           if (a in anumMap) {
             usedAttribs.push(String(anumMap[a])); // i = 0 => bold, etc.
           }
@@ -307,7 +311,7 @@ const getHTMLFromAtext = async (pad:PadType, atext: AText, authorColors?: string
   for (let i = 0; i < textLines.length; i++) {
     let context;
     const line = _analyzeLine(textLines[i], attribLines[i], apool);
-    const lineContent = getLineHTML(line.text, line.aline);
+    const lineContent = getLineHTML(line.text as string, line.aline as string);
     // If we are inside a list
     if (line.listLevel) {
       context = {
@@ -326,7 +330,7 @@ const getHTMLFromAtext = async (pad:PadType, atext: AText, authorColors?: string
       if (i < textLines.length) {
         nextLine = _analyzeLine(textLines[i + 1], attribLines[i + 1], apool);
       }
-      await hooks.aCallAll('getLineHTMLForExport', context);
+      await aCallAll('getLineHTMLForExport', context);
       // To create list parent elements
       if ((!prevLine || prevLine.listLevel !== line.listLevel) ||
           (line.listTypeName !== prevLine.listTypeName)) {
@@ -335,14 +339,14 @@ const getHTMLFromAtext = async (pad:PadType, atext: AText, authorColors?: string
         if (!exists) {
           let prevLevel = 0;
           if (prevLine && prevLine.listLevel) {
-            prevLevel = prevLine.listLevel;
+            prevLevel = prevLine.listLevel as number;
           }
           if (prevLine && line.listTypeName !== prevLine.listTypeName) {
             prevLevel = 0;
           }
 
-          for (let diff = prevLevel; diff < line.listLevel; diff++) {
-            openLists.push({level: diff, type: line.listTypeName});
+          for (let diff = prevLevel; diff < (line.listLevel as number); diff++) {
+            openLists.push({level: diff, type: line.listTypeName as string});
             const prevPiece = pieces[pieces.length - 1];
 
             if (prevPiece.indexOf('<ul') === 0 ||
@@ -372,7 +376,7 @@ const getHTMLFromAtext = async (pad:PadType, atext: AText, authorColors?: string
                  // pieces.push("</li>");
 
               */
-              if ((nextLine.listTypeName === 'number') && (nextLine.text === '')) {
+              if ((nextLine!.listTypeName === 'number') && (nextLine!.text === '')) {
                 // is the listTypeName check needed here?  null text might be completely fine!
                 // TODO Check against Uls
                 // don't do anything because the next item is a nested ol openener so
@@ -431,13 +435,13 @@ const getHTMLFromAtext = async (pad:PadType, atext: AText, authorColors?: string
           (line.listTypeName !== nextLine.listTypeName)) {
         let nextLevel = 0;
         if (nextLine && nextLine.listLevel) {
-          nextLevel = nextLine.listLevel;
+          nextLevel = nextLine.listLevel as number;
         }
         if (nextLine && line.listTypeName !== nextLine.listTypeName) {
           nextLevel = 0;
         }
 
-        for (let diff = nextLevel; diff < line.listLevel; diff++) {
+        for (let diff = nextLevel; diff < (line.listLevel as number); diff++) {
           openLists = openLists.filter((el) => el.level !== diff && el.type !== line.listTypeName);
 
           if (pieces[pieces.length - 1].indexOf('</ul') === 0 ||
@@ -463,7 +467,7 @@ const getHTMLFromAtext = async (pad:PadType, atext: AText, authorColors?: string
         padId: pad.id,
       };
 
-      await hooks.aCallAll('getLineHTMLForExport', context);
+      await aCallAll('getLineHTMLForExport', context);
       pieces.push(context.lineContent, '<br>');
     }
   }
@@ -471,23 +475,24 @@ const getHTMLFromAtext = async (pad:PadType, atext: AText, authorColors?: string
   return pieces.join('');
 };
 
-exports.getPadHTMLDocument = async (padId: string, revNum: string, readOnlyId: number) => {
-  const pad = await padManager.getPad(padId);
+export const getPadHTMLDocument = async (padId: string, revNum: number, readOnlyId: number) => {
+  const pad = await getPad(padId);
 
   // Include some Styles into the Head for Export
   let stylesForExportCSS = '';
-  const stylesForExport: string[] = await hooks.aCallAll('stylesForExport', padId);
+  const stylesForExport: string[] = await aCallAll('stylesForExport', padId);
   stylesForExport.forEach((css) => {
     stylesForExportCSS += css;
   });
 
   let html = await getPadHTML(pad, revNum);
 
-  for (const hookHtml of await hooks.aCallAll('exportHTMLAdditionalContent', {padId})) {
+  for (const hookHtml of await aCallAll('exportHTMLAdditionalContent', {padId})) {
     html += hookHtml;
   }
 
-  return eejs.require('ep_etherpad-lite/templates/export_html.html', {
+  return requireP('ep_etherpad-lite/templates/export_html.html', {
+    // @ts-ignore
     body: html,
     padId: Security.escapeHTML(readOnlyId || padId),
     extraCSS: stylesForExportCSS,
@@ -543,5 +548,3 @@ const _processSpaces = (s: string) => {
   return parts.join('');
 };
 
-exports.getPadHTML = getPadHTML;
-exports.getHTMLFromAtext = getHTMLFromAtext;

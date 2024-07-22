@@ -1,6 +1,9 @@
 'use strict';
 
-const pluginDefs = require('./plugin_defs');
+import {PluginHook} from "./plugin_defs";
+import {MapArrayType} from "../../../node/types/MapType";
+
+import {pluginDefs} from './plugin_defs';
 
 // Maps the name of a server-side hook to a string explaining the deprecation
 // (e.g., 'use the foo hook instead').
@@ -10,12 +13,12 @@ const pluginDefs = require('./plugin_defs');
 //     const hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks');
 //     hooks.deprecationNotices.fooBar = 'use the newSpiffy hook instead';
 //
-exports.deprecationNotices = {};
+export const deprecationNotices: MapArrayType<string> = {};
 
-const deprecationWarned = {};
+const deprecationWarned: MapArrayType<boolean> = {};
 
-const checkDeprecation = (hook) => {
-  const notice = exports.deprecationNotices[hook.hook_name];
+const checkDeprecation = (hook: PluginHook) => {
+  const notice = deprecationNotices[hook.hook_name];
   if (notice == null) return;
   if (deprecationWarned[hook.hook_fn_name]) return;
   console.warn(`${hook.hook_name} hook used by the ${hook.part.plugin} plugin ` +
@@ -26,7 +29,7 @@ const checkDeprecation = (hook) => {
 // Calls the node-style callback when the Promise settles. Unlike util.callbackify, this takes a
 // Promise (rather than a function that returns a Promise), and it returns a Promise (rather than a
 // function that returns undefined).
-const attachCallback = (p, cb) => p.then(
+const attachCallback = (p: Promise<any>, cb: Function) => p.then(
     (val) => cb(null, val),
     // Callbacks often only check the truthiness, not the nullness, of the first parameter. To avoid
     // problems, always pass a truthy value as the first argument if the Promise is rejected.
@@ -35,7 +38,7 @@ const attachCallback = (p, cb) => p.then(
 // Normalizes the value provided by hook functions so that it is always an array. `undefined` (but
 // not `null`!) becomes an empty array, array values are returned unmodified, and non-array values
 // are wrapped in an array (so `null` becomes `[null]`).
-const normalizeValue = (val) => {
+const normalizeValue = (val: string|number|string[]|number[]) => {
   // `undefined` is treated the same as `[]`. IMPORTANT: `null` is *not* treated the same as `[]`
   // because some hooks use `null` as a special value.
   if (val === undefined) return [];
@@ -44,7 +47,7 @@ const normalizeValue = (val) => {
 };
 
 // Flattens the array one level.
-const flatten1 = (array) => array.reduce((a, b) => a.concat(b), []);
+const flatten1 = (array: any[]) => array.reduce<any[]>((a, b) => a.concat(b), []);
 
 // Calls the hook function synchronously and returns the value provided by the hook function (via
 // callback or return value).
@@ -75,16 +78,25 @@ const flatten1 = (array) => array.reduce((a, b) => a.concat(b), []);
 // See the tests in src/tests/backend/specs/hooks.js for examples of supported and prohibited
 // behaviors.
 //
-const callHookFnSync = (hook, context) => {
+type OutCome = {
+  state: string,
+  err: Error|null,
+  val: any,
+  how: string,
+}
+
+const callHookFnSync = (hook: PluginHook, context: {
+
+}) => {
   checkDeprecation(hook);
 
   // This var is used to keep track of whether the hook function already settled.
-  let outcome;
+  let outcome: OutCome;
 
   // This is used to prevent recursion.
   let doubleSettleErr;
 
-  const settle = (err, val, how) => {
+  const settle = (err: Error|null, val: any|null, how: string) => {
     doubleSettleErr = null;
     const state = err == null ? 'resolved' : 'rejected';
     if (outcome != null) {
@@ -113,14 +125,14 @@ const callHookFnSync = (hook, context) => {
 
   // IMPORTANT: This callback must return `undefined` so that a hook function can safely do
   // `return callback(value);` for backwards compatibility.
-  const callback = (ret) => {
+  const callback = (ret: string) => {
     settle(null, ret, 'callback');
   };
 
   let val;
   try {
     val = hook.hook_fn(hook.hook_name, context, callback);
-  } catch (err) {
+  } catch (err:any) {
     if (err === doubleSettleErr) throw err; // Avoid recursion.
     try {
       settle(err, null, 'thrown exception');
@@ -137,6 +149,7 @@ const callHookFnSync = (hook, context) => {
   // IMPORTANT: This MUST check for undefined -- not nullish -- because some hooks intentionally use
   // null as a special value.
   if (val === undefined) {
+    // @ts-ignore
     if (outcome != null) return outcome.val; // Already settled via callback.
     if (hook.hook_fn.length >= 3) {
       console.error(`UNSETTLED FUNCTION BUG IN HOOK FUNCTION (plugin: ${hook.part.plugin}, ` +
@@ -173,7 +186,7 @@ const callHookFnSync = (hook, context) => {
   }
 
   settle(null, val, 'returned value');
-  return outcome.val;
+  return outcome!.val;
 };
 
 // DEPRECATED: Use `callAllSerial()` or `aCallAll()` instead.
@@ -189,9 +202,11 @@ const callHookFnSync = (hook, context) => {
 //     1. Collect all values returned by the hook functions into an array.
 //     2. Convert each `undefined` entry into `[]`.
 //     3. Flatten one level.
-exports.callAll = (hookName, context) => {
+export const callAll = (hookName: string, context?: {
+
+}) => {
   if (context == null) context = {};
-  const hooks = pluginDefs.hooks[hookName] || [];
+  const hooks = pluginDefs.getHooks()[hookName] || [];
   return flatten1(hooks.map((hook) => normalizeValue(callHookFnSync(hook, context))));
 };
 
@@ -230,13 +245,13 @@ exports.callAll = (hookName, context) => {
 // See the tests in src/tests/backend/specs/hooks.js for examples of supported and prohibited
 // behaviors.
 //
-const callHookFnAsync = async (hook, context) => {
+const callHookFnAsync = async (hook: PluginHook, context: {}) => {
   checkDeprecation(hook);
   return await new Promise((resolve, reject) => {
     // This var is used to keep track of whether the hook function already settled.
-    let outcome;
+    let outcome: OutCome;
 
-    const settle = (err, val, how) => {
+    const settle = (err: Error|null, val: string|null, how: string) => {
       const state = err == null ? 'resolved' : 'rejected';
       if (outcome != null) {
         // It was already settled, which indicates a bug.
@@ -258,7 +273,7 @@ const callHookFnAsync = async (hook, context) => {
 
     // IMPORTANT: This callback must return `undefined` so that a hook function can safely do
     // `return callback(value);` for backwards compatibility.
-    const callback = (ret) => {
+    const callback = (ret:any) => {
       // Wrap ret in a Promise so that a hook function can do `callback(asyncFunction());`. Note: If
       // ret is a Promise (or other thenable), Promise.resolve() will flatten it into this new
       // Promise.
@@ -270,7 +285,7 @@ const callHookFnAsync = async (hook, context) => {
     let ret;
     try {
       ret = hook.hook_fn(hook.hook_name, context, callback);
-    } catch (err) {
+    } catch (err:any) {
       try {
         settle(err, null, 'thrown exception');
       } catch (doubleSettleErr) {
@@ -342,24 +357,26 @@ const callHookFnAsync = async (hook, context) => {
 //     2. Convert each `undefined` entry into `[]`.
 //     3. Flatten one level.
 //   If cb is non-null, this function resolves to the value returned by cb.
-exports.aCallAll = async (hookName, context, cb = null) => {
-  if (cb != null) return await attachCallback(exports.aCallAll(hookName, context), cb);
+export const aCallAll = async (hookName: string, context?: {}, cb = null): Promise<any[]> => {
+  if (cb != null) return await attachCallback(aCallAll(hookName, context), cb);
   if (context == null) context = {};
-  const hooks = pluginDefs.hooks[hookName] || [];
+  const hooks = pluginDefs.getHooks()[hookName] || [];
   const results = await Promise.all(
-      hooks.map(async (hook) => normalizeValue(await callHookFnAsync(hook, context))));
+      hooks.map(async (hook) => normalizeValue(await callHookFnAsync(hook, context) as any)));
   return flatten1(results);
 };
 
 // Like `aCallAll()` except the hook functions are called one at a time instead of concurrently.
 // Only use this function if the hook functions must be called one at a time, otherwise use
 // `aCallAll()`.
-exports.callAllSerial = async (hookName, context) => {
+export const callAllSerial = async (hookName: string, context: {
+
+}) => {
   if (context == null) context = {};
-  const hooks = pluginDefs.hooks[hookName] || [];
+  const hooks = pluginDefs.getHooks()[hookName] || [];
   const results = [];
   for (const hook of hooks) {
-    results.push(normalizeValue(await callHookFnAsync(hook, context)));
+    results.push(normalizeValue(await callHookFnAsync(hook, context) as any));
   }
   return flatten1(results);
 };
@@ -367,10 +384,10 @@ exports.callAllSerial = async (hookName, context) => {
 // DEPRECATED: Use `aCallFirst()` instead.
 //
 // Like `aCallFirst()`, but synchronous. Hook functions must provide their values synchronously.
-exports.callFirst = (hookName, context) => {
+export const callFirst = (hookName: string, context: {}) => {
   if (context == null) context = {};
-  const predicate = (val) => val.length;
-  const hooks = pluginDefs.hooks[hookName] || [];
+  const predicate = (val: (string|number)[]) => val.length;
+  const hooks = pluginDefs.getHooks()[hookName] || [];
   for (const hook of hooks) {
     const val = normalizeValue(callHookFnSync(hook, context));
     if (predicate(val)) return val;
@@ -399,22 +416,24 @@ exports.callFirst = (hookName, context) => {
 //   If cb is nullish, resolves to an array that is either the normalized value that satisfied the
 //   predicate or empty if the predicate was never satisfied. If cb is non-nullish, resolves to the
 //   value returned from cb().
-exports.aCallFirst = async (hookName, context, cb = null, predicate = null) => {
+export const aCallFirst = async (hookName: string, context:{}, cb: Function|null = null, predicate: ((val: any[])=>number)|null = null):Promise<any> => {
   if (cb != null) {
-    return await attachCallback(exports.aCallFirst(hookName, context, null, predicate), cb);
+    return await attachCallback(aCallFirst(hookName, context, null, predicate), cb);
   }
   if (context == null) context = {};
-  if (predicate == null) predicate = (val) => val.length;
-  const hooks = pluginDefs.hooks[hookName] || [];
+  if (predicate == null) {
+    predicate = (val) => val.length;
+  }
+  const hooks = pluginDefs.getHooks()[hookName] || [];
   for (const hook of hooks) {
-    const val = normalizeValue(await callHookFnAsync(hook, context));
+    const val = normalizeValue(await callHookFnAsync(hook, context) as any);
     if (predicate(val)) return val;
   }
   return [];
 };
 
-exports.exportedForTestingOnly = {
+export const exportedForTestingOnly = {
   callHookFnAsync,
   callHookFnSync,
   deprecationWarned,
-};
+}

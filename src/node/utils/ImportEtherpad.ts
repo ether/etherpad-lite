@@ -1,7 +1,5 @@
 'use strict';
 
-import {APool} from "../types/PadType";
-
 /**
  * 2014 John McLear (Etherpad Foundation / McLear Ltd)
  *
@@ -19,29 +17,28 @@ import {APool} from "../types/PadType";
  */
 
 import AttributePool from '../../static/js/AttributePool';
-const {Pad} = require('../db/Pad');
-const Stream = require('./Stream');
-const authorManager = require('../db/AuthorManager');
-const db = require('../db/DB');
-const hooks = require('../../static/js/pluginfw/hooks');
+import Pad from '../db/Pad';
+import Stream from './Stream';
+import {addPad, doesAuthorExist} from '../db/AuthorManager';
+import {aCallAll, callAll} from '../../static/js/pluginfw/hooks';
 import log4js from 'log4js';
 const supportedElems = require('../../static/js/contentcollector').supportedElems;
 import ueberdb from 'ueberdb2';
 
 const logger = log4js.getLogger('ImportEtherpad');
 
-exports.setPadRaw = async (padId: string, r: string, authorId = '') => {
+export const setPadRaw = async (padId: string, r: string, authorId = '') => {
   const records = JSON.parse(r);
 
   // get supported block Elements from plugins, we will use this later.
-  hooks.callAll('ccRegisterBlockElements').forEach((element:any) => {
+  callAll('ccRegisterBlockElements').forEach((element:any) => {
     supportedElems.add(element);
   });
 
   // DB key prefixes for pad records. Each key is expected to have the form `${prefix}:${padId}` or
   // `${prefix}:${padId}:${otherstuff}`.
   const padKeyPrefixes = [
-    ...await hooks.aCallAll('exportEtherpadAdditionalContent'),
+    ...await aCallAll('exportEtherpadAdditionalContent'),
     'pad',
   ];
 
@@ -55,7 +52,7 @@ exports.setPadRaw = async (padId: string, r: string, authorId = '') => {
   // there is a problem with the data.
 
   const data = new Map();
-  const existingAuthors = new Set();
+  const existingAuthors = new Set<string>();
   const padDb = new ueberdb.Database('memory', {data});
   await padDb.init();
   try {
@@ -74,7 +71,7 @@ exports.setPadRaw = async (padId: string, r: string, authorId = '') => {
           throw new TypeError('globalAuthor padIDs subkey is not a string');
         }
         checkOriginalPadId(value.padIDs);
-        if (await authorManager.doesAuthorExist(id)) {
+        if (await doesAuthorExist(id)) {
           existingAuthors.add(id);
           return;
         }
@@ -106,9 +103,9 @@ exports.setPadRaw = async (padId: string, r: string, authorId = '') => {
     const readOps = new Stream(Object.entries(records)).map(([k, v]) => processRecord(k, v));
     for (const op of readOps.batch(100).buffer(99)) await op;
 
-    const pad = new Pad(padId, padDb);
+    const pad = new Pad(padId);
     await pad.init(null, authorId);
-    await hooks.aCallAll('importEtherpad', {
+    await aCallAll('importEtherpad', {
       pad,
       // Shallow freeze meant to prevent accidental bugs. It would be better to deep freeze, but
       // it's not worth the added complexity.
@@ -121,8 +118,8 @@ exports.setPadRaw = async (padId: string, r: string, authorId = '') => {
   }
 
   const writeOps = (function* () {
-    for (const [k, v] of data) yield db.set(k, v);
-    for (const a of existingAuthors) yield authorManager.addPad(a, padId);
+    for (const [k, v] of data) yield padDb.set(k, v);
+    for (const a of existingAuthors) yield addPad(a, padId);
   })();
   for (const op of new Stream(writeOps).batch(100).buffer(99)) await op;
 };

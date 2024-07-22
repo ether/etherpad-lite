@@ -24,37 +24,66 @@
 import ueberDB from 'ueberdb2';
 const settings = require('../utils/Settings');
 import log4js from 'log4js';
-const stats = require('../stats')
+import {measuredCollection} from '../stats';
 
 const logger = log4js.getLogger('ueberDB');
 
 /**
  * The UeberDB Object that provides the database functions
  */
-exports.db = null;
+let db: ueberDB.Database|null = null;
 
 /**
  * Initializes the database with the settings provided by the settings module
  */
-exports.init = async () => {
-  exports.db = new ueberDB.Database(settings.dbType, settings.dbSettings, null, logger);
-  await exports.db.init();
-  if (exports.db.metrics != null) {
-    for (const [metric, value] of Object.entries(exports.db.metrics)) {
+export const init = async () => {
+  db = new ueberDB.Database(settings.dbType, settings.dbSettings, null, logger);
+  await db.init();
+  if (db.metrics != null) {
+    for (const [metric, value] of Object.entries(db.metrics)) {
       if (typeof value !== 'number') continue;
-      stats.gauge(`ueberdb_${metric}`, () => exports.db.metrics[metric]);
+      measuredCollection.gauge(`ueberdb_${metric}`, () => db!.metrics[metric]);
     }
   }
-  for (const fn of ['get', 'set', 'findKeys', 'getSub', 'setSub', 'remove']) {
-    const f = exports.db[fn];
-    exports[fn] = async (...args:string[]) => await f.call(exports.db, ...args);
-    Object.setPrototypeOf(exports[fn], Object.getPrototypeOf(f));
-    Object.defineProperties(exports[fn], Object.getOwnPropertyDescriptors(f));
-  }
-};
+}
 
-exports.shutdown = async (hookName: string, context:any) => {
+export const get = async (key: string) => {
+  if (db == null) throw new Error('Database not initialized');
+  return await db.get(key);
+}
+
+export const set = async (key: string, value: any) => {
+  if (db == null) throw new Error('Database not initialized');
+  return await db.set(key, value);
+}
+
+export const findKeys = async (key: string, notKey:string|null, callback?: Function) => {
+  if (db == null) throw new Error('Database not initialized');
+  // @ts-ignore
+  return await db.findKeys(key, notKey, callback as any);
+}
+
+export const getSub = async (key: string, field: string[], callback?: Function) => {
+  if (db == null) throw new Error('Database not initialized');
+  // @ts-ignore
+  return await db.getSub(key, field, callback as any);
+}
+
+export const setSub = async (key: string, field: string[], value: any, callback?: any, deprecated?: any) => {
+  if (db == null) throw new Error('Database not initialized');
+  // @ts-ignore
+  return await db.setSub(key, field, value, callback, deprecated);
+}
+
+export const remove = async (key: string, callback?: null) => {
+  if (db == null) throw new Error('Database not initialized');
+  return await db.remove(key, callback);
+}
+
+
+export const shutdown = async (hookName: string, context:any) => {
   if (exports.db != null) await exports.db.close();
   exports.db = null;
   logger.log('Database closed');
 };
+

@@ -629,7 +629,7 @@ class PadUserList {
 
       if (!colorPickerSetup) {
         const colorsList = $('#colorpickerswatches');
-        for (let i = 0; i < palette.length; i++) {
+        for (let i = 0; i < palette.length!; i++) {
           const li = $('<li>', {
             style: `background: ${palette[i]};`,
           });

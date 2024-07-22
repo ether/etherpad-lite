@@ -19,16 +19,19 @@
  * limitations under the License.
  */
 
-import {AText, PadType} from "../types/PadType";
+import {AText} from "../types/PadType";
 import {MapType} from "../types/MapType";
 
-const Changeset = require('../../static/js/Changeset');
-const attributes = require('../../static/js/attributes');
-const padManager = require('../db/PadManager');
-const _analyzeLine = require('./ExportHelper')._analyzeLine;
+import {deserializeOps, splitAttributionLines, subattribution} from '../../static/js/Changeset';
+import {decodeAttribString} from '../../static/js/attributes';
+import {getPad} from '../db/PadManager';
+import {StringIterator} from "../../static/js/StringIterator";
+import {StringAssembler} from "../../static/js/StringAssembler";
+import Pad from "../db/Pad";
+import {_analyzeLine} from "./ExportHelper";
 
 // This is slightly different than the HTML method as it passes the output to getTXTFromAText
-const getPadTXT = async (pad: PadType, revNum: string) => {
+const getPadTXT = async (pad: Pad, revNum: number) => {
   let atext = pad.atext;
 
   if (revNum !== undefined) {
@@ -40,18 +43,19 @@ const getPadTXT = async (pad: PadType, revNum: string) => {
   return getTXTFromAtext(pad, atext);
 };
 
-// This is different than the functionality provided in ExportHtml as it provides formatting
+// This is different from the functionality provided in ExportHtml as it provides formatting
 // functionality that is designed specifically for TXT exports
-const getTXTFromAtext = (pad: PadType, atext: AText, authorColors?:string) => {
+export const getTXTFromAtext = (pad: Pad, atext: AText, authorColors?:string) => {
   const apool = pad.apool();
   const textLines = atext.text.slice(0, -1).split('\n');
-  const attribLines = Changeset.splitAttributionLines(atext.attribs, atext.text);
+  const attribLines = splitAttributionLines(atext.attribs, atext.text);
 
   const props = ['heading1', 'heading2', 'bold', 'italic', 'underline', 'strikethrough'];
   const anumMap: MapType = {};
   const css = '';
 
   props.forEach((propName, i) => {
+    // @ts-ignore
     const propTrueNum = apool.putAttrib([propName, true], true);
     if (propTrueNum >= 0) {
       anumMap[propTrueNum] = i;
@@ -69,8 +73,8 @@ const getTXTFromAtext = (pad: PadType, atext: AText, authorColors?:string) => {
     // <b>Just bold<b> <b><i>Bold and italics</i></b> <i>Just italics</i>
     // becomes
     // <b>Just bold <i>Bold and italics</i></b> <i>Just italics</i>
-    const taker = Changeset.stringIterator(text);
-    const assem = Changeset.stringAssembler();
+    const taker = new StringIterator(text);
+    const assem = new StringAssembler();
 
     let idx = 0;
 
@@ -79,13 +83,13 @@ const getTXTFromAtext = (pad: PadType, atext: AText, authorColors?:string) => {
         return;
       }
 
-      const ops = Changeset.deserializeOps(Changeset.subattribution(attribs, idx, idx + numChars));
+      const ops = deserializeOps(subattribution(attribs, idx, idx + numChars));
       idx += numChars;
 
       for (const o of ops) {
         let propChanged = false;
 
-        for (const a of attributes.decodeAttribString(o.attribs)) {
+        for (const a of decodeAttribString(o.attribs)) {
           if (a in anumMap) {
             const i = anumMap[a] as number; // i = 0 => bold, etc.
 
@@ -197,7 +201,7 @@ const getTXTFromAtext = (pad: PadType, atext: AText, authorColors?:string) => {
 
   for (let i = 0; i < textLines.length; i++) {
     const line = _analyzeLine(textLines[i], attribLines[i], apool);
-    let lineContent = getLineTXT(line.text, line.aline);
+    let lineContent = getLineTXT(line.text as string, line.aline);
 
     if (line.listTypeName === 'bullet') {
       lineContent = `* ${lineContent}`; // add a bullet
@@ -210,11 +214,11 @@ const getTXTFromAtext = (pad: PadType, atext: AText, authorColors?:string) => {
       }
     }
 
-    if (line.listLevel > 0) {
-      for (let j = line.listLevel - 1; j >= 0; j--) {
+    if ((line.listLevel as number) > 0) {
+      for (let j = (line.listLevel as number) - 1; j >= 0; j--) {
         pieces.push('\t'); // tab indent list numbers..
-        if (!listNumbers[line.listLevel]) {
-          listNumbers[line.listLevel] = 0;
+        if (!listNumbers[(line.listLevel as number)]) {
+          listNumbers[(line.listLevel as number)] = 0;
         }
       }
 
@@ -232,23 +236,23 @@ const getTXTFromAtext = (pad: PadType, atext: AText, authorColors?:string) => {
         * To handle going back to 2.1 when prevListLevel is lower number
         * than current line.listLevel then reset the object value
         */
-        if (line.listLevel < prevListLevel) {
-          delete listNumbers[prevListLevel];
+        if ((line.listLevel as number) < prevListLevel!) {
+          delete listNumbers[(prevListLevel as number)];
         }
 
         // @ts-ignore
         listNumbers[line.listLevel]++;
-        if (line.listLevel > 1) {
+        if ((line.listLevel as number) > 1) {
           let x = 1;
-          while (x <= line.listLevel - 1) {
+          while (x <= (line.listLevel as number) - 1) {
             // if it's undefined to avoid undefined.undefined.1 for 0.0.1
             if (!listNumbers[x]) listNumbers[x] = 0;
             pieces.push(`${listNumbers[x]}.`);
             x++;
           }
         }
-        pieces.push(`${listNumbers[line.listLevel]}. `);
-        prevListLevel = line.listLevel;
+        pieces.push(`${listNumbers[(line.listLevel as number)]}. `);
+        prevListLevel = line.listLevel as number;
       }
 
       pieces.push(lineContent, '\n');
@@ -260,9 +264,8 @@ const getTXTFromAtext = (pad: PadType, atext: AText, authorColors?:string) => {
   return pieces.join('');
 };
 
-exports.getTXTFromAtext = getTXTFromAtext;
 
-exports.getPadTXTDocument = async (padId:string, revNum:string) => {
-  const pad = await padManager.getPad(padId);
+export const getPadTXTDocument = async (padId:string, revNum:number) => {
+  const pad = await getPad(padId);
   return getPadTXT(pad, revNum);
 };

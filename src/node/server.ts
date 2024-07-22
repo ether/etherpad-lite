@@ -28,8 +28,7 @@ import log4js from 'log4js';
 import pkg from '../package.json';
 import {checkForMigration} from "../static/js/pluginfw/installer";
 import axios from "axios";
-
-const settings = require('./utils/Settings');
+import settings from "./utils/Settings";
 
 let wtfnode: any;
 if (settings.dumpOnUncleanExit) {
@@ -64,18 +63,18 @@ if (process.env['https_proxy']) {
  * early check for version compatibility before calling
  * any modules that require newer versions of NodeJS
  */
-const NodeVersion = require('./utils/NodeVersion');
-NodeVersion.enforceMinNodeVersion(pkg.engines.node.replace(">=", ""));
-NodeVersion.checkDeprecationStatus(pkg.engines.node.replace(">=", ""), '2.1.0');
+import {checkDeprecationStatus, enforceMinNodeVersion} from './utils/NodeVersion';
+enforceMinNodeVersion(pkg.engines.node.replace(">=", ""));
+checkDeprecationStatus(pkg.engines.node.replace(">=", ""), '2.1.0');
 
-const UpdateCheck = require('./utils/UpdateCheck');
-const db = require('./db/DB');
-const express = require('./hooks/express');
-const hooks = require('../static/js/pluginfw/hooks');
-const pluginDefs = require('../static/js/pluginfw/plugin_defs');
-const plugins = require('../static/js/pluginfw/plugins');
-const {Gate} = require('./utils/promises');
-const stats = require('./stats')
+import {check} from './utils/UpdateCheck';
+import {init} from './db/DB';
+import {server} from './hooks/express';
+import {aCallAll} from '../static/js/pluginfw/hooks';
+import {pluginDefs} from '../static/js/pluginfw/plugin_defs';
+import {formatHooks, formatParts, update} from '../static/js/pluginfw/plugins';
+import {Gate} from './utils/promises';
+import {measuredCollection} from './stats';
 
 const logger = log4js.getLogger('server');
 
@@ -100,17 +99,17 @@ const removeSignalListener = (signal: NodeJS.Signals, listener: NodeJS.SignalsLi
 };
 
 
-let startDoneGate: { resolve: () => void; }
-exports.start = async () => {
+let startDoneGate: Gate<void>
+export const start = async (): Promise<any> => {
   switch (state) {
     case State.INITIAL:
       break;
     case State.STARTING:
       await startDoneGate;
       // Retry. Don't fall through because it might have transitioned to STATE_TRANSITION_FAILED.
-      return await exports.start();
+      return await start();
     case State.RUNNING:
-      return express.server;
+      return server;
     case State.STOPPING:
     case State.STOPPED:
     case State.EXITING:
@@ -121,22 +120,20 @@ exports.start = async () => {
       throw new Error(`unknown State: ${state.toString()}`);
   }
   logger.info('Starting Etherpad...');
-  startDoneGate = new Gate();
+  startDoneGate = new Gate<void>();
   state = State.STARTING;
   try {
     // Check if Etherpad version is up-to-date
-    UpdateCheck.check();
+    check();
 
-    // @ts-ignore
-    stats.gauge('memoryUsage', () => process.memoryUsage().rss);
-    // @ts-ignore
-    stats.gauge('memoryUsageHeap', () => process.memoryUsage().heapUsed);
+    measuredCollection.gauge('memoryUsage', () => process.memoryUsage().rss);
+    measuredCollection.gauge('memoryUsageHeap', () => process.memoryUsage().heapUsed);
 
     process.on('uncaughtException', (err: ErrorCaused) => {
       logger.debug(`uncaught exception: ${err.stack || err}`);
 
       // eslint-disable-next-line promise/no-promise-in-callback
-      exports.exit(err)
+      exit(err)
           .catch((err: ErrorCaused) => {
             logger.error('Error in process exit', err);
             // eslint-disable-next-line n/no-process-exit
@@ -153,12 +150,12 @@ exports.start = async () => {
     for (const signal of ['SIGINT', 'SIGTERM'] as NodeJS.Signals[]) {
       // Forcibly remove other signal listeners to prevent them from terminating node before we are
       // done cleaning up. See https://github.com/andywer/threads.js/pull/329 for an example of a
-      // problematic listener. This means that exports.exit is solely responsible for performing all
+      // problematic listener. This means that exit is solely responsible for performing all
       // necessary cleanup tasks.
       for (const listener of process.listeners(signal)) {
         removeSignalListener(signal, listener);
       }
-      process.on(signal, exports.exit);
+      process.on(signal, exit);
       // Prevent signal listeners from being added in the future.
       process.on('newListener', (event, listener) => {
         if (event !== signal) return;
@@ -166,40 +163,40 @@ exports.start = async () => {
       });
     }
 
-    await db.init();
+    await init();
     await checkForMigration();
-    await plugins.update();
-    const installedPlugins = (Object.values(pluginDefs.plugins) as PluginType[])
+    await update();
+    const installedPlugins = (Object.values(pluginDefs.getPlugins()) as PluginType[])
         .filter((plugin) => plugin.package.name !== 'ep_etherpad-lite')
         .map((plugin) => `${plugin.package.name}@${plugin.package.version}`)
         .join(', ');
     logger.info(`Installed plugins: ${installedPlugins}`);
-    logger.debug(`Installed parts:\n${plugins.formatParts()}`);
-    logger.debug(`Installed server-side hooks:\n${plugins.formatHooks('hooks', false)}`);
-    await hooks.aCallAll('loadSettings', {settings});
-    await hooks.aCallAll('createServer');
+    logger.debug(`Installed parts:\n${formatParts()}`);
+    logger.debug(`Installed server-side hooks:\n${formatHooks('hooks', false)}`);
+    await aCallAll('loadSettings', {settings});
+    await aCallAll('createServer');
   } catch (err) {
     logger.error('Error occurred while starting Etherpad');
     state = State.STATE_TRANSITION_FAILED;
-    startDoneGate.resolve();
-    return await exports.exit(err);
+    startDoneGate.resolve!();
+    return await exit(err as any);
   }
 
   logger.info('Etherpad is running');
   state = State.RUNNING;
-  startDoneGate.resolve();
+  startDoneGate.resolve!();
 
   // Return the HTTP server to make it easier to write tests.
-  return express.server;
+  return server;
 };
 
 const stopDoneGate = new Gate();
-exports.stop = async () => {
+export const stop = async (): Promise<void> => {
   switch (state) {
     case State.STARTING:
-      await exports.start();
+      await start();
       // Don't fall through to State.RUNNING in case another caller is also waiting for startup.
-      return await exports.stop();
+      return await stop();
     case State.RUNNING:
       break;
     case State.STOPPING:
@@ -219,7 +216,7 @@ exports.stop = async () => {
   try {
     let timeout: NodeJS.Timeout = null as unknown as NodeJS.Timeout;
     await Promise.race([
-      hooks.aCallAll('shutdown'),
+      aCallAll('shutdown'),
       new Promise((resolve, reject) => {
         timeout = setTimeout(() => reject(new Error('Timed out waiting for shutdown tasks')), 3000);
       }),
@@ -228,24 +225,25 @@ exports.stop = async () => {
   } catch (err) {
     logger.error('Error occurred while stopping Etherpad');
     state = State.STATE_TRANSITION_FAILED;
-    stopDoneGate.resolve();
-    return await exports.exit(err);
+    stopDoneGate.resolve!();
+    // @ts-ignore
+    return await exit(err);
   }
   logger.info('Etherpad stopped');
   state = State.STOPPED;
-  stopDoneGate.resolve();
+  stopDoneGate.resolve!();
 };
 
 let exitGate: any;
 let exitCalled = false;
-exports.exit = async (err: ErrorCaused|string|null = null) => {
+export const exit = async (err: ErrorCaused|string|null = null): Promise<void> => {
   /* eslint-disable no-process-exit */
   if (err === 'SIGTERM') {
     // Termination from SIGTERM is not treated as an abnormal termination.
     logger.info('Received SIGTERM signal');
     err = null;
   } else if (typeof err == "object" && err != null) {
-    logger.error(`Metrics at time of fatal error:\n${JSON.stringify(stats.toJSON(), null, 2)}`);
+    logger.error(`Metrics at time of fatal error:\n${JSON.stringify(measuredCollection.toJSON(), null, 2)}`);
     logger.error(err.stack || err.toString());
     process.exitCode = 1;
     if (exitCalled) {
@@ -259,11 +257,11 @@ exports.exit = async (err: ErrorCaused|string|null = null) => {
     case State.STARTING:
     case State.RUNNING:
     case State.STOPPING:
-      await exports.stop();
+      await stop();
       // Don't fall through to State.STOPPED in case another caller is also waiting for stop().
       // Don't pass err to exports.exit() because this err has already been processed. (If err is
       // passed again to exit() then exit() will think that a second error occurred while exiting.)
-      return await exports.exit();
+      return await exit();
     case State.INITIAL:
     case State.STOPPED:
     case State.STATE_TRANSITION_FAILED:
@@ -303,7 +301,7 @@ exports.exit = async (err: ErrorCaused|string|null = null) => {
   /* eslint-enable no-process-exit */
 };
 
-if (require.main === module) exports.start();
+if (require.main === module) start();
 
 // @ts-ignore
-if (typeof(PhusionPassenger) !== 'undefined') exports.start();
+if (typeof(PhusionPassenger) !== 'undefined') start();

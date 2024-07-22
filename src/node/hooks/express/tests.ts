@@ -3,10 +3,10 @@
 import {Dirent} from "node:fs";
 import {PluginDef} from "../../types/PartType";
 
-const path = require('path');
-const fsp = require('fs').promises;
-const plugins = require('../../../static/js/pluginfw/plugin_defs');
-const sanitizePathname = require('../../utils/sanitizePathname');
+import path from 'path';
+import {promises as fsp} from 'fs';
+import {pluginDefs} from '../../../static/js/pluginfw/plugin_defs';
+import sanitizePathname from '../../utils/sanitizePathname';
 const settings = require('../../utils/Settings');
 
 // Returns all *.js files under specDir (recursively) as relative paths to specDir, using '/'
@@ -32,11 +32,11 @@ const findSpecs = async (specDir: string) => {
   return specs;
 };
 
-exports.expressPreSession = async (hookName:string, {app}:any) => {
+export const expressPreSession = async (hookName:string, {app}:any) => {
   app.get('/tests/frontend/frontendTestSpecs.json', (req:any, res:any, next:Function) => {
     (async () => {
       const modules:string[] = [];
-      await Promise.all(Object.entries(plugins.plugins).map(async ([plugin, def]) => {
+      await Promise.all(Object.entries(pluginDefs.getPlugins()).map(async ([plugin, def]) => {
         let {package: {path: pluginPath}} = def as PluginDef;
         if (!pluginPath.endsWith(path.sep)) pluginPath += path.sep;
         const specDir = `${plugin === 'ep_etherpad-lite' ? '' : 'static/'}tests/frontend/specs`;

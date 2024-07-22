@@ -21,7 +21,9 @@
  */
 
 // An object containing the parsed command-line options
-exports.argv = {};
+import {MapArrayType} from "../types/MapType";
+
+export const argvP: MapArrayType<any> = {};
 
 const argv = process.argv.slice(2);
 let arg, prevArg;
@@ -32,22 +34,22 @@ for (let i = 0; i < argv.length; i++) {
 
   // Override location of settings.json file
   if (prevArg === '--settings' || prevArg === '-s') {
-    exports.argv.settings = arg;
+    argvP.settings = arg;
   }
 
   // Override location of credentials.json file
   if (prevArg === '--credentials') {
-    exports.argv.credentials = arg;
+    argvP.credentials = arg;
   }
 
   // Override location of settings.json file
   if (prevArg === '--sessionkey') {
-    exports.argv.sessionkey = arg;
+    argvP.sessionkey = arg;
   }
 
   // Override location of APIKEY.txt file
   if (prevArg === '--apikey') {
-    exports.argv.apikey = arg;
+    argvP.apikey = arg;
   }
 
   prevArg = arg;

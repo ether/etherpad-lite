@@ -1,15 +1,16 @@
 'use strict';
 
-const defs = require('./plugin_defs');
+import {Part, pluginDefs, PluginHook} from './plugin_defs';
+import {MapArrayType} from "../../../node/types/MapType";
 
-const disabledHookReasons = {
+const disabledHookReasons: MapArrayType<any> = {
   hooks: {
     indexCustomInlineScripts: 'The hook makes it impossible to use a Content Security Policy ' +
         'that prohibits inline code. Permitting inline code makes XSS vulnerabilities more likely',
   },
 };
 
-const loadFn = (path, hookName, modules) => {
+const loadFn = (path: string, hookName: string, modules: Function) => {
   let functionName;
   const parts = path.split(':');
 
@@ -28,6 +29,7 @@ const loadFn = (path, hookName, modules) => {
   if (modules === undefined || !("get" in modules)) {
     fn = require(/* webpackIgnore: true */ path);
   } else {
+    // @ts-ignore
     fn = modules.get(path);
   }
 
@@ -39,9 +41,10 @@ const loadFn = (path, hookName, modules) => {
   return fn;
 };
 
-const extractHooks = (parts, hookSetName, normalizer, modules) => {
-  const hooks = {};
+export const extractHooks = (parts: Part[], hookSetName: string, normalizer: Function|null, modules: Function) => {
+  const hooks: MapArrayType<PluginHook[]> = {};
   for (const part of parts) {
+    // @ts-ignore
     for (const [hookName, regHookFnName] of Object.entries(part[hookSetName] || {})) {
       /* On the server side, you can't just
        * require("pluginname/whatever") if the plugin is installed as
@@ -64,7 +67,8 @@ const extractHooks = (parts, hookSetName, normalizer, modules) => {
       } catch (err) {
         console.error(`Failed to load hook function "${hookFnName}" for plugin "${part.plugin}" ` +
                       `part "${part.name}" hook set "${hookSetName}" hook "${hookName}": ` +
-                      `${err.stack || err}`);
+          // @ts-ignore
+          `${err.stack || err}`);
       }
       if (hookFn) {
         if (hooks[hookName] == null) hooks[hookName] = [];
@@ -80,7 +84,6 @@ const extractHooks = (parts, hookSetName, normalizer, modules) => {
   return hooks;
 };
 
-exports.extractHooks = extractHooks;
 
 /*
  * Returns an array containing the names of the installed client-side plugins
@@ -94,8 +97,8 @@ exports.extractHooks = extractHooks;
  *   No plugins:   []
  *   Some plugins: [ 'ep_adminpads', 'ep_add_buttons', 'ep_activepads' ]
  */
-exports.clientPluginNames = () => {
-  const clientPluginNames = defs.parts
+export const clientPluginNames = () => {
+  const clientPluginNames = pluginDefs.getParts()
       .filter((part) => Object.prototype.hasOwnProperty.call(part, 'client_hooks'))
       .map((part) => `plugin-${part.plugin}`);
   return [...new Set(clientPluginNames)];

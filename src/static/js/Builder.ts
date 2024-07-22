@@ -62,7 +62,7 @@ export class Builder {
    *     attribute key, value pairs.
    * @returns {Builder} this
    */
-  keepText= (text: string, attribs: string|Attribute[], pool?: AttributePool): Builder=> {
+  keepText= (text: string, attribs?: string|Attribute[], pool?: AttributePool): Builder=> {
     for (const op of opsFromText('=', text, attribs, pool)) this.assem.append(op);
     return this;
   }
@@ -89,7 +89,7 @@ export class Builder {
    *     character must be a newline.
    * @returns {Builder} this
    */
-  remove= (N: number, L: number): Builder => {
+  remove= (N: number, L?: number): Builder => {
     this.o.opcode = '-';
     this.o.attribs = '';
     this.o.chars = N;

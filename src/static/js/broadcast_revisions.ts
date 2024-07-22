@@ -25,13 +25,22 @@
 // of the document.  These revisions are connected together by various
 // changesets,  or deltas, between any two revisions.
 
-const loadBroadcastRevisionsJS = () => {
-  function Revision(revNum) {
+type RevisionDelta = {
+  deltaRev: number;
+  deltaTime: number;
+  getValue: () => RevisionDelta;
+}
+
+export class Revision {
+  rev: number;
+  changesets: RevisionDelta[];
+
+  constructor(revNum: number) {
     this.rev = revNum;
     this.changesets = [];
   }
 
-  Revision.prototype.addChangeset = function (destIndex, changeset, timeDelta) {
+  addChangeset(destIndex: number, changeset: RevisionDelta, timeDelta: number) {
     const changesetWrapper = {
       deltaRev: destIndex - this.rev,
       deltaTime: timeDelta,
@@ -39,34 +48,39 @@ const loadBroadcastRevisionsJS = () => {
     };
     this.changesets.push(changesetWrapper);
     this.changesets.sort((a, b) => (b.deltaRev - a.deltaRev));
-  };
+  }
+}
 
-  const revisionInfo = {};
-  revisionInfo.addChangeset = function (fromIndex, toIndex, changeset, backChangeset, timeDelta) {
-    const startRevision = this[fromIndex] || this.createNew(fromIndex);
-    const endRevision = this[toIndex] || this.createNew(toIndex);
+class RevisionInfo {
+  private revisionInfo: Record<number|string, number|Revision> = {};
+
+  constructor() {
+    this.revisionInfo.latest = window.clientVars.collab_client_vars.rev || -1;
+    window.revisionInfo = this.revisionInfo;
+  }
+
+  addChangeset =  (fromIndex: number, toIndex: number, changeset: RevisionDelta, backChangeset: RevisionDelta, timeDelta: number)=> {
+    const startRevision = (this.revisionInfo[fromIndex] || this.createNew(fromIndex)) as Revision;
+    const endRevision = (this.revisionInfo[toIndex] || this.createNew(toIndex)) as Revision;
     startRevision.addChangeset(toIndex, changeset, timeDelta);
     endRevision.addChangeset(fromIndex, backChangeset, -1 * timeDelta);
-  };
+  }
 
-  revisionInfo.latest = clientVars.collab_client_vars.rev || -1;
-
-  revisionInfo.createNew = function (index) {
-    this[index] = new Revision(index);
-    if (index > this.latest) {
-      this.latest = index;
+  createNew =  (index: number)=> {
+    this.revisionInfo![index] = new Revision(index);
+    if (index > (this.revisionInfo.latest as number)) {
+      this.revisionInfo.latest = index;
     }
 
-    return this[index];
-  };
-
+    return this.revisionInfo[index];
+  }
   // assuming that there is a path from fromIndex to toIndex, and that the links
   // are laid out in a skip-list format
-  revisionInfo.getPath = function (fromIndex, toIndex) {
+  getPath =  (fromIndex: number, toIndex: number)=> {
     const changesets = [];
     const spans = [];
     const times = [];
-    let elem = this[fromIndex] || this.createNew(fromIndex);
+    let elem = (this.revisionInfo[fromIndex] || this.createNew(fromIndex)) as Revision;
     if (elem.changesets.length !== 0 && fromIndex !== toIndex) {
       const reverse = !(fromIndex < toIndex);
       while (((elem.rev < toIndex) && !reverse) || ((elem.rev > toIndex) && reverse)) {
@@ -74,21 +88,21 @@ const loadBroadcastRevisionsJS = () => {
         const oldRev = elem.rev;
 
         for (let i = reverse ? elem.changesets.length - 1 : 0;
-          reverse ? i >= 0 : i < elem.changesets.length;
-          i += reverse ? -1 : 1) {
+             reverse ? i >= 0 : i < elem.changesets.length;
+             i += reverse ? -1 : 1) {
           if (((elem.changesets[i].deltaRev < 0) && !reverse) ||
-              ((elem.changesets[i].deltaRev > 0) && reverse)) {
+            ((elem.changesets[i].deltaRev > 0) && reverse)) {
             couldNotContinue = true;
             break;
           }
 
           if (((elem.rev + elem.changesets[i].deltaRev <= toIndex) && !reverse) ||
-              ((elem.rev + elem.changesets[i].deltaRev >= toIndex) && reverse)) {
+            ((elem.rev + elem.changesets[i].deltaRev >= toIndex) && reverse)) {
             const topush = elem.changesets[i];
             changesets.push(topush.getValue());
             spans.push(elem.changesets[i].deltaRev);
             times.push(topush.deltaTime);
-            elem = this[elem.rev + elem.changesets[i].deltaRev];
+            elem = this.revisionInfo[elem.rev + elem.changesets[i].deltaRev] as Revision;
             break;
           }
         }
@@ -108,8 +122,7 @@ const loadBroadcastRevisionsJS = () => {
       spans,
       times,
     };
-  };
-  window.revisionInfo = revisionInfo;
-};
+  }
+}
 
-exports.loadBroadcastRevisionsJS = loadBroadcastRevisionsJS;
+export default new RevisionInfo();

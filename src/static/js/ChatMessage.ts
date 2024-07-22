@@ -8,11 +8,11 @@ import {padUtils} from './pad_utils'
  *
  * Supports serialization to JSON.
  */
-class ChatMessage {
+export class ChatMessage {
   customMetadata: any
   text: string|null
   public authorId: string|null
-  private displayName: string|null
+  displayName: string|null
   time: number|null
   static fromObject(obj: ChatMessage) {
     // The userId property was renamed to authorId, and userName was renamed to displayName. Accept

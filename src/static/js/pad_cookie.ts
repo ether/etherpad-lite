@@ -62,7 +62,7 @@ class PadCookie {
     return this.readPrefs_()[prefName];
   }
 
-  setPref(prefName: string, value: string) {
+  setPref(prefName: string, value: any) {
     const prefs = this.readPrefs_();
     prefs[prefName] = value;
     this.writePrefs_(prefs);

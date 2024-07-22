@@ -367,18 +367,17 @@ export class CollabClient {
 
   tellAceAuthorInfo = (userId: string, colorId: number|object, inactive?: boolean) => {
     if (typeof colorId === 'number') {
+      // @ts-ignore
       colorId = window.clientVars.colorPalette[colorId];
     }
 
     const cssColor = colorId;
     if (inactive) {
-      // @ts-ignore
       this.editor.setAuthorInfo(userId, {
         bgcolor: cssColor,
         fade: 0.5,
       });
     } else {
-      // @ts-ignore
       this.editor.setAuthorInfo(userId, {
         bgcolor: cssColor,
       });

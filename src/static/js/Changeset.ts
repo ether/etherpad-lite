@@ -445,10 +445,10 @@ export const applyToText = (cs: string, str: string): string => {
  * @param {string} cs - the changeset to apply
  * @param {string[]} lines - The lines to which the changeset needs to be applied
  */
-const mutateTextLines = (cs: string, lines:string[]) => {
+export const mutateTextLines = (cs: string, lines: RegExpMatchArray | null) => {
   const unpacked = unpack(cs);
   const bankIter = new StringIterator(unpacked.charBank);
-  const mut = new TextLinesMutator(lines);
+  const mut = new TextLinesMutator(lines!);
   for (const op of deserializeOps(unpacked.ops)) {
     switch (op.opcode) {
       case '+':
@@ -709,7 +709,7 @@ export const identity = (N: number): string => pack(N, N, '', '');
  * @param {AttributePool.ts} [pool] - Attribute pool.
  * @returns {string}
  */
-export const makeSplice = (orig: string, start: number, ndel: number, ins: string, attribs: string | Attribute[] | undefined, pool: AttributePool | null | undefined): string => {
+export const makeSplice = (orig: string, start: number, ndel: number, ins: string|null, attribs?: string | Attribute[] | undefined, pool?: AttributePool | null | undefined): string => {
   if (start < 0) throw new RangeError(`start index must be non-negative (is ${start})`);
   if (ndel < 0) throw new RangeError(`characters to delete must be non-negative (is ${ndel})`);
   if (start > orig.length) start = orig.length;
@@ -723,7 +723,7 @@ export const makeSplice = (orig: string, start: number, ndel: number, ins: strin
   })();
   for (const op of ops) assem.append(op);
   assem.endDocument();
-  return pack(orig.length, orig.length + ins.length - ndel, assem.toString(), ins);
+  return pack(orig.length, orig.length + ins!.length - ndel, assem.toString(), ins!);
 };
 
 /**
@@ -932,7 +932,7 @@ export const mapAttribNumbers = (cs: string, func: Function): string => {
  *     attributes
  * @returns {AText}
  */
-export const makeAText = (text: string, attribs: string): AText => ({
+export const makeAText = (text: string, attribs?: string): AText => ({
   text,
   attribs: (attribs || makeAttribution(text)),
 });
@@ -1119,7 +1119,7 @@ export const makeAttribsString = (opcode: string, attribs: Attribute[]|string, p
 /**
  * Like "substring" but on a single-line attribution string.
  */
-export const subattribution = (astr: string, start: number, optEnd: number) => {
+export const subattribution = (astr: string, start: number, optEnd?: number) => {
   const attOps = deserializeOps(astr);
   let attOpsNext = attOps.next();
   const assem = new SmartOpAssembler();
@@ -1164,9 +1164,7 @@ export const subattribution = (astr: string, start: number, optEnd: number) => {
   return assem.toString();
 };
 
-export const inverse = (cs: string, lines: string|{
-  get: (idx: number) => string,
-}, alines: string|{
+export const inverse = (cs: string, lines: string|RegExpMatchArray | null, alines: string[]|{
   get: (idx: number) => string,
 }, pool: AttributePool) => {
   // lines and alines are what the exports is meant to apply to.
@@ -1176,9 +1174,10 @@ export const inverse = (cs: string, lines: string|{
   const linesGet = (idx: number) => {
     // @ts-ignore
     if ("get" in lines) {
+      // @ts-ignore
       return lines.get(idx);
     } else {
-      return lines[idx];
+      return lines![idx];
     }
   };
 

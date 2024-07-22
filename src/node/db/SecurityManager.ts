@@ -21,13 +21,13 @@
 
 import {UserSettingsObject} from "../types/UserSettingsObject";
 
-const authorManager = require('./AuthorManager');
-const hooks = require('../../static/js/pluginfw/hooks.js');
-const padManager = require('./PadManager');
-const readOnlyManager = require('./ReadOnlyManager');
-const sessionManager = require('./SessionManager');
+import {getAuthorId} from './AuthorManager';
+import {callAll} from '../../static/js/pluginfw/hooks.js';
+import {doesPadExist, getPad} from './PadManager';
+import {getPadId, isReadOnlyId} from './ReadOnlyManager';
+import {findAuthorID} from './SessionManager';
 const settings = require('../utils/Settings');
-const webaccess = require('../hooks/express/webaccess');
+import {normalizeAuthzLevel} from '../hooks/express/webaccess';
 const log4js = require('log4js');
 const authLogger = log4js.getLogger('auth');
 import {padUtils as padutils} from '../../static/js/pad_utils';
@@ -57,7 +57,14 @@ const DENY = Object.freeze({accessStatus: 'deny'});
  * @param {Object} userSettings
  * @return {DENY|{accessStatus: String, authorID: String}}
  */
-exports.checkAccess = async (padID:string, sessionCookie:string, token:string, userSettings:UserSettingsObject) => {
+
+
+type CheckAccessStat = {
+  accessStatus: string;
+  authorID?: string;
+}
+
+export const checkAccess = async (padID:string, sessionCookie:string, token:string, userSettings:UserSettingsObject): Promise<CheckAccessStat> => {
   if (!padID) {
     authLogger.debug('access denied: missing padID');
     return DENY;
@@ -65,9 +72,9 @@ exports.checkAccess = async (padID:string, sessionCookie:string, token:string, u
 
   let canCreate = !settings.editOnly;
 
-  if (readOnlyManager.isReadOnlyId(padID)) {
+  if (isReadOnlyId(padID)) {
     canCreate = false;
-    padID = await readOnlyManager.getPadId(padID);
+    padID = await getPadId(padID);
     if (padID == null) {
       authLogger.debug('access denied: read-only pad ID for a pad that does not exist');
       return DENY;
@@ -88,7 +95,7 @@ exports.checkAccess = async (padID:string, sessionCookie:string, token:string, u
     // Note: userSettings.padAuthorizations should still be populated even if
     // settings.requireAuthorization is false.
     const padAuthzs = userSettings.padAuthorizations || {};
-    const level = webaccess.normalizeAuthzLevel(padAuthzs[padID]);
+    const level = normalizeAuthzLevel(padAuthzs[padID]);
     if (!level) {
       authLogger.debug('access denied: unauthorized');
       return DENY;
@@ -98,18 +105,18 @@ exports.checkAccess = async (padID:string, sessionCookie:string, token:string, u
 
   // allow plugins to deny access
   const isFalse = (x:boolean) => x === false;
-  if (hooks.callAll('onAccessCheck', {padID, token, sessionCookie}).some(isFalse)) {
+  if (callAll('onAccessCheck', {padID, token, sessionCookie}).some(isFalse)) {
     authLogger.debug('access denied: an onAccessCheck hook function returned false');
     return DENY;
   }
 
-  const padExists = await padManager.doesPadExist(padID);
+  const padExists = await doesPadExist(padID);
   if (!padExists && !canCreate) {
     authLogger.debug('access denied: user attempted to create a pad, which is prohibited');
     return DENY;
   }
 
-  const sessionAuthorID = await sessionManager.findAuthorID(padID.split('$')[0], sessionCookie);
+  const sessionAuthorID = await findAuthorID(padID.split('$')[0], sessionCookie);
   if (settings.requireSession && !sessionAuthorID) {
     authLogger.debug('access denied: HTTP API session is required');
     return DENY;
@@ -122,7 +129,7 @@ exports.checkAccess = async (padID:string, sessionCookie:string, token:string, u
 
   const grant = {
     accessStatus: 'grant',
-    authorID: sessionAuthorID || await authorManager.getAuthorId(token, userSettings),
+    authorID: sessionAuthorID || await getAuthorId(token, userSettings),
   };
 
   if (!padID.includes('$')) {
@@ -139,7 +146,7 @@ exports.checkAccess = async (padID:string, sessionCookie:string, token:string, u
     return grant;
   }
 
-  const pad = await padManager.getPad(padID);
+  const pad = await getPad(padID);
 
   if (!pad.getPublicStatus() && sessionAuthorID == null) {
     authLogger.debug('access denied: must have an HTTP API session to access private group pads');

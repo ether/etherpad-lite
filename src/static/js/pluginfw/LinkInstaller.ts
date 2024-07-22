@@ -6,6 +6,7 @@ import {dependencies, name} from '../../../package.json'
 import {pathToFileURL} from 'node:url';
 const settings = require('../../../node/utils/Settings');
 import {readFileSync} from "fs";
+import {IPluginInfoExtended} from "./IPluginInfoExtended";
 
 export class LinkInstaller {
     private livePluginManager: PluginManager;
@@ -46,7 +47,7 @@ export class LinkInstaller {
 
     public async installPlugin(pluginName: string, version?: string) {
         if (version) {
-            const installedPlugin = await this.livePluginManager.install(pluginName, version);
+            const installedPlugin = await this.livePluginManager.install(pluginName, version) as IPluginInfoExtended;
             this.linkDependency(pluginName)
             await this.checkLinkedDependencies(installedPlugin)
         } else {
@@ -57,7 +58,7 @@ export class LinkInstaller {
     }
 
     public async listPlugins() {
-        const plugins = this.livePluginManager.list()
+        const plugins = this.livePluginManager.list() as IPluginInfoExtended[]
         if (plugins && plugins.length > 0 && this.loadedPlugins.length == 0) {
             this.loadedPlugins = plugins
             // Check already installed plugins
@@ -223,7 +224,6 @@ export class LinkInstaller {
             // So nothing to do
         }
     }
-
 
     private async checkLinkedDependencies(plugin: IPluginInfo) {
         // Check if the plugin really exists at source

@@ -2,6 +2,9 @@ import {MapArrayType} from "../../../node/types/MapType";
 import {AText} from "./AText";
 import AttributePool from "../AttributePool";
 import attributePool from "../AttributePool";
+import ChatMessage from "../ChatMessage";
+import {PadRevision} from "./PadRevision";
+import {MappedPlugin} from "../pluginfw/plugin_defs";
 
 export type SocketIOMessage = {
   type: string
@@ -11,15 +14,24 @@ export type SocketIOMessage = {
 export type HistoricalAuthorData = MapArrayType<{
   name: string;
   colorId: number;
-  userId: string
+  userId?: string
 }>
 
 export type ServerVar = {
   rev: number
-  historicalAuthorData: HistoricalAuthorData,
-  initialAttributedText: string,
-  apool: AttributePool
+  clientIp: string
+  padId: string
+  historicalAuthorData?: HistoricalAuthorData,
+  initialAttributedText: {
+    attribs: string
+    text: string
+  },
+  apool: AttributePoolWire
+  time: number
 }
+
+export type AttributePoolWire = {numToAttrib: {[p: number]: [string, string]}, nextNum: number}
+
 
 export type UserInfo = {
   userId: string
@@ -31,18 +43,18 @@ export type ClientVarPayload = {
   readOnlyId: string
   automaticReconnectionTimeout: number
   sessionRefreshInterval: number,
-  historicalAuthorData: HistoricalAuthorData,
-  atext: AText,
-  apool: AttributePool,
-  noColors: boolean,
-  userName: string,
+  atext?: AText,
+  apool?: AttributePool,
+  userName?: string,
   userColor: number,
-  hideChat: boolean,
+  hideChat?: boolean,
   padOptions: PadOption,
   padId: string,
   clientIp: string,
-  colorPalette: MapArrayType<number>,
-  accountPrivs: MapArrayType<string>,
+  colorPalette: string[],
+  accountPrivs: {
+    maxRevisions: number,
+  },
   collab_client_vars: ServerVar,
   chatHead: number,
   readonly: boolean,
@@ -54,6 +66,29 @@ export type ClientVarPayload = {
   skinName: string
   skinVariants: string,
   exportAvailable: string
+  savedRevisions: PadRevision[],
+  initialRevisionList: number[],
+  padShortcutEnabled: MapArrayType<boolean>,
+  initialTitle: string,
+  opts: {}
+  numConnectedUsers: number
+  abiwordAvailable: string
+  sofficeAvailable: string
+  plugins: {
+    plugins:  MapArrayType<any>
+    parts:  MappedPlugin[]
+  }
+  indentationOnNewLine: boolean
+  scrollWhenFocusLineIsOutOfViewport : {
+    percentage: {
+      editionAboveViewport: number,
+      editionBelowViewport: number
+    }
+    duration: number
+    scrollWhenCaretIsInTheLastLineOfViewport: boolean
+    percentageToScrollWhenUserPressesArrowUp: number
+  }
+  initialChangesets: []
 }
 
 export type ClientVarData = {
@@ -105,7 +140,9 @@ export type ClientMessageMessage = {
 
 export type ChatMessageMessage = {
   type: 'CHAT_MESSAGE'
-  message: string
+  data: {
+    message: ChatMessage
+  }
 }
 
 export type ChatMessageMessages = {
@@ -122,7 +159,18 @@ export type ClientUserChangesMessage = {
 
 
 
-export type ClientSendMessages =  ClientUserChangesMessage | ClientSendUserInfoUpdate| ClientMessageMessage | GetChatMessageMessage |ClientSuggestUserName | NewRevisionListMessage | RevisionLabel | PadOptionsMessage| ClientSaveRevisionMessage
+export type ClientSendMessages =  ClientUserChangesMessage |ClientReadyMessage| ClientSendUserInfoUpdate|ChatMessageMessage| ClientMessageMessage | GetChatMessageMessage |ClientSuggestUserName | NewRevisionListMessage | RevisionLabel | PadOptionsMessage| ClientSaveRevisionMessage
+
+export type ClientReadyMessage = {
+  type: 'CLIENT_READY',
+  component: string,
+  padId: string,
+  sessionID: string,
+  token: string,
+  userInfo: UserInfo,
+  reconnect?: boolean
+  client_rev?: number
+}
 
 export type ClientSaveRevisionMessage = {
   type: 'SAVE_REVISION'
@@ -191,18 +239,44 @@ export type ClientDisconnectedMessage = {
   type: "disconnected"
   disconnected: boolean
 }
+
+export type UserChanges = {
+  data: ClientUserChangesMessage
+}
+
+export type UserSuggestUserName = {
+  data: {
+    payload: ClientSuggestUserName
+  }
+}
+
+export type ChangesetRequestMessage = {
+  type: 'CHANGESET_REQ'
+  data: {
+    granularity: number
+    start: number
+    requestID: string
+  }
+}
+
+
+
+export type CollabroomMessage = {
+  type: 'COLLABROOM'
+  data: ClientSendUserInfoUpdate | ClientUserChangesMessage | ChatMessageMessage | GetChatMessageMessage | ClientSaveRevisionMessage | ClientMessageMessage
+}
+
 export type ClientVarMessage = {
-  type: 'CHANGESET_REQ'| 'COLLABROOM'| 'CUSTOM'
-  data:
-    | ClientNewChanges
-    | ClientAcceptCommitMessage
-    |UserNewInfoMessage
-    | UserLeaveMessage
-    |ClientMessageMessage
-    |ChatMessageMessage
-    |ChatMessageMessages
-  |ClientConnectMessage,
-} | ClientVarData | ClientDisconnectedMessage
+  type:  'CUSTOM'
+  data: ClientVarData
+} | ClientVarData | ClientDisconnectedMessage | ClientReadyMessage| ChangesetRequestMessage | CollabroomMessage
+
+export type ClientCustomMessage = {
+  type: 'CUSTOM',
+  action: string,
+  payload: any
+
+}
 
 export type SocketClientReadyMessage = {
   type: string

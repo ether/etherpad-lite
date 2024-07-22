@@ -2,9 +2,8 @@
 
 const measured = require('measured-core');
 
-module.exports = measured.createCollection();
+export const measuredCollection = measured.createCollection();
 
-// @ts-ignore
-module.exports.shutdown = async (hookName, context) => {
-  module.exports.end();
+export const shutdown = async (hookName: string, context:any) => {
+  measuredCollection.end();
 };

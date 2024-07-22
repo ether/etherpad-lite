@@ -1,13 +1,16 @@
 'use strict';
 
+import {Part} from "./plugin_defs";
+
 const fs = require('fs').promises;
 const hooks = require('./hooks');
-const log4js = require('log4js');
-const path = require('path');
+import log4js from 'log4js';
+import path from 'path';
 const runCmd = require('../../../node/utils/run_cmd');
-const tsort = require('./tsort');
+import {TSort} from './tsort';
 const pluginUtils = require('./shared');
-const defs = require('./plugin_defs');
+import {pluginDefs} from './plugin_defs';
+import {IPluginInfo} from "live-plugin-manager";
 const settings = require('../../../node/utils/Settings');
 
 const logger = log4js.getLogger('plugins');
@@ -18,53 +21,54 @@ const logger = log4js.getLogger('plugins');
     const version = await runCmd(['pnpm', '--version'], {stdio: [null, 'string']});
     logger.info(`pnpm --version: ${version}`);
   } catch (err) {
+    // @ts-ignore
     logger.error(`Failed to get pnpm version: ${err.stack || err}`);
     // This isn't a fatal error so don't re-throw.
   }
 })();
 
-exports.prefix = 'ep_';
+export const prefix = 'ep_';
 
-exports.formatPlugins = () => Object.keys(defs.plugins).join(', ');
+export const formatPlugins = () => Object.keys(pluginDefs.getPlugins()).join(', ');
 
-exports.getPlugins = () => Object.keys(defs.plugins);
+export const getPlugins = () => Object.keys(pluginDefs.getPlugins());
 
-exports.formatParts = () => defs.parts.map((part) => part.full_name).join('\n');
+export const formatParts = () => pluginDefs.getParts().map((part) => part.full_name).join('\n');
 
-exports.getParts = () => defs.parts.map((part) => part.full_name);
+export const getParts = () => pluginDefs.getParts().map((part) => part.full_name);
 
-const sortHooks = (hookSetName, hooks) => {
-  for (const [pluginName, def] of Object.entries(defs.plugins)) {
+const sortHooks = (hookSetName: string, hooks: Map<string, Map<string,Map<string, string>>>) => {
+  for (const [pluginName, def] of Object.entries(pluginDefs.getPlugins())) {
     for (const part of def.parts) {
       for (const [hookName, hookFnName] of Object.entries(part[hookSetName] || {})) {
         let hookEntry = hooks.get(hookName);
         if (!hookEntry) {
-          hookEntry = new Map();
+          hookEntry = new Map<string,Map<string, string>>();
           hooks.set(hookName, hookEntry);
         }
         let pluginEntry = hookEntry.get(pluginName);
         if (!pluginEntry) {
-          pluginEntry = new Map();
+          pluginEntry = new Map<string, string>();
           hookEntry.set(pluginName, pluginEntry);
         }
-        pluginEntry.set(part.name, hookFnName);
+        pluginEntry.set(part.name, hookFnName as string);
       }
     }
   }
 };
 
 
-exports.getHooks = (hookSetName) => {
+export const getHooks = (hookSetName: string) => {
   const hooks = new Map();
   sortHooks(hookSetName, hooks);
   return hooks;
 };
 
-exports.formatHooks = (hookSetName, html) => {
-  let hooks = new Map();
+export const formatHooks = (hookSetName: string, html: string|false) => {
+  let hooks:Map<string, Map<string,Map<string, string>>> = new Map();
   sortHooks(hookSetName, hooks);
   const lines = [];
-  const sortStringKeys = (a, b) => String(a[0]).localeCompare(b[0]);
+  const sortStringKeys = (a: [string, Map<string, Map<string, string>>]| [string, Map<string, string>]|[string,string], b: [string, Map<string, Map<string, string>>]|[string,string]| [string, Map<string, string>]) => String(a[0]).localeCompare(b[0]);
   if (html) lines.push('<dl>');
   hooks = new Map([...hooks].sort(sortStringKeys));
   for (const [hookName, hookEntry] of hooks) {
@@ -88,20 +92,20 @@ exports.formatHooks = (hookSetName, html) => {
   return lines.join('\n');
 };
 
-exports.pathNormalization = (part, hookFnName, hookName) => {
+export const pathNormalization = (part: Part, hookFnName: string, hookName: string) => {
   const tmp = hookFnName.split(':'); // hookFnName might be something like 'C:\\foo.js:myFunc'.
   // If there is a single colon assume it's 'filename:funcname' not 'C:\\filename'.
   const functionName = (tmp.length > 1 ? tmp.pop() : null) || hookName;
   const moduleName = tmp.join(':') || part.plugin;
-  const packageDir = path.dirname(defs.plugins[part.plugin].package.path);
-  const fileName = path.join(packageDir, moduleName);
+  const packageDir = path.dirname(pluginDefs.getPlugins()[part.plugin!].package.path);
+  const fileName = path.join(packageDir, moduleName!);
   return `${fileName}:${functionName}`;
 };
 
-exports.update = async () => {
-  const packages = await exports.getPackages();
-  const parts = {}; // Key is full name. sortParts converts this into a topologically sorted array.
-  const plugins = {};
+export const update = async () => {
+  const packages = await getPackages();
+  const parts: MapArrayType<Part> = {}; // Key is full name. sortParts converts this into a topologically sorted array.
+  const plugins:  MapArrayType<any> = {};
 
   // Load plugin metadata ep.json
   await Promise.all(Object.keys(packages).map(async (pluginName) => {
@@ -110,23 +114,27 @@ exports.update = async () => {
   }));
   logger.info(`Loaded ${Object.keys(packages).length} plugins`);
 
-  defs.plugins = plugins;
-  defs.parts = sortParts(parts);
-  defs.hooks = pluginUtils.extractHooks(defs.parts, 'hooks', exports.pathNormalization);
-  defs.loaded = true;
-  await Promise.all(Object.keys(defs.plugins).map(async (p) => {
+  pluginDefs.setPlugins(plugins);
+  pluginDefs.setParts(sortParts(parts));
+  pluginDefs.setHooks(pluginUtils.extractHooks(pluginDefs.getParts(), 'hooks', pathNormalization))
+  pluginDefs.setLoaded(true);
+
+  await Promise.all(Object.keys(pluginDefs.getPlugins()).map(async (p) => {
     const logger = log4js.getLogger(`plugin:${p}`);
     await hooks.aCallAll(`init_${p}`, {logger});
   }));
 };
 
-exports.getPackages = async () => {
-  const {linkInstaller} = require("./installer");
+import {linkInstaller} from "./installer";
+import {MapArrayType} from "../../../node/types/MapType";
+import {IPluginInfoExtended} from "./IPluginInfoExtended";
+
+export const getPackages = async () => {
   const plugins = await linkInstaller.listPlugins();
-  const newDependencies = {};
+  const newDependencies:MapArrayType<IPluginInfoExtended> = {};
 
   for (const plugin of plugins) {
-    if (!plugin.name.startsWith(exports.prefix)) {
+    if (!plugin.name.startsWith(prefix)) {
       continue;
     }
     plugin.path = plugin.realPath = plugin.location;
@@ -134,17 +142,20 @@ exports.getPackages = async () => {
   }
 
   newDependencies['ep_etherpad-lite'] = {
+    dependencies: {},
+    location: "",
+    mainFile: "",
     name: 'ep_etherpad-lite',
     version: settings.getEpVersion(),
     path: path.join(settings.root, 'node_modules/ep_etherpad-lite'),
-    realPath: path.join(settings.root, 'src'),
+    realPath: path.join(settings.root, 'src')
   };
 
   return newDependencies;
 };
 
-const loadPlugin = async (packages, pluginName, plugins, parts) => {
-  const pluginPath = path.resolve(packages[pluginName].path, 'ep.json');
+const loadPlugin = async (packages:  MapArrayType<IPluginInfoExtended>, pluginName: string, plugins:  MapArrayType<any>, parts: MapArrayType<Part>) => {
+  const pluginPath = path.resolve(packages[pluginName].path!, 'ep.json');
   try {
     const data = await fs.readFile(pluginPath);
     try {
@@ -156,16 +167,16 @@ const loadPlugin = async (packages, pluginName, plugins, parts) => {
         part.full_name = `${pluginName}/${part.name}`;
         parts[part.full_name] = part;
       }
-    } catch (err) {
+    } catch (err: any) {
       logger.error(`Unable to parse plugin definition file ${pluginPath}: ${err.stack || err}`);
     }
-  } catch (err) {
+  } catch (err: any) {
     logger.error(`Unable to load plugin definition file ${pluginPath}: ${err.stack || err}`);
   }
 };
 
-const partsToParentChildList = (parts) => {
-  const res = [];
+const partsToParentChildList = (parts: MapArrayType<Part>) => {
+  const res:[string,string][] = [];
   for (const name of Object.keys(parts)) {
     for (const childName of parts[name].post || []) {
       res.push([name, childName]);
@@ -181,6 +192,6 @@ const partsToParentChildList = (parts) => {
 };
 
 // Used only in Node, so no need for _
-const sortParts = (parts) => tsort(partsToParentChildList(parts))
-    .filter((name) => parts[name] !== undefined)
-    .map((name) => parts[name]);
+const sortParts = (parts: MapArrayType<Part>) => new TSort(partsToParentChildList(parts)).getSorted()
+  .filter((name) => parts[name] !== undefined)
+  .map((name) => parts[name]);

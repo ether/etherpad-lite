@@ -16,15 +16,16 @@
  */
 
 import log4js from 'log4js';
-const Changeset = require('../../static/js/Changeset');
-const contentcollector = require('../../static/js/contentcollector');
+import {deserializeOps} from '../../static/js/Changeset';
+import ContentCollector from '../../static/js/contentcollector';
 import jsdom from 'jsdom';
-import {PadType} from "../types/PadType";
+import Pad from "../db/Pad";
+import {Builder} from "../../static/js/Builder";
 
 const apiLogger = log4js.getLogger('ImportHtml');
 let processor:any;
 
-exports.setPadHTML = async (pad: PadType, html:string, authorId = '') => {
+export const setPadHTML = async (pad: Pad, html:string, authorId = '') => {
   if (processor == null) {
     const [{rehype}, {default: minifyWhitespace}] =
         await Promise.all([import('rehype'), import('rehype-minify-whitespace')]);
@@ -43,7 +44,7 @@ exports.setPadHTML = async (pad: PadType, html:string, authorId = '') => {
 
   // Convert a dom tree into a list of lines and attribute liens
   // using the content collector object
-  const cc = contentcollector.makeContentCollector(true, null, pad.pool);
+  const cc = new ContentCollector(true, null, pad.pool);
   try {
     // we use a try here because if the HTML is bad it will blow up
     cc.collectContent(document.body);
@@ -69,13 +70,13 @@ exports.setPadHTML = async (pad: PadType, html:string, authorId = '') => {
   const newAttribs = `${result.lineAttribs.join('|1+1')}|1+1`;
 
   // create a new changeset with a helper builder object
-  const builder = Changeset.builder(1);
+  const builder = new Builder(1);
 
   // assemble each line into the builder
   let textIndex = 0;
   const newTextStart = 0;
   const newTextEnd = newText.length;
-  for (const op of Changeset.deserializeOps(newAttribs)) {
+  for (const op of deserializeOps(newAttribs)) {
     const nextIndex = textIndex + op.chars;
     if (!(nextIndex <= newTextStart || textIndex >= newTextEnd)) {
       const start = Math.max(newTextStart, textIndex);

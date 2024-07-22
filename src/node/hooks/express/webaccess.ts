@@ -7,21 +7,19 @@ import {WebAccessTypes} from "../../types/WebAccessTypes";
 import {SettingsUser} from "../../types/SettingsUser";
 const httpLogger = log4js.getLogger('http');
 const settings = require('../../utils/Settings');
-const hooks = require('../../../static/js/pluginfw/hooks');
+import {deprecationNotices, aCallFirst as HookAcall} from '../../../static/js/pluginfw/hooks';
 const readOnlyManager = require('../../db/ReadOnlyManager');
 
-hooks.deprecationNotices.authFailure = 'use the authnFailure and authzFailure hooks instead';
+deprecationNotices.authFailure = 'use the authnFailure and authzFailure hooks instead';
 
 // Promisified wrapper around hooks.aCallFirst.
 const aCallFirst = (hookName: string, context:any, pred = null) => new Promise((resolve, reject) => {
-  hooks.aCallFirst(hookName, context, (err:any, r: unknown) => err != null ? reject(err) : resolve(r), pred);
+  HookAcall(hookName, context, (err:any, r: unknown) => err != null ? reject(err) : resolve(r), pred)
 });
 
-const aCallFirst0 =
-    // @ts-ignore
-    async (hookName: string, context:any, pred = null) => (await aCallFirst(hookName, context, pred))[0];
+const aCallFirst0 = async (hookName: string, context:any, pred = null): Promise<any> => (await aCallFirst(hookName, context, pred)) as any[0];
 
-exports.normalizeAuthzLevel = (level: string|boolean) => {
+export const normalizeAuthzLevel = (level: string|boolean) => {
   if (!level) return false;
   switch (level) {
     case true:
@@ -36,20 +34,20 @@ exports.normalizeAuthzLevel = (level: string|boolean) => {
   return false;
 };
 
-exports.userCanModify = (padId: string, req: SocketClientRequest) => {
+export const userCanModify = (padId: string, req: SocketClientRequest) => {
   if (readOnlyManager.isReadOnlyId(padId)) return false;
   if (!settings.requireAuthentication) return true;
   const {session: {user} = {}} = req;
   if (!user || user.readOnly) return false;
   assert(user.padAuthorizations); // This is populated even if !settings.requireAuthorization.
-  const level = exports.normalizeAuthzLevel(user.padAuthorizations[padId]);
+  const level = normalizeAuthzLevel(user.padAuthorizations[padId]);
   return level && level !== 'readOnly';
 };
 
 // Exported so that tests can set this to 0 to avoid unnecessary test slowness.
-exports.authnFailureDelayMs = 1000;
+export const authnFailureDelayMs = 1000;
 
-const checkAccess = async (req:any, res:any, next: Function) => {
+const _checkAccess = async (req:any, res:any, next: Function) => {
   const requireAdmin = req.path.toLowerCase().startsWith('/admin-auth');
 
   // ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -93,7 +91,7 @@ const checkAccess = async (req:any, res:any, next: Function) => {
   // authentication is checked and once after (if settings.requireAuthorization is true).
   const authorize = async () => {
     const grant = async (level: string|false) => {
-      level = exports.normalizeAuthzLevel(level);
+      level = normalizeAuthzLevel(level);
       if (!level) return false;
       const user = req.session.user;
       if (user == null) return true; // This will happen if authentication is not required.
@@ -173,7 +171,7 @@ const checkAccess = async (req:any, res:any, next: Function) => {
         res.header('WWW-Authenticate', 'Basic realm="Protected Area"');
       }
       // Delay the error response for 1s to slow down brute force attacks.
-      await new Promise((resolve) => setTimeout(resolve, exports.authnFailureDelayMs));
+      await new Promise((resolve) => setTimeout(resolve, authnFailureDelayMs));
       res.status(401).send('Authentication Required');
       return;
     }
@@ -213,6 +211,6 @@ const checkAccess = async (req:any, res:any, next: Function) => {
  * Express middleware to authenticate the user and check authorization. Must be installed after the
  * express-session middleware.
  */
-exports.checkAccess = (req:any, res:any, next:Function) => {
-  checkAccess(req, res, next).catch((err) => next(err || new Error(err)));
+export const checkAccess = (req:any, res:any, next:Function) => {
+  _checkAccess(req, res, next).catch((err) => next(err || new Error(err)));
 };

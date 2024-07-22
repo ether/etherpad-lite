@@ -5,12 +5,12 @@
  * objects lack.
  */
 class Stream {
-  private _iter
+  private readonly _iter
   private _next: any
   /**
    * @returns {Stream} A Stream that yields values in the half-open range [start, end).
    */
-  static range(start: number, end: number) {
+  static range(start: number, end: number): Stream {
     return new Stream((function* () { for (let i = start; i < end; ++i) yield i; })());
   }
 
@@ -127,7 +127,7 @@ class Stream {
    * @param {(v: any) => any} fn - Value transformation function.
    * @returns {Stream} A new Stream that yields this Stream's values, transformed by `fn`.
    */
-  map(fn:Function) { return new Stream((function* () { // @ts-ignore
+  map(fn:Function): Stream { return new Stream((function* () { // @ts-ignore
     for (const v of this) yield fn(v); }).call(this)); }
 
   /**
@@ -136,4 +136,4 @@ class Stream {
   [Symbol.iterator]() { return this._iter; }
 }
 
-module.exports = Stream;
+export default Stream;

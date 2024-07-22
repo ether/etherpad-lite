@@ -22,15 +22,17 @@
 import {ChildProcess} from "node:child_process";
 import {AsyncQueueTask} from "../types/AsyncQueueTask";
 
-const spawn = require('child_process').spawn;
-const async = require('async');
+import {spawn} from 'child_process'
+import async from 'async';
 const settings = require('./Settings');
-const os = require('os');
+import os from 'os';
+
+export let convertFile: (srcFile: string,     destFile: string,     type: string)=> Promise<void>
 
 // on windows we have to spawn a process for each convertion,
 // cause the plugin abicommand doesn't exist on this platform
 if (os.type().indexOf('Windows') > -1) {
-  exports.convertFile = async (srcFile: string, destFile: string, type: string) => {
+  convertFile = async (srcFile: string, destFile: string, type: string) => {
     const abiword = spawn(settings.abiword, [`--to=${destFile}`, srcFile]);
     let stdoutBuffer = '';
     abiword.stdout.on('data', (data: string) => { stdoutBuffer += data.toString(); });
@@ -87,7 +89,7 @@ if (os.type().indexOf('Windows') > -1) {
     };
   }, 1);
 
-  exports.convertFile = async (srcFile: string, destFile: string, type: string) => {
+  convertFile = async (srcFile: string, destFile: string, type: string) => {
     await queue.pushAsync({srcFile, destFile, type});
   };
 }
