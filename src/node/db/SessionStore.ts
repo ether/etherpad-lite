@@ -1,9 +1,9 @@
 'use strict';
 
-const DB = require('./DB');
+import {get, remove, set} from './DB';
 const Store = require('@etherpad/express-session').Store;
-const log4js = require('log4js');
-const util = require('util');
+import log4js from 'log4js';
+import util from 'util';
 
 const logger = log4js.getLogger('SessionStore');
 
@@ -19,7 +19,7 @@ class SessionStore extends Store {
    *     Etherpad is restarted. Use `null` to prevent `touch()` from ever updating the record.
    *     Ignored if the cookie does not expire.
    */
-  constructor(refresh = null) {
+  constructor(refresh: number | null = null) {
     super();
     this._refresh = refresh;
     // Maps session ID to an object with the following properties:
@@ -65,12 +65,12 @@ class SessionStore extends Store {
   }
 
   async _write(sid: string, sess: any) {
-    await DB.set(`sessionstorage:${sid}`, sess);
+    await set(`sessionstorage:${sid}`, sess);
   }
 
   async _get(sid: string) {
     logger.debug(`GET ${sid}`);
-    const s = await DB.get(`sessionstorage:${sid}`);
+    const s = await get(`sessionstorage:${sid}`);
     return await this._updateExpirations(sid, s);
   }
 
@@ -84,7 +84,7 @@ class SessionStore extends Store {
     logger.debug(`DESTROY ${sid}`);
     clearTimeout((this._expirations.get(sid) || {}).timeout);
     this._expirations.delete(sid);
-    await DB.remove(`sessionstorage:${sid}`);
+    await remove(`sessionstorage:${sid}`);
   }
 
   // Note: express-session might call touch() before it calls set() for the first time. Ideally this
@@ -111,4 +111,4 @@ for (const m of ['get', 'set', 'destroy', 'touch']) {
   SessionStore.prototype[m] = util.callbackify(SessionStore.prototype[`_${m}`]);
 }
 
-module.exports = SessionStore;
+export default SessionStore

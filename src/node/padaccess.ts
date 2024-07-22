@@ -1,10 +1,10 @@
 'use strict';
-const securityManager = require('./db/SecurityManager');
+import {checkAccess} from './db/SecurityManager';
 
 // checks for padAccess
-module.exports = async (req: { params?: any; cookies?: any; session?: any; }, res: { status: (arg0: number) => { (): any; new(): any; send: { (arg0: string): void; new(): any; }; }; }) => {
+export default async (req: { params?: any; cookies?: any; session?: any; }, res: { status: (arg0: number) => { (): any; new(): any; send: { (arg0: string): void; new(): any; }; }; }) => {
   const {session: {user} = {}} = req;
-  const accessObj = await securityManager.checkAccess(
+  const accessObj = await checkAccess(
       req.params.pad, req.cookies.sessionID, req.cookies.token, user);
 
   if (accessObj.accessStatus === 'grant') {

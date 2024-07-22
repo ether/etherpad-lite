@@ -10,13 +10,13 @@ import path from "path";
 
 import {promises as fs} from "fs";
 
-const plugins = require('./plugins');
-const hooks = require('./hooks');
-const runCmd = require('../../../node/utils/run_cmd');
-const settings = require('../../../node/utils/Settings');
+import {update, prefix, getPackages} from './plugins';
+import {aCallAll} from './hooks';
+import runCmd from '../../../node/utils/run_cmd';
+import settings from '../../../node/utils/Settings';
 import {LinkInstaller} from "./LinkInstaller";
 
-const {findEtherpadRoot} = require('../../../node/utils/AbsolutePaths');
+import {findEtherpadRoot} from '../../../node/utils/AbsolutePaths';
 const logger = log4js.getLogger('plugins');
 
 export const pluginInstallPath = path.join(settings.root, 'src','plugin_packages');
@@ -25,11 +25,11 @@ export const node_modules = path.join(findEtherpadRoot(),'src', 'node_modules');
 export const installedPluginsPath = path.join(settings.root, 'var/installed_plugins.json');
 
 const onAllTasksFinished = async () => {
-  await plugins.update();
+  await update();
   await persistInstalledPlugins();
   settings.reloadSettings();
-  await hooks.aCallAll('loadSettings', {settings});
-  await hooks.aCallAll('restartServer');
+  await aCallAll('loadSettings', {settings});
+  await aCallAll('restartServer');
 };
 
 const headers = {
@@ -62,7 +62,7 @@ const migratePluginsFromNodeModules = async () => {
       {stdio: [null, 'string']}));
 
   await Promise.all(Object.entries(dependencies)
-      .filter(([pkg, info]) => pkg.startsWith(plugins.prefix) && pkg !== 'ep_etherpad-lite')
+      .filter(([pkg, info]) => pkg.startsWith(prefix) && pkg !== 'ep_etherpad-lite')
       .map(async ([pkg, info]) => {
           const _info = info as PackageInfo
           if (!_info.resolved) {
@@ -120,7 +120,7 @@ export const checkForMigration = async () => {
   const installedPlugins = JSON.parse(fileContent.toString());
 
   for (const plugin of installedPlugins.plugins) {
-    if (plugin.name.startsWith(plugins.prefix) && plugin.name !== 'ep_etherpad-lite') {
+    if (plugin.name.startsWith(prefix) && plugin.name !== 'ep_etherpad-lite') {
       await linkInstaller.installPlugin(plugin.name, plugin.version);
     }
   }
@@ -130,7 +130,7 @@ const persistInstalledPlugins = async () => {
   const installedPlugins:{
     plugins: PackageData[]
   } = {plugins: []};
-  for (const pkg of Object.values(await plugins.getPackages()) as PackageData[]) {
+  for (const pkg of Object.values(await getPackages()) as PackageData[]) {
     installedPlugins.plugins.push({
       name: pkg.name,
       version: pkg.version,
@@ -146,7 +146,7 @@ export const uninstall = async (pluginName: string, cb:Function|null = null) => 
 
   await linkInstaller.uninstallPlugin(pluginName);
   logger.info(`Successfully uninstalled plugin ${pluginName}`);
-  await hooks.aCallAll('pluginUninstall', {pluginName});
+  await aCallAll('pluginUninstall', {pluginName});
   cb(null);
 };
 
@@ -155,7 +155,7 @@ export const install = async (pluginName: string, cb:Function|null = null) => {
   logger.info(`Installing plugin ${pluginName}...`);
   await linkInstaller.installPlugin(pluginName);
   logger.info(`Successfully installed plugin ${pluginName}`);
-  await hooks.aCallAll('pluginInstall', {pluginName});
+  await aCallAll('pluginInstall', {pluginName});
   cb(null);
 };
 
@@ -193,7 +193,7 @@ export const search = (searchTerm: string, maxCacheAge: number) => getAvailableP
       for (const pluginName in results) {
         // for every available plugin
         // TODO: Also search in keywords here!
-        if (pluginName.indexOf(plugins.prefix) !== 0) continue;
+        if (pluginName.indexOf(prefix) !== 0) continue;
 
         if (searchTerm && !~results[pluginName].name.toLowerCase().indexOf(searchTerm) &&
             (typeof results[pluginName].description !== 'undefined' &&

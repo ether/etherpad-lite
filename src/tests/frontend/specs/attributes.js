@@ -1,6 +1,6 @@
 'use strict';
 
-const AttributePool = require('../../../static/js/AttributePool');
+import AttributePool from '../../../static/js/AttributePool'
 const attributes = require('../../../static/js/attributes');
 
 describe('attributes', function () {

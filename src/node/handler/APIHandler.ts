@@ -21,15 +21,15 @@
 
 import {MapArrayType} from "../types/MapType";
 
-const api = require('../db/API');
-const padManager = require('../db/PadManager');
+import * as api from '../db/API';
+import {sanitizePadId} from '../db/PadManager';
 import createHTTPError from 'http-errors';
-import {Http2ServerRequest, Http2ServerResponse} from "node:http2";
+import {Http2ServerRequest} from "node:http2";
 import {publicKeyExported} from "../security/OAuth2Provider";
 import {jwtVerify} from "jose";
 import {apikey} from './APIKeyHandler'
 // a list of all functions
-const version:MapArrayType<any> = {};
+export const version:MapArrayType<any> = {};
 
 version['1'] = {
   createGroup: [],
@@ -142,10 +142,9 @@ version['1.3.0'] = {
 };
 
 // set the latest available API version here
-exports.latestApiVersion = '1.3.0';
+export const latestApiVersion = '1.3.0';
 
 // exports the versions so it can be used by the new Swagger endpoint
-exports.version = version;
 
 
 type APIFields = {
@@ -163,7 +162,7 @@ type APIFields = {
  * @param fields the params of the called function
  * @param req express request object
  */
-exports.handle = async function (apiVersion: string, functionName: string, fields: APIFields,
+export const handle = async function (apiVersion: string, functionName: string, fields: APIFields,
                                  req: Http2ServerRequest) {
   // say goodbye if this is an unknown API version
   if (!(apiVersion in version)) {
@@ -197,19 +196,20 @@ exports.handle = async function (apiVersion: string, functionName: string, field
 
   // sanitize any padIDs before continuing
   if (fields.padID) {
-    fields.padID = await padManager.sanitizePadId(fields.padID);
+    fields.padID = await sanitizePadId(fields.padID);
   }
   // there was an 'else' here before - removed it to ensure
   // that this sanitize step can't be circumvented by forcing
   // the first branch to be taken
   if (fields.padName) {
-    fields.padName = await padManager.sanitizePadId(fields.padName);
+    fields.padName = await sanitizePadId(fields.padName);
   }
 
   // put the function parameters in an array
   // @ts-ignore
-  const functionParams = version[apiVersion][functionName].map((field) => fields[field]);
+  const functionParams = version[apiVersion][functionName].map((field: string) => fields[field]);
 
   // call the api function
+  // @ts-ignore
   return api[functionName].apply(this, functionParams);
 };

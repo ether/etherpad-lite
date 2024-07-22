@@ -4,12 +4,12 @@ import type {MapArrayType} from "../types/MapType";
 import {I18nPluginDefs} from "../types/I18nPluginDefs";
 
 const languages = require('languages4translatewiki');
-const fs = require('fs');
-const path = require('path');
-const _ = require('underscore');
-const pluginDefs = require('../../static/js/pluginfw/plugin_defs.js');
-const existsSync = require('../utils/path_exists');
-const settings = require('../utils/Settings');
+import fs from 'fs';
+import path from 'path';
+import _ from 'underscore';
+import {pluginDefs} from '../../static/js/pluginfw/plugin_defs.js';
+import existsSync from '../utils/path_exists';
+import settings from '../utils/Settings';
 
 // returns all existing messages merged together and grouped by langcode
 // {es: {"foo": "string"}, en:...}
@@ -43,7 +43,7 @@ const getAllLocales = () => {
   extractLangs(path.join(settings.root, 'src/locales'));
 
   // add plugins languages (if any)
-  for (const {package: {path: pluginPath}} of Object.values<I18nPluginDefs>(pluginDefs.plugins)) {
+  for (const {package: {path: pluginPath}} of Object.values<I18nPluginDefs>(pluginDefs.getPlugins())) {
     // plugin locales should overwrite etherpad's core locales
     if (pluginPath.endsWith('/ep_etherpad-lite')) continue;
     extractLangs(path.join(pluginPath, 'locales'));

@@ -1,7 +1,7 @@
 'use strict';
 
 const Changeset = require('../../../static/js/Changeset');
-const AttributePool = require('../../../static/js/AttributePool');
+import AttributePool from "../../../static/js/AttributePool";
 const {randomMultiline, randomTestChangeset} = require('../easysync-helper.js');
 
 describe('easysync-follow', function () {

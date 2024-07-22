@@ -1,10 +1,10 @@
 'use strict';
 
-const measured = require('measured-core');
-
-module.exports = measured.createCollection();
-
 // @ts-ignore
-module.exports.shutdown = async (hookName, context) => {
-  module.exports.end();
+import measured from 'measured-core';
+
+export const measuredCollection = measured.createCollection();
+
+export const shutdown = async (hookName: string, context:any) => {
+  measuredCollection.end();
 };

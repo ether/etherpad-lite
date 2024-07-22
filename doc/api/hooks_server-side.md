@@ -825,16 +825,16 @@ Context properties:
 Example:
 
 ```javascript
-const AttributeMap = require('ep_etherpad-lite/static/js/AttributeMap');
-const Changeset = require('ep_etherpad-lite/static/js/Changeset');
+const AttributeMap = require('src/static/js/AttributeMap');
+const Changeset = require('src/static/js/Changeset');
 
 exports.getLineHTMLForExport = async (hookName, context) => {
-  if (!context.attribLine) return;
-  const [op] = Changeset.deserializeOps(context.attribLine);
-  if (op == null) return;
-  const heading = AttributeMap.fromString(op.attribs, context.apool).get('heading');
-  if (!heading) return;
-  context.lineContent = `<${heading}>${context.lineContent}</${heading}>`;
+    if (!context.attribLine) return;
+    const [op] = Changeset.deserializeOps(context.attribLine);
+    if (op == null) return;
+    const heading = AttributeMap.fromString(op.attribs, context.apool).get('heading');
+    if (!heading) return;
+    context.lineContent = `<${heading}>${context.lineContent}</${heading}>`;
 };
 ```
 

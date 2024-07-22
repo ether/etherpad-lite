@@ -3,7 +3,7 @@ import Provider, {Account, Configuration} from 'oidc-provider';
 import {generateKeyPair, exportJWK, KeyLike} from 'jose'
 import MemoryAdapter from "./OIDCAdapter";
 import path from "path";
-const settings = require('../utils/Settings');
+import settings from '../utils/Settings';
 import {IncomingForm} from 'formidable'
 import express, {Request, Response} from 'express';
 import {format} from 'url'

@@ -1,7 +1,7 @@
 'use strict';
 
-const AttributeMap = require('../../../static/js/AttributeMap');
-const AttributePool = require('../../../static/js/AttributePool');
+import AttributeMap from "../../../static/js/AttributeMap";
+import AttributePool from '../../../static/js/AttributePool';
 const attributes = require('../../../static/js/attributes');
 
 describe('AttributeMap', function () {

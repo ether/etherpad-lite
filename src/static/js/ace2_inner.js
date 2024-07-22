@@ -1,5 +1,7 @@
 'use strict';
 
+import linestylefilter from "./linestylefilter";
+
 /**
  * Copyright 2009 Google Inc.
  * Copyright 2020 John McLear - The Etherpad Foundation.
@@ -18,32 +20,31 @@
  */
 let documentAttributeManager;
 
-const AttributeMap = require('./AttributeMap');
+import AttributeMap from './AttributeMap'
 const browser = require('./vendors/browser');
-const padutils = require('./pad_utils').padutils;
+import {padUtils as padutils} from './pad_utils'
 const Ace2Common = require('./ace2_common');
-const $ = require('./rjquery').$;
 
 const isNodeText = Ace2Common.isNodeText;
 const getAssoc = Ace2Common.getAssoc;
 const setAssoc = Ace2Common.setAssoc;
 const noop = Ace2Common.noop;
 const hooks = require('./pluginfw/hooks');
+import AttributePool from "./AttributePool";
 
 import Scroll from './scroll'
+import AttributeManager from "./AttributeManager";
+import ChangesetTracker from './changesettracker'
+import SkipList from "./skiplist";
+import {undoModule, pool as undoModPool, setPool} from './undomodule'
 
 function Ace2Inner(editorInfo, cssManagers) {
-  const makeChangesetTracker = require('./changesettracker').makeChangesetTracker;
   const colorutils = require('./colorutils').colorutils;
   const makeContentCollector = require('./contentcollector').makeContentCollector;
   const domline = require('./domline').domline;
-  const AttribPool = require('./AttributePool');
   const Changeset = require('./Changeset');
   const ChangesetUtils = require('./ChangesetUtils');
-  const linestylefilter = require('./linestylefilter').linestylefilter;
-  const SkipList = require('./skiplist');
-  const undoModule = require('./undomodule').undoModule;
-  const AttributeManager = require('./AttributeManager');
+
   const DEBUG = false;
 
   const THE_TAB = '    '; // 4
@@ -126,12 +127,12 @@ function Ace2Inner(editorInfo, cssManagers) {
     selFocusAtStart: false,
     alltext: '',
     alines: [],
-    apool: new AttribPool(),
+    apool: new AttributePool(),
   };
 
   // lines, alltext, alines, and DOM are set up in init()
   if (undoModule.enabled) {
-    undoModule.apool = rep.apool;
+    setPool(rep.apool)
   }
 
   let isEditable = true;
@@ -174,7 +175,7 @@ function Ace2Inner(editorInfo, cssManagers) {
     //           CCCCCCCCCCCCCCCCCCCC\n
     //           CCCC\n
     // end[0]:   <CCC end[1] CCC>-------\n
-    const builder = Changeset.builder(rep.lines.totalWidth());
+    const builder = Changeset.builder(rep.lines.totalWidth);
     ChangesetUtils.buildKeepToStartOfRange(rep, builder, start);
     ChangesetUtils.buildRemoveRange(rep, builder, start, end);
     builder.insert(newText, [
@@ -185,7 +186,7 @@ function Ace2Inner(editorInfo, cssManagers) {
     performDocumentApplyChangeset(cs);
   };
 
-  const changesetTracker = makeChangesetTracker(scheduler, rep.apool, {
+  const changesetTracker = new ChangesetTracker(scheduler, rep.apool, {
     withCallbacks: (operationName, f) => {
       inCallStackIfNecessary(operationName, () => {
         fastIncorp(1);
@@ -497,7 +498,7 @@ function Ace2Inner(editorInfo, cssManagers) {
   const importAText = (atext, apoolJsonObj, undoable) => {
     atext = Changeset.cloneAText(atext);
     if (apoolJsonObj) {
-      const wireApool = (new AttribPool()).fromJsonable(apoolJsonObj);
+      const wireApool = (new AttributePool()).fromJsonable(apoolJsonObj);
       atext.attribs = Changeset.moveOpsToNewPool(atext.attribs, wireApool, rep.apool);
     }
     inCallStackIfNecessary(`importText${undoable ? 'Undoable' : ''}`, () => {
@@ -523,7 +524,7 @@ function Ace2Inner(editorInfo, cssManagers) {
 
     fastIncorp(8);
 
-    const oldLen = rep.lines.totalWidth();
+    const oldLen = rep.lines.totalWidth;
     const numLines = rep.lines.length();
     const upToLastLine = rep.lines.offsetOfIndex(numLines - 1);
     const lastLineLength = rep.lines.atIndex(numLines - 1).text.length;
@@ -827,7 +828,7 @@ function Ace2Inner(editorInfo, cssManagers) {
 
   const recolorLinesInRange = (startChar, endChar) => {
     if (endChar <= startChar) return;
-    if (startChar < 0 || startChar >= rep.lines.totalWidth()) return;
+    if (startChar < 0 || startChar >= rep.lines.totalWidth) return;
     let lineEntry = rep.lines.atOffset(startChar); // rounds down to line boundary
     let lineStart = rep.lines.offsetOfEntry(lineEntry);
     let lineIndex = rep.lines.indexOfEntry(lineEntry);
@@ -1271,7 +1272,7 @@ function Ace2Inner(editorInfo, cssManagers) {
       if (shouldIndent && /[[(:{]\s*$/.exec(prevLineText)) {
         theIndent += THE_TAB;
       }
-      const cs = Changeset.builder(rep.lines.totalWidth()).keep(
+      const cs = Changeset.builder(rep.lines.totalWidth).keep(
           rep.lines.offsetOfIndex(lineNum), lineNum).insert(
           theIndent, [
             ['author', thisAuthor],
@@ -2297,7 +2298,7 @@ function Ace2Inner(editorInfo, cssManagers) {
 
     // 3-renumber every list item of the same level from the beginning, level 1
     // IMPORTANT: never skip a level because there imbrication may be arbitrary
-    const builder = Changeset.builder(rep.lines.totalWidth());
+    const builder = Changeset.builder(rep.lines.totalWidth);
     let loc = [0, 0];
     const applyNumberList = (line, level) => {
       // init

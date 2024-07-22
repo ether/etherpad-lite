@@ -21,8 +21,8 @@ import fs from 'fs';
 const fsp = fs.promises;
 import path from 'path';
 import zlib from 'zlib';
-const settings = require('./Settings');
-const existsSync = require('./path_exists');
+import settings from './Settings';
+import existsSync from './path_exists';
 import util from 'util';
 
 /*

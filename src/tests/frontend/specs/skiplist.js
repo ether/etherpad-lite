@@ -1,6 +1,6 @@
 'use strict';
 
-const SkipList = require('ep_etherpad-lite/static/js/skiplist');
+import SkipList from "../../../static/js/skiplist";
 
 describe('skiplist.js', function () {
   it('rejects null keys', async function () {

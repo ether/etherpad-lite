@@ -20,8 +20,8 @@
  */
 
 
-const db = require('./DB');
-const randomString = require('../utils/randomstring');
+import {get, set} from './DB';
+import {randomString} from '../utils/randomstring';
 
 
 /**
@@ -29,23 +29,23 @@ const randomString = require('../utils/randomstring');
  * @param {String} id the pad's id
  * @return {Boolean} true if the id is readonly
  */
-exports.isReadOnlyId = (id:string) => id.startsWith('r.');
+export const isReadOnlyId = (id:string): boolean => id.startsWith('r.');
 
 /**
  * returns a read only id for a pad
  * @param {String} padId the id of the pad
  * @return {String} the read only id
  */
-exports.getReadOnlyId = async (padId:string) => {
+export const getReadOnlyId = async (padId:string): Promise<string> => {
   // check if there is a pad2readonly entry
-  let readOnlyId = await db.get(`pad2readonly:${padId}`);
+  let readOnlyId = await get(`pad2readonly:${padId}`);
 
   // there is no readOnly Entry in the database, let's create one
   if (readOnlyId == null) {
     readOnlyId = `r.${randomString(16)}`;
     await Promise.all([
-      db.set(`pad2readonly:${padId}`, readOnlyId),
-      db.set(`readonly2pad:${readOnlyId}`, padId),
+      set(`pad2readonly:${padId}`, readOnlyId),
+      set(`readonly2pad:${readOnlyId}`, padId),
     ]);
   }
 
@@ -57,19 +57,23 @@ exports.getReadOnlyId = async (padId:string) => {
  * @param {String} readOnlyId read only id
  * @return {String} the padId
  */
-exports.getPadId = async (readOnlyId:string) => await db.get(`readonly2pad:${readOnlyId}`);
+export const getPadId = async (readOnlyId:string): Promise<string> => await get(`readonly2pad:${readOnlyId}`) as string;
 
 /**
  * returns the padId and readonlyPadId in an object for any id
  * @param {String} id read only id or real pad id
  * @return {Object} an object with the padId and readonlyPadId
  */
-exports.getIds = async (id:string) => {
-  const readonly = exports.isReadOnlyId(id);
+export const getIds = async (id:string): Promise<{
+  readOnlyPadId: string,
+  padId: string,
+  readonly: boolean
+}> => {
+  const readonly = isReadOnlyId(id);
 
   // Might be null, if this is an unknown read-only id
-  const readOnlyPadId = readonly ? id : await exports.getReadOnlyId(id);
-  const padId = readonly ? await exports.getPadId(id) : id;
+  const readOnlyPadId = readonly ? id : await getReadOnlyId(id);
+  const padId = readonly ? await getPadId(id) : id;
 
   return {readOnlyPadId, padId, readonly};
 };

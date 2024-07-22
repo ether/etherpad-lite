@@ -20,13 +20,13 @@ import {ErrorCaused} from "../../types/ErrorCaused";
 
 const OpenAPIBackend = require('openapi-backend').default;
 const IncomingForm = require('formidable').IncomingForm;
-const cloneDeep = require('lodash.clonedeep');
-const createHTTPError = require('http-errors');
+import cloneDeep from 'lodash.clonedeep';
+import createHTTPError from 'http-errors';
 
-const apiHandler = require('../../handler/APIHandler');
-const settings = require('../../utils/Settings');
+import {handle, latestApiVersion, version as apiVersion} from '../../handler/APIHandler';
+import settings from '../../utils/Settings';
 
-const log4js = require('log4js');
+import log4js from 'log4js';
 const logger = log4js.getLogger('API');
 
 // https://github.com/OAI/OpenAPI-Specification/tree/master/schemas/v3.0
@@ -48,7 +48,7 @@ const info = {
     name: 'Apache 2.0',
     url: 'https://www.apache.org/licenses/LICENSE-2.0.html',
   },
-  version: apiHandler.latestApiVersion,
+  version: latestApiVersion,
 };
 
 const APIPathStyle = {
@@ -401,6 +401,7 @@ for (const [resource, actions] of Object.entries(resources)) {
     // add response objects
     const responses:OpenAPISuccessResponse = {...defaultResponseRefs};
     if (responseSchema) {
+      // @ts-ignore
       responses[200] = cloneDeep(defaultResponses.Success);
       responses[200].content!['application/json'].schema.properties.data = {
         type: 'object',
@@ -504,7 +505,7 @@ const generateDefinitionForVersion = (version:string, style = APIPathStyle.FLAT)
   };
 
   // build operations
-  for (const funcName of Object.keys(apiHandler.version[version])) {
+  for (const funcName of Object.keys(apiVersion[version])) {
     let operation:OpenAPIOperations = {};
     if (operations[funcName]) {
       operation = {...operations[funcName]};
@@ -518,7 +519,7 @@ const generateDefinitionForVersion = (version:string, style = APIPathStyle.FLAT)
 
     // set parameters
     operation.parameters = operation.parameters || [];
-    for (const paramName of apiHandler.version[version][funcName]) {
+    for (const paramName of apiVersion[version][funcName]) {
       operation.parameters.push({$ref: `#/components/parameters/${paramName}`});
       // @ts-ignore
       if (!definition.components.parameters[paramName]) {
@@ -559,7 +560,7 @@ const generateDefinitionForVersion = (version:string, style = APIPathStyle.FLAT)
 
 exports.expressPreSession = async (hookName:string, {app}:any) => {
   // create openapi-backend handlers for each api version under /api/{version}/*
-  for (const version of Object.keys(apiHandler.version)) {
+  for (const version of Object.keys(apiVersion)) {
     // we support two different styles of api: flat + rest
     // TODO: do we really want to support both?
 
@@ -577,7 +578,7 @@ exports.expressPreSession = async (hookName:string, {app}:any) => {
       });
 
       // serve latest openapi definition file under /api/openapi.json
-      const isLatestAPIVersion = version === apiHandler.latestApiVersion;
+      const isLatestAPIVersion = version === latestApiVersion;
       if (isLatestAPIVersion) {
         app.get(`/${style}/openapi.json`, (req:any, res:any) => {
           res.header('Access-Control-Allow-Origin', '*');
@@ -605,7 +606,7 @@ exports.expressPreSession = async (hookName:string, {app}:any) => {
       });
 
       // register operation handlers
-      for (const funcName of Object.keys(apiHandler.version[version])) {
+      for (const funcName of Object.keys(apiVersion[version])) {
         const handler = async (c: any, req:any, res:any) => {
           // parse fields from request
           const {headers, params, query} = c.request;
@@ -630,7 +631,7 @@ exports.expressPreSession = async (hookName:string, {app}:any) => {
           // pass to api handler
           let data;
           try {
-            data = await apiHandler.handle(version, funcName, fields, req, res);
+            data = await handle(version, funcName, fields, req);
           } catch (err) {
             const errCaused = err as ErrorCaused
             // convert all errors to http errors
@@ -645,7 +646,7 @@ exports.expressPreSession = async (hookName:string, {app}:any) => {
               // an unknown error happened
               // log it and throw internal error
               logger.error(errCaused.stack || errCaused.toString());
-              throw new createHTTPError.InternalError('internal error');
+              throw new createHTTPError.InternalServerError('internal error');
             }
           }
 
