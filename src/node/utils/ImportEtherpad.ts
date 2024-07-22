@@ -26,7 +26,7 @@ const db = require('../db/DB');
 const hooks = require('../../static/js/pluginfw/hooks');
 import log4js from 'log4js';
 const supportedElems = require('../../static/js/contentcollector').supportedElems;
-import ueberdb from 'ueberdb2';
+import {Database} from 'ueberdb2';
 
 const logger = log4js.getLogger('ImportEtherpad');
 
@@ -56,7 +56,7 @@ exports.setPadRaw = async (padId: string, r: string, authorId = '') => {
 
   const data = new Map();
   const existingAuthors = new Set();
-  const padDb = new ueberdb.Database('memory', {data});
+  const padDb = new Database('memory', {data});
   await padDb.init();
   try {
     const processRecord = async (key:string, value: null|{
