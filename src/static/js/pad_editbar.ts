@@ -501,6 +501,6 @@ class Padeditbar {
       }
     });
   }
-};
+}
 
 export const padeditbar = new PadEditor()

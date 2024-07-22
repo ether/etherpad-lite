@@ -23,6 +23,7 @@
  */
 
 import {padModals} from "./pad_modals";
+import {ClientDisconnectedMessage} from "./types/SocketIOMessage";
 
 class PadConnectionStatus {
   private status: {
@@ -55,12 +56,13 @@ class PadConnectionStatus {
   }
   disconnected
     =
-    (msg: string) => {
+    (msg: ClientDisconnectedMessage) => {
       if (this.status.what === 'disconnected') return;
 
       this.status =
         {
           what: 'disconnected',
+          // @ts-ignore
           why: msg,
         }
 

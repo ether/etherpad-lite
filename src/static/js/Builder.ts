@@ -43,7 +43,7 @@ export class Builder {
    *     attribute key, value pairs.
    * @returns {Builder} this
    */
-  keep =  (N: number, L: number, attribs?: string|Attribute[], pool?: AttributePool): Builder => {
+  keep =  (N: number, L?: number, attribs?: string|Attribute[], pool?: AttributePool): Builder => {
     this.o.opcode = '=';
     this.o.attribs = typeof attribs === 'string'
       ? attribs : new AttributeMap(pool).update(attribs || []).toString();

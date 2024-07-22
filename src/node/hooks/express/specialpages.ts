@@ -234,7 +234,7 @@ exports.expressCreateServer = async (hookName: string, args: any, cb: Function) 
   });
 
 
-  const padString =   requireP('ep_etherpad-lite/templates/padBootstrap.js', {
+  const padString =   requireP('ep_etherpad-lite/templates/padBootstrap.ts', {
       pluginModules: (() => {
         const pluginModules = new Set();
         for (const part of pluginDefs.getParts()) {
@@ -248,7 +248,7 @@ exports.expressCreateServer = async (hookName: string, args: any, cb: Function) 
       settings,
     })
 
-    const timeSliderString = requireP('ep_etherpad-lite/templates/timeSliderBootstrap.js', {
+    const timeSliderString = requireP('ep_etherpad-lite/templates/timeSliderBootstrap.ts', {
       pluginModules: (() => {
         const pluginModules = new Set();
         for (const part of pluginDefs.getParts()) {

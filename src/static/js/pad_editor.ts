@@ -5,8 +5,6 @@
  * TL;DR COMMENTS ON THIS FILE ARE HIGHLY APPRECIATED
  */
 
-import {PadType} from "../../node/types/PadType";
-
 /**
  * Copyright 2009 Google Inc.
  *
@@ -48,9 +46,9 @@ export class PadEditor {
     this.viewZoom = 100
   }
 
-  init = async (initialViewOptions: MapArrayType<boolean>, _pad: Pad) => {
+  init = async (initialViewOptions?: MapArrayType<boolean>, _pad?: Pad) => {
     this.pad = _pad;
-    this.settings = this.pad.settings;
+    this.settings = this.pad!.settings;
     this.ace = new Ace2Editor();
     await this.ace.init('editorcontainer', '');
     $('#editorloadingbox').hide();
@@ -175,8 +173,10 @@ export class PadEditor {
     }
   }
   restoreRevisionText= (dataFromServer: ClientVarPayload) => {
-      this.pad!.addHistoricalAuthors(dataFromServer.historicalAuthorData);
-      this.ace!.importAText(dataFromServer.atext, dataFromServer.apool, true);
+      // @ts-ignore
+    this.pad!.addHistoricalAuthors(dataFromServer.historicalAuthorData);
+      // @ts-ignore
+    this.ace!.importAText(dataFromServer.atext, dataFromServer.apool, true);
     }
 
   focusOnLine = (ace: Ace2Editor) => {

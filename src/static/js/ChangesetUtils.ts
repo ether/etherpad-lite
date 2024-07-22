@@ -9,6 +9,7 @@ import {RepModel} from "./types/RepModel";
 import {ChangeSetBuilder} from "./types/ChangeSetBuilder";
 import {Attribute} from "./types/Attribute";
 import AttributePool from "./AttributePool";
+import {Builder} from "./Builder";
 
 /**
  * Copyright 2009 Google Inc.
@@ -49,7 +50,7 @@ export const buildKeepRange = (rep: RepModel, builder: ChangeSetBuilder, start: 
   }
 };
 
-export const buildKeepToStartOfRange = (rep: RepModel, builder: ChangeSetBuilder, start: [number, number]) => {
+export const buildKeepToStartOfRange = (rep: RepModel, builder: Builder, start: [number, number]) => {
   const startLineOffset = rep.lines.offsetOfIndex(start[0]);
 
   builder.keep(startLineOffset, start[0]);
@@ -62,7 +63,7 @@ export const buildKeepToStartOfRange = (rep: RepModel, builder: ChangeSetBuilder
  * @param {string} str - string of the number in base 36
  * @returns {number} number
  */
-export const parseNum = (str: string) => parseInt(str, 36);
+export const parseNum = (str: string): number => parseInt(str, 36);
 
 /**
  * Writes a number in base 36 and puts it in a string.

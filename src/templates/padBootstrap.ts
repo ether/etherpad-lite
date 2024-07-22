@@ -1,3 +1,6 @@
+import browser from '../static/js/vendors/browser'
+import {padeditbar} from '../static/js/pad_editbar'
+import {padImpExp} from '../static/js/pad_impexp'
 
 (async () => {
 
@@ -6,6 +9,7 @@
   window.clientVars = {
     // This is needed to fetch /pluginfw/plugin-definitions.json, which happens before the server
     // sends the CLIENT_VARS message.
+    // @ts-ignore
     randomVersionString: <%-JSON.stringify(settings.randomVersionString)%>,
   }
 
@@ -14,7 +18,7 @@
 
   const basePath = new URL('..', window.location.href).pathname;
   window.$ = window.jQuery = require('../../src/static/js/vendors/jquery');
-  window.browser = require('../static/js/vendors/browser');
+  window.browser = browser;
   const pad = require('../../src/static/js/pad');
   pad.baseURL = basePath;
   window.plugins = require('../../src/static/js/pluginfw/client_plugins');
@@ -23,8 +27,8 @@
   // TODO: These globals shouldn't exist.
   window.pad = pad.pad;
   window.chat = require('../../src/static/js/chat').chat;
-  window.padeditbar = require('../static/js/pad_editbar').padeditbar;
-  window.padimpexp = require('../static/js/pad_impexp').padimpexp;
+  window.padeditbar = padeditbar;
+  window.padimpexp = padimpexp;
   await import('../../src/static/js/skin_variants')
   await import('../../src/static/js/basic_error_handler')
 

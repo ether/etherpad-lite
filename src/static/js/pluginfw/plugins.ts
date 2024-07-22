@@ -2,7 +2,7 @@
 
 import {Part} from "./plugin_defs";
 
-const fs = require('fs').promises;
+import {promises as fs} from 'fs'
 import {aCallAll} from './hooks';
 import log4js from 'log4js';
 import path from 'path';
@@ -158,7 +158,7 @@ const loadPlugin = async (packages:  MapArrayType<IPluginInfoExtended>, pluginNa
   try {
     const data = await fs.readFile(pluginPath);
     try {
-      const plugin = JSON.parse(data);
+      const plugin = JSON.parse(data.toString());
       plugin.package = packages[pluginName];
       plugins[pluginName] = plugin;
       for (const part of plugin.parts) {

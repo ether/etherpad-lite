@@ -38,21 +38,20 @@ import html10n from './vendors/html10n'
 const Cookies = require('./pad_utils').Cookies;
 const chat = require('./chat').chat;
 import Collab_client, {CollabClient} from './collab_client'
-const padconnectionstatus = require('./pad_connectionstatus').padconnectionstatus;
+import {padconnectionstatus} from "./pad_connectionstatus";
 import padcookie from "./pad_cookie";
-
-const padeditbar = require('./pad_editbar').padeditbar;
+import {padeditbar} from "./pad_editbar";
 import {padEditor as padeditor} from './pad_editor'
 const padimpexp = require('./pad_impexp').padimpexp;
 const padmodals = require('./pad_modals').padmodals;
-const padsavedrevs = require('./pad_savedrevs');
+import {} from './pad_savedrevs';
 const paduserlist = require('./pad_userlist').paduserlist;
 import {padUtils as padutils} from "./pad_utils";
 
 const colorutils = require('./colorutils').colorutils;
 const randomString = require('./pad_utils').randomString;
 import connect from './socketio'
-import {ClientSendMessages, ClientVarData, ClientVarMessage, HistoricalAuthorData, PadOption, SocketClientReadyMessage, SocketIOMessage, UserInfo} from "./types/SocketIOMessage";
+import {ClientDisconnectedMessage, ClientSendMessages, ClientVarData, ClientVarMessage, HistoricalAuthorData, PadOption, SocketClientReadyMessage, SocketIOMessage, UserInfo} from "./types/SocketIOMessage";
 import {MapArrayType} from "../../node/types/MapType";
 import {ChangeSetLoader} from "./timeslider";
 
@@ -341,7 +340,7 @@ const handshake = async () => {
       }
 
     } else if ("disconnect" in obj && obj.disconnect) {
-      padconnectionstatus.disconnected(obj.disconnect);
+      padconnectionstatus.disconnected(obj.disconnect as ClientDisconnectedMessage);
       socket.disconnect();
 
       // block user from making any change to the pad
@@ -477,7 +476,7 @@ export class Pad {
 
     this.myUserInfo = {
       userId: window.clientVars.userId,
-      name: window.clientVars.userName,
+      name: window.clientVars.userName!,
       ip: this.getClientIp(),
       colorId: window.clientVars.userColor,
     };

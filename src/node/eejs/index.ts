@@ -25,7 +25,7 @@ import fs from 'fs';
 import {callAll} from '../../static/js/pluginfw/hooks.js';
 import path from 'path';
 import resolve from 'resolve';
-const settings = require('../utils/Settings');
+import settings from '../utils/Settings';
 import {pluginInstallPath} from '../../static/js/pluginfw/installer'
 
 const templateCache = new Map();
@@ -100,7 +100,14 @@ export const requireP = (name:string, args:{
 
   const ejspath = resolve.sync(name, {paths, basedir, extensions: ['.html', '.ejs']});
 
-  args.e = exports;
+  args.e = {
+    // @ts-ignore
+    _init,
+    _exit,
+    begin_block,
+    end_block,
+    // Include other methods as necessary
+  };
   // @ts-ignore
   args.require = requireP;
 

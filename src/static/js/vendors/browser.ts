@@ -214,3 +214,6 @@ export class BrowserDetector {
     return false;
   }
 }
+
+const browser = new BrowserDetector()
+export default browser

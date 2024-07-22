@@ -257,7 +257,7 @@ export const restartServer = async () => {
     });
   });
   // @ts-ignore
-  await util.promisify(server!.listen).bind(server)(port, ip);
+  await util.promisify(server!.listen).bind(server)(settings.port, settings.ip);
   startTime.setValue(Date.now());
   logger.info('HTTP server listening for connections');
 };
