@@ -1,6 +1,7 @@
 'use strict';
 
-const measured = require('measured-core');
+// @ts-ignore
+import measured from 'measured-core';
 
 export const measuredCollection = measured.createCollection();
 

@@ -22,9 +22,9 @@
 
 import {MapArrayType} from "../types/MapType";
 import {SocketModule} from "../types/SocketModule";
-const log4js = require('log4js');
-const settings = require('../utils/Settings');
-const stats = require('../../node/stats')
+import log4js from 'log4js';
+import settings from '../utils/Settings';
+import {measuredCollection} from '../stats';
 
 const logger = log4js.getLogger('socket.io');
 
@@ -41,8 +41,8 @@ let io:any;
  * @param {string} moduleName
  * @param {Module} module
  */
-exports.addComponent = (moduleName: string, module: SocketModule) => {
-  if (module == null) return exports.deleteComponent(moduleName);
+export const addComponent = (moduleName: string, module: SocketModule) => {
+  if (module == null) return deleteComponent(moduleName);
   components[moduleName] = module;
   module.setSocketIO(io);
 };
@@ -51,13 +51,13 @@ exports.addComponent = (moduleName: string, module: SocketModule) => {
  * removes a component
  * @param {Module} moduleName
  */
-exports.deleteComponent = (moduleName: string) => { delete components[moduleName]; };
+export const deleteComponent = (moduleName: string) => { delete components[moduleName]; };
 
 /**
  * sets the socket.io and adds event functions for routing
  * @param {Object} _io the socket.io instance
  */
-exports.setSocketIO = (_io:any) => {
+export const setSocketIO = (_io:any) => {
   io = _io;
 
   io.sockets.on('connection', (socket:any) => {
@@ -96,7 +96,7 @@ exports.setSocketIO = (_io:any) => {
       // when the last user disconnected.  If your activePads is 0 and totalUsers is 0
       // you can say, if there has been no active pads or active users for 10 minutes
       // this instance can be brought out of a scaling cluster.
-      stats.gauge('lastDisconnect', () => Date.now());
+      measuredCollection.gauge('lastDisconnect', () => Date.now());
       // tell all components about this disconnect
       for (const i of Object.keys(components)) {
         components[i].handleDisconnect(socket);

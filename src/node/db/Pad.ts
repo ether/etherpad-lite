@@ -14,7 +14,7 @@ import AttributePool from '../../static/js/AttributePool';
 import Stream from '../utils/Stream';
 const assert = require('assert').strict;
 import {get, set, setSub, remove} from './DB';
-const settings = require('../utils/Settings');
+import settings from '../utils/Settings';
 import {addPad, getAuthorColorId, getAuthorName, getColorPalette, removePad} from './AuthorManager';
 import {doesPadExist, getPad} from './PadManager';
 import {kickSessionsFromPad} from '../handler/PadMessageHandler';

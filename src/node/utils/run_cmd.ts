@@ -8,7 +8,7 @@ import {Readable} from "node:stream";
 import spawn from 'cross-spawn';
 import log4js from 'log4js';
 import path from 'path';
-const settings = require('./Settings');
+import settings from './Settings';
 
 const logger = log4js.getLogger('runCmd');
 

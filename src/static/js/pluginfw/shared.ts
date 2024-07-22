@@ -10,7 +10,7 @@ const disabledHookReasons: MapArrayType<any> = {
   },
 };
 
-const loadFn = (path: string, hookName: string, modules: Function) => {
+const loadFn = (path: string, hookName: string, modules?: Function) => {
   let functionName;
   const parts = path.split(':');
 
@@ -41,7 +41,7 @@ const loadFn = (path: string, hookName: string, modules: Function) => {
   return fn;
 };
 
-export const extractHooks = (parts: Part[], hookSetName: string, normalizer: Function|null, modules: Function) => {
+export const extractHooks = (parts: Part[], hookSetName: string, normalizer: Function|null, modules?: Function) => {
   const hooks: MapArrayType<PluginHook[]> = {};
   for (const part of parts) {
     // @ts-ignore

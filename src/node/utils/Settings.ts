@@ -66,14 +66,14 @@ class Settings {
   private defaultLogLevel = 'INFO';
   private logger = log4js.getLogger('settings');
   /* Root path of the installation */
-  private root = findEtherpadRoot();
+  root = findEtherpadRoot();
   /**
    * Pathname of the favicon you want to use. If null, the skin's favicon is
    * used if one is provided by the skin, otherwise the default Etherpad favicon
    * is used. If this is a relative path it is interpreted as relative to the
    * Etherpad root directory.
    */
-  private favicon: string|null = null;
+  favicon: string|null = null;
 // Exported values that settings.json and credentials.json cannot override.
   private nonSettings = [
     'credentialsFilename',
@@ -131,8 +131,8 @@ class Settings {
   /**
    * socket.io transport methods
    **/
-  private socketTransportProtocols = ['websocket', 'polling'];
-  private socketIo = {
+  socketTransportProtocols: ("polling"| "websocket"|"webtransport")[] = ['websocket', 'polling'];
+  socketIo = {
     /**
      * Maximum permitted client message size (in bytes).
      *
@@ -149,20 +149,20 @@ class Settings {
   The default value is sso
   If you want to use the old authentication system, change this to apikey
  */
-  private authenticationMethod = 'sso'
+  authenticationMethod = 'sso'
   /*
  * The Type of the database
  */
-  private dbType = 'dirty';
+  dbType = 'dirty';
 
   /**
    * This setting is passed with dbType to ueberDB to set up the database
    */
-  private dbSettings = {filename: path.join(this.root, 'var/dirty.db')};
+  dbSettings = {filename: path.join(this.root, 'var/dirty.db')};
   /**
    * The default Text of a new pad
    */
-  private defaultPadText = [
+  defaultPadText = [
     'Welcome to Etherpad!',
     '',
     'This pad text is synchronized as you type, so that everyone viewing this page sees the same ' +
@@ -240,22 +240,22 @@ class Settings {
   /**
    * A flag that requires any user to have a valid session (via the api) before accessing a pad
    */
-  private requireSession = false;
+  requireSession = false;
 
   /**
    * A flag that prevents users from creating new pads
    */
-  private editOnly = false;
+  editOnly = false;
 
   /**
    * Max age that responses will have (affects caching layer).
    */
-  private maxAge = 1000 * 60 * 60 * 6; // 6 hours
+  maxAge = 1000 * 60 * 60 * 6; // 6 hours
 
   /**
    * A flag that shows if minification is enabled or not
    */
-  private minify = true;
+  minify = true;
 
   /**
    * The path of the abiword executable
@@ -275,7 +275,7 @@ class Settings {
   /**
    * The log level of log4js
    */
-  private loglevel: string = this.defaultLogLevel;
+  loglevel: string = this.defaultLogLevel;
 
 
 
@@ -292,7 +292,7 @@ class Settings {
   /**
    * Disable Load Testing
    */
-  private loadTest = false;
+  loadTest = false;
 
   /**
    * Disable dump of objects preventing a clean exit
@@ -345,14 +345,14 @@ class Settings {
    * authorization. Note: /admin always requires authentication, and
    * either authorization by a module, or a user with is_admin set
    */
-  private requireAuthentication = false;
+  requireAuthentication = false;
   private requireAuthorization = false;
   users = {};
 
   /*
    * This setting is used for configuring sso
    */
-  private sso = {
+  sso = {
     issuer: "http://localhost:9001"
   }
 
@@ -403,7 +403,7 @@ class Settings {
   /*
    * Override any strings found in locale directories
    */
-  private customLocaleStrings = {};
+  customLocaleStrings = {};
 
   /*
    * From Etherpad 1.8.3 onwards, import and export of pads is always rate
@@ -816,7 +816,7 @@ class Settings {
     }
   }
 
-  private reloadSettings = () => {
+  reloadSettings = () => {
     const settings = this.parseSettings(this.settingsFilename, true);
     const credentials = this.parseSettings(this.credentialsFilename, false);
     this.storeSettings(settings);

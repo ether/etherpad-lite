@@ -1,11 +1,11 @@
 'use strict';
 import semver from 'semver';
-import {getEpVersion} from './Settings';
+import settings from './Settings';
 import axios from 'axios';
 
 
 const headers = {
-  'User-Agent': 'Etherpad/' + getEpVersion(),
+  'User-Agent': 'Etherpad/' + settings.getEpVersion(),
 }
 
 type Infos = {
@@ -47,7 +47,7 @@ export const getLatestVersion = () => {
 export const needsUpdate = async (cb?: Function) => {
   try {
     const info = await loadEtherpadInformations()
-    if (semver.gt(info!.latestVersion, getEpVersion())) {
+    if (semver.gt(info!.latestVersion, settings.getEpVersion())) {
       if (cb) return cb(true);
     }
   } catch (err) {

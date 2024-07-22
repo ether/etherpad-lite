@@ -7,7 +7,7 @@ import path from 'path';
 import {promises as fsp} from 'fs';
 import {pluginDefs} from '../../../static/js/pluginfw/plugin_defs';
 import sanitizePathname from '../../utils/sanitizePathname';
-const settings = require('../../utils/Settings');
+import settings from '../../utils/Settings';
 
 // Returns all *.js files under specDir (recursively) as relative paths to specDir, using '/'
 // instead of path.sep to separate pathname components.

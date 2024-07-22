@@ -3,15 +3,14 @@
 import {Part} from "./plugin_defs";
 
 const fs = require('fs').promises;
-const hooks = require('./hooks');
+import {aCallAll} from './hooks';
 import log4js from 'log4js';
 import path from 'path';
-const runCmd = require('../../../node/utils/run_cmd');
+import runCmd from '../../../node/utils/run_cmd';
 import {TSort} from './tsort';
-const pluginUtils = require('./shared');
+import {extractHooks} from './shared';
 import {pluginDefs} from './plugin_defs';
-import {IPluginInfo} from "live-plugin-manager";
-const settings = require('../../../node/utils/Settings');
+import settings from '../../../node/utils/Settings';
 
 const logger = log4js.getLogger('plugins');
 
@@ -116,12 +115,12 @@ export const update = async () => {
 
   pluginDefs.setPlugins(plugins);
   pluginDefs.setParts(sortParts(parts));
-  pluginDefs.setHooks(pluginUtils.extractHooks(pluginDefs.getParts(), 'hooks', pathNormalization))
+  pluginDefs.setHooks(extractHooks(pluginDefs.getParts(), 'hooks', pathNormalization)!)
   pluginDefs.setLoaded(true);
 
   await Promise.all(Object.keys(pluginDefs.getPlugins()).map(async (p) => {
     const logger = log4js.getLogger(`plugin:${p}`);
-    await hooks.aCallAll(`init_${p}`, {logger});
+    await aCallAll(`init_${p}`, {logger});
   }));
 };
 

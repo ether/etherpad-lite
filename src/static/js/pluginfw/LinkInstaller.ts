@@ -4,7 +4,7 @@ import {node_modules, pluginInstallPath} from "./installer";
 import {accessSync, constants, rmSync, symlinkSync, unlinkSync} from "node:fs";
 import {dependencies, name} from '../../../package.json'
 import {pathToFileURL} from 'node:url';
-const settings = require('../../../node/utils/Settings');
+import settings from '../../../node/utils/Settings';
 import {readFileSync} from "fs";
 import {IPluginInfoExtended} from "./IPluginInfoExtended";
 

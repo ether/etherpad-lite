@@ -4,10 +4,10 @@ import {MapArrayType} from "../../types/MapType";
 import {PartType} from "../../types/PartType";
 
 const fs = require('fs').promises;
-const minify = require('../../utils/Minify');
-const path = require('path');
-const plugins = require('../../../static/js/pluginfw/plugin_defs');
-const settings = require('../../utils/Settings');
+import {minify} from '../../utils/Minify';
+import path from 'path';
+import {pluginDefs} from '../../../static/js/pluginfw/plugin_defs';
+import settings from '../../utils/Settings';
 import CachingMiddleware from '../../utils/caching_middleware';
 
 // Rewrite tar to include modules with no extensions and proper rooted paths.
@@ -40,13 +40,15 @@ exports.expressPreSession = async (hookName:string, {app}:any) => {
 
   // Minify will serve static files compressed (minify enabled). It also has
   // file-specific hacks for ace/require-kernel/etc.
-  app.all('/static/:filename(*)', minify.minify);
+  app.all('/static/:filename(*)', (req: Request, res: Response, next: Function)=>{
+    minify(req,res, next)
+  });
 
   // serve plugin definitions
   // not very static, but served here so that client can do
   // require("pluginfw/static/js/plugin-definitions.js");
   app.get('/pluginfw/plugin-definitions.json', (req: any, res:any, next:Function) => {
-    const clientParts = plugins.parts.filter((part: PartType) => part.client_hooks != null);
+    const clientParts = pluginDefs.getParts().filter((part: PartType) => part.client_hooks != null);
     const clientPlugins:MapArrayType<string> = {};
     for (const name of new Set(clientParts.map((part: PartType) => part.plugin))) {
       // @ts-ignore

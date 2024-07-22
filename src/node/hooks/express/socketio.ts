@@ -3,14 +3,14 @@
 import {ArgsExpressType} from "../../types/ArgsExpressType";
 
 import events from 'events';
-const express = require('../express');
+import {sessionMiddleware} from '../express';
 import log4js from 'log4js';
-const proxyaddr = require('proxy-addr');
-const settings = require('../../utils/Settings');
+import proxyaddr from 'proxy-addr';
+import settings from '../../utils/Settings';
 import {Server, Socket} from 'socket.io'
-const socketIORouter = require('../../handler/SocketIORouter');
-const hooks = require('../../../static/js/pluginfw/hooks');
-const padMessageHandler = require('../../handler/PadMessageHandler');
+import {addComponent, setSocketIO} from '../../handler/SocketIORouter';
+import {callAll} from '../../../static/js/pluginfw/hooks';
+import * as padMessageHandler from '../../handler/PadMessageHandler';
 
 let io:any;
 const logger = log4js.getLogger('socket.io');
@@ -62,7 +62,7 @@ const socketSessionMiddleware = (args: any) => (socket: any, next: Function) => 
     // socketio.js-client on node.js doesn't support cookies, so pass them via a query parameter.
     req.headers.cookie = socket.handshake.query.cookie;
   }
-  express.sessionMiddleware(req, {}, next);
+  sessionMiddleware(req, {}, next);
 };
 
 export const expressCreateServer = (hookName:string, args:ArgsExpressType, cb:Function) => {
@@ -71,6 +71,7 @@ export const expressCreateServer = (hookName:string, args:ArgsExpressType, cb:Fu
   // transports in this list at once
   // e.g. XHR is disabled in IE by default, so in IE it should use jsonp-polling
   io = new Server(args.server,{
+    // @ts-ignore
     transports: settings.socketTransportProtocols,
     cookie: false,
     maxHttpBufferSize: settings.socketIo.maxHttpBufferSize,
@@ -133,10 +134,10 @@ export const expressCreateServer = (hookName:string, args:ArgsExpressType, cb:Fu
   // if(settings.minify) io.enable('browser client minification');
 
   // Initialize the Socket.IO Router
-  socketIORouter.setSocketIO(io);
-  socketIORouter.addComponent('pad', padMessageHandler);
+  setSocketIO(io);
+  addComponent('pad', padMessageHandler);
 
-  hooks.callAll('socketio', {app: args.app, io, server: args.server});
+  callAll('socketio', {app: args.app, io, server: args.server});
 
   return cb();
 };

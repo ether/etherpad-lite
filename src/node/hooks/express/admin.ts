@@ -5,7 +5,7 @@ import fs from "fs";
 import * as url from "node:url";
 import {MapArrayType} from "../../types/MapType";
 
-const settings = require('ep_etherpad-lite/node/utils/Settings');
+import settings from 'ep_etherpad-lite/node/utils/Settings';
 
 const ADMIN_PATH = path.join(settings.root, 'src', 'templates');
 const PROXY_HEADER = "x-proxy-path"

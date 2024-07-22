@@ -26,9 +26,9 @@ import {callAll} from '../../static/js/pluginfw/hooks.js';
 import {doesPadExist, getPad} from './PadManager';
 import {getPadId, isReadOnlyId} from './ReadOnlyManager';
 import {findAuthorID} from './SessionManager';
-const settings = require('../utils/Settings');
+import settings from '../utils/Settings';
 import {normalizeAuthzLevel} from '../hooks/express/webaccess';
-const log4js = require('log4js');
+import log4js from 'log4js';
 const authLogger = log4js.getLogger('auth');
 import {padUtils as padutils} from '../../static/js/pad_utils';
 

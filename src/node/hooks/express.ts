@@ -182,8 +182,7 @@ export const restartServer = async () => {
   // starts listening to requests as reported in issue #158. Not installing the log4js connect
   // logger when the log level has a higher severity than INFO since it would not log at that level
   // anyway.
-  // @ts-ignore
-  if (!(loglevel === 'WARN' && loglevel === 'ERROR')) {
+  if (!(settings.loglevel === 'WARN' || settings.loglevel === 'ERROR')) {
     app.use(log4js.connectLogger(logger, {
       level: log4js.levels.DEBUG.levelStr,
       format: ':status, :method :url',
@@ -263,6 +262,6 @@ export const restartServer = async () => {
   logger.info('HTTP server listening for connections');
 };
 
-export const shutdown = async (hookName:string, context: any) => {
+export const shutdown = async () => {
   await closeServer();
 };
