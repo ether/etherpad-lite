@@ -1,7 +1,10 @@
 import browser from 'ep_etherpad-lite/static/js/vendors/browser'
 import {padeditbar} from 'ep_etherpad-lite/static/js/pad_editbar'
 import {padImpExp} from 'ep_etherpad-lite/static/js/pad_impexp'
-
+import jquery from 'jquery';
+window.jQuery = jquery;
+window.$ = jquery;
+import {pad, setPadBaseURL} from 'ep_etherpad-lite/static/js/pad'
 (async () => {
 
   require('../../src/static/js/l10n')
@@ -17,10 +20,8 @@ import {padImpExp} from 'ep_etherpad-lite/static/js/pad_impexp'
   //window.require.resolveTmp = require.resolve('ep_etherpad-lite/static/js/pad_cookie');
 
   const basePath = new URL('..', window.location.href).pathname;
-  window.$ = window.jQuery = require('ep_etherpad-lite/static/js/vendors/jquery');
   window.browser = browser;
-  const pad = require('ep_etherpad-lite/static/js/pad');
-  pad.baseURL = basePath;
+  setPadBaseURL(basePath);
   window.plugins = require('ep_etherpad-lite/static/js/pluginfw/client_plugins');
   const hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks');
 
@@ -44,6 +45,6 @@ import {padImpExp} from 'ep_etherpad-lite/static/js/pad_impexp'
   window._postPluginUpdateForTestingDone = true;
   window.pluginDefs = require('../../src/static/js/pluginfw/plugin_defs');
   pad.init();
-  await new Promise((resolve) => $(resolve));
+  await new Promise((resolve) => window.$(resolve));
   await hooks.aCallAll('documentReady');
 })();

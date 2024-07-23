@@ -101,4 +101,3 @@ class PadConnectionStatus {
 
 
 export const padconnectionstatus = new PadConnectionStatus()
-exports.padconnectionstatus = padconnectionstatus;

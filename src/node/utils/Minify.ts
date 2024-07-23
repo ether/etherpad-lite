@@ -249,7 +249,7 @@ const getFileCompressed = async (filename: string, contentType: string|false) =>
 
         const compressResult = await compressJS(content.toString());
 
-        if (compressResult.warnings) {
+        if (compressResult.warnings.length != 0) {
           console.error(`Error compressing JS (${filename}) using terser`, compressResult.warnings);
         } else {
           jsSources = compressResult.code.toString(); // Convert content obj code to string
@@ -268,13 +268,13 @@ const getFileCompressed = async (filename: string, contentType: string|false) =>
 
         const compressResult = await compressCSS(path.resolve(ROOT_DIR, filename));
 
-        if (compressResult) {
+        if (compressResult == null) {
           console.error(`Error compressing CSS (${filename}) using terser`, compressResult);
         } else {
           contentString = compressResult
         }
       } catch (error) {
-        console.error(`CleanCSS.minify() returned an error on ${filename}: ${error}`);
+        console.error(`CleanCSS.minify() returned an error on : ${error}`);
       }
       resolve(content.toString());
     });

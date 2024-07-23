@@ -12,6 +12,8 @@ import {userCanModify} from './webaccess';
 import {pluginDefs} from '../../../static/js/pluginfw/plugin_defs';
 
 import {build, buildSync} from 'esbuild'
+import {availableLangs} from "../i18n";
+import {clientPluginNames} from "../../../static/js/pluginfw/shared";
 let ioI: { sockets: { sockets: any[]; }; } | null = null
 
 export const socketio = (hookName: string, {io}: any) => {
@@ -157,6 +159,9 @@ const handleLiveReload = async (args: any, padString: string, timeSliderString: 
         const content = requireP('ep_etherpad-lite/templates/pad.html', {
           req,
           toolbar,
+          settings: settings,
+          clientPluginNames: clientPluginNames,
+          langs: availableLangs,
           isReadOnly,
           entrypoint: '/watch/pad?hash=' + hash
         })
@@ -186,6 +191,8 @@ const handleLiveReload = async (args: any, padString: string, timeSliderString: 
         const content = requireP('ep_etherpad-lite/templates/timeslider.html', {
           req,
           toolbar,
+          langs: availableLangs,
+          settings: settings,
           isReadOnly,
           entrypoint: '/watch/timeslider?hash=' + hash
         })
@@ -210,7 +217,8 @@ const convertTypescriptWatched = (content: string, cb: (output:string, hash: str
     },
     alias:{
       "ep_etherpad-lite/static/js/browser": 'ep_etherpad-lite/static/js/vendors/browser',
-      "ep_etherpad-lite/static/js/nice-select": 'ep_etherpad-lite/static/js/vendors/nice-select'
+      "ep_etherpad-lite/static/js/nice-select": 'ep_etherpad-lite/static/js/vendors/nice-select',
+      "jquery": "ep_etherpad-lite/node_modules/jquery"
     },
     bundle: true, // Bundle the files together
     minify: process.env.NODE_ENV === "production", // Minify the output

@@ -867,7 +867,8 @@ export type PadSettings = {
 
 export const pad = new Pad()
 
-exports.baseURL = '';
-exports.randomString = randomString;
-exports.getParams = getParams;
-exports.pad = pad;
+export let baseURL = '';
+
+export const setPadBaseURL = (url: string)=> {
+  baseURL = url
+}

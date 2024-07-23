@@ -1,3 +1,7 @@
+import jquery from 'jquery';
+window.jQuery = jquery;
+window.$ = jquery;
+
 // WARNING: This file has been modified from the Original
 // TODO: Nice Select seems relatively abandoned, we should consider other options.
 
@@ -5,9 +9,8 @@
     https://github.com/hernansartorio/jquery-nice-select
     Made by Hernán Sartorio  */
 
-(function($) {
-
-  $.fn.niceSelect = function(method) {
+(function() {
+  window.$.fn.niceSelect = function(method) {
 
     // Methods
     if (typeof method == 'string') {
@@ -209,4 +212,4 @@
 
   };
 
-}(jQuery));
+}(window.jQuery));
