@@ -29,7 +29,8 @@
     "install-plugins": "pnpm --filter bin run plugins i",
     "remove-plugins": "pnpm --filter bin run remove-plugins",
     "list-plugins": "pnpm --filter bin run list-plugins",
-    "build:etherpad": "pnpm --filter admin run build-copy && pnpm --filter ui run build-copy"
+    "build:etherpad": "pnpm --filter admin run build-copy && pnpm --filter ui run build-copy",
+    "build:ui": "pnpm --filter ui run build-copy && pnpm --filter admin run build-copy"
   },
   "dependencies": {
     "ep_etherpad-lite": "workspace:./src"

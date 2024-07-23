@@ -26,6 +26,9 @@ const compressCSS = async (content) => {
       minify: true,
       bundle: true,
       loader:{
+        '.jpg': 'dataurl',
+        '.png': 'dataurl',
+        '.gif': 'dataurl',
         '.ttf': 'dataurl',
         '.otf': 'dataurl',
         '.woff': 'dataurl',
