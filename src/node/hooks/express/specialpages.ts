@@ -111,7 +111,7 @@ const convertTypescript = (content: string) => {
   }
 }
 
-const handleLiveReload = async (args: any, padString: string, timeSliderString: string ) => {
+const handleLiveReload = async (args: any, padString: string, timeSliderString: string, indexString: any) => {
   const chokidar = await import('chokidar')
   const watcher = chokidar.watch(path.join(settings.root, 'src', 'static', 'js'));
   let routeHandlers: { [key: string]: Function } = {};
@@ -130,6 +130,8 @@ const handleLiveReload = async (args: any, padString: string, timeSliderString: 
         pad: req.path.split('/')[2]
       }
       routeHandlers['/p/:pad/timeslider'](req, res);
+    } else if (req.path == "/"){
+      routeHandlers['/'](req, res);
     } else if (routeHandlers[req.path]) {
       routeHandlers[req.path](req, res);
     } else {
@@ -138,12 +140,26 @@ const handleLiveReload = async (args: any, padString: string, timeSliderString: 
   });
 
   function handleUpdate() {
+
+    convertTypescriptWatched(indexString, (output, hash) => {
+      setRouteHandler('/watch/index', (req: any, res: any) => {
+        res.header('Content-Type', 'application/javascript');
+        res.send(output)
+      })
+      setRouteHandler('/', (req: any, res: any) => {
+        res.send(eejs.require('ep_etherpad-lite/templates/index.html', {req, entrypoint: '/watch/index?hash=' + hash, settings}));
+      })
+    })
+
     convertTypescriptWatched(padString, (output, hash) => {
       console.log("New pad hash is", hash)
       setRouteHandler('/watch/pad', (req: any, res: any) => {
         res.header('Content-Type', 'application/javascript');
         res.send(output)
       })
+
+
+
 
       setRouteHandler("/p/:pad", (req: any, res: any, next: Function) => {
         // The below might break for pads being rewritten
@@ -228,12 +244,6 @@ const convertTypescriptWatched = (content: string, cb: (output:string, hash: str
 }
 
 exports.expressCreateServer = async (hookName: string, args: any, cb: Function) => {
-  // serve index.html under /
-  args.app.get('/', (req: any, res: any) => {
-    res.send(eejs.require('ep_etherpad-lite/templates/index.html', {req}));
-  });
-
-
   const padString =   eejs.require('ep_etherpad-lite/templates/padBootstrap.js', {
       pluginModules: (() => {
         const pluginModules = new Set();
@@ -247,6 +257,9 @@ exports.expressCreateServer = async (hookName: string, args: any, cb: Function) 
       })(),
       settings,
     })
+
+  const indexString = eejs.require('ep_etherpad-lite/templates/indexBootstrap.js', {
+  })
 
     const timeSliderString = eejs.require('ep_etherpad-lite/templates/timeSliderBootstrap.js', {
       pluginModules: (() => {
@@ -268,17 +281,25 @@ exports.expressCreateServer = async (hookName: string, args: any, cb: Function) 
 
   let fileNamePad: string
   let fileNameTimeSlider: string
+  let fileNameIndex: string
   if(process.env.NODE_ENV === "production"){
     const padSliderWrite = convertTypescript(padString)
     const timeSliderWrite = convertTypescript(timeSliderString)
+    const indexWrite = convertTypescript(indexString)
 
     fileNamePad = `padbootstrap-${padSliderWrite.hash}.min.js`
     fileNameTimeSlider = `timeSliderBootstrap-${timeSliderWrite.hash}.min.js`
+    fileNameIndex = `indexBootstrap-${indexWrite.hash}.min.js`
     const pathNamePad = path.join(outdir, fileNamePad)
     const pathNameTimeSlider = path.join(outdir, fileNameTimeSlider)
+    const pathNameIndex = path.join(outdir, 'index.js')
 
     if (!fs.existsSync(pathNamePad)) {
       fs.writeFileSync(pathNamePad, padSliderWrite.output);
+    }
+
+    if (!fs.existsSync(pathNameIndex)) {
+      fs.writeFileSync(pathNameIndex, indexWrite.output);
     }
 
     if (!fs.existsSync(pathNameTimeSlider)) {
@@ -289,9 +310,18 @@ exports.expressCreateServer = async (hookName: string, args: any, cb: Function) 
       res.sendFile(pathNamePad)
     })
 
+    args.app.get("/"+fileNameIndex, (req: any, res: any) => {
+      res.sendFile(pathNameIndex)
+    })
+
     args.app.get("/"+fileNameTimeSlider, (req: any, res: any) => {
       res.sendFile(pathNameTimeSlider)
     })
+
+    // serve index.html under /
+    args.app.get('/', (req: any, res: any) => {
+      res.send(eejs.require('ep_etherpad-lite/templates/index.html', {req, settings, entrypoint: "/"+fileNameIndex}));
+    });
 
 
     // serve pad.html under /p
@@ -326,7 +356,7 @@ exports.expressCreateServer = async (hookName: string, args: any, cb: Function) 
       }));
     });
   } else {
-    await handleLiveReload(args, padString, timeSliderString)
+    await handleLiveReload(args, padString, timeSliderString, indexString)
   }
 
   // The client occasionally polls this endpoint to get an updated expiration for the express_sid

@@ -1,6 +1,3 @@
-<%
-  var settings = require("ep_etherpad-lite/node/utils/Settings");
-%>
 <!doctype html>
 <html>
 
@@ -10,12 +7,7 @@
         <meta name="referrer" content="no-referrer">
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
         <link rel="shortcut icon" href="favicon.ico">
-
         <link rel="localizations" type="application/l10n+json" href="locales.json">
-        <script type="text/javascript" src="static/js/vendors/html10n.js?v=<%=settings.randomVersionString%>"></script>
-        <script type="text/javascript" src="static/js/l10n.js?v=<%=settings.randomVersionString%>"></script>
-        <script src="static/js/vendors/jquery.js"></script>
-        <script src="static/js/index.js"></script>
 
         <style>
             html, body {
@@ -157,6 +149,7 @@
             </div>
         <% e.end_block(); %>
         </div>
+        <script src="<%=entrypoint%>"></script>
 
         <% e.begin_block("indexCustomScripts"); %>
         <script src="static/skins/<%=encodeURI(settings.skinName)%>/index.js?v=<%=settings.randomVersionString%>"></script>
