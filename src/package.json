@@ -108,7 +108,7 @@
     "sinon": "^18.0.0",
     "split-grid": "^1.0.11",
     "supertest": "^7.0.0",
-    "typescript": "^5.5.3"
+    "typescript": "^5.5.4"
   },
   "engines": {
     "node": ">=18.18.2",
