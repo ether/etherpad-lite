@@ -14,12 +14,12 @@ import {pluginDefs} from '../../../static/js/pluginfw/plugin_defs';
 import {build, buildSync} from 'esbuild'
 let ioI: { sockets: { sockets: any[]; }; } | null = null
 
-exports.socketio = (hookName: string, {io}: any) => {
+export const socketio = (hookName: string, {io}: any) => {
   ioI = io
 }
 
 
-exports.expressPreSession = async (hookName:string, {app}:any) => {
+export const expressPreSession = async (hookName:string, {app}:any) => {
   // This endpoint is intended to conform to:
   // https://www.ietf.org/archive/id/draft-inadarei-api-health-check-06.html
   app.get('/health', (req:any, res:any) => {
@@ -227,7 +227,7 @@ const convertTypescriptWatched = (content: string, cb: (output:string, hash: str
   })
 }
 
-exports.expressCreateServer = async (hookName: string, args: any, cb: Function) => {
+export const expressCreateServer = async (hookName: string, args: any, cb: Function) => {
   // serve index.html under /
   args.app.get('/', (req: any, res: any) => {
     res.send(requireP('ep_etherpad-lite/templates/index.html', {req}));
@@ -235,7 +235,8 @@ exports.expressCreateServer = async (hookName: string, args: any, cb: Function) 
 
 
   const padString =   requireP('ep_etherpad-lite/templates/padBootstrap.ts', {
-      pluginModules: (() => {
+    // @ts-ignore
+    pluginModules: (() => {
         const pluginModules = new Set();
         for (const part of pluginDefs.getParts()) {
           for (const [, hookFnName] of Object.entries(part.client_hooks || {})) {
@@ -249,6 +250,7 @@ exports.expressCreateServer = async (hookName: string, args: any, cb: Function) 
     })
 
     const timeSliderString = requireP('ep_etherpad-lite/templates/timeSliderBootstrap.ts', {
+      // @ts-ignore
       pluginModules: (() => {
         const pluginModules = new Set();
         for (const part of pluginDefs.getParts()) {

@@ -61,7 +61,7 @@ const requestURI = async (url: string, method: string, headers: MapArrayType<any
   let mockResponse;
   const p = new Promise((resolve) => {
     mockResponse = {
-      writeHead: (_status, _headers) => {
+      writeHead: (_status: number, _headers: { [x: string]: any; }) => {
         status = _status;
         for (const header in _headers) {
           if (Object.prototype.hasOwnProperty.call(_headers, header)) {
@@ -69,16 +69,16 @@ const requestURI = async (url: string, method: string, headers: MapArrayType<any
           }
         }
       },
-      setHeader: (header, value) => {
+      setHeader: (header: string, value: { toString: () => any; }) => {
         headers[header.toLowerCase()] = value.toString();
       },
       header: (header: string, value: string) => {
         headers[header.toLowerCase()] = value.toString();
       },
-      write: (_content) => {
+      write: (_content: string) => {
         _content && content.push(_content);
       },
-      end: (_content) => {
+      end: (_content: string) => {
         _content && content.push(_content);
         resolve([status, headers, content.join('')]);
       },

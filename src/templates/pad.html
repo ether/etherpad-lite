@@ -1,8 +1,7 @@
 <%
-  var settings = require("ep_etherpad-lite/node/utils/Settings")
-    , langs = require("ep_etherpad-lite/node/hooks/i18n").availableLangs
-    , pluginUtils = require('ep_etherpad-lite/static/js/pluginfw/shared')
-    ;
+  import settings from 'ep_etherpad-lite/node/utils/Settings'
+  import langs from 'ep_etherpad-lite/node/hooks/i18n'
+  import {pluginUtils} from 'ep_etherpad-lite/static/js/pluginfw/shared'
 %>
 <!doctype html>
 <html translate="no" class="pad <%=pluginUtils.clientPluginNames().join(' '); %> <%=settings.skinVariants%>">
