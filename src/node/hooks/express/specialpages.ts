@@ -278,6 +278,10 @@ exports.expressCreateServer = async (hookName: string, args: any, cb: Function) 
 
 
   const outdir = path.join(settings.root, 'var','js')
+  // Create the outdir if it doesn't exist
+  if (!fs.existsSync(outdir)) {
+    fs.mkdirSync(outdir);
+  }
 
   let fileNamePad: string
   let fileNameTimeSlider: string
