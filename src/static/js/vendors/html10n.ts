@@ -990,4 +990,7 @@ class Loader {
   }
 }
 
-export default new Html10n()
+const html10n = new Html10n()
+export default html10n
+
+window.html10n = html10n
