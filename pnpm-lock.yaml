@@ -48,7 +48,7 @@ importers:
         version: 7.17.0(eslint@9.7.0)(typescript@5.5.4)
       '@vitejs/plugin-react-swc':
         specifier: ^3.5.0
-        version: 3.7.0(vite@5.3.4(@types/node@20.14.12))
+        version: 3.7.0(vite@5.3.5(@types/node@20.14.12))
       eslint:
         specifier: ^9.7.0
         version: 9.7.0
@@ -65,8 +65,8 @@ importers:
         specifier: ^8.0.0
         version: 8.0.0
       lucide-react:
-        specifier: ^0.414.0
-        version: 0.414.0(react@18.3.1)
+        specifier: ^0.416.0
+        version: 0.416.0(react@18.3.1)
       react:
         specifier: ^18.2.0
         version: 18.3.1
@@ -89,14 +89,14 @@ importers:
         specifier: ^5.5.4
         version: 5.5.4
       vite:
-        specifier: ^5.3.4
-        version: 5.3.4(@types/node@20.14.12)
+        specifier: ^5.3.5
+        version: 5.3.5(@types/node@20.14.12)
       vite-plugin-static-copy:
         specifier: ^1.0.6
-        version: 1.0.6(vite@5.3.4(@types/node@20.14.12))
+        version: 1.0.6(vite@5.3.5(@types/node@20.14.12))
       vite-plugin-svgr:
         specifier: ^4.2.0
-        version: 4.2.0(rollup@4.18.0)(typescript@5.5.4)(vite@5.3.4(@types/node@20.14.12))
+        version: 4.2.0(rollup@4.18.0)(typescript@5.5.4)(vite@5.3.5(@types/node@20.14.12))
       zustand:
         specifier: ^4.5.4
         version: 4.5.4(@types/react@18.3.3)(react@18.3.1)
@@ -370,8 +370,8 @@ importers:
         specifier: ^5.5.4
         version: 5.5.4
       vite:
-        specifier: ^5.3.4
-        version: 5.3.4(@types/node@20.14.12)
+        specifier: ^5.3.5
+        version: 5.3.5(@types/node@20.14.12)
 
 packages:
 
@@ -3230,8 +3230,8 @@ packages:
     resolution: {integrity: sha512-jumlc0BIUrS3qJGgIkWZsyfAM7NCWiBcCDhnd+3NNM5KbBmLTgHVfWBcg6W+rLUsIpzpERPsvwUP7CckAQSOoA==}
     engines: {node: '>=12'}
 
-  lucide-react@0.414.0:
-    resolution: {integrity: sha512-Krr/MHg9AWoJc52qx8hyJ64X9++JNfS1wjaJviLM1EP/68VNB7Tv0VMldLCB1aUe6Ka9QxURPhQm/eB6cqOM3A==}
+  lucide-react@0.416.0:
+    resolution: {integrity: sha512-wPWxTzdss1CTz2aqcNWNlbh4YSnH9neJWP3RaeXepxpLCTW+pmu7WcT/wxJe+Q7Y7DqGOxAqakJv0pIK3431Ag==}
     peerDependencies:
       react: ^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0
 
@@ -4247,8 +4247,8 @@ packages:
     peerDependencies:
       vite: ^2.6.0 || 3 || 4 || 5
 
-  vite@5.3.4:
-    resolution: {integrity: sha512-Cw+7zL3ZG9/NZBB8C+8QbQZmR54GwqIz+WMI4b3JgdYJvX+ny9AjJXqkGQlDXSXRP9rP0B4tbciRMOVEKulVOA==}
+  vite@5.3.5:
+    resolution: {integrity: sha512-MdjglKR6AQXQb9JGiS7Rc2wC6uMjcm7Go/NHNO63EwiJXfuk9PgqiP/n5IDJCziMkfw9n4Ubp7lttNwz+8ZVKA==}
     engines: {node: ^18.0.0 || >=20.0.0}
     hasBin: true
     peerDependencies:
@@ -5684,16 +5684,16 @@ snapshots:
 
   '@ungap/structured-clone@1.2.0': {}
 
-  '@vitejs/plugin-react-swc@3.7.0(vite@5.3.4(@types/node@20.14.12))':
+  '@vitejs/plugin-react-swc@3.7.0(vite@5.3.5(@types/node@20.14.12))':
     dependencies:
       '@swc/core': 1.5.28
-      vite: 5.3.4(@types/node@20.14.12)
+      vite: 5.3.5(@types/node@20.14.12)
     transitivePeerDependencies:
       - '@swc/helpers'
 
-  '@vitejs/plugin-vue@5.0.5(vite@5.3.4(@types/node@20.14.12))(vue@3.4.31(typescript@5.5.4))':
+  '@vitejs/plugin-vue@5.0.5(vite@5.3.5(@types/node@20.14.12))(vue@3.4.31(typescript@5.5.4))':
     dependencies:
-      vite: 5.3.4(@types/node@20.14.12)
+      vite: 5.3.5(@types/node@20.14.12)
       vue: 3.4.31(typescript@5.5.4)
 
   '@vue/compiler-core@3.4.31':
@@ -7582,7 +7582,7 @@ snapshots:
 
   lru-cache@7.18.3: {}
 
-  lucide-react@0.414.0(react@18.3.1):
+  lucide-react@0.416.0(react@18.3.1):
     dependencies:
       react: 18.3.1
 
@@ -8716,26 +8716,26 @@ snapshots:
       unist-util-stringify-position: 4.0.0
       vfile-message: 4.0.2
 
-  vite-plugin-static-copy@1.0.6(vite@5.3.4(@types/node@20.14.12)):
+  vite-plugin-static-copy@1.0.6(vite@5.3.5(@types/node@20.14.12)):
     dependencies:
       chokidar: 3.6.0
       fast-glob: 3.3.2
       fs-extra: 11.2.0
       picocolors: 1.0.1
-      vite: 5.3.4(@types/node@20.14.12)
+      vite: 5.3.5(@types/node@20.14.12)
 
-  vite-plugin-svgr@4.2.0(rollup@4.18.0)(typescript@5.5.4)(vite@5.3.4(@types/node@20.14.12)):
+  vite-plugin-svgr@4.2.0(rollup@4.18.0)(typescript@5.5.4)(vite@5.3.5(@types/node@20.14.12)):
     dependencies:
       '@rollup/pluginutils': 5.1.0(rollup@4.18.0)
       '@svgr/core': 8.1.0(typescript@5.5.4)
       '@svgr/plugin-jsx': 8.1.0(@svgr/core@8.1.0(typescript@5.5.4))
-      vite: 5.3.4(@types/node@20.14.12)
+      vite: 5.3.5(@types/node@20.14.12)
     transitivePeerDependencies:
       - rollup
       - supports-color
       - typescript
 
-  vite@5.3.4(@types/node@20.14.12):
+  vite@5.3.5(@types/node@20.14.12):
     dependencies:
       esbuild: 0.21.5
       postcss: 8.4.39
@@ -8751,7 +8751,7 @@ snapshots:
       '@shikijs/core': 1.10.3
       '@shikijs/transformers': 1.10.3
       '@types/markdown-it': 14.1.1
-      '@vitejs/plugin-vue': 5.0.5(vite@5.3.4(@types/node@20.14.12))(vue@3.4.31(typescript@5.5.4))
+      '@vitejs/plugin-vue': 5.0.5(vite@5.3.5(@types/node@20.14.12))(vue@3.4.31(typescript@5.5.4))
       '@vue/devtools-api': 7.3.5
       '@vue/shared': 3.4.31
       '@vueuse/core': 10.11.0(vue@3.4.31(typescript@5.5.4))
@@ -8760,7 +8760,7 @@ snapshots:
       mark.js: 8.11.1
       minisearch: 7.0.0
       shiki: 1.10.3
-      vite: 5.3.4(@types/node@20.14.12)
+      vite: 5.3.5(@types/node@20.14.12)
       vue: 3.4.31(typescript@5.5.4)
     optionalDependencies:
       postcss: 8.4.39
