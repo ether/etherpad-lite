@@ -54,13 +54,14 @@ const nonSettings = [
 
 // This is a function to make it easy to create a new instance. It is important to not reuse a
 // config object after passing it to log4js.configure() because that method mutates the object. :(
-const defaultLogConfig = (level: string) => ({
-    appenders: {console: {type: 'console'}},
+const defaultLogConfig = (level: string, layoutType: string) => ({
+    appenders: {console: {type: 'console', layout: {type: layoutType}}},
     categories: {
         default: {appenders: ['console'], level},
     }
 });
 const defaultLogLevel = 'INFO';
+const defaultLogLayoutType = 'colored';
 
 const initLogging = (config: any) => {
     // log4js.configure() modifies exports.logconfig so check for equality first.
@@ -76,7 +77,7 @@ const initLogging = (config: any) => {
 
 // Initialize logging as early as possible with reasonable defaults. Logging will be re-initialized
 // with the user's chosen log level and logger config after the settings have been loaded.
-initLogging(defaultLogConfig(defaultLogLevel));
+initLogging(defaultLogConfig(defaultLogLevel, defaultLogLayoutType));
 
 /* Root path of the installation */
 exports.root = absolutePaths.findEtherpadRoot();
@@ -290,6 +291,11 @@ exports.allowUnknownFileEnds = true;
  * The log level of log4js
  */
 exports.loglevel = defaultLogLevel;
+
+/**
+ * The log layout type of log4js
+ */
+exports.logLayoutType = defaultLogLayoutType;
 
 /**
  * Disable IP logging
@@ -817,7 +823,12 @@ exports.reloadSettings = () => {
     storeSettings(credentials);
 
     // Init logging config
-    exports.logconfig = defaultLogConfig(exports.loglevel ? exports.loglevel : defaultLogLevel);
+    exports.logconfig = defaultLogConfig(
+        exports.loglevel ? exports.loglevel : defaultLogLevel,
+        exports.logLayoutType ? exports.logLayoutType : defaultLogLayoutType
+    );
+    logger.warn("loglevel: " + exports.loglevel);
+    logger.warn("logLayoutType: " + exports.logLayoutType);
     initLogging(exports.logconfig);
 
     if (!exports.skinName) {
