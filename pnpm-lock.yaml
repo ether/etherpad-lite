@@ -27,6 +27,9 @@ importers:
       '@radix-ui/react-switch':
         specifier: ^1.1.0
         version: 1.1.0(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      react-day-picker:
+        specifier: ^9.0.7
+        version: 9.0.7(react@18.3.1)
     devDependencies:
       '@radix-ui/react-dialog':
         specifier: ^1.1.1
@@ -2185,6 +2188,9 @@ packages:
     resolution: {integrity: sha512-t/Ygsytq+R995EJ5PZlD4Cu56sWa8InXySaViRzw9apusqsOO2bQP+SbYzAhR0pFKoB+43lYy8rWban9JSuXnA==}
     engines: {node: '>= 0.4'}
 
+  date-fns@3.6.0:
+    resolution: {integrity: sha512-fRHTG8g/Gif+kSh50gaGEdToemgfj74aRX3swtiouboip5JDLAyDE9F11nHMIcvOaXeOC6D7SpNhi7uFyB7Uww==}
+
   date-format@4.0.14:
     resolution: {integrity: sha512-39BOQLs9ZjKh0/patS9nrT8wc3ioX3/eA/zgbKNopnF2wCqJEoxywwwElATYvRsXdnOxA/OQeQoFZ3rFjVajhg==}
     engines: {node: '>=4.0'}
@@ -3711,6 +3717,11 @@ packages:
   raw-body@2.5.2:
     resolution: {integrity: sha512-8zGqypfENjCIqGhgXToC8aB2r7YrBX+AQAfIPs/Mlk+BtPTztOvTS01NRW/3Eh60J+a48lt8qsCzirQ6loCVfA==}
     engines: {node: '>= 0.8'}
+
+  react-day-picker@9.0.7:
+    resolution: {integrity: sha512-JTa9vhhfxWSVfhzTFG5rEXynsDb6zi3NG+0EHbs5JBZuGFlNbg8qyagh9YtIR1ccGThwY339CAqFOH6op55omw==}
+    peerDependencies:
+      react: '>=16.8.0'
 
   react-dom@18.3.1:
     resolution: {integrity: sha512-5m4nQKp+rZRb09LNH59GM4BxTh9251/ylbKIbpe7TpGxfJ+9kv6BLkLBXIjjspbgbnIBNqlI23tRnTWT0snUIw==}
@@ -6333,6 +6344,8 @@ snapshots:
       es-errors: 1.3.0
       is-data-view: 1.0.1
 
+  date-fns@3.6.0: {}
+
   date-format@4.0.14: {}
 
   debug@2.6.9:
@@ -8156,6 +8169,11 @@ snapshots:
       http-errors: 2.0.0
       iconv-lite: 0.4.24
       unpipe: 1.0.0
+
+  react-day-picker@9.0.7(react@18.3.1):
+    dependencies:
+      date-fns: 3.6.0
+      react: 18.3.1
 
   react-dom@18.3.1(react@18.3.1):
     dependencies:

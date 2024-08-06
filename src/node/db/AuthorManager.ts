@@ -297,6 +297,11 @@ exports.addPad = async (authorID: string, padID: string) => {
   await db.set(`globalAuthor:${authorID}`, author);
 };
 
+
+exports.listAllAuthorsKeys = async () => {
+  return await db.findKeys('globalAuthor:*');
+}
+
 /**
  * Removes a pad from the list of contributions
  * @param {String} authorID The id of the author

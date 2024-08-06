@@ -11,7 +11,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@radix-ui/react-switch": "^1.1.0"
+    "@radix-ui/react-switch": "^1.1.0",
+    "react-day-picker": "^9.0.7"
   },
   "devDependencies": {
     "@radix-ui/react-dialog": "^1.1.1",

@@ -13,7 +13,7 @@ const settings = require('../../utils/Settings');
 const UpdateCheck = require('../../utils/UpdateCheck');
 const padManager = require('../../db/PadManager');
 const api = require('../../db/API');
-
+const authorManager = require('../../db/AuthorManager');
 
 const queryPadLimit = 12;
 const logger = log4js.getLogger('adminSettings');
@@ -251,6 +251,33 @@ exports.socketio = (hookName: string, {io}: any) => {
                 socket.emit('results:deletePad', padId);
             }
         })
+
+        socket.on('deleteAuthorsBefore', async (time: number) => {
+          const allGlobalAuthors = await authorManager.listAllAuthorsKeys()
+          const authorId = authorManager.createAuthor("inactive_user")
+          const {padIDs} = await padManager.listAllPads()
+
+          for (const authorKey of allGlobalAuthors) {
+            const authorId = authorKey.split(":")[1]
+            console.log("global Authors are",allGlobalAuthors)
+            const author = await authorManager.getAuthor(authorId)
+            console.log("Author is", author)
+            if (author.timestamp < time) {
+              if ("padIDs" in author) {
+                for (const padId of Object.keys(author.padIDs)) {
+                  const pad = padManager.getPad(padId) as PadType
+                  console.log("Pad is", pad)
+                  const headRevision = pad.head
+                  for (let i = 0; i < headRevision; i++) {
+                    const rev = await pad.getRevision(i)
+                    console.log("Revision is", rev)
+                  }
+                }
+              }
+            }
+          }
+        })
+
 
         socket.on('restartServer', async () => {
             logger.info('Admin request to restart server through a socket on /admin/settings');
