@@ -67,7 +67,7 @@
     "semver": "^7.6.3",
     "socket.io": "^4.7.5",
     "socket.io-client": "^4.7.5",
-    "superagent": "^10.0.0",
+    "superagent": "9.0.2",
     "threads": "^1.7.0",
     "tinycon": "0.6.8",
     "tsx": "4.16.5",

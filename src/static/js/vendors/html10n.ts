@@ -993,4 +993,5 @@ class Loader {
 const html10n = new Html10n()
 export default html10n
 
+// @ts-ignore
 window.html10n = html10n
