@@ -232,7 +232,12 @@ const statFile = async (filename, dirStatLimit) => {
   }
 };
 
+let contentCache = new Map();
+
 const getFileCompressed = async (filename, contentType) => {
+  if (contentCache.has(filename)) {
+    return contentCache.get(filename);
+  }
   let content = await getFile(filename);
   if (!content || !settings.minify) {
     return content;
@@ -254,6 +259,7 @@ const getFileCompressed = async (filename, contentType) => {
           console.error('getFile() returned an error in ' +
                         `getFileCompressed(${filename}, ${contentType}): ${error}`);
         }
+        contentCache.set(filename, content);
         resolve(content);
       });
     });
@@ -273,10 +279,12 @@ const getFileCompressed = async (filename, contentType) => {
         } catch (error) {
           console.error(`CleanCSS.minify() returned an error on ${filename}: ${error}`);
         }
+        contentCache.set(filename, content);
         resolve(content);
       });
     });
   } else {
+    contentCache.set(filename, content);
     return content;
   }
 };
