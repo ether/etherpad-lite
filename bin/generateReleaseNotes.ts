@@ -14,8 +14,6 @@ if (!tagVar) {
   process.exit(1)
 }
 
-console.log("Tag",tagVar)
-
 tagVar = tagVar.replace("refs/tags/v", "")
 
 let startNum = -1
@@ -38,4 +36,4 @@ for (const line of changelogLines) {
 }
 
 let currentReleaseNotes = changelogLines.slice(startNum, endline).join('\n')
-console.log("Generated changelog",currentReleaseNotes)
+console.log(currentReleaseNotes)
