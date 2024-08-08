@@ -80,8 +80,6 @@ jobs:
         if: ${{startsWith(github.ref, 'refs/tags/v') }}
         working-directory: bin
         run: pnpm run generateChangelog ${{ github.ref }} > ${{ github.workspace }}-CHANGELOG.txt
-        with:
-          tag: ${{ github.ref }}
       - name: Release
         uses: softprops/action-gh-release@v2
         if: ${{startsWith(github.ref, 'refs/tags/v') }}
