@@ -62,15 +62,15 @@ jobs:
         shell: msys2 {0}
         run: cd src && pnpm test
       -
-        name: Build the .zip
-        shell: msys2 {0}
-        run: bin/buildForWindows.sh
-      -
-        name: Archive production artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: etherpad-win.zip
-          path: etherpad-win.zip
+        name: Run Etherpad
+        working-directory: etherpad/src
+        run: |
+          pnpm i
+          pnpm exec playwright install --with-deps
+          pnpm run prod &
+          curl --connect-timeout 10 --max-time 20 --retry 5 --retry-delay 10 --retry-max-time 60 --retry-connrefused http://127.0.0.1:9001/p/test
+          pnpm exec playwright install chromium  --with-deps
+          pnpm run test-ui --project=chromium
 
   build-exe:
     if: |
@@ -151,7 +151,7 @@ jobs:
         run: .\bin\installOnWindows.bat
         working-directory: etherpad
       -
-        name: Run Etherpad
+        name: Run Frontend Tests
         working-directory: etherpad/src
         run: |
           pnpm i
@@ -165,8 +165,8 @@ jobs:
         name: Rename to etherpad-lite-win.zip
         shell: powershell
         run: mv etherpad-win.zip etherpad-lite-win.zip
-      - name: upload binaries to release
-        uses: softprops/action-gh-release@v2
+      - name: Release next version
+        uses: marvinpinto/action-automatic-releases@latest
         if: ${{startsWith(github.ref, 'refs/tags/v') }}
         with:
-            files: etherpad-lite-win.zip
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
