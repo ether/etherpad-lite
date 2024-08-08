@@ -74,11 +74,9 @@ jobs:
           pnpm run test-ui --project=chromium
       # On release, create release
       - name: Generate Changelog
-        #if: ${{startsWith(github.ref, 'refs/tags/v') }}
+        if: ${{startsWith(github.ref, 'refs/tags/v') }}
         working-directory: bin
         run: pnpm run generateChangelog ${{ github.ref }} > ${{ github.workspace }}-CHANGELOG.txt
-      - name: Output changelog
-        run: cat ${{ github.workspace }}-CHANGELOG.txt
       - name: Release
         uses: softprops/action-gh-release@v2
         if: ${{startsWith(github.ref, 'refs/tags/v') }}
