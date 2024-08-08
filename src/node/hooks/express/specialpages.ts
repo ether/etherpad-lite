@@ -107,7 +107,7 @@ const convertTypescript = (content: string) => {
 
   return  {
     output,
-    hash: outputRaw.outputFiles[0].hash.replaceAll('/','2')
+    hash: outputRaw.outputFiles[0].hash.replaceAll('/','2').replaceAll("+",'5').replaceAll("^","7")
   }
 }
 
@@ -238,7 +238,7 @@ const convertTypescriptWatched = (content: string, cb: (output:string, hash: str
   }).then((outputRaw) => {
     cb(
       outputRaw.outputFiles[0].text,
-      outputRaw.outputFiles[0].hash.replaceAll('/','2')
+      outputRaw.outputFiles[0].hash.replaceAll('/','2').replaceAll("+",'5').replaceAll("^","7")
     )
   })
 }
