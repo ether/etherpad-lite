@@ -82,8 +82,9 @@ jobs:
         run: pnpm run generateChangelog ${{github.ref}} > ${{ github.workspace }}-CHANGELOG.txt
         with:
           tag: ${{ github.ref }}
-      - name: Release next version
-        uses: marvinpinto/action-automatic-releases@latest
+      - name: Release
+        uses: softprops/action-gh-release@v2
         if: ${{startsWith(github.ref, 'refs/tags/v') }}
         with:
           body_path: ${{ github.workspace }}-CHANGELOG.txt
+          make_latest: true
