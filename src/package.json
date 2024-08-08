@@ -134,6 +134,6 @@
     "test-admin:ui": "cross-env NODE_ENV=production npx playwright test tests/frontend-new/admin-spec --ui --workers 1",
     "debug:socketio": "cross-env DEBUG=socket.io* node --require tsx/cjs node/server.ts"
   },
-  "version": "2.2.0",
+  "version": "2.2.1",
   "license": "Apache-2.0"
 }

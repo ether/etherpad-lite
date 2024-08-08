@@ -56,6 +56,13 @@ jobs:
       -
         name: Create settings.json
         run: cp ./src/tests/settings.json settings.json
+      - name: Cache playwright binaries
+        uses: actions/cache@v3
+        id: playwright-cache
+        with:
+          path: |
+            ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ env.PLAYWRIGHT_VERSION }}
       - name: Run the frontend tests
         shell: bash
         run: |
@@ -119,6 +126,13 @@ jobs:
         run: echo "::set-output name=sha_short::$(git rev-parse --short ${{ github.sha }})"
       - name: Create settings.json
         run: cp ./src/tests/settings.json settings.json
+      - name: Cache playwright binaries
+        uses: actions/cache@v3
+        id: playwright-cache
+        with:
+          path: |
+            ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ env.PLAYWRIGHT_VERSION }}
       - name: Run the frontend tests
         shell: bash
         run: |
@@ -160,6 +174,13 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
+      - name: Cache playwright binaries
+        uses: actions/cache@v3
+        id: playwright-cache
+        with:
+          path: |
+            ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ env.PLAYWRIGHT_VERSION }}
       - uses: pnpm/action-setup@v4
         name: Install pnpm
         with:
