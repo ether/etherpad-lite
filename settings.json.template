@@ -648,6 +648,13 @@
    */
   "loglevel": "INFO",
 
+    /*
+   * The log layout type to use.
+   *
+   * Valid values: basic, colored
+   */
+   "logLayoutType": "colored",
+
   /* Override any strings found in locale directories */
   "customLocaleStrings": {},
 

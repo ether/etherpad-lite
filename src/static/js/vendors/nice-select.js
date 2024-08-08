@@ -110,10 +110,10 @@
           $dropdown.find('.list').css('min-width', $dropdown.outerWidth() + 'px');
         }
 
-        $listHeight = $dropdown.find('.list').outerHeight();
-        $top = $dropdown.parent().offset().top;
-        $bottom = $('body').height() - $top;
-        $maxListHeight = $bottom - $dropdown.outerHeight() - 20;
+        let $listHeight = $dropdown.find('.list').outerHeight();
+        let $top = $dropdown.parent().offset().top;
+        let $bottom = $('body').height() - $top;
+        let $maxListHeight = $bottom - $dropdown.outerHeight() - 20;
         if ($maxListHeight < 200) {
           $dropdown.addClass('reverse');
           $maxListHeight = 250;

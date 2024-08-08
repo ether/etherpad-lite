@@ -128,6 +128,7 @@ exports.socketio = (hookName: string, {io}: any) => {
                 maxResult = 0;
             }
 
+            // Reset to default values if out of bounds
             if (query.offset && query.offset < 0) {
                 query.offset = 0;
             } else if (query.offset > maxResult) {
@@ -135,10 +136,13 @@ exports.socketio = (hookName: string, {io}: any) => {
             }
 
             if (query.limit && query.limit < 0) {
+              // Too small
                 query.limit = 0;
             } else if (query.limit > queryPadLimit) {
+              // Too big
                 query.limit = queryPadLimit;
             }
+
 
             if (query.sortBy === 'padName') {
                 result = result.sort((a, b) => {
@@ -160,53 +164,78 @@ exports.socketio = (hookName: string, {io}: any) => {
                         revisionNumber
                     }
                 }));
-            } else {
+            } else if (query.sortBy === "revisionNumber") {
                 const currentWinners: PadQueryResult[] = []
-                let queryOffsetCounter = 0
+                const padMapping = [] as {padId: string, revisionNumber: number}[]
                 for (let res of result) {
-
                     const pad = await padManager.getPad(res);
-                    const padType = {
-                        padName: res,
-                        lastEdited: await pad.getLastEdit(),
-                        userCount: api.padUsersCount(res).padUsersCount,
-                        revisionNumber: pad.getHeadRevisionNumber()
-                    };
-
-                    if (currentWinners.length < query.limit) {
-                        if (queryOffsetCounter < query.offset) {
-                            queryOffsetCounter++
-                            continue
-                        }
-                        currentWinners.push({
-                            padName: res,
-                            lastEdited: await pad.getLastEdit(),
-                            userCount: api.padUsersCount(res).padUsersCount,
-                            revisionNumber: pad.getHeadRevisionNumber()
-                        })
-                    } else {
-                        // Kick out worst pad and replace by current pad
-                        let worstPad = currentWinners.sort((a, b) => {
-                            if (a[query.sortBy] < b[query.sortBy]) return query.ascending ? -1 : 1;
-                            if (a[query.sortBy] > b[query.sortBy]) return query.ascending ? 1 : -1;
-                            return 0;
-                        })
-                        if (worstPad[0] && worstPad[0][query.sortBy] < padType[query.sortBy]) {
-                            if (queryOffsetCounter < query.offset) {
-                                queryOffsetCounter++
-                                continue
-                            }
-                            currentWinners.splice(currentWinners.indexOf(worstPad[0]), 1)
-                            currentWinners.push({
-                                padName: res,
-                                lastEdited: await pad.getLastEdit(),
-                                userCount: api.padUsersCount(res).padUsersCount,
-                                revisionNumber: pad.getHeadRevisionNumber()
-                            })
-                        }
-                    }
+                    const revisionNumber = pad.getHeadRevisionNumber()
+                    padMapping.push({padId: res, revisionNumber})
                 }
-                data.results = currentWinners;
+                padMapping.sort((a, b) => {
+                    if (a.revisionNumber < b.revisionNumber) return query.ascending ? -1 : 1;
+                    if (a.revisionNumber > b.revisionNumber) return query.ascending ? 1 : -1;
+                    return 0;
+                })
+
+              for (const padRetrieval of padMapping.slice(query.offset, query.offset + query.limit)) {
+                let pad = await padManager.getPad(padRetrieval.padId);
+                currentWinners.push({
+                  padName: padRetrieval.padId,
+                  lastEdited: await pad.getLastEdit(),
+                  userCount: api.padUsersCount(pad.padName).padUsersCount,
+                  revisionNumber: padRetrieval.revisionNumber
+                })
+              }
+
+              data.results = currentWinners;
+            } else if (query.sortBy === "userCount") {
+              const currentWinners: PadQueryResult[] = []
+              const padMapping = [] as {padId: string, userCount: number}[]
+              for (let res of result) {
+                const userCount = api.padUsersCount(res).padUsersCount
+                padMapping.push({padId: res, userCount})
+              }
+              padMapping.sort((a, b) => {
+                if (a.userCount < b.userCount) return query.ascending ? -1 : 1;
+                if (a.userCount > b.userCount) return query.ascending ? 1 : -1;
+                return 0;
+              })
+
+              for (const padRetrieval of padMapping.slice(query.offset, query.offset + query.limit)) {
+                let pad = await padManager.getPad(padRetrieval.padId);
+                currentWinners.push({
+                  padName: padRetrieval.padId,
+                  lastEdited: await pad.getLastEdit(),
+                  userCount: padRetrieval.userCount,
+                  revisionNumber: pad.getHeadRevisionNumber()
+                })
+              }
+              data.results = currentWinners;
+            } else if (query.sortBy === "lastEdited") {
+              const currentWinners: PadQueryResult[] = []
+              const padMapping = [] as {padId: string, lastEdited: string}[]
+              for (let res of result) {
+                const pad = await padManager.getPad(res);
+                const lastEdited = await pad.getLastEdit();
+                padMapping.push({padId: res, lastEdited})
+              }
+              padMapping.sort((a, b) => {
+                if (a.lastEdited < b.lastEdited) return query.ascending ? -1 : 1;
+                if (a.lastEdited > b.lastEdited) return query.ascending ? 1 : -1;
+                return 0;
+              })
+
+              for (const padRetrieval of padMapping.slice(query.offset, query.offset + query.limit)) {
+                let pad = await padManager.getPad(padRetrieval.padId);
+                currentWinners.push({
+                  padName: padRetrieval.padId,
+                  lastEdited: padRetrieval.lastEdited,
+                  userCount: api.padUsersCount(pad.padName).padUsersCount,
+                  revisionNumber: pad.getHeadRevisionNumber()
+                })
+              }
+              data.results = currentWinners;
             }
 
             socket.emit('results:padLoad', data);

@@ -5,11 +5,11 @@
 # Author: muxator
 
 FROM node:alpine AS adminbuild
-
+RUN npm install -g pnpm@9.0.4
 WORKDIR /opt/etherpad-lite
-COPY ./ ./
-RUN cd ./admin && npm install -g pnpm@9.0.4 && pnpm install && pnpm run build --outDir ./dist
-RUN cd ./ui && pnpm install && pnpm run build --outDir ./dist
+COPY . .
+RUN pnpm install
+RUN pnpm run build:ui
 
 
 FROM node:alpine AS build
@@ -115,8 +115,8 @@ COPY --chown=etherpad:etherpad ./pnpm-workspace.yaml ./package.json ./
 FROM build AS development
 
 COPY --chown=etherpad:etherpad ./src/package.json .npmrc ./src/
-COPY --chown=etherpad:etherpad --from=adminbuild /opt/etherpad-lite/admin/dist ./src/templates/admin
-COPY --chown=etherpad:etherpad --from=adminbuild /opt/etherpad-lite/ui/dist ./src/static/oidc
+COPY --chown=etherpad:etherpad --from=adminbuild /opt/etherpad-lite/src/ templates/admin./src/templates/admin
+COPY --chown=etherpad:etherpad --from=adminbuild /opt/etherpad-lite/src/static/oidc ./src/static/oidc
 
 RUN bin/installDeps.sh && \
     if [ ! -z "${ETHERPAD_PLUGINS}" ] || [ ! -z "${ETHERPAD_LOCAL_PLUGINS}" ]; then \
@@ -130,8 +130,8 @@ ENV NODE_ENV=production
 ENV ETHERPAD_PRODUCTION=true
 
 COPY --chown=etherpad:etherpad ./src ./src
-COPY --chown=etherpad:etherpad --from=adminbuild /opt/etherpad-lite/admin/dist ./src/templates/admin
-COPY --chown=etherpad:etherpad --from=adminbuild /opt/etherpad-lite/ui/dist ./src/static/oidc
+COPY --chown=etherpad:etherpad --from=adminbuild /opt/etherpad-lite/src/templates/admin ./src/templates/admin
+COPY --chown=etherpad:etherpad --from=adminbuild /opt/etherpad-lite/src/static/oidc ./src/static/oidc
 
 RUN bin/installDeps.sh && rm -rf ~/.npm && rm -rf ~/.local && rm -rf ~/.cache && \
     if [ ! -z "${ETHERPAD_PLUGINS}" ] || [ ! -z "${ETHERPAD_LOCAL_PLUGINS}" ]; then \

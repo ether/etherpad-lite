@@ -1,14 +1,23 @@
 'use strict';
 
-const path = require('path');
-const eejs = require('../../eejs');
-const fs = require('fs');
+import path from 'node:path';
+const eejs = require('../../eejs')
+import fs from 'node:fs';
 const fsp = fs.promises;
 const toolbar = require('../../utils/toolbar');
 const hooks = require('../../../static/js/pluginfw/hooks');
 const settings = require('../../utils/Settings');
-const util = require('util');
+import util from 'node:util';
 const webaccess = require('./webaccess');
+const plugins = require('../../../static/js/pluginfw/plugin_defs');
+
+import {build, buildSync} from 'esbuild'
+let ioI: { sockets: { sockets: any[]; }; } | null = null
+
+exports.socketio = (hookName: string, {io}: any) => {
+  ioI = io
+}
+
 
 exports.expressPreSession = async (hookName:string, {app}:any) => {
   // This endpoint is intended to conform to:
@@ -73,49 +82,291 @@ exports.expressPreSession = async (hookName:string, {app}:any) => {
   });
 };
 
-exports.expressCreateServer = (hookName:string, args:any, cb:Function) => {
-  // serve index.html under /
-  args.app.get('/', (req:any, res:any) => {
-    res.send(eejs.require('ep_etherpad-lite/templates/index.html', {req}));
+
+
+const convertTypescript = (content: string) => {
+  const outputRaw = buildSync({
+    stdin: {
+      contents: content,
+      resolveDir: path.join(settings.root, 'var','js'),
+      loader: 'js'
+    },
+    alias:{
+      "ep_etherpad-lite/static/js/browser": 'ep_etherpad-lite/static/js/vendors/browser',
+      "ep_etherpad-lite/static/js/nice-select": 'ep_etherpad-lite/static/js/vendors/nice-select'
+    },
+    bundle: true, // Bundle the files together
+    minify: process.env.NODE_ENV === "production", // Minify the output
+    sourcemap: !(process.env.NODE_ENV === "production"), // Generate source maps
+    sourceRoot: settings.root+"/src/static/js/",
+    target: ['es2020'], // Target ECMAScript version
+    metafile: true,
+    write: false, // Do not write to file system,
+  })
+  const output = outputRaw.outputFiles[0].text
+
+  return  {
+    output,
+    hash: outputRaw.outputFiles[0].hash.replaceAll('/','2')
+  }
+}
+
+const handleLiveReload = async (args: any, padString: string, timeSliderString: string, indexString: any) => {
+  const chokidar = await import('chokidar')
+  const watcher = chokidar.watch(path.join(settings.root, 'src', 'static', 'js'));
+  let routeHandlers: { [key: string]: Function } = {};
+
+  const setRouteHandler = (path: string, newHandler: Function) => {
+    routeHandlers[path] = newHandler;
+  };
+  args.app.use((req: any, res: any, next: Function) => {
+    if (req.path.startsWith('/p/') && req.path.split('/').length == 3) {
+      req.params = {
+        pad: req.path.split('/')[2]
+      }
+      routeHandlers['/p/:pad'](req, res);
+    } else if (req.path.startsWith('/p/') && req.path.split('/').length == 4) {
+      req.params = {
+        pad: req.path.split('/')[2]
+      }
+      routeHandlers['/p/:pad/timeslider'](req, res);
+    } else if (req.path == "/"){
+      routeHandlers['/'](req, res);
+    } else if (routeHandlers[req.path]) {
+      routeHandlers[req.path](req, res);
+    } else {
+      next();
+    }
   });
 
-  // serve pad.html under /p
-  args.app.get('/p/:pad', (req:any, res:any, next:Function) => {
-    // The below might break for pads being rewritten
-    const isReadOnly = !webaccess.userCanModify(req.params.pad, req);
+  function handleUpdate() {
 
-    hooks.callAll('padInitToolbar', {
-      toolbar,
-      isReadOnly,
+    convertTypescriptWatched(indexString, (output, hash) => {
+      setRouteHandler('/watch/index', (req: any, res: any) => {
+        res.header('Content-Type', 'application/javascript');
+        res.send(output)
+      })
+      setRouteHandler('/', (req: any, res: any) => {
+        res.send(eejs.require('ep_etherpad-lite/templates/index.html', {req, entrypoint: '/watch/index?hash=' + hash, settings}));
+      })
+    })
+
+    convertTypescriptWatched(padString, (output, hash) => {
+      console.log("New pad hash is", hash)
+      setRouteHandler('/watch/pad', (req: any, res: any) => {
+        res.header('Content-Type', 'application/javascript');
+        res.send(output)
+      })
+
+
+
+
+      setRouteHandler("/p/:pad", (req: any, res: any, next: Function) => {
+        // The below might break for pads being rewritten
+        const isReadOnly = !webaccess.userCanModify(req.params.pad, req);
+
+        hooks.callAll('padInitToolbar', {
+          toolbar,
+          isReadOnly
+        });
+
+        const content = eejs.require('ep_etherpad-lite/templates/pad.html', {
+          req,
+          toolbar,
+          isReadOnly,
+          entrypoint: '/watch/pad?hash=' + hash
+        })
+        res.send(content);
+      })
+      ioI!.sockets.sockets.forEach(socket => socket.emit('liveupdate'))
+    })
+    convertTypescriptWatched(timeSliderString, (output, hash) => {
+      // serve timeslider.html under /p/$padname/timeslider
+      console.log("New timeslider hash is", hash)
+
+      setRouteHandler('/watch/timeslider', (req: any, res: any) => {
+        res.header('Content-Type', 'application/javascript');
+        res.send(output)
+      })
+
+      setRouteHandler("/p/:pad/timeslider", (req: any, res: any, next: Function) => {
+        console.log("Reloading pad")
+        // The below might break for pads being rewritten
+        const isReadOnly = !webaccess.userCanModify(req.params.pad, req);
+
+        hooks.callAll('padInitToolbar', {
+          toolbar,
+          isReadOnly
+        });
+
+        const content = eejs.require('ep_etherpad-lite/templates/timeslider.html', {
+          req,
+          toolbar,
+          isReadOnly,
+          entrypoint: '/watch/timeslider?hash=' + hash
+        })
+        res.send(content);
+      })
+    })
+  }
+
+  watcher.on('change', path => {
+    console.log(`File ${path} has been changed`);
+    handleUpdate();
+  });
+  handleUpdate()
+}
+
+const convertTypescriptWatched = (content: string, cb: (output:string, hash: string)=>void) => {
+  build({
+    stdin: {
+      contents: content,
+      resolveDir: path.join(settings.root, 'var','js'),
+      loader: 'js'
+    },
+    alias:{
+      "ep_etherpad-lite/static/js/browser": 'ep_etherpad-lite/static/js/vendors/browser',
+      "ep_etherpad-lite/static/js/nice-select": 'ep_etherpad-lite/static/js/vendors/nice-select'
+    },
+    bundle: true, // Bundle the files together
+    minify: process.env.NODE_ENV === "production", // Minify the output
+    sourcemap: !(process.env.NODE_ENV === "production"), // Generate source maps
+    sourceRoot: settings.root+"/src/static/js/",
+    target: ['es2020'], // Target ECMAScript version
+    metafile: true,
+    write: false, // Do not write to file system,
+  }).then((outputRaw) => {
+    cb(
+      outputRaw.outputFiles[0].text,
+      outputRaw.outputFiles[0].hash.replaceAll('/','2')
+    )
+  })
+}
+
+exports.expressCreateServer = async (hookName: string, args: any, cb: Function) => {
+  const padString =   eejs.require('ep_etherpad-lite/templates/padBootstrap.js', {
+      pluginModules: (() => {
+        const pluginModules = new Set();
+        for (const part of plugins.parts) {
+          for (const [, hookFnName] of Object.entries(part.client_hooks || {})) {
+            // @ts-ignore
+            pluginModules.add(hookFnName.split(':')[0]);
+          }
+        }
+        return [...pluginModules];
+      })(),
+      settings,
+    })
+
+  const indexString = eejs.require('ep_etherpad-lite/templates/indexBootstrap.js', {
+  })
+
+    const timeSliderString = eejs.require('ep_etherpad-lite/templates/timeSliderBootstrap.js', {
+      pluginModules: (() => {
+        const pluginModules = new Set();
+        for (const part of plugins.parts) {
+          for (const [, hookFnName] of Object.entries(part.client_hooks || {})) {
+            // @ts-ignore
+            pluginModules.add(hookFnName.split(':')[0]);
+          }
+        }
+        return [...pluginModules];
+      })(),
+      settings,
+    })
+
+
+
+  const outdir = path.join(settings.root, 'var','js')
+  // Create the outdir if it doesn't exist
+  if (!fs.existsSync(outdir)) {
+    fs.mkdirSync(outdir);
+  }
+
+  let fileNamePad: string
+  let fileNameTimeSlider: string
+  let fileNameIndex: string
+  if(process.env.NODE_ENV === "production"){
+    const padSliderWrite = convertTypescript(padString)
+    const timeSliderWrite = convertTypescript(timeSliderString)
+    const indexWrite = convertTypescript(indexString)
+
+    fileNamePad = `padbootstrap-${padSliderWrite.hash}.min.js`
+    fileNameTimeSlider = `timeSliderBootstrap-${timeSliderWrite.hash}.min.js`
+    fileNameIndex = `indexBootstrap-${indexWrite.hash}.min.js`
+    const pathNamePad = path.join(outdir, fileNamePad)
+    const pathNameTimeSlider = path.join(outdir, fileNameTimeSlider)
+    const pathNameIndex = path.join(outdir, 'index.js')
+
+    if (!fs.existsSync(pathNamePad)) {
+      fs.writeFileSync(pathNamePad, padSliderWrite.output);
+    }
+
+    if (!fs.existsSync(pathNameIndex)) {
+      fs.writeFileSync(pathNameIndex, indexWrite.output);
+    }
+
+    if (!fs.existsSync(pathNameTimeSlider)) {
+      fs.writeFileSync(pathNameTimeSlider,timeSliderWrite.output)
+    }
+
+    args.app.get("/"+fileNamePad, (req: any, res: any) => {
+      res.sendFile(pathNamePad)
+    })
+
+    args.app.get("/"+fileNameIndex, (req: any, res: any) => {
+      res.sendFile(pathNameIndex)
+    })
+
+    args.app.get("/"+fileNameTimeSlider, (req: any, res: any) => {
+      res.sendFile(pathNameTimeSlider)
+    })
+
+    // serve index.html under /
+    args.app.get('/', (req: any, res: any) => {
+      res.send(eejs.require('ep_etherpad-lite/templates/index.html', {req, settings, entrypoint: "/"+fileNameIndex}));
     });
 
-    // can be removed when require-kernel is dropped
-    res.header('Feature-Policy', 'sync-xhr \'self\'');
-    res.send(eejs.require('ep_etherpad-lite/templates/pad.html', {
-      req,
-      toolbar,
-      isReadOnly,
-    }));
-  });
 
-  // serve timeslider.html under /p/$padname/timeslider
-  args.app.get('/p/:pad/timeslider', (req:any, res:any, next:Function) => {
-    hooks.callAll('padInitToolbar', {
-      toolbar,
+    // serve pad.html under /p
+    args.app.get('/p/:pad', (req: any, res: any, next: Function) => {
+      // The below might break for pads being rewritten
+      const isReadOnly = !webaccess.userCanModify(req.params.pad, req);
+
+      hooks.callAll('padInitToolbar', {
+        toolbar,
+        isReadOnly
+      });
+
+      const content = eejs.require('ep_etherpad-lite/templates/pad.html', {
+        req,
+        toolbar,
+        isReadOnly,
+        entrypoint: "/"+fileNamePad
+      })
+      res.send(content);
     });
 
-    res.send(eejs.require('ep_etherpad-lite/templates/timeslider.html', {
-      req,
-      toolbar,
-    }));
-  });
+    // serve timeslider.html under /p/$padname/timeslider
+    args.app.get('/p/:pad/timeslider', (req: any, res: any, next: Function) => {
+      hooks.callAll('padInitToolbar', {
+        toolbar,
+      });
+
+      res.send(eejs.require('ep_etherpad-lite/templates/timeslider.html', {
+        req,
+        toolbar,
+        entrypoint: "/"+fileNameTimeSlider
+      }));
+    });
+  } else {
+    await handleLiveReload(args, padString, timeSliderString, indexString)
+  }
 
   // The client occasionally polls this endpoint to get an updated expiration for the express_sid
   // cookie. This handler must be installed after the express-session middleware.
-  args.app.put('/_extendExpressSessionLifetime', (req:any, res:any) => {
+  args.app.put('/_extendExpressSessionLifetime', (req: any, res: any) => {
     // express-session automatically calls req.session.touch() so we don't need to do it here.
     res.json({status: 'ok'});
   });
-
-  return cb();
 };

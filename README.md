@@ -98,76 +98,19 @@ volumes:
   etherpad-var:
 ```
 
-
-
 ### Requirements
 
 [Node.js](https://nodejs.org/) >= **18.18.2**.
 
-### GNU/Linux and other UNIX-like systems
+### Windows, macOS, Linux
 
-#### Quick install on Debian/Ubuntu
-
-Install the latest Node.js LTS per [official install instructions](https://github.com/nodesource/distributions#installation-instructions), then:
-```sh
-git clone --branch master https://github.com/ether/etherpad-lite.git &&
-cd etherpad-lite &&
-bin/run.sh
-```
-
-#### Manual install
-
-You'll need Git and [Node.js](https://nodejs.org/) installed.
-
-**As any user (we recommend creating a separate user called etherpad):**
-
-  1. Move to a folder where you want to install Etherpad.
-  2. Clone the Git repository: `git clone --branch master
-     https://github.com/ether/etherpad-lite.git`
-  3. Change into the new directory containing the cloned source code: `cd
-     etherpad-lite`
-  4. Run `bin/run.sh` and open http://127.0.0.1:9001 in your browser.
-
-To update to the latest released version, execute `git pull origin`. The next
-start with `bin/run.sh` will update the dependencies.
-
-### Windows
-
-#### Prebuilt Windows package
-
-This package runs on any Windows machine. You can perform a manual installation
-via git for development purposes, but as this uses symlinks which performs
-unreliably on Windows, please stick to the prebuilt package if possible.
-
-  1. [Download the latest Windows package](https://etherpad.org/#download)
-  2. Extract the folder
-
-Run `start.bat` and open <http://localhost:9001> in your browser.
-
-#### Manually install on Windows
-
-You'll need [Node.js](https://nodejs.org) and (optionally, though recommended)
-git.
-
-  1. Grab the source, either:
-      * download <https://github.com/ether/etherpad-lite/zipball/master>
-      * or `git clone --branch master
-        https://github.com/ether/etherpad-lite.git`
-  2. With a "Run as administrator" command prompt execute
-     `bin\installOnWindows.bat`
-
-Now, run `start.bat` and open http://localhost:9001 in your browser.
-
-Update to the latest version with `git pull origin`, then run
-`bin\installOnWindows.bat`, again.
-
-If cloning to a subdirectory within another project, you may need to do the
-following:
-
-  1. Start the server manually (e.g. `node src/node/server.ts`)
-  2. Edit the db `filename` in `settings.json` to the relative directory with
-     the file (e.g. `application/lib/etherpad-lite/var/dirty.db`)
-  3. Add auto-generated files to the main project `.gitignore`
+1. Download the latest Node.js runtime from [nodejs.org](https://nodejs.org/).
+2. Install pnpm: `npm install -g pnpm` (Administrator privileges may be required).
+3. Clone the repository: `git clone -b master`
+4. Run `pnpm i`
+5. Run `pnpm run build:etherpad`
+6. Run `pnpm run prod`
+7. Visit `http://localhost:9001` in your browser.
 
 ### Docker container
 

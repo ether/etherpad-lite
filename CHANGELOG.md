@@ -1,3 +1,13 @@
+# 2.2.0
+
+### Notable enhancements and fixes
+
+- Removal of Etherpad require kernel: We finally managed to include esbuild to bundle our frontend code together. So no matter how many plugins your server has it is always one JavaScript file. This boosts performance dramatically.
+- Added log layoutType: This lets you print the log in either colored or basic (black and white text)
+- Introduced esbuild for bundling CSS files
+- Cache all files to be bundled in memory for faster load speed
+
+
 # 2.1.1
 
 

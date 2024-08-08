@@ -11,6 +11,7 @@
 			"हिमाल सुबेदी"
 		]
 	},
+	"admin_plugins.description": "विवरण",
 	"index.newPad": "नयाँ प्याड",
 	"index.createOpenPad": "नाम सहितको नयाँ प्याड सिर्जना गर्ने / खोल्ने :",
 	"pad.toolbar.bold.title": "मोटो (Ctrl-B)",

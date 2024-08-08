@@ -7,6 +7,8 @@
 
 // As of v14, Node.js does not exit when there is an unhandled Promise rejection. Convert an
 // unhandled rejection into an uncaught exception, which does cause Node.js to exit.
+import process from "node:process";
+
 process.on('unhandledRejection', (err) => { throw err; });
 
 if (process.argv.length !== 4 && process.argv.length !== 5) {
@@ -82,4 +84,5 @@ const newPadId = process.argv[4] || `${padId}-rebuilt`;
 
   await db.shutdown();
   console.info('finished');
+  process.exit(0)
 })();

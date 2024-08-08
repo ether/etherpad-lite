@@ -38,4 +38,5 @@ const apikey = fs.readFileSync(filePath, {encoding: 'utf-8'});
   const deleteAttempt = await axios.post(uri);
   if (deleteAttempt.data.code === 1) throw new Error(`Error deleting pad ${deleteAttempt.data}`);
   console.log('Deleted pad', deleteAttempt.data);
+  process.exit(0)
 })();

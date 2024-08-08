@@ -57,4 +57,5 @@ let valueCount = 0;
   }
 
   console.info(`Finished: Replaced ${valueCount} values in the database`);
+  process.exit(0)
 })();

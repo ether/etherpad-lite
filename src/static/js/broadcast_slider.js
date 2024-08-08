@@ -26,6 +26,7 @@
 const _ = require('./underscore');
 const padmodals = require('./pad_modals').padmodals;
 const colorutils = require('./colorutils').colorutils;
+import html10n from './vendors/html10n';
 
 const loadBroadcastSliderJS = (fireWhenAllScriptsAreLoaded) => {
   let BroadcastSlider;

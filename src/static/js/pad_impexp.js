@@ -22,6 +22,9 @@
  * limitations under the License.
  */
 
+import html10n from './vendors/html10n';
+
+
 const padimpexp = (() => {
   let pad;
 

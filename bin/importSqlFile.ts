@@ -6,7 +6,8 @@ import util from "node:util";
 const fs = require('fs');
 import log4js from 'log4js';
 import readline from 'readline';
-import ueberDB from "ueberdb2";
+import {Database} from "ueberdb2";
+import process from "node:process";
 
 const settings = require('ep_etherpad-lite/node/utils/Settings');
 process.on('unhandledRejection', (err) => { throw err; });
@@ -56,7 +57,7 @@ const unescape = (val: string) => {
     writeInterval: 100,
     json: false, // data is already json encoded
   };
-  const db = new ueberDB.Database( // eslint-disable-line new-cap
+  const db = new Database( // eslint-disable-line new-cap
       settings.dbType,
       settings.dbSettings,
       dbWrapperSettings,
@@ -96,6 +97,8 @@ const unescape = (val: string) => {
                        'depended on dbms this may take some time..\n');
 
   const closeDB = util.promisify(db.close.bind(db));
+  // @ts-ignore
   await closeDB(null);
   log(`finished, imported ${keyNo} keys.`);
+  process.exit(0)
 })();

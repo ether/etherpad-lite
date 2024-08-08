@@ -24,11 +24,14 @@
 
 let socket;
 
+
 // These jQuery things should create local references, but for now `require()`
 // assigns to the global `$` and augments it with plugins.
 require('./vendors/jquery');
 require('./vendors/farbtastic');
 require('./vendors/gritter');
+
+import html10n from './vendors/html10n'
 
 const Cookies = require('./pad_utils').Cookies;
 const chat = require('./chat').chat;
@@ -136,7 +139,8 @@ const getParameters = [
     name: 'lang',
     checkVal: null,
     callback: (val) => {
-      window.html10n.localize([val, 'en']);
+      console.log('Val is', val)
+      html10n.localize([val, 'en']);
       Cookies.set('language', val);
     },
   },
@@ -281,6 +285,7 @@ const handshake = async () => {
     }
   });
 
+
   socket.on('error', (error) => {
     // pad.collabClient might be null if the error occurred before the hanshake completed.
     if (pad.collabClient != null) {
@@ -313,6 +318,15 @@ const handshake = async () => {
             () => $.ajax('../_extendExpressSessionLifetime', {method: 'PUT'}).catch(() => {});
         setInterval(ping, window.clientVars.sessionRefreshInterval);
       }
+      if(window.clientVars.mode === "development") {
+        console.warn('Enabling development mode with live update')
+        socket.on('liveupdate', ()=>{
+
+          console.log('Live reload update received')
+          location.reload()
+        })
+      }
+
     } else if (obj.disconnect) {
       padconnectionstatus.disconnected(obj.disconnect);
       socket.disconnect();
@@ -713,7 +727,7 @@ const pad = {
       $.ajax(
           {
             type: 'post',
-            url: 'ep/pad/connection-diagnostic-info',
+            url: '../ep/pad/connection-diagnostic-info',
             data: {
               diagnosticInfo: JSON.stringify(pad.diagnosticInfo),
             },

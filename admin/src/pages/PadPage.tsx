@@ -112,17 +112,17 @@ export const PadPage = ()=>{
                         ascending: !searchParams.ascending
                     })
                 }}><Trans i18nKey="ep_admin_pads:ep_adminpads2_padname"/></th>
-                <th className={determineSorting(searchParams.sortBy, searchParams.ascending, 'lastEdited')} onClick={()=>{
-                    setSearchParams({
-                        ...searchParams,
-                        sortBy: 'lastEdited',
-                        ascending: !searchParams.ascending
-                    })
-                }}><Trans i18nKey="ep_admin_pads:ep_adminpads2_pad-user-count"/></th>
                 <th className={determineSorting(searchParams.sortBy, searchParams.ascending, 'userCount')} onClick={()=>{
                     setSearchParams({
                         ...searchParams,
                         sortBy: 'userCount',
+                        ascending: !searchParams.ascending
+                    })
+                }}><Trans i18nKey="ep_admin_pads:ep_adminpads2_pad-user-count"/></th>
+                <th className={determineSorting(searchParams.sortBy, searchParams.ascending, 'lastEdited')} onClick={()=>{
+                    setSearchParams({
+                        ...searchParams,
+                        sortBy: 'lastEdited',
                         ascending: !searchParams.ascending
                     })
                 }}><Trans i18nKey="ep_admin_pads:ep_adminpads2_last-edited"/></th>

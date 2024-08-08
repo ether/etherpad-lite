@@ -2,7 +2,7 @@
 /**
  * The Toolbar Module creates and renders the toolbars and buttons
  */
-const _ = require('underscore');
+import {isString, reduce, each, isUndefined, map, first, last, extend, escape} from 'underscore';
 
 const removeItem = (array: string[], what: string) => {
     let ax;
@@ -21,7 +21,7 @@ const defaultButtonAttributes = (name: string, overrides?: boolean) => ({
 const tag = (name: string, attributes: AttributeObj, contents?: string) => {
     const aStr = tagAttributes(attributes);
 
-    if (_.isString(contents) && contents!.length > 0) {
+    if (isString(contents) && contents!.length > 0) {
         return `<${name}${aStr}>${contents}</${name}>`;
     } else {
         return `<${name}${aStr}></${name}>`;
@@ -34,14 +34,14 @@ type AttributeObj = {
 }
 
 const tagAttributes = (attributes: AttributeObj) => {
-    attributes = _.reduce(attributes || {}, (o: AttributeObj, val: string, name: string) => {
-        if (!_.isUndefined(val)) {
+    attributes = reduce(attributes || {}, (o: AttributeObj, val: string, name: string) => {
+        if (!isUndefined(val)) {
             o[name] = val;
         }
         return o;
     }, {});
 
-    return ` ${_.map(attributes, (val: string, name: string) => `${name}="${_.escape(val)}"`).join(' ')}`;
+    return ` ${map(attributes, (val: string, name: string) => `${name}="${escape(val)}"`).join(' ')}`;
 };
 
 type ButtonGroupType = {
@@ -58,7 +58,7 @@ class ButtonGroup {
 
     public static fromArray = function (array: string[]) {
         const btnGroup = new ButtonGroup();
-        _.each(array, (btnName: string) => {
+        each(array, (btnName: string) => {
             const button = Button.load(btnName) as Button
             btnGroup.addButton(button);
         });
@@ -70,18 +70,19 @@ class ButtonGroup {
         return this;
     }
 
-    render() {
+    render(): string {
         if (this.buttons && this.buttons.length === 1) {
             this.buttons[0].grouping = '';
         } else if (this.buttons && this.buttons.length > 1) {
-            _.first(this.buttons).grouping = 'grouped-left';
-            _.last(this.buttons).grouping = 'grouped-right';
-            _.each(this.buttons.slice(1, -1), (btn: Button) => {
+            first(this.buttons)!.grouping = 'grouped-left';
+            last(this.buttons)!.grouping = 'grouped-right';
+            each(this.buttons.slice(1, -1), (btn: Button) => {
                 btn.grouping = 'grouped-middle';
             });
         }
 
-        return _.map(this.buttons, (btn: ButtonGroup) => {
+        // @ts-ignore
+      return map(this.buttons, (btn: ButtonGroup) => {
             if (btn) return btn.render();
         }).join('\n');
     }
@@ -151,8 +152,8 @@ class SelectButton extends Button {
     select(attributes: AttributeObj) {
         const options: string[] = [];
 
-        _.each(this.options, (opt: AttributeSelect) => {
-            const a = _.extend({
+        each(this.options, (opt: AttributeSelect) => {
+            const a = extend({
                 value: opt.value,
             }, opt.attributes);
 
@@ -299,7 +300,7 @@ module.exports = {
             buttons[0].push('savedrevision');
         }
 
-        const groups = _.map(buttons, (group: string[]) => ButtonGroup.fromArray(group).render());
+        const groups = map(buttons, (group: string[]) => ButtonGroup.fromArray(group).render());
         return groups.join(this.separator());
     },
 };

@@ -4,7 +4,7 @@ const AttributeMap = require('./AttributeMap');
 const Changeset = require('./Changeset');
 const ChangesetUtils = require('./ChangesetUtils');
 const attributes = require('./attributes');
-const _ = require('./underscore');
+const underscore = require("underscore")
 
 const lineMarkerAttribute = 'lmkr';
 
@@ -45,7 +45,7 @@ const AttributeManager = function (rep, applyChangesetCallback) {
 AttributeManager.DEFAULT_LINE_ATTRIBUTES = DEFAULT_LINE_ATTRIBUTES;
 AttributeManager.lineAttributes = lineAttributes;
 
-AttributeManager.prototype = _(AttributeManager.prototype).extend({
+AttributeManager.prototype = underscore.default(AttributeManager.prototype).extend({
 
   applyChangeset(changeset) {
     if (!this.applyChangesetCallback) return changeset;
@@ -335,7 +335,7 @@ AttributeManager.prototype = _(AttributeManager.prototype).extend({
 
     ChangesetUtils.buildKeepToStartOfRange(this.rep, builder, [lineNum, 0]);
 
-    const countAttribsWithMarker = _.chain(attribs).filter((a) => !!a[1])
+    const countAttribsWithMarker = underscore.chain(attribs).filter((a) => !!a[1])
         .map((a) => a[0]).difference(DEFAULT_LINE_ATTRIBUTES).size().value();
 
     // if we have marker and any of attributes don't need to have marker. we need delete it
