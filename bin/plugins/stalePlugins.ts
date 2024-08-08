@@ -3,6 +3,7 @@
 // Returns a list of stale plugins and their authors email
 
 import axios from 'axios'
+import process from "node:process";
 const currentTime = new Date();
 
 (async () => {
@@ -19,4 +20,5 @@ const currentTime = new Date();
       console.log(`${name}, ${res.data[plugin].data.maintainers[0].email}`);
     }
   }
+  process.exit(0)
 })();

@@ -49,4 +49,5 @@ const settings = require('ep_etherpad-lite/tests/container/loadSettings').loadSe
     }
   }
   console.log(`Deleted ${deleteCount} sessions`);
+  process.exit(0)
 })();
