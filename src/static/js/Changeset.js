@@ -908,8 +908,10 @@ class TextLinesMutator {
     let removed = '';
     if (this._isCurLineInSplice()) {
       if (this._curCol === 0) {
+        // First line to be removed is in splice.
         removed = this._curSplice[this._curSplice.length - 1];
         this._curSplice.length--;
+        // Next lines to be removed are not in splice.
         removed += nextKLinesText(L - 1);
         this._curSplice[1] += L - 1;
       } else {
@@ -917,11 +919,13 @@ class TextLinesMutator {
         this._curSplice[1] += L - 1;
         const sline = this._curSplice.length - 1;
         removed = this._curSplice[sline].substring(this._curCol) + removed;
-        this._curSplice[sline] = this._curSplice[sline].substring(0, this._curCol) +
-            this._linesGet(this._curSplice[0] + this._curSplice[1]);
-        this._curSplice[1] += 1;
+        // Is there a line left?
+        const remaining = this._linesGet(this._curSplice[0] + this._curSplice[1]) || '';
+        this._curSplice[sline] = this._curSplice[sline].substring(0, this._curCol) + remaining;
+        this._curSplice[1] += remaining ? 1 : 0;
       }
     } else {
+      // Nothing that is removed is in splice. Implies curCol === 0.
       removed = nextKLinesText(L);
       this._curSplice[1] += L;
     }
@@ -973,17 +977,24 @@ class TextLinesMutator {
         this._curLine += newLines.length;
         // insert the remaining chars from the "old" line (e.g. the line we were in
         // when we started to insert new lines)
-        this._curSplice.push(theLine.substring(lineCol));
-        this._curCol = 0; // TODO(doc) why is this not set to the length of last line?
+        const remaining = theLine.substring(lineCol);
+        if (remaining !== '') this._curSplice.push(remaining);
+        this._curCol = 0;
       } else {
         this._curSplice.push(...newLines);
         this._curLine += newLines.length;
       }
-    } else {
+    } else if (!this.hasMore()) {
       // There are no additional lines. Although the line is put into splice, curLine is not
-      // increased because there may be more chars in the line (newline is not reached).
+      // increased because there may be more chars in the line (newline is not reached). We are
+      // inserting at the end of lines. curCol is 0 as curLine is not in splice.
+      this._curSplice.push(text);
+      this._curCol += text.length;
+    } else {
+      // insert text after curCol
       const sline = this._putCurLineInSplice();
       if (!this._curSplice[sline]) {
+        // TODO should never happen now
         const err = new Error(
             'curSplice[sline] not populated, actual curSplice contents is ' +
             `${JSON.stringify(this._curSplice)}. Possibly related to ` +
