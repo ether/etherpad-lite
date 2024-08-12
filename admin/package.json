@@ -21,7 +21,7 @@
     "@typescript-eslint/eslint-plugin": "^8.0.1",
     "@typescript-eslint/parser": "^8.0.1",
     "@vitejs/plugin-react-swc": "^3.5.0",
-    "eslint": "^9.8.0",
+    "eslint": "^9.9.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.9",
     "i18next": "^23.12.2",
