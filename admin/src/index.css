@@ -802,3 +802,12 @@ input, button, select, optgroup, textarea {
     background-color: var(--etherpad-color);
     color: white
 }
+
+.search-pads{
+  text-align: center;
+}
+
+.search-pads-body tr td:last-child {
+  display: flex;
+  justify-content: center;
+}
