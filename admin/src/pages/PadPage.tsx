@@ -104,7 +104,7 @@ export const PadPage = ()=>{
         <SearchField value={searchTerm} onChange={v=>setSearchTerm(v.target.value)} placeholder={t('ep_admin_pads:ep_adminpads2_search-heading')}/>
         <table>
             <thead>
-            <tr>
+            <tr className="search-pads">
                 <th className={determineSorting(searchParams.sortBy, searchParams.ascending, 'padName')} onClick={()=>{
                     setSearchParams({
                         ...searchParams,
@@ -136,7 +136,7 @@ export const PadPage = ()=>{
                 <th><Trans i18nKey="ep_admin_pads:ep_adminpads2_action"/></th>
             </tr>
             </thead>
-            <tbody>
+            <tbody className="search-pads-body">
             {
                 pads?.results?.map((pad)=>{
                     return <tr key={pad.padName}>
