@@ -114,13 +114,13 @@ COPY --chown=etherpad:etherpad ./pnpm-workspace.yaml ./package.json ./
 
 FROM build AS development
 
-COPY --chown=etherpad:etherpad ./src/package.json .npmrc ./src/
+COPY --chown=etherpad:etherpad ./src/ ./src/
 COPY --chown=etherpad:etherpad --from=adminbuild /opt/etherpad-lite/src/ templates/admin./src/templates/admin
 COPY --chown=etherpad:etherpad --from=adminbuild /opt/etherpad-lite/src/static/oidc ./src/static/oidc
 
 RUN bin/installDeps.sh && \
-    if [ ! -z "${ETHERPAD_PLUGINS}" ] || [ ! -z "${ETHERPAD_LOCAL_PLUGINS}" ]; then \
-        pnpm run plugins i ${ETHERPAD_PLUGINS} ${ETHERPAD_LOCAL_PLUGINS:+--path ${ETHERPAD_LOCAL_PLUGINS}}; \
+    if [ ! -z "${ETHERPAD_PLUGINS}" ] || [ ! -z "${ETHERPAD_LOCAL_PLUGINS}" ] || [ ! -z "${ETHERPAD_GITHUB_PLUGINS}" ]; then \
+        pnpm run plugins i ${ETHERPAD_PLUGINS} ${ETHERPAD_LOCAL_PLUGINS:+--path ${ETHERPAD_LOCAL_PLUGINS}} ${ETHERPAD_GITHUB_PLUGINS:+--github ${ETHERPAD_GITHUB_PLUGINS}}; \
     fi
 
 
@@ -134,10 +134,9 @@ COPY --chown=etherpad:etherpad --from=adminbuild /opt/etherpad-lite/src/template
 COPY --chown=etherpad:etherpad --from=adminbuild /opt/etherpad-lite/src/static/oidc ./src/static/oidc
 
 RUN bin/installDeps.sh && rm -rf ~/.npm && rm -rf ~/.local && rm -rf ~/.cache && \
-    if [ ! -z "${ETHERPAD_PLUGINS}" ] || [ ! -z "${ETHERPAD_LOCAL_PLUGINS}" ]; then \
-        pnpm run plugins i ${ETHERPAD_PLUGINS} ${ETHERPAD_LOCAL_PLUGINS:+--path ${ETHERPAD_LOCAL_PLUGINS}}; \
+    if [ ! -z "${ETHERPAD_PLUGINS}" ] || [ ! -z "${ETHERPAD_LOCAL_PLUGINS}" ] || [ ! -z "${ETHERPAD_GITHUB_PLUGINS}" ]; then \
+      pnpm run plugins i ${ETHERPAD_PLUGINS} ${ETHERPAD_LOCAL_PLUGINS:+--path ${ETHERPAD_LOCAL_PLUGINS}} ${ETHERPAD_GITHUB_PLUGINS:+--github ${ETHERPAD_GITHUB_PLUGINS}}; \
     fi
-
 
 # Copy the configuration file.
 COPY --chown=etherpad:etherpad ${SETTINGS} "${EP_DIR}"/settings.json

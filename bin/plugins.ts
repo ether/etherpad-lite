@@ -23,17 +23,13 @@ const possibleActions = [
 ]
 
 const install = ()=> {
-
-  let registryPlugins: string[] = [];
-  let localPlugins: string[] = [];
-
-  if (args.indexOf('--path') !== -1) {
-    const indexToSplit = args.indexOf('--path');
-    registryPlugins = args.slice(1, indexToSplit);
-    localPlugins = args.slice(indexToSplit + 1);
-  } else {
-    registryPlugins = args;
-  }
+  const argsAsString = args.join(" ");
+  const regexRegistryPlugins = /(?<=i\s)(.?)(?=\s--path|--github|$)/;
+  const regexLocalPlugins = /(?<=--path\s)(.*?)(?=\s--github|$)/;
+  const regexGithubPlugins = /(?<=--github\s)(.*?)(?=\s--path|$)/;
+  const registryPlugins = argsAsString.match(regexRegistryPlugins)?.[0]?.split(" ") || [];
+  const localPlugins = argsAsString.match(regexLocalPlugins)?.[0]?.split(" ") || [];
+  const githubPlugins = argsAsString.match(regexGithubPlugins)?.[0]?.split(" ") || [];
 
   async function run() {
     for (const plugin of registryPlugins) {
@@ -52,6 +48,11 @@ const install = ()=> {
     for (const plugin of localPlugins) {
       console.log(`Installing plugin from path: ${plugin}`);
       await linkInstaller.installFromPath(plugin);
+    }
+
+    for (const plugin of githubPlugins) {
+      console.log(`Installing plugin from github: ${plugin}`);
+      await linkInstaller.installFromGitHub(plugin);
     }
   }
 
