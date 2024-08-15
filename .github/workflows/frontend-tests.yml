@@ -57,7 +57,7 @@ jobs:
         name: Create settings.json
         run: cp ./src/tests/settings.json settings.json
       - name: Cache playwright binaries
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         id: playwright-cache
         with:
           path: |
@@ -127,7 +127,7 @@ jobs:
       - name: Create settings.json
         run: cp ./src/tests/settings.json settings.json
       - name: Cache playwright binaries
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         id: playwright-cache
         with:
           path: |
@@ -175,7 +175,7 @@ jobs:
         with:
           node-version: 22
       - name: Cache playwright binaries
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         id: playwright-cache
         with:
           path: |
