@@ -23,13 +23,13 @@ const possibleActions = [
 ]
 
 const install = ()=> {
-  const argsAsString = args.join(" ");
-  const regexRegistryPlugins = /(?<=i\s)(.?)(?=\s--path|--github|$)/;
-  const regexLocalPlugins = /(?<=--path\s)(.*?)(?=\s--github|$)/;
-  const regexGithubPlugins = /(?<=--github\s)(.*?)(?=\s--path|$)/;
-  const registryPlugins = argsAsString.match(regexRegistryPlugins)?.[0]?.split(" ") || [];
-  const localPlugins = argsAsString.match(regexLocalPlugins)?.[0]?.split(" ") || [];
-  const githubPlugins = argsAsString.match(regexGithubPlugins)?.[0]?.split(" ") || [];
+  const argsAsString: string = args.join(" ");
+  const regexRegistryPlugins = /(?<=i\s)(.*?)(?=--github|--path|$)/;
+  const regexLocalPlugins = /(?<=--path\s)(.*?)(?=--github|$)/;
+  const regexGithubPlugins = /(?<=--github\s)(.*?)(?=--path|$)/;
+  const registryPlugins = argsAsString.match(regexRegistryPlugins)?.[0]?.split(" ")?.filter(s => s) || [];
+  const localPlugins = argsAsString.match(regexLocalPlugins)?.[0]?.split(" ")?.filter(s => s) || [];
+  const githubPlugins = argsAsString.match(regexGithubPlugins)?.[0]?.split(" ")?.filter(s => s) || [];
 
   async function run() {
     for (const plugin of registryPlugins) {

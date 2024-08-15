@@ -49,6 +49,14 @@ ARG ETHERPAD_PLUGINS=
 #   ETHERPAD_LOCAL_PLUGINS="../ep_my_plugin ../ep_another_plugin"
 ARG ETHERPAD_LOCAL_PLUGINS=
 
+# github plugins to install while building the container. By default no plugins are
+# installed.
+# If given a value, it has to be a space-separated, quoted list of plugin names.
+#
+# EXAMPLE:
+#   ETHERPAD_GITHUB_PLUGINS="ether/ep_plugin"
+ARG ETHERPAD_GITHUB_PLUGINS=
+
 # Control whether abiword will be installed, enabling exports to DOC/PDF/ODT formats.
 # By default, it is not installed.
 # If given any value, abiword will be installed.
