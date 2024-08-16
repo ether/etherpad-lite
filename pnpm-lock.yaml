@@ -269,9 +269,6 @@ importers:
       unorm:
         specifier: 1.6.0
         version: 1.6.0
-      vitest:
-        specifier: ^2.0.5
-        version: 2.0.5(@types/node@22.4.0)(jsdom@24.1.1)
       wtfnode:
         specifier: ^0.9.3
         version: 0.9.3
@@ -363,6 +360,9 @@ importers:
       typescript:
         specifier: ^5.5.4
         version: 5.5.4
+      vitest:
+        specifier: ^2.0.5
+        version: 2.0.5(@types/node@22.4.0)(jsdom@24.1.1)
 
   ui:
     devDependencies:
