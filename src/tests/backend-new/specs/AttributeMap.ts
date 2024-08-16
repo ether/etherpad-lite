@@ -1,8 +1,8 @@
 'use strict';
 
-const AttributeMap = require('../../static/js/AttributeMap.js');
-const AttributePool = require('../../static/js/AttributePool');
-const attributes = require('../../static/js/attributes');
+const AttributeMap = require('../../../static/js/AttributeMap.js');
+const AttributePool = require('../../../static/js/AttributePool');
+const attributes = require('../../../static/js/attributes');
 import {expect, describe, it, beforeEach} from 'vitest'
 
 describe('AttributeMap', function () {
@@ -11,7 +11,7 @@ describe('AttributeMap', function () {
     ['baz', 'bif'],
     ['emptyValue', ''],
   ];
-  let pool;
+  let pool: { eachAttrib: (arg0: () => number) => void; putAttrib: (arg0: string[]) => any; getAttrib: (arg0: number) => any; };
 
   const getPoolSize = () => {
     let n = 0;
@@ -67,7 +67,7 @@ describe('AttributeMap', function () {
         ['number', 1, '1'],
       ];
       for (const [desc, input, want] of testCases) {
-        describe(desc, function () {
+        describe(desc as string, function () {
           it('key is coerced to string', async function () {
             const m = new AttributeMap(pool);
             m.set(input, 'value');
@@ -117,8 +117,9 @@ describe('AttributeMap', function () {
   });
 
   for (const funcName of ['update', 'updateFromString']) {
-    const callUpdateFn = (m, ...args) => {
+    const callUpdateFn = (m: any, ...args: (boolean | (string | null | undefined)[][])[]) => {
       if (funcName === 'updateFromString') {
+        // @ts-ignore
         args[0] = attributes.attribsToString(attributes.sort([...args[0]]), pool);
       }
       return AttributeMap.prototype[funcName].call(m, ...args);

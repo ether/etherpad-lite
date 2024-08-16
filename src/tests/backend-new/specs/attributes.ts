@@ -1,9 +1,9 @@
 'use strict';
 
-import {APool} from "../../node/types/PadType";
+import {APool} from "../../../node/types/PadType";
 
-const AttributePool = require('../../static/js/AttributePool');
-const attributes = require('../../static/js/attributes');
+const AttributePool = require('../../../static/js/AttributePool');
+const attributes = require('../../../static/js/attributes');
 
 import {expect, describe, it, beforeEach} from 'vitest';
 

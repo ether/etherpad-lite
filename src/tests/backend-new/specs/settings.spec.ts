@@ -1,7 +1,7 @@
 'use strict';
 
 const assert = require('assert').strict;
-const {parseSettings} = require('../../node/utils/Settings').exportedForTestingOnly;
+const settingsMod = require('../../../node/utils/Settings');
 import path from 'node:path';
 import process from 'node:process';
 import {describe, it, beforeAll} from 'vitest';
@@ -22,7 +22,7 @@ describe(__filename, function () {
       beforeAll(async function () {
             for (const tc of envVarSubstTestCases) process.env[tc.var] = tc.val;
             delete process.env.UNSET_VAR;
-            settings = parseSettings(path.join(__dirname, 'settings.json'), true);
+            settings = settingsMod.exportedForTestingOnly.parseSettings(path.join(__dirname, 'settings.json'), true);
             assert(settings != null);
         });
 
@@ -68,25 +68,25 @@ describe(__filename, function () {
         })
 
         it('should parse plugin settings', async function () {
-            let settings = parseSettings(path.join(__dirname, 'settings.json'), true);
+            let settings = settingsMod.exportedForTestingOnly.parseSettings(path.join(__dirname, 'settings.json'), true);
             assert.equal(settings.ADMIN.PASSWORD, "test");
         })
 
         it('should bundle settings with same path', async function () {
             process.env["EP__ADMIN__USERNAME"] = "test"
-            let settings = parseSettings(path.join(__dirname, 'settings.json'), true);
+            let settings = settingsMod.exportedForTestingOnly.parseSettings(path.join(__dirname, 'settings.json'), true);
             assert.deepEqual(settings.ADMIN, {PASSWORD: "test", USERNAME: "test"});
         })
 
         it("Can set the ep themes", async function () {
             process.env["EP__ep_themes__default_theme"] = "hacker"
-            let settings = parseSettings(path.join(__dirname, 'settings.json'), true);
+            let settings = settingsMod.exportedForTestingOnly.parseSettings(path.join(__dirname, 'settings.json'), true);
             assert.deepEqual(settings.ep_themes, {"default_theme": "hacker"});
         })
 
         it("can set the ep_webrtc settings", async function () {
             process.env["EP__ep_webrtc__enabled"] = "true"
-            let settings = parseSettings(path.join(__dirname, 'settings.json'), true);
+            let settings = settingsMod.exportedForTestingOnly.parseSettings(path.join(__dirname, 'settings.json'), true);
             assert.deepEqual(settings.ep_webrtc, {"enabled": true});
         })
     })

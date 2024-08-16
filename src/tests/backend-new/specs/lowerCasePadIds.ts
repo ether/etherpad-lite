@@ -1,9 +1,8 @@
-'use strict';
-
 const assert = require('assert').strict;
-const common = require('../common');
+import {connect, handshake, init} from '../../backend//common';
 const padManager = require('../../../node/db/PadManager');
 const settings = require('../../../node/utils/Settings');
+import {describe, beforeAll, beforeEach, afterEach, afterAll, it} from 'vitest'
 
 describe(__filename, function () {
   let agent:any;
@@ -18,9 +17,9 @@ describe(__filename, function () {
   };
   let backup:any;
 
-  before(async function () {
+  beforeAll(async function () {
     backup = settings.lowerCasePadIds;
-    agent = await common.init();
+    agent = await init();
   });
   beforeEach(async function () {
     await cleanUpPads();
@@ -28,7 +27,7 @@ describe(__filename, function () {
   afterEach(async function () {
     await cleanUpPads();
   });
-  after(async function () {
+  afterAll(async function () {
     settings.lowerCasePadIds = backup;
   });
 
@@ -65,24 +64,24 @@ describe(__filename, function () {
       });
 
       const oldPad = await agent.get('/p/ALREADYexistingPad').expect(200);
-      const oldPadSocket = await common.connect(oldPad);
-      const oldPadHandshake = await common.handshake(oldPadSocket, 'ALREADYexistingPad');
-      assert.equal(oldPadHandshake.data.padId, 'ALREADYexistingPad');
-      assert.equal(oldPadHandshake.data.collab_client_vars.initialAttributedText.text, 'oldpad\n');
+      const oldPadSocket = await connect(oldPad);
+      const oldPadHandshake = await handshake(oldPadSocket, 'ALREADYexistingPad');
+      assert.equal(oldPadHandshake!.data.padId, 'ALREADYexistingPad');
+      assert.equal(oldPadHandshake!.data.collab_client_vars.initialAttributedText.text, 'oldpad\n');
 
       const newPad = await agent.get('/p/alreadyexistingpad').expect(200);
-      const newPadSocket = await common.connect(newPad);
-      const newPadHandshake = await common.handshake(newPadSocket, 'alreadyexistingpad');
-      assert.equal(newPadHandshake.data.padId, 'alreadyexistingpad');
-      assert.equal(newPadHandshake.data.collab_client_vars.initialAttributedText.text, 'newpad\n');
+      const newPadSocket = await connect(newPad);
+      const newPadHandshake = await handshake(newPadSocket, 'alreadyexistingpad');
+      assert.equal(newPadHandshake!.data.padId, 'alreadyexistingpad');
+      assert.equal(newPadHandshake!.data.collab_client_vars.initialAttributedText.text, 'newpad\n');
     });
 
     it('disallow creation of different case pad-name via socket connection', async function () {
       await padManager.getPad('maliciousattempt', 'attempt');
 
       const newPad = await agent.get('/p/maliciousattempt').expect(200);
-      const newPadSocket = await common.connect(newPad);
-      const newPadHandshake = await common.handshake(newPadSocket, 'MaliciousAttempt');
+      const newPadSocket = await connect(newPad);
+      const newPadHandshake = await handshake(newPadSocket, 'MaliciousAttempt');
 
       assert.equal(newPadHandshake.data.collab_client_vars.initialAttributedText.text, 'attempt\n');
     });

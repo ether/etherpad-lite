@@ -1,16 +1,13 @@
-'use strict';
-
 import {MapArrayType} from "../../../node/types/MapType";
-
-import {strict as assert} from "assert";
 const {padutils} = require('../../../static/js/pad_utils');
+import {describe, it, expect, afterEach, beforeAll} from "vitest";
 
 describe(__filename, function () {
   describe('warnDeprecated', function () {
     const {warnDeprecated} = padutils;
     const backups:MapArrayType<any> = {};
 
-    before(async function () {
+    beforeAll(async function () {
       backups.logger = warnDeprecated.logger;
     });
 
@@ -36,10 +33,10 @@ describe(__filename, function () {
       for (const [now, want] of testCases) { // In a loop so that the stack trace is the same.
         warnDeprecated._rl.now = () => now;
         warnDeprecated();
-        assert.equal(got, want);
+        expect(got).toEqual(want);
       }
       warnDeprecated(); // Should have a different stack trace.
-      assert.equal(got, testCases[testCases.length - 1][1] + 1);
+      expect(got).toEqual(testCases[testCases.length - 1][1] + 1);
     });
   });
 });

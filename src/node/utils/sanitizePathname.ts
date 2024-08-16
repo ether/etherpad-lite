@@ -1,10 +1,8 @@
-'use strict';
-
-const path = require('path');
+import path from 'path';
 
 // Normalizes p and ensures that it is a relative path that does not reach outside. See
 // https://nvd.nist.gov/vuln/detail/CVE-2015-3297 for additional context.
-module.exports = (p: string, pathApi = path) => {
+const sanitizeRoot =  (p: string, pathApi = path) => {
   // The documentation for path.normalize() says that it resolves '..' and '.' segments. The word
   // "resolve" implies that it examines the filesystem to resolve symbolic links, so 'a/../b' might
   // not be the same thing as 'b'. Most path normalization functions from other libraries (e.g.,
@@ -21,3 +19,5 @@ module.exports = (p: string, pathApi = path) => {
   if (pathApi.sep === '\\') p = p.replace(/\\/g, '/');
   return p;
 };
+
+export default sanitizeRoot
