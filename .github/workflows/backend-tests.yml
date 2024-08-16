@@ -142,6 +142,9 @@ jobs:
       -
         name: Run the backend tests
         run: pnpm test
+      - name: Run the new vitest tests
+        working-directory: src
+        run: pnpm run test:vitest
 
   withoutpluginsWindows:
     # run on pushes to any branch
@@ -193,7 +196,11 @@ jobs:
           powershell -Command "(gc settings.json.holder) -replace '\"points\": 10', '\"points\": 1000' | Out-File -encoding ASCII settings.json"
       -
         name: Run the backend tests
-        run: cd src && pnpm test
+        working-directory: src
+        run: pnpm test
+      - name: Run the new vitest tests
+        working-directory: src
+        run: pnpm run test:vitest
 
   withpluginsWindows:
     # run on pushes to any branch
@@ -273,4 +280,9 @@ jobs:
           powershell -Command "(gc settings.json.holder) -replace '\"points\": 10', '\"points\": 1000' | Out-File -encoding ASCII settings.json"
       -
         name: Run the backend tests
-        run: cd src && pnpm test
+        working-directory: src
+        run: pnpm test
+      - name: Run the new vitest tests
+        working-directory: src
+        run: pnpm run test:vitest
+

@@ -21,20 +21,20 @@
  * limitations under the License.
  */
 
-const settings = require('./Settings');
-const fs = require('fs').promises;
-const path = require('path');
-const plugins = require('../../static/js/pluginfw/plugin_defs');
-const mime = require('mime-types');
-const Threads = require('threads');
-const log4js = require('log4js');
-const sanitizePathname = require('./sanitizePathname');
+import {TransformResult} from "esbuild";
+import mime from 'mime-types';
+import log4js from 'log4js';
+import {compressCSS, compressJS} from './MinifyWorker'
 
+const settings = require('./Settings');
+import {promises as fs} from 'fs';
+import path from 'node:path';
+const plugins = require('../../static/js/pluginfw/plugin_defs');
+import sanitizePathname from './sanitizePathname';
 const logger = log4js.getLogger('Minify');
 
 const ROOT_DIR = path.join(settings.root, 'src/static/');
 
-const threadsPool = new Threads.Pool(() => Threads.spawn(new Threads.Worker('./MinifyWorker')), 2);
 
 const LIBRARY_WHITELIST = [
   'async',
@@ -48,10 +48,10 @@ const LIBRARY_WHITELIST = [
 
 // What follows is a terrible hack to avoid loop-back within the server.
 // TODO: Serve files from another service, or directly from the file system.
-const requestURI = async (url, method, headers) => {
+const requestURI = async (url: string | URL, method: any, headers: { [x: string]: any; }) => {
   const parsedUrl = new URL(url);
   let status = 500;
-  const content = [];
+  const content: any[] = [];
   const mockRequest = {
     url,
     method,
@@ -61,7 +61,7 @@ const requestURI = async (url, method, headers) => {
   let mockResponse;
   const p = new Promise((resolve) => {
     mockResponse = {
-      writeHead: (_status, _headers) => {
+      writeHead: (_status: number, _headers: { [x: string]: any; }) => {
         status = _status;
         for (const header in _headers) {
           if (Object.prototype.hasOwnProperty.call(_headers, header)) {
@@ -69,37 +69,63 @@ const requestURI = async (url, method, headers) => {
           }
         }
       },
-      setHeader: (header, value) => {
+      setHeader: (header: string, value: { toString: () => any; }) => {
         headers[header.toLowerCase()] = value.toString();
       },
-      header: (header, value) => {
+      header: (header: string, value: { toString: () => any; }) => {
         headers[header.toLowerCase()] = value.toString();
       },
-      write: (_content) => {
+      write: (_content: any) => {
         _content && content.push(_content);
       },
-      end: (_content) => {
+      end: (_content: any) => {
         _content && content.push(_content);
         resolve([status, headers, content.join('')]);
       },
     };
   });
-  await minify(mockRequest, mockResponse);
+  await _minify(mockRequest, mockResponse);
   return await p;
 };
 
-const requestURIs = (locations, method, headers, callback) => {
+const _requestURIs = (locations: any[], method: any, headers: {
+  [x: string]:
+  /**
+   * This Module manages all /minified/* requests. It controls the
+   * minification && compression of Javascript and CSS.
+   */
+  /*
+   * 2011 Peter 'Pita' Martischka (Primary Technology Ltd)
+   *
+   * Licensed under the Apache License, Version 2.0 (the "License");
+   * you may not use this file except in compliance with the License.
+   * You may obtain a copy of the License at
+   *
+   *      http://www.apache.org/licenses/LICENSE-2.0
+   *
+   * Unless required by applicable law or agreed to in writing, software
+   * distributed under the License is distributed on an "AS-IS" BASIS,
+   * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   * See the License for the specific language governing permissions and
+   * limitations under the License.
+   */
+    any;
+}, callback: (arg0: any[], arg1: any[], arg2: any[]) => void) => {
   Promise.all(locations.map(async (loc) => {
     try {
       return await requestURI(loc, method, headers);
     } catch (err) {
       logger.debug(`requestURI(${JSON.stringify(loc)}, ${JSON.stringify(method)}, ` +
-                   `${JSON.stringify(headers)}) failed: ${err.stack || err}`);
+        // @ts-ignore
+        `${JSON.stringify(headers)}) failed: ${err.stack || err}`);
       return [500, headers, ''];
     }
   })).then((responses) => {
+    // @ts-ignore
     const statuss = responses.map((x) => x[0]);
+    // @ts-ignore
     const headerss = responses.map((x) => x[1]);
+    // @ts-ignore
     const contentss = responses.map((x) => x[2]);
     callback(statuss, headerss, contentss);
   });
@@ -119,11 +145,12 @@ const compatPaths = {
  * @param req the Express request
  * @param res the Express response
  */
-const minify = async (req, res) => {
+const _minify = async (req:any, res:any) => {
   let filename = req.params.filename;
   try {
     filename = sanitizePathname(filename);
   } catch (err) {
+    // @ts-ignore
     logger.error(`sanitization of pathname "${filename}" failed: ${err.stack || err}`);
     res.writeHead(404, {});
     res.end();
@@ -131,6 +158,7 @@ const minify = async (req, res) => {
   }
 
   // Backward compatibility for plugins that require() files from old paths.
+  // @ts-ignore
   const newLocation = compatPaths[filename.replace(/^plugins\/ep_etherpad-lite\/static\//, '')];
   if (newLocation != null) {
     logger.warn(`request for deprecated path "${filename}", replacing with "${newLocation}"`);
@@ -193,7 +221,7 @@ const minify = async (req, res) => {
     res.writeHead(200, {});
     res.end();
   } else if (req.method === 'GET') {
-    const content = await getFileCompressed(filename, contentType);
+    const content = await getFileCompressed(filename, contentType as string);
     res.header('Content-Type', contentType);
     res.writeHead(200, {});
     res.write(content);
@@ -205,7 +233,7 @@ const minify = async (req, res) => {
 };
 
 // Check for the existance of the file and get the last modification date.
-const statFile = async (filename, dirStatLimit) => {
+const statFile = async (filename: string, dirStatLimit: number):Promise<(any | boolean)[]> => {
   /*
    * The only external call to this function provides an explicit value for
    * dirStatLimit: this check could be removed.
@@ -221,6 +249,7 @@ const statFile = async (filename, dirStatLimit) => {
     try {
       stats = await fs.stat(path.resolve(ROOT_DIR, filename));
     } catch (err) {
+      // @ts-ignore
       if (['ENOENT', 'ENOTDIR'].includes(err.code)) {
         // Stat the directory instead.
         const [date] = await statFile(path.dirname(filename), dirStatLimit - 1);
@@ -234,69 +263,64 @@ const statFile = async (filename, dirStatLimit) => {
 
 let contentCache = new Map();
 
-const getFileCompressed = async (filename, contentType) => {
+const getFileCompressed = async (filename: any, contentType: string) => {
   if (contentCache.has(filename)) {
     return contentCache.get(filename);
   }
-  let content = await getFile(filename);
+  let content: Buffer|string = await getFile(filename);
   if (!content || !settings.minify) {
     return content;
   } else if (contentType === 'application/javascript') {
-    return await new Promise((resolve) => {
-      threadsPool.queue(async ({compressJS}) => {
+    return await new Promise(async (resolve) => {
+      try {
+        logger.info('Compress JS file %s.', filename);
+
+        content = content.toString();
         try {
-          logger.info('Compress JS file %s.', filename);
-
-          content = content.toString();
-          const compressResult = await compressJS(content);
-
-          if (compressResult.error) {
-            console.error(`Error compressing JS (${filename}) using terser`, compressResult.error);
-          } else {
-            content = compressResult.code.toString(); // Convert content obj code to string
-          }
+          let compressResult:  TransformResult<{ minify: boolean }>
+          compressResult = await compressJS(content);
+          content = compressResult.code.toString(); // Convert content obj code to string
         } catch (error) {
-          console.error('getFile() returned an error in ' +
-                        `getFileCompressed(${filename}, ${contentType}): ${error}`);
+          console.error(`Error compressing JS (${filename}) using esbuild`, error);
         }
-        contentCache.set(filename, content);
-        resolve(content);
-      });
+      } catch (error) {
+        console.error('getFile() returned an error in ' +
+          `getFileCompressed(${filename}, ${contentType}): ${error}`);
+      }
+      contentCache.set(filename, content);
+      resolve(content);
     });
   } else if (contentType === 'text/css') {
-    return await new Promise((resolve) => {
-      threadsPool.queue(async ({compressCSS}) => {
+    return await new Promise(async (resolve) => {
+      try {
+        logger.info('Compress CSS file %s.', filename);
+
         try {
-          logger.info('Compress CSS file %s.', filename);
-
-          const compressResult = await compressCSS(path.resolve(ROOT_DIR,filename));
-
-          if (compressResult.error) {
-            console.error(`Error compressing CSS (${filename}) using terser`, compressResult.error);
-          } else {
-            content = compressResult
-          }
+          content = await compressCSS(path.resolve(ROOT_DIR, filename));
         } catch (error) {
           console.error(`CleanCSS.minify() returned an error on ${filename}: ${error}`);
         }
         contentCache.set(filename, content);
         resolve(content);
-      });
-    });
+      } catch (e) {
+        console.error('getFile() returned an error in ' +
+          `getFileCompressed(${filename}, ${contentType}): ${e}`);
+      }
+    })
   } else {
     contentCache.set(filename, content);
     return content;
   }
 };
 
-const getFile = async (filename) => {
+const getFile = async (filename: any) => {
   return await fs.readFile(path.resolve(ROOT_DIR, filename));
 };
 
-exports.minify = (req, res, next) => minify(req, res).catch((err) => next(err || new Error(err)));
+export const minify = (req:any, res:any, next:Function) => _minify(req, res).catch((err) => next(err || new Error(err)));
 
-exports.requestURIs = requestURIs;
+export const requestURIs = _requestURIs;
 
-exports.shutdown = async (hookName, context) => {
-  await threadsPool.terminate();
+export const shutdown = async (hookName: string, context:any) => {
+  contentCache = new Map();
 };
