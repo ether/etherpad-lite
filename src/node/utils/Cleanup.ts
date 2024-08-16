@@ -1,8 +1,6 @@
 'use strict'
 
-import {AChangeSet, PadType} from "../types/PadType";
-import {MapArrayType} from "../types/MapType";
-import {ChangeSet} from "../types/ChangeSet";
+import {AChangeSet} from "../types/PadType";
 import {Revision} from "../types/Revision";
 
 const promises = require('./promises');
@@ -12,43 +10,6 @@ const padManager = require('ep_etherpad-lite/node/db/PadManager');
 const db = require('ep_etherpad-lite/node/db/DB');
 const Changeset = require('ep_etherpad-lite/static/js/Changeset');
 const padMessageHandler = require('ep_etherpad-lite/node/handler/PadMessageHandler');
-
-
-const composePadChangesets = async (pad: PadType, startNum: number, endNum: number) => {
-  // fetch all changesets we need
-  const headNum = pad.getHeadRevisionNumber();
-  endNum = Math.min(endNum, headNum + 1);
-  startNum = Math.max(startNum, 0);
-
-  // create an array for all changesets, we will
-  // replace the values with the changeset later
-  const changesetsNeeded = [];
-  for (let r = startNum; r < endNum; r++) {
-    changesetsNeeded.push(r);
-  }
-
-  // get all changesets
-  const changesets: MapArrayType<ChangeSet> = {};
-  await Promise.all(changesetsNeeded.map(
-    (revNum) => pad.getRevisionChangeset(revNum)
-      .then((changeset) => changesets[revNum] = changeset)));
-
-  // compose Changesets
-  let r;
-  try {
-    let changeset = changesets[startNum];
-    const pool = pad.apool();
-
-    for (r = startNum + 1; r < endNum; r++) {
-      const cs = changesets[r];
-      changeset = Changeset.compose(changeset, cs, pool);
-    }
-    return changeset;
-  } catch (e) {
-    // r-1 indicates the rev that was build starting with startNum, applying startNum+1, +2, +3
-    throw e;
-  }
-};
 
 exports.deleteAllRevisions = async (padID: string): Promise<void> => {
 
@@ -61,7 +22,7 @@ exports.deleteAllRevisions = async (padID: string): Promise<void> => {
   await pad.remove();
 }
 
-const createRevision = async (aChangeset: AChangeSet, timestamp: number, isKeyRev: boolean, authorId = '', atext: any = null, pool: any = null) => {
+const createRevision = async (aChangeset: AChangeSet, timestamp: number, isKeyRev: boolean, authorId: string, atext: any, pool: any) => {
 
   if (authorId !== '') pool.putAttrib(['author', authorId]);
 
@@ -81,7 +42,7 @@ const createRevision = async (aChangeset: AChangeSet, timestamp: number, isKeyRe
 exports.deleteRevisions = async (padId: string, keepRevisions: number): Promise<void> => {
 
   let pad = await padManager.getPad(padId);
-  pad.check()
+  await pad.check()
 
   console.log('Initial pad is valid')
 
@@ -89,7 +50,7 @@ exports.deleteRevisions = async (padId: string, keepRevisions: number): Promise<
 
   const cleanupUntilRevision = pad.head - keepRevisions
   console.log('Composing changesets: ', cleanupUntilRevision)
-  const changeset = await composePadChangesets(pad, 0, cleanupUntilRevision + 1)
+  const changeset = await padMessageHandler.composePadChangesets(pad, 0, cleanupUntilRevision + 1)
 
   const revisions: Revision[] = [];
 
