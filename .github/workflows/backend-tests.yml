@@ -69,6 +69,9 @@ jobs:
       -
         name: Run the backend tests
         run: pnpm test
+      - name: Run the new vitest tests
+        working-directory: src
+        run: pnpm run test:vitest
 
   withpluginsLinux:
     # run on pushes to any branch
@@ -285,4 +288,3 @@ jobs:
       - name: Run the new vitest tests
         working-directory: src
         run: pnpm run test:vitest
-
