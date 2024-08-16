@@ -35,6 +35,7 @@ export type APool = {
     clone: ()=>APool,
     check: ()=>Promise<void>,
     eachAttrib: (callback: (key: string, value: any)=>void)=>void,
+    getAttrib: (key: number)=>any,
 }
 
 

@@ -4,11 +4,19 @@ const Changeset = require('../../../static/js/Changeset');
 const {padutils} = require('../../../static/js/pad_utils');
 const {poolOrArray} = require('../easysync-helper.js');
 
+import {describe, it, expect} from 'vitest'
+
+
 describe('easysync-assembler', function () {
   it('opAssembler', async function () {
     const x = '-c*3*4+6|3=az*asdf0*1*2*3+1=1-1+1*0+1=1-1+1|c=c-1';
     const assem = Changeset.opAssembler();
-    for (const op of Changeset.deserializeOps(x)) assem.append(op);
+    var opLength = 0
+    for (const op of Changeset.deserializeOps(x)){
+      console.log(op)
+      assem.append(op);
+      opLength++
+    }
     expect(assem.toString()).to.equal(x);
   });
 
@@ -145,14 +153,23 @@ describe('easysync-assembler', function () {
       next() { const v = this._n.value; this._n = ops.next(); return v; },
     };
     const assem = Changeset.smartOpAssembler();
-    assem.append(iter.next());
-    assem.append(iter.next());
-    assem.append(iter.next());
+    var iter1 = iter.next()
+    assem.append(iter1);
+    var iter2 = iter.next()
+    assem.append(iter2);
+    var iter3 = iter.next()
+    assem.append(iter3);
+    console.log(assem.toString());
     assem.clear();
     assem.append(iter.next());
     assem.append(iter.next());
+    console.log(assem.toString());
     assem.clear();
-    while (iter.hasNext()) assem.append(iter.next());
+    let counter = 0;
+    while (iter.hasNext()) {
+      console.log(counter++)
+      assem.append(iter.next());
+    }
     assem.endDocument();
     expect(assem.toString()).to.equal('-1+1*0+1=1-1+1|c=c-1');
   });

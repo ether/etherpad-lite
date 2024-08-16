@@ -3,14 +3,13 @@
  * Worker thread to minify JS & CSS files out of the main NodeJS thread
  */
 
-import {expose} from 'threads'
 import {build, transform} from 'esbuild';
 
 /*
   * Minify JS content
   * @param {string} content - JS content to minify
  */
-const compressJS = async (content) => {
+export const compressJS = async (content: string) => {
   return await transform(content, {minify: true});
 }
 
@@ -19,7 +18,7 @@ const compressJS = async (content) => {
   * @param {string} filename - name of the file
   * @param {string} ROOT_DIR - the root dir of Etherpad
  */
-const compressCSS = async (content) => {
+export const compressCSS = async (content: string) => {
   const transformedCSS = await build(
     {
       entryPoints: [content],
@@ -41,8 +40,3 @@ const compressCSS = async (content) => {
   )
   return transformedCSS.outputFiles[0].text
 };
-
-expose({
-  compressJS: compressJS,
-  compressCSS,
-});

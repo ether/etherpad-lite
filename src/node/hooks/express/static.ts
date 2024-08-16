@@ -4,11 +4,10 @@ import {MapArrayType} from "../../types/MapType";
 import {PartType} from "../../types/PartType";
 
 const fs = require('fs').promises;
-const minify = require('../../utils/Minify');
-const path = require('path');
+import {minify} from '../../utils/Minify';
+import path from 'node:path';
 const plugins = require('../../../static/js/pluginfw/plugin_defs');
 const settings = require('../../utils/Settings');
-import CachingMiddleware from '../../utils/caching_middleware';
 
 // Rewrite tar to include modules with no extensions and proper rooted paths.
 const getTar = async () => {
@@ -32,15 +31,10 @@ const getTar = async () => {
 };
 
 exports.expressPreSession = async (hookName:string, {app}:any) => {
-  // Cache both minified and static.
-  const assetCache = new CachingMiddleware();
-  // Cache static assets
-  app.all(/\/js\/(.*)/, assetCache.handle.bind(assetCache));
-  app.all(/\/css\/(.*)/, assetCache.handle.bind(assetCache));
 
   // Minify will serve static files compressed (minify enabled). It also has
   // file-specific hacks for ace/require-kernel/etc.
-  app.all('/static/:filename(*)', minify.minify);
+  app.all('/static/:filename(*)', minify);
 
   // serve plugin definitions
   // not very static, but served here so that client can do

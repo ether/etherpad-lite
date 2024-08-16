@@ -1,8 +1,7 @@
-'use strict';
-
 import {strict as assert} from "assert";
 import path from 'path';
-const sanitizePathname = require('../../../node/utils/sanitizePathname');
+import sanitizePathname from '../../../node/utils/sanitizePathname';
+import {describe, it, expect} from 'vitest';
 
 describe(__filename, function () {
   describe('absolute paths rejected', function () {
@@ -21,7 +20,7 @@ describe(__filename, function () {
     for (const [platform, p] of testCases) {
       it(`${platform} ${p}`, async function () {
         // @ts-ignore
-        assert.throws(() => sanitizePathname(p, path[platform]), {message: /absolute path/});
+        expect(() => sanitizePathname(p, path[platform] as any)).toThrowError(/absolute path/);
       });
     }
   });
