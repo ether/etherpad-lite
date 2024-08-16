@@ -25,4 +25,5 @@ if (process.argv.length !== 2) throw new Error('Use: node bin/checkAllPads.js');
     console.log(`Pad ${padId}: OK`);
   }));
   console.log('Finished.');
+  process.exit(0)
 })();

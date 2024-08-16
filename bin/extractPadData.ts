@@ -60,4 +60,5 @@ const padId = process.argv[2];
   }
 
   console.log('finished');
+  process.exit(0)
 })();

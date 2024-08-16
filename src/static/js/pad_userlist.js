@@ -18,7 +18,7 @@
 
 const padutils = require('./pad_utils').padutils;
 const hooks = require('./pluginfw/hooks');
-
+import html10n from './vendors/html10n';
 let myUserInfo = {};
 
 let colorPickerOpen = false;

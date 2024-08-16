@@ -20,7 +20,7 @@ export type SearchParams = {
     searchTerm: string,
     offset: number,
     limit: number,
-    sortBy: 'name'|'version',
+    sortBy: 'name'|'version'|'last-updated',
     sortDir: 'asc'|'desc'
 }
 

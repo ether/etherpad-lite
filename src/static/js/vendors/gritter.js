@@ -42,8 +42,8 @@
 			return Gritter.add(params || {});
 		} catch(e) {
 
-			var err = 'Gritter Error: ' + e;
-			(typeof(console) != 'undefined' && console.error) ?
+      const err = 'Gritter Error: ' + e;
+      (typeof(console) != 'undefined' && console.error) ?
 				console.error(err, params) :
 				alert(err);
 
@@ -289,7 +289,7 @@
 		*/
 		_runSetup: function(){
 
-			for(opt in $.gritter.options){
+			for(let opt in $.gritter.options){
 				this[opt] = $.gritter.options[opt];
 			}
 			this._is_setup = 1;

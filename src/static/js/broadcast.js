@@ -32,6 +32,9 @@ const colorutils = require('./colorutils').colorutils;
 const _ = require('./underscore');
 const hooks = require('./pluginfw/hooks');
 
+import html10n from './vendors/html10n';
+
+
 // These parameters were global, now they are injected. A reference to the
 // Timeslider controller would probably be more appropriate.
 const loadBroadcastJS = (socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, BroadcastSlider) => {

@@ -78,7 +78,7 @@ jobs:
       - name: Run the frontend tests
         shell: bash
         run: |
-          pnpm run dev &
+          pnpm run prod &
           connected=false
           can_connect() {
           curl -sSfo /dev/null http://localhost:9001/ || return 1

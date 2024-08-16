@@ -3,8 +3,11 @@ import { resolve } from 'path'
 import { defineConfig } from 'vite'
 
 export default defineConfig({
-    base: '/views/',
+  base: '/views/',
     build: {
+    commonjsOptions:{
+      transformMixedEsModules: true,
+    },
         outDir: resolve(__dirname, '../src/static/oidc'),
         rollupOptions: {
             input: {
@@ -14,4 +17,31 @@ export default defineConfig({
         },
         emptyOutDir: true,
     },
+  server:{
+      proxy:{
+        '/static':{
+            target: 'http://localhost:9001',
+            changeOrigin: true,
+            secure: false,
+        },
+        '/views/manifest.json':{
+            target: 'http://localhost:9001',
+            changeOrigin: true,
+            secure: false,
+          rewrite: (path) => path.replace(/^\/views/, ''),
+        },
+        '/locales.json':{
+            target: 'http://localhost:9001',
+            changeOrigin: true,
+            secure: false,
+          rewrite: (path) => path.replace(/^\/views/, ''),
+        },
+        '/locales':{
+            target: 'http://localhost:9001',
+            changeOrigin: true,
+            secure: false,
+          rewrite: (path) => path.replace(/^\/views/, ''),
+        },
+      }
+  }
 })

@@ -26,7 +26,7 @@ export const PadPage = ()=>{
     const [padToDelete, setPadToDelete] = useState<string>('')
     const pages = useMemo(()=>{
         if(!pads){
-            return [0]
+            return 0;
         }
 
         return Math.ceil(pads!.total / searchParams.limit)
@@ -104,7 +104,7 @@ export const PadPage = ()=>{
         <SearchField value={searchTerm} onChange={v=>setSearchTerm(v.target.value)} placeholder={t('ep_admin_pads:ep_adminpads2_search-heading')}/>
         <table>
             <thead>
-            <tr>
+            <tr className="search-pads">
                 <th className={determineSorting(searchParams.sortBy, searchParams.ascending, 'padName')} onClick={()=>{
                     setSearchParams({
                         ...searchParams,
@@ -112,17 +112,17 @@ export const PadPage = ()=>{
                         ascending: !searchParams.ascending
                     })
                 }}><Trans i18nKey="ep_admin_pads:ep_adminpads2_padname"/></th>
-                <th className={determineSorting(searchParams.sortBy, searchParams.ascending, 'lastEdited')} onClick={()=>{
-                    setSearchParams({
-                        ...searchParams,
-                        sortBy: 'lastEdited',
-                        ascending: !searchParams.ascending
-                    })
-                }}><Trans i18nKey="ep_admin_pads:ep_adminpads2_pad-user-count"/></th>
                 <th className={determineSorting(searchParams.sortBy, searchParams.ascending, 'userCount')} onClick={()=>{
                     setSearchParams({
                         ...searchParams,
                         sortBy: 'userCount',
+                        ascending: !searchParams.ascending
+                    })
+                }}><Trans i18nKey="ep_admin_pads:ep_adminpads2_pad-user-count"/></th>
+                <th className={determineSorting(searchParams.sortBy, searchParams.ascending, 'lastEdited')} onClick={()=>{
+                    setSearchParams({
+                        ...searchParams,
+                        sortBy: 'lastEdited',
                         ascending: !searchParams.ascending
                     })
                 }}><Trans i18nKey="ep_admin_pads:ep_adminpads2_last-edited"/></th>
@@ -136,7 +136,7 @@ export const PadPage = ()=>{
                 <th><Trans i18nKey="ep_admin_pads:ep_adminpads2_action"/></th>
             </tr>
             </thead>
-            <tbody>
+            <tbody className="search-pads-body">
             {
                 pads?.results?.map((pad)=>{
                     return <tr key={pad.padName}>
@@ -166,7 +166,7 @@ export const PadPage = ()=>{
                         offset: (Number(currentPage)-1)*searchParams.limit})
             }}><ChevronLeft/><span>Previous Page</span></button>
             <span>{currentPage+1} out of {pages}</span>
-            <button disabled={pages == currentPage+1} onClick={()=>{
+            <button disabled={pages == 0 || pages == currentPage+1} onClick={()=>{
               const newCurrentPage = currentPage+1
                 setCurrentPage(newCurrentPage)
                 setSearchParams({

@@ -21,9 +21,11 @@ const padcookie = require('./pad_cookie').padcookie;
 const Tinycon = require('tinycon/tinycon');
 const hooks = require('./pluginfw/hooks');
 const padeditor = require('./pad_editor').padeditor;
+import html10n from './vendors/html10n';
 
 // Removes diacritics and lower-cases letters. https://stackoverflow.com/a/37511463
 const normalize = (s) => s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+
 
 exports.chat = (() => {
   let isStuck = false;

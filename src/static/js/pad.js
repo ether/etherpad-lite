@@ -24,11 +24,14 @@
 
 let socket;
 
+
 // These jQuery things should create local references, but for now `require()`
 // assigns to the global `$` and augments it with plugins.
 require('./vendors/jquery');
 require('./vendors/farbtastic');
 require('./vendors/gritter');
+
+import html10n from './vendors/html10n'
 
 const Cookies = require('./pad_utils').Cookies;
 const chat = require('./chat').chat;
@@ -136,7 +139,8 @@ const getParameters = [
     name: 'lang',
     checkVal: null,
     callback: (val) => {
-      window.html10n.localize([val, 'en']);
+      console.log('Val is', val)
+      html10n.localize([val, 'en']);
       Cookies.set('language', val);
     },
   },
@@ -230,7 +234,7 @@ const handshake = async () => {
     sendClientReady(false);
   });
 
-  socket.on('reconnect', () => {
+  socket.io.on('reconnect', () => {
     // pad.collabClient might be null if the hanshake failed (or it never got that far).
     if (pad.collabClient != null) {
       pad.collabClient.setChannelState('CONNECTED');
@@ -251,9 +255,8 @@ const handshake = async () => {
     // The socket.io client will automatically try to reconnect for all reasons other than "io
     // server disconnect".
     console.log(`Socket disconnected: ${reason}`)
-    if (reason !== 'io server disconnect' || reason !== 'ping timeout') return;
+    //if (reason !== 'io server disconnect' || reason !== 'ping timeout') return;
     socketReconnecting();
-    socket.connect();
   });
 
 
@@ -271,9 +274,9 @@ const handshake = async () => {
     }
   })
 
-  socket.on('reconnecting', socketReconnecting);
+  socket.io.on('reconnect_attempt', socketReconnecting);
 
-  socket.on('reconnect_failed', (error) => {
+  socket.io.on('reconnect_failed', (error) => {
     // pad.collabClient might be null if the hanshake failed (or it never got that far).
     if (pad.collabClient != null) {
       pad.collabClient.setChannelState('DISCONNECTED', 'reconnect_timeout');
@@ -281,6 +284,7 @@ const handshake = async () => {
       throw new Error('Reconnect timed out');
     }
   });
+
 
   socket.on('error', (error) => {
     // pad.collabClient might be null if the error occurred before the hanshake completed.
@@ -314,6 +318,15 @@ const handshake = async () => {
             () => $.ajax('../_extendExpressSessionLifetime', {method: 'PUT'}).catch(() => {});
         setInterval(ping, window.clientVars.sessionRefreshInterval);
       }
+      if(window.clientVars.mode === "development") {
+        console.warn('Enabling development mode with live update')
+        socket.on('liveupdate', ()=>{
+
+          console.log('Live reload update received')
+          location.reload()
+        })
+      }
+
     } else if (obj.disconnect) {
       padconnectionstatus.disconnected(obj.disconnect);
       socket.disconnect();
@@ -714,7 +727,7 @@ const pad = {
       $.ajax(
           {
             type: 'post',
-            url: 'ep/pad/connection-diagnostic-info',
+            url: '../ep/pad/connection-diagnostic-info',
             data: {
               diagnosticInfo: JSON.stringify(pad.diagnosticInfo),
             },

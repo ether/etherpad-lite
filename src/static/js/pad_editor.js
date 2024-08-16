@@ -24,9 +24,10 @@
 const Cookies = require('./pad_utils').Cookies;
 const padcookie = require('./pad_cookie').padcookie;
 const padutils = require('./pad_utils').padutils;
+const Ace2Editor = require('./ace').Ace2Editor;
+import html10n from '../js/vendors/html10n'
 
 const padeditor = (() => {
-  let Ace2Editor = undefined;
   let pad = undefined;
   let settings = undefined;
 
@@ -35,7 +36,6 @@ const padeditor = (() => {
     // this is accessed directly from other files
     viewZoom: 100,
     init: async (initialViewOptions, _pad) => {
-      Ace2Editor = require('./ace').Ace2Editor;
       pad = _pad;
       settings = pad.settings;
       self.ace = new Ace2Editor();
@@ -99,7 +99,7 @@ const padeditor = (() => {
       $('#languagemenu').val(html10n.getLanguage());
       $('#languagemenu').on('change', () => {
         Cookies.set('language', $('#languagemenu').val());
-        window.html10n.localize([$('#languagemenu').val(), 'en']);
+        html10n.localize([$('#languagemenu').val(), 'en']);
         if ($('select').niceSelect) {
           $('select').niceSelect('update');
         }

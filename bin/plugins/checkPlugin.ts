@@ -474,6 +474,6 @@ log4js.configure({
       logger.info('No changes.');
     }
   }
-
   logger.info('Finished');
+  process.exit(0)
 })();

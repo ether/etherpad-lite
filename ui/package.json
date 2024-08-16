@@ -6,10 +6,12 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "build-copy": "tsc && vite build --outDir ../src/static/oidc --emptyOutDir"
   },
   "devDependencies": {
-    "typescript": "^5.4.5",
-    "vite": "^5.2.12"
+    "ep_etherpad-lite": "workspace:../src",
+    "typescript": "^5.5.4",
+    "vite": "^5.4.0"
   }
 }

@@ -4,12 +4,14 @@
 			"Bada Kaji",
 			"Nirajan pant",
 			"Nirjal stha",
+			"पर्वत सुबेदी",
 			"बडा काजी",
 			"राम प्रसाद जोशी",
 			"सरोज कुमार ढकाल",
 			"हिमाल सुबेदी"
 		]
 	},
+	"admin_plugins.description": "विवरण",
 	"index.newPad": "नयाँ प्याड",
 	"index.createOpenPad": "नाम सहितको नयाँ प्याड सिर्जना गर्ने / खोल्ने :",
 	"pad.toolbar.bold.title": "मोटो (Ctrl-B)",
@@ -57,6 +59,7 @@
 	"pad.modals.connected": "जोडीएको।",
 	"pad.modals.reconnecting": "तपाईंको प्याडमा पुन: जडान गर्दै",
 	"pad.modals.forcereconnect": "जडानको लागि जोडगर्ने",
+	"pad.modals.cancel": "रद्द गर्नुहोस्",
 	"pad.modals.userdup": "अर्को सन्झ्यालमा खोल्ने",
 	"pad.modals.unauth": "अनुमती नदिइएको",
 	"pad.modals.initsocketfail": "सर्भरमा पहुँच पुर्‍याउन सकिएन ।",

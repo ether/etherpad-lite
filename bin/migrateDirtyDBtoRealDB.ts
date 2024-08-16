@@ -1,7 +1,7 @@
 'use strict';
 
 import process from 'node:process';
-import ueberDB from "ueberdb2";
+import {Database} from "ueberdb2";
 import log4js from 'log4js';
 import util from 'util';
 const settings = require('ep_etherpad-lite/node/utils/Settings');
@@ -23,7 +23,7 @@ process.on('unhandledRejection', (err) => { throw err; });
     cache: '0', // The cache slows things down when you're mostly writing.
     writeInterval: 0, // Write directly to the database, don't buffer
   };
-  const db = new ueberDB.Database( // eslint-disable-line new-cap
+  const db = new Database( // eslint-disable-line new-cap
       settings.dbType,
       settings.dbSettings,
       dbWrapperSettings,
@@ -31,7 +31,7 @@ process.on('unhandledRejection', (err) => { throw err; });
   await db.init();
 
   console.log('Waiting for dirtyDB to parse its file.');
-  const dirty = await  new ueberDB.Database('dirty',`${__dirname}/../var/dirty.db`);
+  const dirty = new Database('dirty', `${__dirname}/../var/dirty.db`);
     await dirty.init();
   const keys = await dirty.findKeys('*', '')
 
@@ -57,4 +57,5 @@ process.on('unhandledRejection', (err) => { throw err; });
   await db.close(null);
   await dirty.close(null);
   console.log('Finished.');
+  process.exit(0)
 })();

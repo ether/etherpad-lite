@@ -1,3 +1,23 @@
+# 2.2.2
+
+### Notable enhancements and fixes
+
+- Removal of Etherpad require kernel: We finally managed to include esbuild to bundle our frontend code together. So no matter how many plugins your server has it is always one JavaScript file. This boosts performance dramatically.
+- Added log layoutType: This lets you print the log in either colored or basic (black and white text)
+- Introduced esbuild for bundling CSS files
+- Cache all files to be bundled in memory for faster load speed
+
+
+# 2.1.1
+
+
+### Notable enhancements and fixes
+
+- Fixed failing Docker build when checked out as git submodule. Thanks to @neurolabs
+- Fixed: Fallback to websocket and polling when unknown(old) config is present for socket io
+- Fixed: Next page disabled if zero page by @samyakj023
+- On CTRL+CLICK bring the window back to focus by Helder Sepulveda
+
 # 2.1.0
 
 ### Notable enhancements and fixes

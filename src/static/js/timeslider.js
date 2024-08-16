@@ -31,7 +31,7 @@ const randomString = require('./pad_utils').randomString;
 const hooks = require('./pluginfw/hooks');
 const padutils = require('./pad_utils').padutils;
 const socketio = require('./socketio');
-
+import html10n from '../js/vendors/html10n'
 let token, padId, exportLinks, socket, changesetLoader, BroadcastSlider;
 
 const init = () => {
@@ -115,6 +115,14 @@ const handleClientVars = (message) => {
     const ping =
         () => $.ajax('../../_extendExpressSessionLifetime', {method: 'PUT'}).catch(() => {});
     setInterval(ping, window.clientVars.sessionRefreshInterval);
+  }
+
+  if(window.clientVars.mode === "development") {
+    console.warn('Enabling development mode with live update')
+    socket.on('liveupdate', ()=>{
+      console.log('Doing live reload')
+      location.reload()
+    })
   }
 
   // load all script that doesn't work without the clientVars

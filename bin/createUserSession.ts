@@ -14,6 +14,7 @@ import path from "node:path";
 import querystring from "node:querystring";
 
 import axios from 'axios'
+import process from "node:process";
 
 
 process.on('unhandledRejection', (err) => { throw err; });
@@ -53,4 +54,5 @@ const settings = require('ep_etherpad-lite/node/utils/Settings');
   if (res.data.code === 1) throw new Error(`Error creating session: ${JSON.stringify(res.data)}`);
   console.log('Session made: ====> create a cookie named sessionID and set the value to',
       res.data.data.sessionID);
+  process.exit(0)
 })();

@@ -9,7 +9,7 @@ const disabledHookReasons = {
   },
 };
 
-const loadFn = (path, hookName) => {
+const loadFn = (path, hookName, modules) => {
   let functionName;
   const parts = path.split(':');
 
@@ -24,7 +24,13 @@ const loadFn = (path, hookName) => {
     functionName = parts[1];
   }
 
-  let fn = require(path);
+  let fn
+  if (modules === undefined || !("get" in modules)) {
+    fn = require(/* webpackIgnore: true */ path);
+  } else {
+    fn = modules.get(path);
+  }
+
   functionName = functionName ? functionName : hookName;
 
   for (const name of functionName.split('.')) {
@@ -33,7 +39,7 @@ const loadFn = (path, hookName) => {
   return fn;
 };
 
-const extractHooks = (parts, hookSetName, normalizer) => {
+const extractHooks = (parts, hookSetName, normalizer, modules) => {
   const hooks = {};
   for (const part of parts) {
     for (const [hookName, regHookFnName] of Object.entries(part[hookSetName] || {})) {
@@ -53,7 +59,7 @@ const extractHooks = (parts, hookSetName, normalizer) => {
       }
       let hookFn;
       try {
-        hookFn = loadFn(hookFnName, hookName);
+        hookFn = loadFn(hookFnName, hookName, modules);
         if (!hookFn) throw new Error('Not a function');
       } catch (err) {
         console.error(`Failed to load hook function "${hookFnName}" for plugin "${part.plugin}" ` +
