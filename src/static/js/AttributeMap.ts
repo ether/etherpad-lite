@@ -1,7 +1,9 @@
-// @ts-nocheck
 'use strict';
 
-const attributes = require('./attributes');
+import AttributePool from "./AttributePool";
+import {Attribute} from "./types/Attribute";
+
+import attributes from './attributes';
 
 /**
  * A `[key, value]` pair of strings describing a text attribute.
@@ -22,6 +24,7 @@ const attributes = require('./attributes');
  * Convenience class to convert an Op's attribute string to/from a Map of key, value pairs.
  */
 class AttributeMap extends Map {
+  private readonly pool? : AttributePool|null
   /**
    * Converts an attribute string into an AttributeMap.
    *
@@ -29,14 +32,14 @@ class AttributeMap extends Map {
    * @param {AttributePool} pool - Attribute pool.
    * @returns {AttributeMap}
    */
-  static fromString(str, pool) {
+  public static fromString(str: string, pool?: AttributePool|null): AttributeMap {
     return new AttributeMap(pool).updateFromString(str);
   }
 
   /**
    * @param {AttributePool} pool - Attribute pool.
    */
-  constructor(pool) {
+  constructor(pool?: AttributePool|null) {
     super();
     /** @public */
     this.pool = pool;
@@ -47,15 +50,15 @@ class AttributeMap extends Map {
    * @param {string} v - Attribute value.
    * @returns {AttributeMap} `this` (for chaining).
    */
-  set(k, v) {
+  set(k: string, v: string):this {
     k = k == null ? '' : String(k);
     v = v == null ? '' : String(v);
-    this.pool.putAttrib([k, v]);
+    this.pool!.putAttrib([k, v]);
     return super.set(k, v);
   }
 
   toString() {
-    return attributes.attribsToString(attributes.sort([...this]), this.pool);
+    return attributes.attribsToString(attributes.sort([...this]), this.pool!);
   }
 
   /**
@@ -64,7 +67,7 @@ class AttributeMap extends Map {
    *     key is removed from this map (if present).
    * @returns {AttributeMap} `this` (for chaining).
    */
-  update(entries, emptyValueIsDelete = false) {
+  update(entries: Iterable<Attribute>, emptyValueIsDelete: boolean = false): AttributeMap {
     for (let [k, v] of entries) {
       k = k == null ? '' : String(k);
       v = v == null ? '' : String(v);
@@ -84,9 +87,9 @@ class AttributeMap extends Map {
    *     key is removed from this map (if present).
    * @returns {AttributeMap} `this` (for chaining).
    */
-  updateFromString(str, emptyValueIsDelete = false) {
-    return this.update(attributes.attribsFromString(str, this.pool), emptyValueIsDelete);
+  updateFromString(str: string, emptyValueIsDelete: boolean = false): AttributeMap {
+    return this.update(attributes.attribsFromString(str, this.pool!), emptyValueIsDelete);
   }
 }
 
-module.exports = AttributeMap;
+export default AttributeMap

@@ -23,10 +23,10 @@
  * https://github.com/ether/pad/blob/master/infrastructure/ace/www/easysync2.js
  */
 
-const AttributeMap = require('./AttributeMap');
-const AttributePool = require('./AttributePool');
+import AttributeMap from './AttributeMap';
+import AttributePool from './AttributePool';
 const attributes = require('./attributes');
-const {padutils} = require('./pad_utils');
+import padutils from './pad_utils';
 
 /**
  * A `[key, value]` pair of strings describing a text attribute.

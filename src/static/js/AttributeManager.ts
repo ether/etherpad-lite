@@ -1,7 +1,7 @@
 // @ts-nocheck
 'use strict';
 
-const AttributeMap = require('./AttributeMap');
+import AttributeMap from './AttributeMap';
 const Changeset = require('./Changeset');
 const ChangesetUtils = require('./ChangesetUtils');
 const attributes = require('./attributes');

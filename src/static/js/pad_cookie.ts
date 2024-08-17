@@ -17,7 +17,7 @@
  * limitations under the License.
  */
 
-const Cookies = require('./pad_utils').Cookies;
+import {Cookies} from "./pad_utils";
 
 exports.padcookie = new class {
   constructor() {

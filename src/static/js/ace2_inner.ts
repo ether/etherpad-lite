@@ -19,9 +19,9 @@
  */
 let documentAttributeManager;
 
-const AttributeMap = require('./AttributeMap');
+import AttributeMap from './AttributeMap';
 const browser = require('./vendors/browser');
-const padutils = require('./pad_utils').padutils;
+import padutils from './pad_utils'
 const Ace2Common = require('./ace2_common');
 const $ = require('./rjquery').$;
 
@@ -30,19 +30,18 @@ const getAssoc = Ace2Common.getAssoc;
 const setAssoc = Ace2Common.setAssoc;
 const noop = Ace2Common.noop;
 const hooks = require('./pluginfw/hooks');
-
+import SkipList from "./skiplist";
 import Scroll from './scroll'
+import AttribPool from './AttributePool'
 
 function Ace2Inner(editorInfo, cssManagers) {
   const makeChangesetTracker = require('./changesettracker').makeChangesetTracker;
   const colorutils = require('./colorutils').colorutils;
   const makeContentCollector = require('./contentcollector').makeContentCollector;
   const domline = require('./domline').domline;
-  const AttribPool = require('./AttributePool');
   const Changeset = require('./Changeset');
   const ChangesetUtils = require('./ChangesetUtils');
   const linestylefilter = require('./linestylefilter').linestylefilter;
-  const SkipList = require('./skiplist');
   const undoModule = require('./undomodule').undoModule;
   const AttributeManager = require('./AttributeManager');
   const DEBUG = false;

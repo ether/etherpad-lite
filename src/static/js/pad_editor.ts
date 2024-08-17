@@ -22,9 +22,8 @@
  * limitations under the License.
  */
 
-const Cookies = require('./pad_utils').Cookies;
+import padutils,{Cookies} from "./pad_utils";
 const padcookie = require('./pad_cookie').padcookie;
-const padutils = require('./pad_utils').padutils;
 const Ace2Editor = require('./ace').Ace2Editor;
 import html10n from '../js/vendors/html10n'
 

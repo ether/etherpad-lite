@@ -1,17 +1,18 @@
 'use strict';
 
-const AttributeMap = require('../../../static/js/AttributeMap.js');
-const AttributePool = require('../../../static/js/AttributePool');
-const attributes = require('../../../static/js/attributes');
+import AttributeMap from '../../../static/js/AttributeMap';
+import AttributePool from '../../../static/js/AttributePool';
+import attributes from '../../../static/js/attributes';
 import {expect, describe, it, beforeEach} from 'vitest'
+import {Attribute} from "../../../static/js/types/Attribute";
 
 describe('AttributeMap', function () {
-  const attribs = [
+  const attribs: Attribute[] = [
     ['foo', 'bar'],
     ['baz', 'bif'],
     ['emptyValue', ''],
   ];
-  let pool: { eachAttrib: (arg0: () => number) => void; putAttrib: (arg0: string[]) => any; getAttrib: (arg0: number) => any; };
+  let pool: AttributePool;
 
   const getPoolSize = () => {
     let n = 0;
@@ -70,12 +71,14 @@ describe('AttributeMap', function () {
         describe(desc as string, function () {
           it('key is coerced to string', async function () {
             const m = new AttributeMap(pool);
+            // @ts-ignore
             m.set(input, 'value');
             expect(m.get(want)).to.equal('value');
           });
 
           it('value is coerced to string', async function () {
             const m = new AttributeMap(pool);
+            // @ts-ignore
             m.set('key', input);
             expect(m.get('key')).to.equal(want);
           });
@@ -122,6 +125,7 @@ describe('AttributeMap', function () {
         // @ts-ignore
         args[0] = attributes.attribsToString(attributes.sort([...args[0]]), pool);
       }
+      // @ts-ignore
       return AttributeMap.prototype[funcName].call(m, ...args);
     };
 

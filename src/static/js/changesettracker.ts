@@ -23,8 +23,8 @@
  * limitations under the License.
  */
 
-const AttributeMap = require('./AttributeMap');
-const AttributePool = require('./AttributePool');
+import AttributeMap from './AttributeMap';
+import AttributePool from './AttributePool';
 const Changeset = require('./Changeset');
 
 const makeChangesetTracker = (scheduler, apool, aceCallbacksProvider) => {

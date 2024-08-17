@@ -7,10 +7,10 @@ import {MapArrayType} from "../types/MapType";
  * The pad object, defined with joose
  */
 
-const AttributeMap = require('../../static/js/AttributeMap');
+import AttributeMap from '../../static/js/AttributeMap';
 const Changeset = require('../../static/js/Changeset');
 const ChatMessage = require('../../static/js/ChatMessage');
-const AttributePool = require('../../static/js/AttributePool');
+import AttributePool from '../../static/js/AttributePool';
 const Stream = require('../utils/Stream');
 const assert = require('assert').strict;
 const db = require('./DB');
@@ -23,7 +23,7 @@ const CustomError = require('../utils/customError');
 const readOnlyManager = require('./ReadOnlyManager');
 const randomString = require('../utils/randomstring');
 const hooks = require('../../static/js/pluginfw/hooks');
-const {padutils: {warnDeprecated}} = require('../../static/js/pad_utils');
+import pad_utils from "../../static/js/pad_utils";
 const promises = require('../utils/promises');
 
 /**
@@ -40,7 +40,7 @@ exports.cleanText = (txt:string): string => txt.replace(/\r\n/g, '\n')
 class Pad {
   private db: Database;
   private atext: AText;
-  private pool: APool;
+  private pool: AttributePool;
   private head: number;
     private chatHead: number;
     private publicStatus: boolean;
@@ -126,11 +126,11 @@ class Pad {
         pad: this,
         authorId,
         get author() {
-          warnDeprecated(`${hook} hook author context is deprecated; use authorId instead`);
+          pad_utils.warnDeprecated(`${hook} hook author context is deprecated; use authorId instead`);
           return this.authorId;
         },
         set author(authorId) {
-          warnDeprecated(`${hook} hook author context is deprecated; use authorId instead`);
+          pad_utils.warnDeprecated(`${hook} hook author context is deprecated; use authorId instead`);
           this.authorId = authorId;
         },
         ...this.head === 0 ? {} : {
@@ -437,11 +437,11 @@ class Pad {
     // let the plugins know the pad was copied
     await hooks.aCallAll('padCopy', {
       get originalPad() {
-        warnDeprecated('padCopy originalPad context property is deprecated; use srcPad instead');
+        pad_utils.warnDeprecated('padCopy originalPad context property is deprecated; use srcPad instead');
         return this.srcPad;
       },
       get destinationID() {
-        warnDeprecated(
+        pad_utils.warnDeprecated(
             'padCopy destinationID context property is deprecated; use dstPad.id instead');
         return this.dstPad.id;
       },
@@ -538,11 +538,11 @@ class Pad {
 
     await hooks.aCallAll('padCopy', {
       get originalPad() {
-        warnDeprecated('padCopy originalPad context property is deprecated; use srcPad instead');
+        pad_utils.warnDeprecated('padCopy originalPad context property is deprecated; use srcPad instead');
         return this.srcPad;
       },
       get destinationID() {
-        warnDeprecated(
+        pad_utils.warnDeprecated(
             'padCopy destinationID context property is deprecated; use dstPad.id instead');
         return this.dstPad.id;
       },
@@ -603,7 +603,7 @@ class Pad {
     p.push(padManager.removePad(padID));
     p.push(hooks.aCallAll('padRemove', {
       get padID() {
-        warnDeprecated('padRemove padID context property is deprecated; use pad.id instead');
+        pad_utils.warnDeprecated('padRemove padID context property is deprecated; use pad.id instead');
         return this.pad.id;
       },
       pad: this,

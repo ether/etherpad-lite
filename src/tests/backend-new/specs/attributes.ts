@@ -2,14 +2,15 @@
 
 import {APool} from "../../../node/types/PadType";
 
-const AttributePool = require('../../../static/js/AttributePool');
-const attributes = require('../../../static/js/attributes');
+import AttributePool from '../../../static/js/AttributePool';
+import attributes from '../../../static/js/attributes';
 
 import {expect, describe, it, beforeEach} from 'vitest';
+import {Attribute} from "../../../static/js/types/Attribute";
 
 describe('attributes', function () {
-  const attribs = [['foo', 'bar'], ['baz', 'bif']];
-  let pool: APool;
+  const attribs: Attribute[] = [['foo', 'bar'], ['baz', 'bif']];
+  let pool: AttributePool;
 
   beforeEach(async function () {
     pool = new AttributePool();
@@ -45,6 +46,7 @@ describe('attributes', function () {
       ];
       for (const [input, want] of testCases) {
         it(`${JSON.stringify(input)} -> ${JSON.stringify(want)}`, async function () {
+          // @ts-ignore
           const got = [...attributes.decodeAttribString(input)];
           expect(JSON.stringify(got)).to.equal(JSON.stringify(want));
         });
@@ -61,6 +63,7 @@ describe('attributes', function () {
       ];
       for (const [desc, input] of testCases) {
         it(desc as string, async function () {
+          // @ts-ignore
           expect(attributes.encodeAttribString(input)).to.equal('*0*1');
         });
       }
@@ -78,6 +81,7 @@ describe('attributes', function () {
       ];
       for (const [input, wantErr] of testCases) {
         it(JSON.stringify(input), async function () {
+          // @ts-ignore
           expect(() => attributes.encodeAttribString(input)).toThrowError(wantErr as RegExp);
         });
       }
@@ -97,6 +101,7 @@ describe('attributes', function () {
       ];
       for (const [input, want] of testCases) {
         it(`${JSON.stringify(input)} -> ${JSON.stringify(want)}`, async function () {
+          // @ts-ignore
           expect(attributes.encodeAttribString(input)).to.equal(want);
         });
       }
@@ -117,6 +122,7 @@ describe('attributes', function () {
 
       for (const [desc, input] of testCases) {
         it(desc as string, async function () {
+          // @ts-ignore
           const gotAttribs = [...attributes.attribsFromNums(input, pool)];
           expect(JSON.stringify(gotAttribs)).to.equal(JSON.stringify(attribs));
         });
@@ -136,6 +142,7 @@ describe('attributes', function () {
       ];
       for (const [input, wantErr] of testCases) {
         it(JSON.stringify(input), async function () {
+          // @ts-ignore
           expect(() => [...attributes.attribsFromNums(input, pool)]).toThrowError(wantErr as RegExp);
         });
       }
@@ -151,6 +158,7 @@ describe('attributes', function () {
       ];
       for (const [input, want] of testCases) {
         it(`${JSON.stringify(input)} -> ${JSON.stringify(want)}`, async function () {
+          // @ts-ignore
           const gotAttribs = [...attributes.attribsFromNums(input, pool)];
           expect(JSON.stringify(gotAttribs)).to.equal(JSON.stringify(want));
         });
@@ -172,6 +180,7 @@ describe('attributes', function () {
 
       for (const [desc, input] of testCases) {
         it(desc as string, async function () {
+          // @ts-ignore
           const gotNums = [...attributes.attribsToNums(input, pool)];
           expect(JSON.stringify(gotNums)).to.equal(JSON.stringify([0, 1]));
         });
@@ -182,6 +191,7 @@ describe('attributes', function () {
       const testCases = [null, [null]];
       for (const input of testCases) {
         it(JSON.stringify(input), async function () {
+          // @ts-ignore
           expect(() => [...attributes.attribsToNums(input, pool)]).toThrowError();
         });
       }
@@ -197,6 +207,7 @@ describe('attributes', function () {
       ];
       for (const [input, want] of testCases) {
         it(`${JSON.stringify(input)} -> ${JSON.stringify(want)}`, async function () {
+          // @ts-ignore
           const got = [...attributes.attribsToNums(input, pool)];
           expect(JSON.stringify(got)).to.equal(JSON.stringify(want));
         });
@@ -211,6 +222,7 @@ describe('attributes', function () {
       ];
       for (const [input, want] of testCases) {
         it(`${JSON.stringify(input)} -> ${JSON.stringify(want)}`, async function () {
+          // @ts-ignore
           const got = [...attributes.attribsToNums(input, pool)];
           expect(JSON.stringify(got)).to.equal(JSON.stringify(want));
           expect(JSON.stringify(pool.getAttrib(attribs.length)))
@@ -234,6 +246,7 @@ describe('attributes', function () {
             ['value is coerced to string', [['key', inputVal]], [['key', wantVal]]],
           ]) {
             it(desc as string, async function () {
+              // @ts-ignore
               const gotNums = [...attributes.attribsToNums(inputAttribs, pool)];
               // Each attrib in inputAttribs is expected to be new to the pool.
               const wantNums = [...Array(attribs.length + 1).keys()].slice(attribs.length);
@@ -265,6 +278,7 @@ describe('attributes', function () {
       ];
       for (const [input, wantErr] of testCases) {
         it(JSON.stringify(input), async function () {
+          // @ts-ignore
           expect(() => [...attributes.attribsFromString(input, pool)]).toThrowError(wantErr);
         });
       }
@@ -280,6 +294,7 @@ describe('attributes', function () {
       ];
       for (const [input, want] of testCases) {
         it(`${JSON.stringify(input)} -> ${JSON.stringify(want)}`, async function () {
+          // @ts-ignore
           const gotAttribs = [...attributes.attribsFromString(input, pool)];
           expect(JSON.stringify(gotAttribs)).to.equal(JSON.stringify(want));
         });
@@ -297,6 +312,7 @@ describe('attributes', function () {
 
       for (const [desc, input] of testCases) {
         it(desc as string, async function () {
+          // @ts-ignore
           const got = attributes.attribsToString(input, pool);
           expect(got).to.equal('*0*1');
         });
@@ -307,6 +323,7 @@ describe('attributes', function () {
       const testCases = [null, [null]];
       for (const input of testCases) {
         it(JSON.stringify(input), async function () {
+          // @ts-ignore
           expect(() => attributes.attribsToString(input, pool)).toThrowError();
         });
       }
@@ -322,6 +339,7 @@ describe('attributes', function () {
       ];
       for (const [input, want] of testCases) {
         it(`${JSON.stringify(input)} -> ${JSON.stringify(want)}`, async function () {
+          // @ts-ignore
           const got = attributes.attribsToString(input, pool);
           expect(got).to.equal(want);
         });
@@ -336,6 +354,7 @@ describe('attributes', function () {
       ];
       for (const [input, want] of testCases) {
         it(`${JSON.stringify(input)} -> ${JSON.stringify(want)}`, async function () {
+          // @ts-ignore
           const got = attributes.attribsToString(input, pool);
           expect(got).to.equal(want);
           expect(JSON.stringify(pool.getAttrib(attribs.length)))

@@ -19,7 +19,7 @@
  * limitations under the License.
  */
 
-const AttributeMap = require('../../static/js/AttributeMap');
+import AttributeMap from '../../static/js/AttributeMap';
 const Changeset = require('../../static/js/Changeset');
 const { checkValidRev } = require('./checkValidRev');
 

@@ -11,12 +11,12 @@
 
 import {APool} from "../../../node/types/PadType";
 
-const AttributePool = require('../../../static/js/AttributePool');
+import AttributePool from '../../../static/js/AttributePool';
 const Changeset = require('../../../static/js/Changeset');
 const assert = require('assert').strict;
-const attributes = require('../../../static/js/attributes');
+import attributes from '../../../static/js/attributes';
 const contentcollector = require('../../../static/js/contentcollector');
-const jsdom = require('jsdom');
+import jsdom from 'jsdom';
 
 // All test case `wantAlines` values must only refer to attributes in this list so that the
 // attribute numbers do not change due to changes in pool insertion order.

@@ -36,7 +36,7 @@ const attributes = require('./attributes');
 const hooks = require('./pluginfw/hooks');
 const linestylefilter = {};
 const AttributeManager = require('./AttributeManager');
-const padutils = require('./pad_utils').padutils;
+import padutils from './pad_utils'
 
 linestylefilter.ATTRIB_CLASSES = {
   bold: 'tag:b',

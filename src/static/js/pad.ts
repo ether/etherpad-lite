@@ -34,7 +34,8 @@ require('./vendors/gritter');
 
 import html10n from './vendors/html10n'
 
-const Cookies = require('./pad_utils').Cookies;
+import {Cookies} from "./pad_utils";
+
 const chat = require('./chat').chat;
 const getCollabClient = require('./collab_client').getCollabClient;
 const padconnectionstatus = require('./pad_connectionstatus').padconnectionstatus;
@@ -45,9 +46,9 @@ const padimpexp = require('./pad_impexp').padimpexp;
 const padmodals = require('./pad_modals').padmodals;
 const padsavedrevs = require('./pad_savedrevs');
 const paduserlist = require('./pad_userlist').paduserlist;
-const padutils = require('./pad_utils').padutils;
+import padutils from './pad_utils'
 const colorutils = require('./colorutils').colorutils;
-const randomString = require('./pad_utils').randomString;
+import {randomString} from "./pad_utils";
 const socketio = require('./socketio');
 
 const hooks = require('./pluginfw/hooks');

@@ -18,7 +18,7 @@ import {APool} from "../types/PadType";
  * limitations under the License.
  */
 
-const AttributePool = require('../../static/js/AttributePool');
+import AttributePool from '../../static/js/AttributePool';
 const {Pad} = require('../db/Pad');
 const Stream = require('./Stream');
 const authorManager = require('../db/AuthorManager');

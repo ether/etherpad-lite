@@ -27,10 +27,9 @@
 // assigns to the global `$` and augments it with plugins.
 require('./vendors/jquery');
 
-const Cookies = require('./pad_utils').Cookies;
-const randomString = require('./pad_utils').randomString;
+import {randomString, Cookies} from "./pad_utils";
 const hooks = require('./pluginfw/hooks');
-const padutils = require('./pad_utils').padutils;
+import padutils from './pad_utils'
 const socketio = require('./socketio');
 import html10n from '../js/vendors/html10n'
 let token, padId, exportLinks, socket, changesetLoader, BroadcastSlider;

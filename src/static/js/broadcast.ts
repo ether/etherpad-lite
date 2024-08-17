@@ -25,7 +25,7 @@
 
 const makeCSSManager = require('./cssmanager').makeCSSManager;
 const domline = require('./domline').domline;
-const AttribPool = require('./AttributePool');
+import AttribPool from './AttributePool';
 const Changeset = require('./Changeset');
 const attributes = require('./attributes');
 const linestylefilter = require('./linestylefilter').linestylefilter;

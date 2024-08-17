@@ -25,7 +25,7 @@
 
 const browser = require('./vendors/browser');
 const hooks = require('./pluginfw/hooks');
-const padutils = require('./pad_utils').padutils;
+import padutils from "./pad_utils";
 const padeditor = require('./pad_editor').padeditor;
 const padsavedrevs = require('./pad_savedrevs');
 const _ = require('underscore');
