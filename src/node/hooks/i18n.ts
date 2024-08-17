@@ -7,7 +7,7 @@ const languages = require('languages4translatewiki');
 const fs = require('fs');
 const path = require('path');
 const _ = require('underscore');
-const pluginDefs = require('../../static/js/pluginfw/plugin_defs.js');
+const pluginDefs = require('../../static/js/pluginfw/plugin_defs');
 const existsSync = require('../utils/path_exists');
 const settings = require('../utils/Settings');
 

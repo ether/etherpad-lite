@@ -19,7 +19,8 @@
  * limitations under the License.
  */
 
-const AttributeMap = require('../../static/js/AttributeMap');
+import AttributeMap from '../../static/js/AttributeMap';
+import AttributePool from "../../static/js/AttributePool";
 const Changeset = require('../../static/js/Changeset');
 const { checkValidRev } = require('./checkValidRev');
 
@@ -51,7 +52,7 @@ type LineModel = {
   [id:string]:string|number|LineModel
 }
 
-exports._analyzeLine = (text:string, aline: LineModel, apool: Function) => {
+exports._analyzeLine = (text:string, aline: LineModel, apool: AttributePool) => {
   const line: LineModel = {};
 
   // identify list

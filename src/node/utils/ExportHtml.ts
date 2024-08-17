@@ -27,7 +27,7 @@ const hooks = require('../../static/js/pluginfw/hooks');
 const eejs = require('../eejs');
 const _analyzeLine = require('./ExportHelper')._analyzeLine;
 const _encodeWhitespace = require('./ExportHelper')._encodeWhitespace;
-const padutils = require('../../static/js/pad_utils').padutils;
+import padutils from "../../static/js/pad_utils";
 
 const getPadHTML = async (pad: PadType, revNum: string) => {
   let atext = pad.atext;

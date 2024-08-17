@@ -21,8 +21,8 @@
 
 const db = require('./DB');
 const CustomError = require('../utils/customError');
-const hooks = require('../../static/js/pluginfw/hooks.js');
-const {randomString, padutils: {warnDeprecated}} = require('../../static/js/pad_utils');
+const hooks = require('../../static/js/pluginfw/hooks');
+import padutils, {randomString} from "../../static/js/pad_utils";
 
 exports.getColorPalette = () => [
   '#ffc7c7',
@@ -169,7 +169,7 @@ exports.getAuthorId = async (token: string, user: object) => {
  * @param {String} token The token
  */
 exports.getAuthor4Token = async (token: string) => {
-  warnDeprecated(
+  padutils.warnDeprecated(
       'AuthorManager.getAuthor4Token() is deprecated; use AuthorManager.getAuthorId() instead');
   return await getAuthor4Token(token);
 };

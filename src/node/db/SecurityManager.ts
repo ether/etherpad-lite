@@ -22,7 +22,7 @@
 import {UserSettingsObject} from "../types/UserSettingsObject";
 
 const authorManager = require('./AuthorManager');
-const hooks = require('../../static/js/pluginfw/hooks.js');
+const hooks = require('../../static/js/pluginfw/hooks');
 const padManager = require('./PadManager');
 const readOnlyManager = require('./ReadOnlyManager');
 const sessionManager = require('./SessionManager');
@@ -30,7 +30,7 @@ const settings = require('../utils/Settings');
 const webaccess = require('../hooks/express/webaccess');
 const log4js = require('log4js');
 const authLogger = log4js.getLogger('auth');
-const {padutils} = require('../../static/js/pad_utils');
+import padutils from '../../static/js/pad_utils'
 
 const DENY = Object.freeze({accessStatus: 'deny'});
 

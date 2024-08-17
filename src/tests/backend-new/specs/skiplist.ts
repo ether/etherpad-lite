@@ -1,12 +1,13 @@
 'use strict';
 
-const SkipList = require('ep_etherpad-lite/static/js/skiplist');
+import SkipList from 'ep_etherpad-lite/static/js/skiplist';
 import {expect, describe, it} from 'vitest';
 
 describe('skiplist.js', function () {
   it('rejects null keys', async function () {
     const skiplist = new SkipList();
     for (const key of [undefined, null]) {
+      // @ts-ignore
       expect(() => skiplist.push({key})).toThrowError();
     }
   });
