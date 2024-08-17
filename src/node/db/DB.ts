@@ -22,7 +22,7 @@
  */
 
 import {Database} from 'ueberdb2';
-const settings = require('../utils/Settings');
+import settings from '../utils/Settings';
 import log4js from 'log4js';
 const stats = require('../stats')
 

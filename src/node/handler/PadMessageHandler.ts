@@ -30,7 +30,7 @@ const AttributeManager = require('../../static/js/AttributeManager');
 const authorManager = require('../db/AuthorManager');
 import padutils from '../../static/js/pad_utils';
 const readOnlyManager = require('../db/ReadOnlyManager');
-const settings = require('../utils/Settings');
+import settings from '../utils/Settings';
 const securityManager = require('../db/SecurityManager');
 const plugins = require('../../static/js/pluginfw/plugin_defs');
 import log4js from 'log4js';

@@ -24,7 +24,7 @@ import {AsyncQueueTask} from "../types/AsyncQueueTask";
 
 const spawn = require('child_process').spawn;
 const async = require('async');
-const settings = require('./Settings');
+import settings from './Settings';
 const os = require('os');
 
 // on windows we have to spawn a process for each convertion,

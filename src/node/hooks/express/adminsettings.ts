@@ -9,7 +9,7 @@ const eejs = require('../../eejs');
 const fsp = require('fs').promises;
 const hooks = require('../../../static/js/pluginfw/hooks');
 const plugins = require('../../../static/js/pluginfw/plugins');
-const settings = require('../../utils/Settings');
+import settings from '../../utils/Settings';
 const UpdateCheck = require('../../utils/UpdateCheck');
 const padManager = require('../../db/PadManager');
 const api = require('../../db/API');

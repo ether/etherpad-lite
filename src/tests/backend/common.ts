@@ -10,7 +10,7 @@ import padutils from '../../static/js/pad_utils';
 const process = require('process');
 const server = require('../../node/server');
 const setCookieParser = require('set-cookie-parser');
-const settings = require('../../node/utils/Settings');
+import settings from '../../node/utils/Settings';
 import supertest from 'supertest';
 import TestAgent from "supertest/lib/agent";
 import {Http2Server} from "node:http2";
@@ -26,7 +26,7 @@ export let baseUrl:string|null = null;
 export let httpServer: Http2Server|null = null;
 export const logger = log4js.getLogger('test');
 
-const logLevel = logger.level;
+const logLevel = logger.level as log4js.Level;
 
 // Mocha doesn't monitor unhandled Promise rejections, so convert them to uncaught exceptions.
 // https://github.com/mochajs/mocha/issues/2640

@@ -29,7 +29,7 @@ import pkg from '../package.json';
 import {checkForMigration} from "../static/js/pluginfw/installer";
 import axios from "axios";
 
-const settings = require('./utils/Settings');
+import settings from './utils/Settings';
 
 let wtfnode: any;
 if (settings.dumpOnUncleanExit) {

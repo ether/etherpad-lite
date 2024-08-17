@@ -9,7 +9,7 @@ const path = require('path');
 const _ = require('underscore');
 const pluginDefs = require('../../static/js/pluginfw/plugin_defs');
 const existsSync = require('../utils/path_exists');
-const settings = require('../utils/Settings');
+import settings from '../utils/Settings';
 
 // returns all existing messages merged together and grouped by langcode
 // {es: {"foo": "string"}, en:...}

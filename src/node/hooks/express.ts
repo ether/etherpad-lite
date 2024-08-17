@@ -14,7 +14,7 @@ import fs from 'fs';
 const hooks = require('../../static/js/pluginfw/hooks');
 import log4js from 'log4js';
 const SessionStore = require('../db/SessionStore');
-const settings = require('../utils/Settings');
+import settings from '../utils/Settings';
 const stats = require('../stats')
 import util from 'util';
 const webaccess = require('./express/webaccess');
@@ -190,6 +190,7 @@ exports.restartServer = async () => {
     secretRotator = new SecretRotator(
         'expressSessionSecrets', keyRotationInterval, sessionLifetime, settings.sessionKey);
     await secretRotator.start();
+    // @ts-ignore
     secret = secretRotator.secrets;
   }
   if (!secret) throw new Error('missing cookie signing secret');

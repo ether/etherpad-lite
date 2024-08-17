@@ -3,7 +3,7 @@
 import {ArgsExpressType} from "../../types/ArgsExpressType";
 
 const hasPadAccess = require('../../padaccess');
-const settings = require('../../utils/Settings');
+import settings from '../../utils/Settings';
 const exportHandler = require('../../handler/ExportHandler');
 const importHandler = require('../../handler/ImportHandler');
 const padManager = require('../../db/PadManager');

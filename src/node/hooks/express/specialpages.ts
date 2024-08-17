@@ -6,7 +6,7 @@ import fs from 'node:fs';
 const fsp = fs.promises;
 const toolbar = require('../../utils/toolbar');
 const hooks = require('../../../static/js/pluginfw/hooks');
-const settings = require('../../utils/Settings');
+import settings from '../../utils/Settings';
 import util from 'node:util';
 const webaccess = require('./webaccess');
 const plugins = require('../../../static/js/pluginfw/plugin_defs');
@@ -40,7 +40,7 @@ exports.expressPreSession = async (hookName:string, {app}:any) => {
 
   app.get('/robots.txt', (req:any, res:any) => {
     let filePath =
-        path.join(settings.root, 'src', 'static', 'skins', settings.skinName, 'robots.txt');
+        path.join(settings.root, 'src', 'static', 'skins', settings.skinName!, 'robots.txt');
     res.sendFile(filePath, (err:any) => {
       // there is no custom robots.txt, send the default robots.txt which dissallows all
       if (err) {
@@ -64,7 +64,7 @@ exports.expressPreSession = async (hookName:string, {app}:any) => {
 
       const fns = [
         ...(settings.favicon ? [path.resolve(settings.root, settings.favicon)] : []),
-        path.join(settings.root, 'src', 'static', 'skins', settings.skinName, 'favicon.ico'),
+        path.join(settings.root, 'src', 'static', 'skins', settings.skinName!, 'favicon.ico'),
         path.join(settings.root, 'src', 'static', 'favicon.ico'),
       ];
       for (const fn of fns) {
@@ -174,6 +174,7 @@ const handleLiveReload = async (args: any, padString: string, timeSliderString: 
           req,
           toolbar,
           isReadOnly,
+          settings: settings,
           entrypoint: '/watch/pad?hash=' + hash
         })
         res.send(content);
@@ -203,6 +204,7 @@ const handleLiveReload = async (args: any, padString: string, timeSliderString: 
           req,
           toolbar,
           isReadOnly,
+          settings: settings,
           entrypoint: '/watch/timeslider?hash=' + hash
         })
         res.send(content);

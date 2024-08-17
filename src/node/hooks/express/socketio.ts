@@ -6,7 +6,7 @@ import events from 'events';
 const express = require('../express');
 import log4js from 'log4js';
 const proxyaddr = require('proxy-addr');
-const settings = require('../../utils/Settings');
+import settings from '../../utils/Settings';
 import {Server, Socket} from 'socket.io'
 const socketIORouter = require('../../handler/SocketIORouter');
 const hooks = require('../../../static/js/pluginfw/hooks');
