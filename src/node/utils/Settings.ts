@@ -779,7 +779,7 @@ class Settings {
    *
    * The isSettings variable only controls the error logging.
    */
-  private parseSettings = (settingsFilename: string, isSettings: boolean) => {
+  parseSettings = (settingsFilename: string, isSettings: boolean) => {
     let settingsStr = '';
 
     let settingsType, notFoundMessage, notFoundFunction;
@@ -961,6 +961,7 @@ class Settings {
 const settings = new Settings()
 
 export default settings
+
 
 
 

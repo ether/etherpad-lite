@@ -8,7 +8,7 @@ const io = require('socket.io-client');
 const log4js = require('log4js');
 import padutils from '../../static/js/pad_utils';
 const process = require('process');
-const server = require('../../node/server');
+const server = require('../../node/server')
 const setCookieParser = require('set-cookie-parser');
 import settings from '../../node/utils/Settings';
 import supertest from 'supertest';

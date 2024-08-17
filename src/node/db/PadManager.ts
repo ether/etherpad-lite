@@ -24,7 +24,7 @@ import {PadType} from "../types/PadType";
 
 const CustomError = require('../utils/customError');
 const Pad = require('../db/Pad');
-const db = require('./DB');
+import db from './DB';
 import settings from '../utils/Settings';
 
 /**
@@ -74,6 +74,7 @@ const padList = new class {
   async getPads() {
     if (!this._loaded) {
       this._loaded = (async () => {
+        // @ts-ignore
         const dbData = await db.findKeys('pad:*', '*:*:*');
         if (dbData == null) return;
         for (const val of dbData) this.addPad(val.replace(/^pad:/, ''));

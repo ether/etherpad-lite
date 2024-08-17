@@ -1,6 +1,6 @@
 'use strict';
 
-const DB = require('./DB');
+import DB from './DB';
 const Store = require('@etherpad/express-session').Store;
 const log4js = require('log4js');
 const util = require('util');
@@ -19,7 +19,7 @@ class SessionStore extends Store {
    *     Etherpad is restarted. Use `null` to prevent `touch()` from ever updating the record.
    *     Ignored if the cookie does not expire.
    */
-  constructor(refresh = null) {
+  constructor(refresh:number|null = null) {
     super();
     this._refresh = refresh;
     // Maps session ID to an object with the following properties:
@@ -111,4 +111,4 @@ for (const m of ['get', 'set', 'destroy', 'touch']) {
   SessionStore.prototype[m] = util.callbackify(SessionStore.prototype[`_${m}`]);
 }
 
-module.exports = SessionStore;
+export default SessionStore

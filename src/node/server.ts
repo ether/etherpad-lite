@@ -69,13 +69,13 @@ NodeVersion.enforceMinNodeVersion(pkg.engines.node.replace(">=", ""));
 NodeVersion.checkDeprecationStatus(pkg.engines.node.replace(">=", ""), '2.1.0');
 
 const UpdateCheck = require('./utils/UpdateCheck');
-const db = require('./db/DB');
+import db from './db/DB';
 const express = require('./hooks/express');
 const hooks = require('../static/js/pluginfw/hooks');
 const pluginDefs = require('../static/js/pluginfw/plugin_defs');
 const plugins = require('../static/js/pluginfw/plugins');
 const {Gate} = require('./utils/promises');
-const stats = require('./stats')
+import stats from './stats';
 
 const logger = log4js.getLogger('server');
 

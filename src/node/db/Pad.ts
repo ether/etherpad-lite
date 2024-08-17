@@ -13,7 +13,7 @@ import ChatMessage from '../../static/js/ChatMessage';
 import AttributePool from '../../static/js/AttributePool';
 const Stream = require('../utils/Stream');
 const assert = require('assert').strict;
-const db = require('./DB');
+import db from './DB';
 import settings from '../utils/Settings';
 const authorManager = require('./AuthorManager');
 const padManager = require('./PadManager');
@@ -56,6 +56,7 @@ class Pad {
    *     own database table, or to validate imported pad data before it is written to the database.
    */
   constructor(id:string, database = db) {
+    // @ts-ignore
     this.db = database;
     this.atext = makeAText('\n');
     this.pool = new AttributePool();
@@ -428,6 +429,7 @@ class Pad {
       yield* Stream.range(0, this.chatHead + 1).map((i) => copyRecord(`:chat:${i}`));
       // @ts-ignore
       yield this.copyAuthorInfoToDestinationPad(destinationID);
+      // @ts-ignore
       if (destGroupID) yield db.setSub(`group:${destGroupID}`, ['pads', destinationID], 1);
     }).call(this);
     for (const p of new Stream(promises).batch(100).buffer(99)) await p;
@@ -511,6 +513,7 @@ class Pad {
 
     // Group pad? Add it to the group's list
     if (destGroupID) {
+      // @ts-ignore
       await db.setSub(`group:${destGroupID}`, ['pads', destinationID], 1);
     }
 

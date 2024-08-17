@@ -1,5 +1,5 @@
-'use strict';
-
+import {cleanComments, minify} from "admin/src/utils/utils";
+import {expect, describe, it, beforeAll} from 'vitest'
 
 import {strict as assert} from "assert";
 import {cleanComments, minify} from "admin/src/utils/utils";

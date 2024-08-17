@@ -2,14 +2,14 @@
 
 const AuthorManager = require('../../../node/db/AuthorManager');
 import {strict as assert} from "assert";
-const common = require('../common');
-const db = require('../../../node/db/DB');
+import {init} from '../common';
+import db from '../../../node/db/DB';
 
 describe(__filename, function () {
   let setBackup: Function;
 
   before(async function () {
-    await common.init();
+    await init();
     setBackup = db.set;
 
     db.set = async (...args:any) => {
@@ -20,7 +20,7 @@ describe(__filename, function () {
   });
 
   after(async function () {
-    db.set = setBackup;
+    db.set = setBackup as any;
   });
 
   it('regression test for missing await in createAuthor (#5000)', async function () {

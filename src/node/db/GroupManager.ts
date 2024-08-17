@@ -21,7 +21,7 @@
 
 const CustomError = require('../utils/customError');
 import {randomString} from "../../static/js/pad_utils";
-const db = require('./DB');
+import db from './DB';
 const padManager = require('./PadManager');
 const sessionManager = require('./SessionManager');
 
@@ -69,6 +69,7 @@ exports.deleteGroup = async (groupID: string): Promise<void> => {
     // UeberDB's setSub() method atomically reads the record, updates the appropriate property, and
     // writes the result. Setting a property to `undefined` deletes that property (JSON.stringify()
     // ignores such properties).
+    // @ts-ignore
     db.setSub('groups', [groupID], undefined),
     ...Object.keys(group.mappings || {}).map(async (m) => await db.remove(`mapper2group:${m}`)),
   ]);
@@ -99,6 +100,7 @@ exports.createGroup = async () => {
   // Add the group to the `groups` record after the group's individual record is created so that
   // the state is consistent. Note: UeberDB's setSub() method atomically reads the record, updates
   // the appropriate property, and writes the result.
+  // @ts-ignore
   await db.setSub('groups', [groupID], 1);
   return {groupID};
 };
@@ -121,6 +123,7 @@ exports.createGroupIfNotExistsFor = async (groupMapper: string|object) => {
     // deleted. Although the core Etherpad API does not support multiple mappings for the same
     // group, the database record does support multiple mappings in case a plugin decides to extend
     // the core Etherpad functionality. (It's also easy to implement it this way.)
+    // @ts-ignore
     db.setSub(`group:${result.groupID}`, ['mappings', groupMapper], 1),
   ]);
   return result;
@@ -157,6 +160,7 @@ exports.createGroupPad = async (groupID: string, padName: string, text: string, 
   await padManager.getPad(padID, text, authorId);
 
   // create an entry in the group for this pad
+  // @ts-ignore
   await db.setSub(`group:${groupID}`, ['pads', padID], 1);
 
   return {padID};
@@ -176,6 +180,7 @@ exports.listPads = async (groupID: string): Promise<{ padIDs: string[]; }> => {
   }
 
   // group exists, let's get the pads
+  // @ts-ignore
   const result = await db.getSub(`group:${groupID}`, ['pads']);
   const padIDs = Object.keys(result);
 

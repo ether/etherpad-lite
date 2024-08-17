@@ -23,7 +23,7 @@
 const CustomError = require('../utils/customError');
 const promises = require('../utils/promises');
 const randomString = require('../utils/randomstring');
-const db = require('./DB');
+import db from './DB';
 const groupManager = require('./GroupManager');
 const authorManager = require('./AuthorManager');
 
@@ -151,7 +151,9 @@ exports.createSession = async (groupID: string, authorID: string, validUntil: nu
   await Promise.all([
     // UeberDB's setSub() method atomically reads the record, updates the appropriate (sub)object
     // property, and writes the result.
+    // @ts-ignore
     db.setSub(`group2sessions:${groupID}`, ['sessionIDs', sessionID], 1),
+    // @ts-ignore
     db.setSub(`author2sessions:${authorID}`, ['sessionIDs', sessionID], 1),
   ]);
 
@@ -196,7 +198,9 @@ exports.deleteSession = async (sessionID:string) => {
     // UeberDB's setSub() method atomically reads the record, updates the appropriate (sub)object
     // property, and writes the result. Setting a property to `undefined` deletes that property
     // (JSON.stringify() ignores such properties).
+    // @ts-ignore
     db.setSub(`group2sessions:${groupID}`, ['sessionIDs', sessionID], undefined),
+    // @ts-ignore
     db.setSub(`author2sessions:${authorID}`, ['sessionIDs', sessionID], undefined),
   ]);
 

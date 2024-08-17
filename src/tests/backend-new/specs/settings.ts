@@ -1,9 +1,8 @@
-'use strict';
+import settingsMod from '../../../node/utils/Settings';
 
-const assert = require('assert').strict;
-const {parseSettings} = require('../../../node/utils/Settings').exportedForTestingOnly;
 import path from 'path';
 import process from 'process';
+import {expect, describe, it, beforeAll} from 'vitest'
 
 describe(__filename, function () {
   describe('parseSettings', function () {
@@ -18,11 +17,11 @@ describe(__filename, function () {
       {name: 'empty string', val: '', var: 'SET_VAR_EMPTY_STRING', want: ''},
     ];
 
-    before(async function () {
+    beforeAll(async function () {
       for (const tc of envVarSubstTestCases) process.env[tc.var] = tc.val;
       delete process.env.UNSET_VAR;
-      settings = parseSettings(path.join(__dirname, 'settings.json'), true);
-      assert(settings != null);
+      settings = settingsMod.parseSettings(path.join(__dirname, 'settings.json'), true);
+      expect(settings).not.toBe(null);
     });
 
     describe('environment variable substitution', function () {
@@ -31,9 +30,9 @@ describe(__filename, function () {
           it(tc.name, async function () {
             const obj = settings['environment variable substitution'].set;
             if (tc.name === 'undefined') {
-              assert(!(tc.name in obj));
+              expect(obj[tc.name]).toBe(undefined);
             } else {
-              assert.equal(obj[tc.name], tc.want);
+              expect(obj[tc.name]).toBe(tc.want);
             }
           });
         }
@@ -42,16 +41,16 @@ describe(__filename, function () {
       describe('unset', function () {
         it('no default', async function () {
           const obj = settings['environment variable substitution'].unset;
-          assert.equal(obj['no default'], null);
+          expect(obj['no default']).toBe(null);
         });
 
         for (const tc of envVarSubstTestCases) {
           it(tc.name, async function () {
             const obj = settings['environment variable substitution'].unset;
             if (tc.name === 'undefined') {
-              assert(!(tc.name in obj));
+              expect(obj[tc.name]).toBe(undefined);
             } else {
-              assert.equal(obj[tc.name], tc.want);
+              expect(obj[tc.name]).toBe(tc.want);
             }
           });
         }
@@ -62,31 +61,31 @@ describe(__filename, function () {
 
   describe("Parse plugin settings", function () {
 
-    before(async function () {
+    beforeAll(async function () {
       process.env["EP__ADMIN__PASSWORD"] = "test"
     })
 
     it('should parse plugin settings', async function () {
-      let settings = parseSettings(path.join(__dirname, 'settings.json'), true);
-      assert.equal(settings.ADMIN.PASSWORD, "test");
+      let settings = settingsMod.parseSettings(path.join(__dirname, 'settings.json'), true);
+      expect(settings!.ADMIN.PASSWORD).toBe("test");
     })
 
     it('should bundle settings with same path', async function () {
       process.env["EP__ADMIN__USERNAME"] = "test"
-      let settings = parseSettings(path.join(__dirname, 'settings.json'), true);
-      assert.deepEqual(settings.ADMIN, {PASSWORD: "test", USERNAME: "test"});
+      let settings = settingsMod.parseSettings(path.join(__dirname, 'settings.json'), true);
+      expect(settings!.ADMIN).toEqual({PASSWORD: "test", USERNAME: "test"});
     })
 
     it("Can set the ep themes", async function () {
       process.env["EP__ep_themes__default_theme"] = "hacker"
-      let settings = parseSettings(path.join(__dirname, 'settings.json'), true);
-      assert.deepEqual(settings.ep_themes, {"default_theme": "hacker"});
+      let settings = settingsMod.parseSettings(path.join(__dirname, 'settings.json'), true);
+      expect(settings!.ep_themes.default_theme).toBe("hacker");
     })
 
     it("can set the ep_webrtc settings", async function () {
       process.env["EP__ep_webrtc__enabled"] = "true"
-      let settings = parseSettings(path.join(__dirname, 'settings.json'), true);
-      assert.deepEqual(settings.ep_webrtc, {"enabled": true});
+      let settings = settingsMod.parseSettings(path.join(__dirname, 'settings.json'), true);
+      expect(settings!.ep_webrtc.enabled).toBe(true);
     })
   })
 });

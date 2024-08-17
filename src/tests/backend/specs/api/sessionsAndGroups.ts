@@ -5,7 +5,7 @@ import {agent, generateJWTToken, init, logger} from "../../common";
 import TestAgent from "supertest/lib/agent";
 import supertest from "supertest";
 const assert = require('assert').strict;
-const db = require('../../../../node/db/DB');
+import db from '../../../../node/db/DB';
 
 let apiVersion = 1;
 let groupID = '';

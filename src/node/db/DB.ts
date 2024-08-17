@@ -24,37 +24,55 @@
 import {Database} from 'ueberdb2';
 import settings from '../utils/Settings';
 import log4js from 'log4js';
-const stats = require('../stats')
+import stats from '../stats';
 
 const logger = log4js.getLogger('ueberDB');
 
 /**
  * The UeberDB Object that provides the database functions
  */
-exports.db = null;
+export let db:Database|null = null;
 
 /**
  * Initializes the database with the settings provided by the settings module
  */
-exports.init = async () => {
-  exports.db = new Database(settings.dbType, settings.dbSettings, null, logger);
-  await exports.db.init();
-  if (exports.db.metrics != null) {
-    for (const [metric, value] of Object.entries(exports.db.metrics)) {
+export const init = async () => {
+  db = new Database(settings.dbType, settings.dbSettings, null, logger);
+  await db.init();
+  if (db.metrics != null) {
+    for (const [metric, value] of Object.entries(db.metrics)) {
       if (typeof value !== 'number') continue;
-      stats.gauge(`ueberdb_${metric}`, () => exports.db.metrics[metric]);
+      stats.gauge(`ueberdb_${metric}`, () => db!.metrics[metric]);
     }
   }
   for (const fn of ['get', 'set', 'findKeys', 'getSub', 'setSub', 'remove']) {
-    const f = exports.db[fn];
-    exports[fn] = async (...args:string[]) => await f.call(exports.db, ...args);
-    Object.setPrototypeOf(exports[fn], Object.getPrototypeOf(f));
-    Object.defineProperties(exports[fn], Object.getOwnPropertyDescriptors(f));
+    // @ts-ignore
+    const f = db[fn];
+    // @ts-ignore
+    dbInstance[fn] = async (...args:string[]) => await f.call(db, ...args);
+    // @ts-ignore
+    Object.setPrototypeOf(dbInstance[fn], Object.getPrototypeOf(f));
+    // @ts-ignore
+    Object.defineProperties(dbInstance[fn], Object.getOwnPropertyDescriptors(f));
   }
 };
 
-exports.shutdown = async (hookName: string, context:any) => {
-  if (exports.db != null) await exports.db.close();
-  exports.db = null;
+export const shutdown = async (hookName: string, context:any) => {
+  if (db != null) await db.close();
+  db = null;
   logger.log('Database closed');
 };
+
+let dbInstance = {} as {
+  get: (key:string) => any;
+  set: (key:string, value:any) => void;
+  findKeys: (key:string) => string[];
+  getSub: (key:string, subkey:string) => any;
+  setSub: (key:string, subkey:string, value:any) => void;
+  remove: (key:string) => void;
+  init: () => Promise<void>;
+}
+
+dbInstance.init = init
+
+export default dbInstance

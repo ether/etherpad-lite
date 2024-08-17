@@ -13,9 +13,9 @@ import expressSession from '@etherpad/express-session';
 import fs from 'fs';
 const hooks = require('../../static/js/pluginfw/hooks');
 import log4js from 'log4js';
-const SessionStore = require('../db/SessionStore');
+import SessionStore from '../db/SessionStore';
 import settings from '../utils/Settings';
-const stats = require('../stats')
+import stats from '../stats';
 import util from 'util';
 const webaccess = require('./express/webaccess');
 
