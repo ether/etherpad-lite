@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-const ChatMessage = require('./ChatMessage');
+import ChatMessage from './ChatMessage';
 import padutils from './pad_utils'
 const padcookie = require('./pad_cookie').padcookie;
 const Tinycon = require('tinycon/tinycon');

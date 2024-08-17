@@ -17,10 +17,11 @@ const assert = require('assert').strict;
 import attributes from '../../../static/js/attributes';
 const contentcollector = require('../../../static/js/contentcollector');
 import jsdom from 'jsdom';
+import {Attribute} from "../../../static/js/types/Attribute";
 
 // All test case `wantAlines` values must only refer to attributes in this list so that the
 // attribute numbers do not change due to changes in pool insertion order.
-const knownAttribs = [
+const knownAttribs: Attribute[] = [
   ['insertorder', 'first'],
   ['italic', 'true'],
   ['list', 'bullet1'],
@@ -336,7 +337,7 @@ pre
 describe(__filename, function () {
   for (const tc of testCases) {
     describe(tc.description, function () {
-      let apool: APool;
+      let apool: AttributePool;
       let result: {
         lines: string[],
         lineAttribs: string[],
@@ -376,11 +377,12 @@ describe(__filename, function () {
         for (const aline of result.lineAttribs) {
           const gotAlineAttribs:string[][] = [];
           gotAttribs.push(gotAlineAttribs);
-          const wantAlineAttribs:string[] = [];
+          const wantAlineAttribs:Attribute[] = [];
           wantAttribs.push(wantAlineAttribs);
           for (const op of Changeset.deserializeOps(aline)) {
-            const gotOpAttribs:string[] = [...attributes.attribsFromString(op.attribs, apool)];
+            const gotOpAttribs = [...attributes.attribsFromString(op.attribs, apool)] as unknown as Attribute;
             gotAlineAttribs.push(gotOpAttribs);
+            // @ts-ignore
             wantAlineAttribs.push(attributes.sort([...gotOpAttribs]));
           }
         }

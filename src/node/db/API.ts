@@ -20,7 +20,7 @@
  */
 
 const Changeset = require('../../static/js/Changeset');
-const ChatMessage = require('../../static/js/ChatMessage');
+import ChatMessage from '../../static/js/ChatMessage';
 const CustomError = require('../utils/customError');
 const padManager = require('./PadManager');
 const padMessageHandler = require('../handler/PadMessageHandler');

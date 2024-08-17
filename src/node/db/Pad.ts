@@ -9,7 +9,7 @@ import {MapArrayType} from "../types/MapType";
 
 import AttributeMap from '../../static/js/AttributeMap';
 const Changeset = require('../../static/js/Changeset');
-const ChatMessage = require('../../static/js/ChatMessage');
+import ChatMessage from '../../static/js/ChatMessage';
 import AttributePool from '../../static/js/AttributePool';
 const Stream = require('../utils/Stream');
 const assert = require('assert').strict;
@@ -330,7 +330,7 @@ class Pad {
    * @param {?number} [time] - Message timestamp (milliseconds since epoch). Deprecated; use
    *     `msgOrText.time` instead.
    */
-  async appendChatMessage(msgOrText: string|typeof ChatMessage, authorId = null, time = null) {
+  async appendChatMessage(msgOrText: string| ChatMessage, authorId = null, time = null) {
     const msg =
           msgOrText instanceof ChatMessage ? msgOrText : new ChatMessage(msgOrText, authorId, time);
     this.chatHead++;

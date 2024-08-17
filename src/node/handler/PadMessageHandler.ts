@@ -24,7 +24,7 @@ import {MapArrayType} from "../types/MapType";
 import AttributeMap from '../../static/js/AttributeMap';
 const padManager = require('../db/PadManager');
 const Changeset = require('../../static/js/Changeset');
-const ChatMessage = require('../../static/js/ChatMessage');
+import ChatMessage from '../../static/js/ChatMessage';
 import AttributePool from '../../static/js/AttributePool';
 const AttributeManager = require('../../static/js/AttributeManager');
 const authorManager = require('../db/AuthorManager');
@@ -43,6 +43,7 @@ import {RateLimiterMemory} from 'rate-limiter-flexible';
 import {ChangesetRequest, PadUserInfo, SocketClientRequest} from "../types/SocketClientRequest";
 import {APool, AText, PadAuthor, PadType} from "../types/PadType";
 import {ChangeSet} from "../types/ChangeSet";
+import {ChatMessageMessage, ClientReadyMessage, ClientSaveRevisionMessage, ClientSuggestUserName, ClientUserChangesMessage, ClientVarMessage, CustomMessage, UserNewInfoMessage} from "../../static/js/types/SocketIOMessage";
 const webaccess = require('../hooks/express/webaccess');
 const { checkValidRev } = require('../utils/checkValidRev');
 
@@ -214,7 +215,7 @@ exports.handleDisconnect = async (socket:any) => {
  * @param socket the socket.io Socket object for the client
  * @param message the message from the client
  */
-exports.handleMessage = async (socket:any, message:typeof ChatMessage) => {
+exports.handleMessage = async (socket:any, message: ClientVarMessage) => {
   const env = process.env.NODE_ENV || 'development';
 
   if (env === 'production') {
@@ -348,15 +349,15 @@ exports.handleMessage = async (socket:any, message:typeof ChatMessage) => {
               stats.counter('pendingEdits').inc();
               await padChannels.enqueue(thisSession.padId, {socket, message});
               break;
-            case 'USERINFO_UPDATE': await handleUserInfoUpdate(socket, message); break;
-            case 'CHAT_MESSAGE': await handleChatMessage(socket, message); break;
+            case 'USERINFO_UPDATE': await handleUserInfoUpdate(socket, message as unknown as UserNewInfoMessage); break;
+            case 'CHAT_MESSAGE': await handleChatMessage(socket, message as unknown as ChatMessageMessage); break;
             case 'GET_CHAT_MESSAGES': await handleGetChatMessages(socket, message); break;
-            case 'SAVE_REVISION': await handleSaveRevisionMessage(socket, message); break;
+            case 'SAVE_REVISION': await handleSaveRevisionMessage(socket, message as unknown as ClientSaveRevisionMessage); break;
             case 'CLIENT_MESSAGE': {
               const {type} = message.data.payload;
               try {
                 switch (type) {
-                  case 'suggestUserName': handleSuggestUserName(socket, message); break;
+                  case 'suggestUserName': handleSuggestUserName(socket, message as unknown as ClientSuggestUserName); break;
                   default: throw new Error('unknown message type');
                 }
               } catch (err) {
@@ -384,7 +385,7 @@ exports.handleMessage = async (socket:any, message:typeof ChatMessage) => {
  * @param socket the socket.io Socket object for the client
  * @param message the message from the client
  */
-const handleSaveRevisionMessage = async (socket:any, message: string) => {
+const handleSaveRevisionMessage = async (socket:any, message: ClientSaveRevisionMessage) => {
   const {padId, author: authorId} = sessioninfos[socket.id];
   const pad = await padManager.getPad(padId, null, authorId);
   await pad.addSavedRevision(pad.head, authorId);
@@ -397,7 +398,7 @@ const handleSaveRevisionMessage = async (socket:any, message: string) => {
  * @param msg {Object} the message we're sending
  * @param sessionID {string} the socketIO session to which we're sending this message
  */
-exports.handleCustomObjectMessage = (msg: typeof ChatMessage, sessionID: string) => {
+exports.handleCustomObjectMessage = (msg: CustomMessage, sessionID: string) => {
   if (msg.data.type === 'CUSTOM') {
     if (sessionID) {
       // a sessionID is targeted: directly to this sessionID
@@ -432,7 +433,7 @@ exports.handleCustomMessage = (padID: string, msgString:string) => {
  * @param socket the socket.io Socket object for the client
  * @param message the message from the client
  */
-const handleChatMessage = async (socket:any, message: typeof ChatMessage) => {
+const handleChatMessage = async (socket:any, message: ChatMessageMessage) => {
   const chatMessage = ChatMessage.fromObject(message.data.message);
   const {padId, author: authorId} = sessioninfos[socket.id];
   // Don't trust the user-supplied values.
@@ -452,7 +453,7 @@ const handleChatMessage = async (socket:any, message: typeof ChatMessage) => {
  * @param {string} [padId] - The destination pad ID. Deprecated; pass a chat message
  *     object as the first argument and the destination pad ID as the second argument instead.
  */
-exports.sendChatMessageToPadClients = async (mt: typeof ChatMessage|number, puId: string, text:string|null = null, padId:string|null = null) => {
+exports.sendChatMessageToPadClients = async (mt: ChatMessage|number, puId: string, text:string|null = null, padId:string|null = null) => {
   const message = mt instanceof ChatMessage ? mt : new ChatMessage(text, puId, mt);
   padId = mt instanceof ChatMessage ? puId : padId;
   const pad = await padManager.getPad(padId, null, message.authorId);
@@ -499,7 +500,7 @@ const handleGetChatMessages = async (socket:any, {data: {start, end}}:any) => {
  * @param socket the socket.io Socket object for the client
  * @param message the message from the client
  */
-const handleSuggestUserName = (socket:any, message: typeof ChatMessage) => {
+const handleSuggestUserName = (socket:any, message: ClientSuggestUserName) => {
   const {newName, unnamedId} = message.data.payload;
   if (newName == null) throw new Error('missing newName');
   if (unnamedId == null) throw new Error('missing unnamedId');
@@ -519,7 +520,7 @@ const handleSuggestUserName = (socket:any, message: typeof ChatMessage) => {
  * @param socket the socket.io Socket object for the client
  * @param message the message from the client
  */
-const handleUserInfoUpdate = async (socket:any, {data: {userInfo: {name, colorId}}}: PadUserInfo) => {
+const handleUserInfoUpdate = async (socket:any, {data: {userInfo: {name, colorId}}}: UserNewInfoMessage) => {
   if (colorId == null) throw new Error('missing colorId');
   if (!name) name = null;
   const session = sessioninfos[socket.id];
@@ -567,7 +568,9 @@ const handleUserInfoUpdate = async (socket:any, {data: {userInfo: {name, colorId
  * @param socket the socket.io Socket object for the client
  * @param message the message from the client
  */
-const handleUserChanges = async (socket:any, message: typeof ChatMessage) => {
+const handleUserChanges = async (socket:any, message: {
+  data: ClientUserChangesMessage
+}) => {
   // This one's no longer pending, as we're gonna process it now
   stats.counter('pendingEdits').dec();
 
@@ -785,7 +788,7 @@ const _correctMarkersInPad = (atext: AText, apool: AttributePool) => {
  * @param socket the socket.io Socket object for the client
  * @param message the message from the client
  */
-const handleClientReady = async (socket:any, message: typeof ChatMessage) => {
+const handleClientReady = async (socket:any, message: ClientReadyMessage) => {
   const sessionInfo = sessioninfos[socket.id];
   if (sessionInfo == null) throw new Error('client disconnected');
   assert(sessionInfo.author);
@@ -793,8 +796,9 @@ const handleClientReady = async (socket:any, message: typeof ChatMessage) => {
   await hooks.aCallAll('clientReady', message); // Deprecated due to awkward context.
 
   let {colorId: authorColorId, name: authorName} = message.userInfo || {};
-  if (authorColorId && !/^#(?:[0-9A-F]{3}){1,2}$/i.test(authorColorId)) {
+  if (authorColorId && !/^#(?:[0-9A-F]{3}){1,2}$/i.test(authorColorId as string)) {
     messageLogger.warn(`Ignoring invalid colorId in CLIENT_READY message: ${authorColorId}`);
+    // @ts-ignore
     authorColorId = null;
   }
   await Promise.all([
@@ -872,7 +876,7 @@ const handleClientReady = async (socket:any, message: typeof ChatMessage) => {
     const revisionsNeeded = [];
     const changesets:MapArrayType<any> = {};
 
-    let startNum = message.client_rev + 1;
+    let startNum = message.client_rev! + 1;
     let endNum = pad.getHeadRevisionNumber() + 1;
 
     const headNum = pad.getHeadRevisionNumber();
