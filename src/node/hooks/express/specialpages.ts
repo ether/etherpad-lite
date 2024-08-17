@@ -342,7 +342,7 @@ exports.expressCreateServer = async (hookName: string, args: any, cb: Function) 
         req,
         toolbar,
         isReadOnly,
-        entrypoint: "/"+fileNamePad
+        entrypoint: "../../"+fileNamePad
       })
       res.send(content);
     });
@@ -356,7 +356,7 @@ exports.expressCreateServer = async (hookName: string, args: any, cb: Function) 
       res.send(eejs.require('ep_etherpad-lite/templates/timeslider.html', {
         req,
         toolbar,
-        entrypoint: "/"+fileNameTimeSlider
+        entrypoint: "../../../"+fileNameTimeSlider
       }));
     });
   } else {
