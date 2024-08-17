@@ -61,7 +61,7 @@ exports.setPadRaw = async (padId: string, r: string, authorId = '') => {
   try {
     const processRecord = async (key:string, value: null|{
       padIDs: string|Record<string, unknown>,
-      pool: APool
+      pool: AttributePool
     }) => {
       if (!value) return;
       const keyParts = key.split(':');
