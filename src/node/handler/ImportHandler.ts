@@ -31,7 +31,7 @@ import os from 'os';
 const importHtml = require('../utils/ImportHtml');
 const importEtherpad = require('../utils/ImportEtherpad');
 import log4js from 'log4js';
-const hooks = require('../../static/js/pluginfw/hooks.js');
+const hooks = require('../../static/js/pluginfw/hooks');
 
 const logger = log4js.getLogger('ImportHandler');
 

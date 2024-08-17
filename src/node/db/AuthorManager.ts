@@ -21,7 +21,7 @@
 
 const db = require('./DB');
 const CustomError = require('../utils/customError');
-const hooks = require('../../static/js/pluginfw/hooks.js');
+const hooks = require('../../static/js/pluginfw/hooks');
 const {randomString, padutils: {warnDeprecated}} = require('../../static/js/pad_utils');
 
 exports.getColorPalette = () => [

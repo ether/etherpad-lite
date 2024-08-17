@@ -22,7 +22,7 @@
 import {UserSettingsObject} from "../types/UserSettingsObject";
 
 const authorManager = require('./AuthorManager');
-const hooks = require('../../static/js/pluginfw/hooks.js');
+const hooks = require('../../static/js/pluginfw/hooks');
 const padManager = require('./PadManager');
 const readOnlyManager = require('./ReadOnlyManager');
 const sessionManager = require('./SessionManager');
