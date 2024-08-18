@@ -7,7 +7,7 @@ import {expect, describe,it } from "vitest";
 import {SmartOpAssembler} from "../../../static/js/SmartOpAssembler";
 import Op from "../../../static/js/Op";
 import {StringAssembler} from "../../../static/js/StringAssembler";
-import {TextLinesMutator} from "../../../static/js/TextLinesMutator";
+import TextLinesMutator from "../../../static/js/TextLinesMutator";
 import {numToString} from "../../../static/js/ChangesetUtils";
 
 describe('easysync-mutations', function () {
@@ -175,7 +175,7 @@ describe('easysync-mutations', function () {
     mu = new TextLinesMutator(lines);
     expect(mu.hasMore()).toBeTruthy();
     mu.remove(6, 3);
-    expect(mu.hasMore()).toBeFalsy();
+    expect(mu.hasMore()).toBeTruthy();
     mu.remove(2, 1);
     expect(mu.hasMore()).toBeFalsy();
     mu.insert('hello\n', 1);

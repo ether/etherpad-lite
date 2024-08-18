@@ -1,4 +1,5 @@
 // @ts-nocheck
+
 'use strict';
 /**
  * This code is mostly from the old Etherpad. Please help us to comment this code.
@@ -9,6 +10,8 @@
 // THIS FILE IS ALSO AN APPJET MODULE: etherpad.collab.ace.contentcollector
 // %APPJET%: import("etherpad.collab.ace.easysync2.Changeset");
 // %APPJET%: import("etherpad.admin.plugins");
+import Op from "./Op";
+
 /**
  * Copyright 2009 Google Inc.
  *
@@ -28,8 +31,9 @@
 const _MAX_LIST_LEVEL = 16;
 
 import AttributeMap from './AttributeMap';
-const UNorm = require('unorm');
-const Changeset = require('./Changeset');
+import UNorm from 'unorm';
+import {subattribution} from './Changeset';
+import {SmartOpAssembler} from "./SmartOpAssembler";
 const hooks = require('./pluginfw/hooks');
 
 const sanitizeUnicode = (s) => UNorm.nfc(s);
@@ -84,14 +88,14 @@ const makeContentCollector = (collectStyles, abrowser, apool, className2Author) 
     const textArray = [];
     const attribsArray = [];
     let attribsBuilder = null;
-    const op = new Changeset.Op('+');
+    const op = new Op('+');
     const self = {
       length: () => textArray.length,
       atColumnZero: () => textArray[textArray.length - 1] === '',
       startNew: () => {
         textArray.push('');
         self.flush(true);
-        attribsBuilder = Changeset.smartOpAssembler();
+        attribsBuilder = new SmartOpAssembler();
       },
       textOfLine: (i) => textArray[i],
       appendText: (txt, attrString = '') => {
@@ -654,8 +658,8 @@ const makeContentCollector = (collectStyles, abrowser, apool, className2Author) 
             const lengthToTake = lineLimit;
             newStrings.push(oldString.substring(0, lengthToTake));
             oldString = oldString.substring(lengthToTake);
-            newAttribStrings.push(Changeset.subattribution(oldAttribString, 0, lengthToTake));
-            oldAttribString = Changeset.subattribution(oldAttribString, lengthToTake);
+            newAttribStrings.push(subattribution(oldAttribString, 0, lengthToTake));
+            oldAttribString = subattribution(oldAttribString, lengthToTake);
           }
           if (oldString.length > 0) {
             newStrings.push(oldString);

@@ -31,12 +31,13 @@
 // requires: plugins
 // requires: undefined
 
-const Changeset = require('./Changeset');
-const attributes = require('./attributes');
+import {deserializeOps} from './Changeset';
+import attributes from './attributes';
 const hooks = require('./pluginfw/hooks');
 const linestylefilter = {};
 const AttributeManager = require('./AttributeManager');
 import padutils from './pad_utils'
+import Op from "./Op";
 
 linestylefilter.ATTRIB_CLASSES = {
   bold: 'tag:b',
@@ -99,12 +100,12 @@ linestylefilter.getLineStyleFilter = (lineLength, aline, textAndClassFunc, apool
       return classes.substring(1);
     };
 
-    const attrOps = Changeset.deserializeOps(aline);
+    const attrOps = deserializeOps(aline);
     let attrOpsNext = attrOps.next();
     let nextOp, nextOpClasses;
 
     const goNextOp = () => {
-      nextOp = attrOpsNext.done ? new Changeset.Op() : attrOpsNext.value;
+      nextOp = attrOpsNext.done ? new Op() : attrOpsNext.value;
       if (!attrOpsNext.done) attrOpsNext = attrOps.next();
       nextOpClasses = (nextOp.opcode && attribsToClasses(nextOp.attribs));
     };

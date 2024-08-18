@@ -14,7 +14,7 @@ import {StringAssembler} from "./StringAssembler";
 import AttributeMap from "./AttributeMap";
 import {Attribute} from "./types/Attribute";
 import AttributePool from "./AttributePool";
-import {opsFromText} from "./Changeset";
+import {opsFromText, pack} from "./Changeset";
 
 /**
  * @param {number} oldLen - Old length
@@ -101,7 +101,7 @@ export class Builder {
   toString= () => {
     this.assem.endDocument();
     const newLen = this.oldLen + this.assem.getLengthChange();
-    return exports.pack(this.oldLen, newLen, this.assem.toString(), this.charBank.toString());
+    return pack(this.oldLen, newLen, this.assem.toString(), this.charBank.toString());
   }
 }
 

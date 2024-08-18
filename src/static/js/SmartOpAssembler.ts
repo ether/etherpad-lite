@@ -87,7 +87,7 @@ export class SmartOpAssembler {
    * @param {?AttributePool.ts} pool - Attribute pool. Only required if `attribs` is an iterable of
    *     attribute key, value pairs.
    */
-  appendOpWithText = (opcode: '-'|'+'|'=', text: string, attribs: Attribute[], pool?: AttributePool) => {
+  appendOpWithText = (opcode: '-'|'+'|'=', text: string, attribs: Attribute[]|string, pool?: AttributePool) => {
     padutils.warnDeprecated('Changeset.smartOpAssembler().appendOpWithText() is deprecated; ' +
       'use opsFromText() instead.');
     for (const op of opsFromText(opcode, text, attribs, pool)) this.append(op);

@@ -32,7 +32,7 @@ import {StringAssembler} from "./StringAssembler";
 import {OpIter} from "./OpIter";
 import {Attribute} from "./types/Attribute";
 import {SmartOpAssembler} from "./SmartOpAssembler";
-import {TextLinesMutator} from "./TextLinesMutator";
+import TextLinesMutator from "./TextLinesMutator";
 import {ChangeSet} from "./types/ChangeSet";
 import {AText} from "./types/AText";
 import {ChangeSetBuilder} from "./types/ChangeSetBuilder";

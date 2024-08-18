@@ -35,7 +35,7 @@ export class StringIterator {
 
   take = (n: number) => {
     this.assertRemaining(n);
-    const s = this.str.substring(this.curIndex, n);
+    const s = this.str.substring(this.curIndex, this.curIndex+n);
     this.newLines -= s.split('\n').length - 1;
     this.curIndex += n;
     return s;
@@ -43,7 +43,7 @@ export class StringIterator {
 
   peek = (n: number) => {
     this.assertRemaining(n);
-    return this.str.substring(this.curIndex, n);
+    return this.str.substring(this.curIndex, this.curIndex+n);
   }
 
   skip = (n: number) => {

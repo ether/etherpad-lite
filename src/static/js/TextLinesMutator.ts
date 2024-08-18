@@ -11,17 +11,17 @@ import {splitTextLines} from "./Changeset";
  * for things to work right in that case, the input to the `insert` method should be a single line
  * with no newlines.
  */
-export class TextLinesMutator {
-  private readonly lines: string[]
-  private readonly curSplice: [number, number]
-  private inSplice: boolean
-  private curLine: number
-  private curCol: number
+class TextLinesMutator {
+  private _lines: string[];
+  private _curSplice: [number, number?];
+  private _inSplice: boolean;
+  private _curLine: number;
+  private _curCol: number;
   /**
    * @param {(string[]|StringArrayLike)} lines - Lines to mutate (in place).
    */
-  constructor(lines: string[]| RegExpMatchArray ) {
-    this.lines = lines;
+  constructor(lines: string[]) {
+    this._lines = lines;
     /**
      * this._curSplice holds values that will be passed as arguments to this._lines.splice() to
      * insert, delete, or change lines:
@@ -33,11 +33,11 @@ export class TextLinesMutator {
      *
      * @type {[number, number?, ...string[]?]}
      */
-    this.curSplice = [0, 0];
-    this.inSplice = false;
+    this._curSplice = [0, 0];
+    this._inSplice = false;
     // position in lines after curSplice is applied:
-    this.curLine = 0;
-    this.curCol = 0;
+    this._curLine = 0;
+    this._curCol = 0;
     // invariant: if (inSplice) then (curLine is in curSplice[0] + curSplice.length - {2,3}) &&
     //            curLine >= curSplice[0]
     // invariant: if (inSplice && (curLine >= curSplice[0] + curSplice.length - 2)) then
@@ -50,12 +50,12 @@ export class TextLinesMutator {
    * @param {number} idx - an index
    * @returns {string}
    */
-  private linesGet(idx: number) {
-    if ('get' in this.lines) {
+  _linesGet(idx: number) {
+    if ('get' in this._lines) {
       // @ts-ignore
-      return this.lines.get(idx) as string;
+      return this._lines.get(idx) as string;
     } else {
-      return this.lines[idx];
+      return this._lines[idx];
     }
   }
 
@@ -66,10 +66,10 @@ export class TextLinesMutator {
    * @param {number} end - the end index
    * @returns {string[]}
    */
-  private linesSlice(start: number, end: number): string[] {
+  _linesSlice(start: number | undefined, end: number | undefined) {
     // can be unimplemented if removeLines's return value not needed
-    if (this.lines.slice) {
-      return this.lines.slice(start, end);
+    if (this._lines.slice) {
+      return this._lines.slice(start, end);
     } else {
       return [];
     }
@@ -80,36 +80,36 @@ export class TextLinesMutator {
    *
    * @returns {number}
    */
-  private linesLength() {
-    if (typeof this.lines.length === 'number') {
-      return this.lines.length;
+  _linesLength() {
+    if (typeof this._lines.length === 'number') {
+      return this._lines.length;
     } else {
       // @ts-ignore
-      return this.lines.length();
+      return this._lines.length();
     }
   }
 
   /**
    * Starts a new splice.
    */
-  enterSplice() {
-    this.curSplice[0] = this.curLine;
-    this.curSplice[1] = 0;
+  _enterSplice() {
+    this._curSplice[0] = this._curLine;
+    this._curSplice[1] = 0;
     // TODO(doc) when is this the case?
     //           check all enterSplice calls and changes to curCol
-    if (this.curCol > 0) this.putCurLineInSplice();
-    this.inSplice = true;
+    if (this._curCol > 0) this._putCurLineInSplice();
+    this._inSplice = true;
   }
 
   /**
    * Changes the lines array according to the values in curSplice and resets curSplice. Called via
    * close or TODO(doc).
    */
-  private leaveSplice() {
-    this.lines.splice(...this.curSplice);
-    this.curSplice.length = 2;
-    this.curSplice[0] = this.curSplice[1] = 0;
-    this.inSplice = false;
+  _leaveSplice() {
+    this._lines.splice(...this._curSplice);
+    this._curSplice.length = 2;
+    this._curSplice[0] = this._curSplice[1] = 0;
+    this._inSplice = false;
   }
 
   /**
@@ -118,11 +118,11 @@ export class TextLinesMutator {
    *
    * @returns {boolean} true if curLine is in splice
    */
-  private isCurLineInSplice() {
+  _isCurLineInSplice() {
     // The value of `this._curSplice[1]` does not matter when determining the return value because
     // `this._curLine` refers to the line number *after* the splice is applied (so after those lines
     // are deleted).
-    return this.curLine - this.curSplice[0] < this.curSplice.length - 2;
+    return this._curLine - this._curSplice[0] < this._curSplice.length - 2;
   }
 
   /**
@@ -130,13 +130,15 @@ export class TextLinesMutator {
    *
    * @returns {number} the index of the added line in curSplice
    */
-  private putCurLineInSplice() {
-    if (!this.isCurLineInSplice()) {
-      this.curSplice.push(Number(this.linesGet(this.curSplice[0] + this.curSplice[1]!)));
-      this.curSplice[1]!++;
+  _putCurLineInSplice() {
+    if (!this._isCurLineInSplice()) {
+      // @ts-ignore
+      this._curSplice.push(this._linesGet(this._curSplice[0] + this._curSplice[1]));
+      // @ts-ignore
+      this._curSplice[1]++;
     }
     // TODO should be the same as this._curSplice.length - 1
-    return 2 + this.curLine - this.curSplice[0];
+    return 2 + this._curLine - this._curSplice[0];
   }
 
   /**
@@ -145,27 +147,27 @@ export class TextLinesMutator {
    * @param {number} L -
    * @param {boolean} includeInSplice - Indicates that attributes are present.
    */
-  public skipLines(L: number, includeInSplice?: boolean) {
+  skipLines(L: number, includeInSplice?: any) {
     if (!L) return;
     if (includeInSplice) {
-      if (!this.inSplice) this.enterSplice();
+      if (!this._inSplice) this._enterSplice();
       // TODO(doc) should this count the number of characters that are skipped to check?
       for (let i = 0; i < L; i++) {
-        this.curCol = 0;
-        this.putCurLineInSplice();
-        this.curLine++;
+        this._curCol = 0;
+        this._putCurLineInSplice();
+        this._curLine++;
       }
     } else {
-      if (this.inSplice) {
+      if (this._inSplice) {
         if (L > 1) {
           // TODO(doc) figure out why single lines are incorporated into splice instead of ignored
-          this.leaveSplice();
+          this._leaveSplice();
         } else {
-          this.putCurLineInSplice();
+          this._putCurLineInSplice();
         }
       }
-      this.curLine += L;
-      this.curCol = 0;
+      this._curLine += L;
+      this._curCol = 0;
     }
     // tests case foo in remove(), which isn't otherwise covered in current impl
   }
@@ -177,18 +179,18 @@ export class TextLinesMutator {
    * @param {number} L - number of newlines to skip
    * @param {boolean} includeInSplice - indicates if attributes are present
    */
-  skip(N: number, L: number, includeInSplice?: boolean) {
+  skip(N: number, L: number, includeInSplice?: any) {
     if (!N) return;
     if (L) {
       this.skipLines(L, includeInSplice);
     } else {
-      if (includeInSplice && !this.inSplice) this.enterSplice();
-      if (this.inSplice) {
+      if (includeInSplice && !this._inSplice) this._enterSplice();
+      if (this._inSplice) {
         // although the line is put into splice curLine is not increased, because
         // only some chars are skipped, not the whole line
-        this.putCurLineInSplice();
+        this._putCurLineInSplice();
       }
-      this.curCol += N;
+      this._curCol += N;
     }
   }
 
@@ -198,9 +200,9 @@ export class TextLinesMutator {
    * @param {number} L - number of lines to remove
    * @returns {string}
    */
-  removeLines(L: number):string {
+  removeLines(L: number) {
     if (!L) return '';
-    if (!this.inSplice) this.enterSplice();
+    if (!this._inSplice) this._enterSplice();
 
     /**
      * Gets a string of joined lines after the end of the splice.
@@ -208,33 +210,38 @@ export class TextLinesMutator {
      * @param {number} k - number of lines
      * @returns {string} joined lines
      */
-    const nextKLinesText = (k: number): string => {
-      const m = this.curSplice[0] + this.curSplice[1]!;
-      return this.linesSlice(m, m + k).join('');
+    const nextKLinesText = (k: number) => {
+      // @ts-ignore
+      const m = this._curSplice[0] + this._curSplice[1];
+      return this._linesSlice(m, m + k).join('');
     };
 
-    let removed: any = '';
-    if (this.isCurLineInSplice()) {
-      if (this.curCol === 0) {
-        removed = this.curSplice[this.curSplice.length - 1];
-        this.curSplice.length--;
+    let removed = '';
+    if (this._isCurLineInSplice()) {
+      if (this._curCol === 0) {
+        // @ts-ignore
+        removed = this._curSplice[this._curSplice.length - 1];
+        this._curSplice.length--;
         removed += nextKLinesText(L - 1);
-        this.curSplice[1]! += L - 1;
+        // @ts-ignore
+        this._curSplice[1] += L - 1;
       } else {
         removed = nextKLinesText(L - 1);
-        this.curSplice[1]! += L - 1;
-        const sline = this.curSplice.length - 1;
         // @ts-ignore
-        removed = this.curSplice[sline]!.substring(this.curCol) + removed;
+        this._curSplice[1] += L - 1;
+        const sline = this._curSplice.length - 1;
         // @ts-ignore
-        this.curSplice[sline] = this.curSplice[sline]!.substring(0, this.curCol) +
-          this.linesGet(this.curSplice[0] + this.curSplice[1]!);
+        removed = this._curSplice[sline].substring(this._curCol) + removed;
         // @ts-ignore
-        this.curSplice[1] += 1;
+        this._curSplice[sline] = this._curSplice[sline].substring(0, this._curCol) +
+          // @ts-ignore
+          this._linesGet(this._curSplice[0] + this._curSplice[1]);
+        // @ts-ignore
+        this._curSplice[1] += 1;
       }
     } else {
       removed = nextKLinesText(L);
-      this.curSplice[1]! += L;
+      this._curSplice[1]! += L;
     }
     return removed;
   }
@@ -246,17 +253,19 @@ export class TextLinesMutator {
    * @param {number} L - lines to delete
    * @returns {string}
    */
-  remove(N: number, L: number) {
+  remove(N: number, L: any) {
     if (!N) return '';
     if (L) return this.removeLines(L);
-    if (!this.inSplice) this.enterSplice();
+    if (!this._inSplice) this._enterSplice();
     // although the line is put into splice, curLine is not increased, because
     // only some chars are removed not the whole line
-    const sline = this.putCurLineInSplice();
-    const removed = this.curSplice[sline].toString().substring(this.curCol, this.curCol + N);
-    this.curSplice[sline] = this.curSplice[sline].toString().substring(0, this.curCol) +
+    const sline = this._putCurLineInSplice();
+    // @ts-ignore
+    const removed = this._curSplice[sline].substring(this._curCol, this._curCol + N);
+    // @ts-ignore
+    this._curSplice[sline] = this._curSplice[sline].substring(0, this._curCol) +
       // @ts-ignore
-      this.curSplice[sline].substring(this.curCol + N);
+      this._curSplice[sline].substring(this._curCol + N);
     return removed;
   }
 
@@ -266,50 +275,51 @@ export class TextLinesMutator {
    * @param {string} text - the text to insert
    * @param {number} L - number of newlines in text
    */
-  insert(text: string, L: number) {
+  insert(text: string | any[], L: any) {
     if (!text) return;
-    if (!this.inSplice) this.enterSplice();
+    if (!this._inSplice) this._enterSplice();
     if (L) {
+      // @ts-ignore
       const newLines = splitTextLines(text);
-      if (this.isCurLineInSplice()) {
-        const sline = this.curSplice.length - 1;
+      if (this._isCurLineInSplice()) {
+        const sline = this._curSplice.length - 1;
         /** @type {string} */
-        const theLine = this.curSplice[sline];
-        const lineCol = this.curCol;
+        const theLine = this._curSplice[sline];
+        const lineCol = this._curCol;
         // Insert the chars up to `curCol` and the first new line.
         // @ts-ignore
-        this.curSplice[sline] = theLine.substring(0, lineCol) + newLines[0];
-        this.curLine++;
+        this._curSplice[sline] = theLine.substring(0, lineCol) + newLines[0];
+        this._curLine++;
         newLines!.splice(0, 1);
         // insert the remaining new lines
         // @ts-ignore
-        this.curSplice.push(...newLines);
-        this.curLine += newLines!.length;
+        this._curSplice.push(...newLines);
+        this._curLine += newLines!.length;
         // insert the remaining chars from the "old" line (e.g. the line we were in
         // when we started to insert new lines)
         // @ts-ignore
-        this.curSplice.push(theLine.substring(lineCol));
-        this.curCol = 0; // TODO(doc) why is this not set to the length of last line?
+        this._curSplice.push(theLine.substring(lineCol));
+        this._curCol = 0; // TODO(doc) why is this not set to the length of last line?
       } else {
-        this.curSplice.push(...newLines);
-        this.curLine += newLines.length;
+        this._curSplice.push(...newLines);
+        this._curLine += newLines!.length;
       }
     } else {
       // There are no additional lines. Although the line is put into splice, curLine is not
       // increased because there may be more chars in the line (newline is not reached).
-      const sline = this.putCurLineInSplice();
-      if (!this.curSplice[sline]) {
+      const sline = this._putCurLineInSplice();
+      if (!this._curSplice[sline]) {
         const err = new Error(
           'curSplice[sline] not populated, actual curSplice contents is ' +
-          `${JSON.stringify(this.curSplice)}. Possibly related to ` +
+          `${JSON.stringify(this._curSplice)}. Possibly related to ` +
           'https://github.com/ether/etherpad-lite/issues/2802');
         console.error(err.stack || err.toString());
       }
       // @ts-ignore
-      this.curSplice[sline] = this.curSplice[sline].substring(0, this.curCol) + text +
+      this._curSplice[sline] = this._curSplice[sline].substring(0, this._curCol) + text +
         // @ts-ignore
-        this.curSplice[sline].substring(this.curCol);
-      this.curCol += text.length;
+        this._curSplice[sline].substring(this._curCol);
+      this._curCol += text.length;
     }
   }
 
@@ -318,18 +328,21 @@ export class TextLinesMutator {
    *
    * @returns {boolean} indicates if there are lines left
    */
-  hasMore(): boolean {
-    let docLines = this.linesLength();
-    if (this.inSplice) {
-      docLines += this.curSplice.length - 2 - this.curSplice[1];
+  hasMore() {
+    let docLines = this._linesLength();
+    if (this._inSplice) {
+      // @ts-ignore
+      docLines += this._curSplice.length - 2 - this._curSplice[1];
     }
-    return this.curLine < docLines;
+    return this._curLine < docLines;
   }
 
   /**
    * Closes the splice
    */
   close() {
-    if (this.inSplice) this.leaveSplice();
+    if (this._inSplice) this._leaveSplice();
   }
 }
+
+export default TextLinesMutator
