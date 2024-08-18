@@ -25,7 +25,8 @@ const randomString = require('../utils/randomstring');
 const hooks = require('../../static/js/pluginfw/hooks');
 import pad_utils from "../../static/js/pad_utils";
 import {SmartOpAssembler} from "../../static/js/SmartOpAssembler";
-const promises = require('../utils/promises');
+import {} from '../utils/promises';
+import {timesLimit} from "async";
 
 /**
  * Copied from the Etherpad source code. It converts Windows line breaks to Unix
@@ -586,12 +587,14 @@ class Pad {
     p.push(db.remove(`pad2readonly:${padID}`));
 
     // delete all chat messages
-    p.push(promises.timesLimit(this.chatHead + 1, 500, async (i: string) => {
+    // @ts-ignore
+    p.push(timesLimit(this.chatHead + 1, 500, async (i: string) => {
       await this.db.remove(`pad:${this.id}:chat:${i}`, null);
     }));
 
     // delete all revisions
-    p.push(promises.timesLimit(this.head + 1, 500, async (i: string) => {
+    // @ts-ignore
+    p.push(timesLimit(this.head + 1, 500, async (i: string) => {
       await this.db.remove(`pad:${this.id}:revs:${i}`, null);
     }));
 

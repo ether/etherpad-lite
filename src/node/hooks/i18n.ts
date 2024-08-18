@@ -8,7 +8,7 @@ const fs = require('fs');
 const path = require('path');
 const _ = require('underscore');
 const pluginDefs = require('../../static/js/pluginfw/plugin_defs');
-const existsSync = require('../utils/path_exists');
+import existsSync from '../utils/path_exists';
 const settings = require('../utils/Settings');
 
 // returns all existing messages merged together and grouped by langcode

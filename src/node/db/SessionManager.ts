@@ -21,7 +21,7 @@
  */
 
 const CustomError = require('../utils/customError');
-const promises = require('../utils/promises');
+import {firstSatisfies} from '../utils/promises';
 const randomString = require('../utils/randomstring');
 const db = require('./DB');
 const groupManager = require('./GroupManager');
@@ -79,7 +79,7 @@ exports.findAuthorID = async (groupID:string, sessionCookie: string) => {
     groupID: string;
     validUntil: number;
   }|null) => (si != null && si.groupID === groupID && now < si.validUntil);
-  const sessionInfo = await promises.firstSatisfies(sessionInfoPromises, isMatch);
+  const sessionInfo = await firstSatisfies(sessionInfoPromises, isMatch) as any;
   if (sessionInfo == null) return undefined;
   return sessionInfo.authorID;
 };
