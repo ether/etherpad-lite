@@ -2,37 +2,37 @@
 
 
 import {strict as assert} from "assert";
-import {cleanComments, minify} from "../../../../admin/src/utils/utils.js";
-
-const fs = require('fs');
+import {cleanComments, minify} from "admin/src/utils/utils";
+import {describe, it, expect, beforeAll} from "vitest";
+import fs from 'fs';
 const fsp = fs.promises;
 let template:string;
 
 describe(__filename, function () {
-  before(async function () {
+  beforeAll(async function () {
     template = await fsp.readFile('../settings.json.template', 'utf8')
   });
   describe('adminUtils', function () {
     it('cleanComments function empty', async function () {
-      assert.equal(cleanComments(""), "");
+      expect(cleanComments("")).to.equal("");
     });
     it('cleanComments function HelloWorld no comment', async function () {
-      assert.equal(cleanComments("HelloWorld"), "HelloWorld");
+      expect(cleanComments("HelloWorld")).to.equal("HelloWorld");
     });
     it('cleanComments function HelloWorld with comment', async function () {
-      assert.equal(cleanComments("Hello/*abc*/World/*def*/"), "HelloWorld");
+      expect(cleanComments("Hello/*abc*/World/*def*/")).to.equal("HelloWorld");
     });
     it('cleanComments function HelloWorld with comment and multiline', async function () {
-      assert.equal(cleanComments("Hello \n/*abc\nxyz*/World/*def*/"), "Hello\nWorld");
+      expect(cleanComments("Hello \n/*abc\nxyz*/World/*def*/")).to.equal("Hello\nWorld");
     });
     it('cleanComments function HelloWorld with multiple line breaks', async function () {
-      assert.equal(cleanComments("  \nHello \n  \n  \nWorld/*def*/"), "Hello\nWorld");
+      expect(cleanComments("  \nHello \n  \n  \nWorld/*def*/")).to.equal("Hello\nWorld");
     });
     it('cleanComments function same after minified', async function () {
-      assert.equal(minify(template), minify(cleanComments(template)!));
+      expect(minify(cleanComments(template)!)).to.equal(minify(template));
     });
     it('minified results are smaller', async function () {
-      assert.equal(minify(template).length < template.length, true);
+      expect(minify(template).length < template.length).to.equal(true);
     });
   });
 });

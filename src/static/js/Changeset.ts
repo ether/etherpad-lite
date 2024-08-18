@@ -1276,7 +1276,7 @@ export const subattribution = (astr: string, start: number, optEnd?: number) => 
   return assem.toString();
 };
 
-export const inverse = (cs: string, lines: string|RegExpMatchArray | null, alines: string[]|{
+export const inverse = (cs: string, lines: string|RegExpMatchArray|string[] | null, alines: string[]|{
   get: (idx: number) => string,
 }, pool: AttributePool) => {
   // lines and alines are what the exports is meant to apply to.
