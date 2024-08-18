@@ -1,4 +1,4 @@
-'use strict';
+// @ts-nocheck
 
 const getCookies =
     () => helper.padChrome$.window.require('ep_etherpad-lite/static/js/pad_utils').Cookies;

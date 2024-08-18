@@ -20,6 +20,7 @@
     "typescript": "^5.5.4"
   },
   "scripts": {
+    "makeDocs": "node --import tsx make_docs.ts",
     "checkPad": "node --import tsx checkPad.ts",
     "checkAllPads": "node --import tsx checkAllPads.ts",
     "createUserSession": "node --import tsx createUserSession.ts",

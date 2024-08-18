@@ -1,4 +1,4 @@
-'use strict';
+// @ts-nocheck
 
 /**
  * Spys on socket.io messages and saves them into several arrays
