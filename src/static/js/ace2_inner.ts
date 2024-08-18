@@ -1,5 +1,5 @@
 // @ts-nocheck
-'use strict';
+import {Builder} from "./Builder";
 
 /**
  * Copyright 2009 Google Inc.
@@ -24,6 +24,8 @@ const browser = require('./vendors/browser');
 import padutils from './pad_utils'
 const Ace2Common = require('./ace2_common');
 const $ = require('./rjquery').$;
+import {characterRangeFollow, checkRep, cloneAText, compose, deserializeOps, filterAttribNumbers, inverse, isIdentity, makeAText, makeAttribution, mapAttribNumbers, moveOpsToNewPool, mutateAttributionLines, mutateTextLines, oldLen, opsFromAText, pack, splitAttributionLines} from './Changeset'
+
 
 const isNodeText = Ace2Common.isNodeText;
 const getAssoc = Ace2Common.getAssoc;
@@ -33,14 +35,15 @@ const hooks = require('./pluginfw/hooks');
 import SkipList from "./skiplist";
 import Scroll from './scroll'
 import AttribPool from './AttributePool'
+import {SmartOpAssembler} from "./SmartOpAssembler";
+import Op from "./Op";
+import {buildKeepRange, buildKeepToStartOfRange, buildRemoveRange} from './ChangesetUtils'
 
 function Ace2Inner(editorInfo, cssManagers) {
   const makeChangesetTracker = require('./changesettracker').makeChangesetTracker;
   const colorutils = require('./colorutils').colorutils;
   const makeContentCollector = require('./contentcollector').makeContentCollector;
   const domline = require('./domline').domline;
-  const Changeset = require('./Changeset');
-  const ChangesetUtils = require('./ChangesetUtils');
   const linestylefilter = require('./linestylefilter').linestylefilter;
   const undoModule = require('./undomodule').undoModule;
   const AttributeManager = require('./AttributeManager');
@@ -174,9 +177,9 @@ function Ace2Inner(editorInfo, cssManagers) {
     //           CCCCCCCCCCCCCCCCCCCC\n
     //           CCCC\n
     // end[0]:   <CCC end[1] CCC>-------\n
-    const builder = Changeset.builder(rep.lines.totalWidth());
-    ChangesetUtils.buildKeepToStartOfRange(rep, builder, start);
-    ChangesetUtils.buildRemoveRange(rep, builder, start, end);
+    const builder = new Builder(rep.lines.totalWidth());
+    buildKeepToStartOfRange(rep, builder, start);
+    buildRemoveRange(rep, builder, start, end);
     builder.insert(newText, [
       ['author', thisAuthor],
     ], rep.apool);
@@ -495,10 +498,10 @@ function Ace2Inner(editorInfo, cssManagers) {
   };
 
   const importAText = (atext, apoolJsonObj, undoable) => {
-    atext = Changeset.cloneAText(atext);
+    atext = cloneAText(atext);
     if (apoolJsonObj) {
       const wireApool = (new AttribPool()).fromJsonable(apoolJsonObj);
-      atext.attribs = Changeset.moveOpsToNewPool(atext.attribs, wireApool, rep.apool);
+      atext.attribs = moveOpsToNewPool(atext.attribs, wireApool, rep.apool);
     }
     inCallStackIfNecessary(`importText${undoable ? 'Undoable' : ''}`, () => {
       setDocAText(atext);
@@ -527,18 +530,18 @@ function Ace2Inner(editorInfo, cssManagers) {
     const numLines = rep.lines.length();
     const upToLastLine = rep.lines.offsetOfIndex(numLines - 1);
     const lastLineLength = rep.lines.atIndex(numLines - 1).text.length;
-    const assem = Changeset.smartOpAssembler();
-    const o = new Changeset.Op('-');
+    const assem = new SmartOpAssembler();
+    const o = new Op('-');
     o.chars = upToLastLine;
     o.lines = numLines - 1;
     assem.append(o);
     o.chars = lastLineLength;
     o.lines = 0;
     assem.append(o);
-    for (const op of Changeset.opsFromAText(atext)) assem.append(op);
+    for (const op of opsFromAText(atext)) assem.append(op);
     const newLen = oldLen + assem.getLengthChange();
-    const changeset = Changeset.checkRep(
-        Changeset.pack(oldLen, newLen, assem.toString(), atext.text.slice(0, -1)));
+    const changeset = checkRep(
+        pack(oldLen, newLen, assem.toString(), atext.text.slice(0, -1)));
     performDocumentApplyChangeset(changeset);
 
     performSelectionChange(
@@ -552,7 +555,7 @@ function Ace2Inner(editorInfo, cssManagers) {
   };
 
   const setDocText = (text) => {
-    setDocAText(Changeset.makeAText(text));
+    setDocAText(makeAText(text));
   };
 
   const getDocText = () => {
@@ -1271,7 +1274,7 @@ function Ace2Inner(editorInfo, cssManagers) {
       if (shouldIndent && /[[(:{]\s*$/.exec(prevLineText)) {
         theIndent += THE_TAB;
       }
-      const cs = Changeset.builder(rep.lines.totalWidth()).keep(
+      const cs = new Builder(rep.lines.totalWidth()).keep(
           rep.lines.offsetOfIndex(lineNum), lineNum).insert(
           theIndent, [
             ['author', thisAuthor],
@@ -1423,7 +1426,7 @@ function Ace2Inner(editorInfo, cssManagers) {
       const selStartChar = rep.lines.offsetOfIndex(rep.selStart[0]) + rep.selStart[1];
       const selEndChar = rep.lines.offsetOfIndex(rep.selEnd[0]) + rep.selEnd[1];
       const result =
-          Changeset.characterRangeFollow(changes, selStartChar, selEndChar, insertsAfterSelection);
+          characterRangeFollow(changes, selStartChar, selEndChar, insertsAfterSelection);
       requiredSelectionSetting = [result[0], result[1], rep.selFocusAtStart];
     }
 
@@ -1435,7 +1438,7 @@ function Ace2Inner(editorInfo, cssManagers) {
       length: () => rep.lines.length(),
     };
 
-    Changeset.mutateTextLines(changes, linesMutatee);
+    mutateTextLines(changes, linesMutatee);
 
     if (requiredSelectionSetting) {
       performSelectionChange(
@@ -1446,10 +1449,10 @@ function Ace2Inner(editorInfo, cssManagers) {
   };
 
   const doRepApplyChangeset = (changes, insertsAfterSelection) => {
-    Changeset.checkRep(changes);
+    checkRep(changes);
 
-    if (Changeset.oldLen(changes) !== rep.alltext.length) {
-      const errMsg = `${Changeset.oldLen(changes)}/${rep.alltext.length}`;
+    if (oldLen(changes) !== rep.alltext.length) {
+      const errMsg = `${oldLen(changes)}/${rep.alltext.length}`;
       throw new Error(`doRepApplyChangeset length mismatch: ${errMsg}`);
     }
 
@@ -1458,10 +1461,10 @@ function Ace2Inner(editorInfo, cssManagers) {
       if (!editEvent.changeset) {
         editEvent.changeset = changes;
       } else {
-        editEvent.changeset = Changeset.compose(editEvent.changeset, changes, rep.apool);
+        editEvent.changeset = compose(editEvent.changeset, changes, rep.apool);
       }
     } else {
-      const inverseChangeset = Changeset.inverse(changes, {
+      const inverseChangeset = inverse(changes, {
         get: (i) => `${rep.lines.atIndex(i).text}\n`,
         length: () => rep.lines.length(),
       }, rep.alines, rep.apool);
@@ -1469,11 +1472,11 @@ function Ace2Inner(editorInfo, cssManagers) {
       if (!editEvent.backset) {
         editEvent.backset = inverseChangeset;
       } else {
-        editEvent.backset = Changeset.compose(inverseChangeset, editEvent.backset, rep.apool);
+        editEvent.backset = compose(inverseChangeset, editEvent.backset, rep.apool);
       }
     }
 
-    Changeset.mutateAttributionLines(changes, rep.alines, rep.apool);
+    mutateAttributionLines(changes, rep.alines, rep.apool);
 
     if (changesetTracker.isTracking()) {
       changesetTracker.composeUserChangeset(changes);
@@ -1582,7 +1585,7 @@ function Ace2Inner(editorInfo, cssManagers) {
       let hasAttrib = true;
 
       let indexIntoLine = 0;
-      for (const op of Changeset.deserializeOps(rep.alines[lineNum])) {
+      for (const op of deserializeOps(rep.alines[lineNum])) {
         const opStartInLine = indexIntoLine;
         const opEndInLine = opStartInLine + op.chars;
         if (!hasIt(op.attribs)) {
@@ -1627,7 +1630,7 @@ function Ace2Inner(editorInfo, cssManagers) {
       if (n === selEndLine) {
         selectionEndInLine = rep.selEnd[1];
       }
-      for (const op of Changeset.deserializeOps(rep.alines[n])) {
+      for (const op of deserializeOps(rep.alines[n])) {
         const opStartInLine = indexIntoLine;
         const opEndInLine = opStartInLine + op.chars;
         if (!hasIt(op.attribs)) {
@@ -1745,7 +1748,7 @@ function Ace2Inner(editorInfo, cssManagers) {
       const spliceStartLineStart = rep.lines.offsetOfIndex(spliceStartLine);
 
       const startBuilder = () => {
-        const builder = Changeset.builder(oldLen);
+        const builder = new Builder(oldLen);
         builder.keep(spliceStartLineStart, spliceStartLine);
         builder.keep(spliceStart - spliceStartLineStart);
         return builder;
@@ -1755,7 +1758,7 @@ function Ace2Inner(editorInfo, cssManagers) {
         let textIndex = 0;
         const newTextStart = commonStart;
         const newTextEnd = newText.length - commonEnd - (shiftFinalNewlineToBeforeNewText ? 1 : 0);
-        for (const op of Changeset.deserializeOps(attribs)) {
+        for (const op of deserializeOps(attribs)) {
           const nextIndex = textIndex + op.chars;
           if (!(nextIndex <= newTextStart || textIndex >= newTextEnd)) {
             func(Math.max(newTextStart, textIndex), Math.min(newTextEnd, nextIndex), op.attribs);
@@ -1773,7 +1776,7 @@ function Ace2Inner(editorInfo, cssManagers) {
         // changeset the applies the styles found in the DOM.
         // This allows us to incorporate, e.g., Safari's native "unbold".
         const incorpedAttribClearer = cachedStrFunc(
-            (oldAtts) => Changeset.mapAttribNumbers(oldAtts, (n) => {
+            (oldAtts) => mapAttribNumbers(oldAtts, (n) => {
               const k = rep.apool.getAttribKey(n);
               if (isStyleAttribute(k)) {
                 return rep.apool.putAttrib([k, '']);
@@ -1799,7 +1802,7 @@ function Ace2Inner(editorInfo, cssManagers) {
         });
         const styler = builder2.toString();
 
-        theChangeset = Changeset.compose(clearer, styler, rep.apool);
+        theChangeset = compose(clearer, styler, rep.apool);
       } else {
         const builder = startBuilder();
 
@@ -1869,7 +1872,7 @@ function Ace2Inner(editorInfo, cssManagers) {
     const attribRuns = (attribs) => {
       const lengs = [];
       const atts = [];
-      for (const op of Changeset.deserializeOps(attribs)) {
+      for (const op of deserializeOps(attribs)) {
         lengs.push(op.chars);
         atts.push(op.attribs);
       }
@@ -1898,8 +1901,8 @@ function Ace2Inner(editorInfo, cssManagers) {
     const newLen = newText.length;
     const minLen = Math.min(oldLen, newLen);
 
-    const oldARuns = attribRuns(Changeset.filterAttribNumbers(oldAttribs, incorpedAttribFilter));
-    const newARuns = attribRuns(Changeset.filterAttribNumbers(newAttribs, incorpedAttribFilter));
+    const oldARuns = attribRuns(filterAttribNumbers(oldAttribs, incorpedAttribFilter));
+    const newARuns = attribRuns(filterAttribNumbers(newAttribs, incorpedAttribFilter));
 
     let commonStart = 0;
     const oldStartIter = attribIterator(oldARuns, false);
@@ -2297,7 +2300,7 @@ function Ace2Inner(editorInfo, cssManagers) {
 
     // 3-renumber every list item of the same level from the beginning, level 1
     // IMPORTANT: never skip a level because there imbrication may be arbitrary
-    const builder = Changeset.builder(rep.lines.totalWidth());
+    const builder = new Builder(rep.lines.totalWidth());
     let loc = [0, 0];
     const applyNumberList = (line, level) => {
       // init
@@ -2312,8 +2315,8 @@ function Ace2Inner(editorInfo, cssManagers) {
         if (isNaN(curLevel) || listType[0] === 'indent') {
           return line;
         } else if (curLevel === level) {
-          ChangesetUtils.buildKeepRange(rep, builder, loc, (loc = [line, 0]));
-          ChangesetUtils.buildKeepRange(rep, builder, loc, (loc = [line, 1]), [
+          buildKeepRange(rep, builder, loc, (loc = [line, 0]));
+          buildKeepRange(rep, builder, loc, (loc = [line, 1]), [
             ['start', position],
           ], rep.apool);
 
@@ -2330,7 +2333,7 @@ function Ace2Inner(editorInfo, cssManagers) {
 
     applyNumberList(lineNum, 1);
     const cs = builder.toString();
-    if (!Changeset.isIdentity(cs)) {
+    if (!isIdentity(cs)) {
       performDocumentApplyChangeset(cs);
     }
 
@@ -2618,7 +2621,7 @@ function Ace2Inner(editorInfo, cssManagers) {
           // TODO: There appears to be a race condition or so.
           const authorIds = new Set();
           if (alineAttrs) {
-            for (const op of Changeset.deserializeOps(alineAttrs)) {
+            for (const op of deserializeOps(alineAttrs)) {
               const authorId = AttributeMap.fromString(op.attribs, apool).get('author');
               if (authorId) authorIds.add(authorId);
             }
@@ -3513,8 +3516,8 @@ function Ace2Inner(editorInfo, cssManagers) {
       const oneEntry = createDomLineEntry('');
       doRepLineSplice(0, rep.lines.length(), [oneEntry]);
       insertDomLines(null, [oneEntry.domInfo]);
-      rep.alines = Changeset.splitAttributionLines(
-          Changeset.makeAttribution('\n'), '\n');
+      rep.alines = splitAttributionLines(
+          makeAttribution('\n'), '\n');
 
       bindTheEventHandlers();
     });

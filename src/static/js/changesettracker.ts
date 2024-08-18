@@ -25,15 +25,16 @@
 
 import AttributeMap from './AttributeMap';
 import AttributePool from './AttributePool';
-const Changeset = require('./Changeset');
+import {applyToAText, checkRep, cloneAText, compose, deserializeOps, follow, identity, isIdentity, makeAText, moveOpsToNewPool, newLen, pack, prepareForWire, unpack} from './Changeset';
+import {MergingOpAssembler} from "./MergingOpAssembler";
 
 const makeChangesetTracker = (scheduler, apool, aceCallbacksProvider) => {
   // latest official text from server
-  let baseAText = Changeset.makeAText('\n');
+  let baseAText = makeAText('\n');
   // changes applied to baseText that have been submitted
   let submittedChangeset = null;
   // changes applied to submittedChangeset since it was prepared
-  let userChangeset = Changeset.identity(1);
+  let userChangeset = identity(1);
   // is the changesetTracker enabled
   let tracking = false;
   // stack state flag so that when we change the rep we don't
@@ -67,18 +68,18 @@ const makeChangesetTracker = (scheduler, apool, aceCallbacksProvider) => {
   return self = {
     isTracking: () => tracking,
     setBaseText: (text) => {
-      self.setBaseAttributedText(Changeset.makeAText(text), null);
+      self.setBaseAttributedText(makeAText(text), null);
     },
     setBaseAttributedText: (atext, apoolJsonObj) => {
       aceCallbacksProvider.withCallbacks('setBaseText', (callbacks) => {
         tracking = true;
-        baseAText = Changeset.cloneAText(atext);
+        baseAText = cloneAText(atext);
         if (apoolJsonObj) {
           const wireApool = (new AttributePool()).fromJsonable(apoolJsonObj);
-          baseAText.attribs = Changeset.moveOpsToNewPool(baseAText.attribs, wireApool, apool);
+          baseAText.attribs = moveOpsToNewPool(baseAText.attribs, wireApool, apool);
         }
         submittedChangeset = null;
-        userChangeset = Changeset.identity(atext.text.length);
+        userChangeset = identity(atext.text.length);
         applyingNonUserChanges = true;
         try {
           callbacks.setDocumentAttributedText(atext);
@@ -90,8 +91,8 @@ const makeChangesetTracker = (scheduler, apool, aceCallbacksProvider) => {
     composeUserChangeset: (c) => {
       if (!tracking) return;
       if (applyingNonUserChanges) return;
-      if (Changeset.isIdentity(c)) return;
-      userChangeset = Changeset.compose(userChangeset, c, apool);
+      if (isIdentity(c)) return;
+      userChangeset = compose(userChangeset, c, apool);
 
       setChangeCallbackTimeout();
     },
@@ -101,23 +102,23 @@ const makeChangesetTracker = (scheduler, apool, aceCallbacksProvider) => {
       aceCallbacksProvider.withCallbacks('applyChangesToBase', (callbacks) => {
         if (apoolJsonObj) {
           const wireApool = (new AttributePool()).fromJsonable(apoolJsonObj);
-          c = Changeset.moveOpsToNewPool(c, wireApool, apool);
+          c = moveOpsToNewPool(c, wireApool, apool);
         }
 
-        baseAText = Changeset.applyToAText(c, baseAText, apool);
+        baseAText = applyToAText(c, baseAText, apool);
 
         let c2 = c;
         if (submittedChangeset) {
           const oldSubmittedChangeset = submittedChangeset;
-          submittedChangeset = Changeset.follow(c, oldSubmittedChangeset, false, apool);
-          c2 = Changeset.follow(oldSubmittedChangeset, c, true, apool);
+          submittedChangeset = follow(c, oldSubmittedChangeset, false, apool);
+          c2 = follow(oldSubmittedChangeset, c, true, apool);
         }
 
         const preferInsertingAfterUserChanges = true;
         const oldUserChangeset = userChangeset;
-        userChangeset = Changeset.follow(
+        userChangeset = follow(
             c2, oldUserChangeset, preferInsertingAfterUserChanges, apool);
-        const postChange = Changeset.follow(
+        const postChange = follow(
             oldUserChangeset, c2, !preferInsertingAfterUserChanges, apool);
 
         const preferInsertionAfterCaret = true; // (optAuthor && optAuthor > thisAuthor);
@@ -136,17 +137,17 @@ const makeChangesetTracker = (scheduler, apool, aceCallbacksProvider) => {
       if (submittedChangeset) {
         // submission must have been canceled, prepare new changeset
         // that includes old submittedChangeset
-        toSubmit = Changeset.compose(submittedChangeset, userChangeset, apool);
+        toSubmit = compose(submittedChangeset, userChangeset, apool);
       } else {
         // Get my authorID
         const authorId = parent.parent.pad.myUserInfo.userId;
 
         // Sanitize authorship: Replace all author attributes with this user's author ID in case the
         // text was copied from another author.
-        const cs = Changeset.unpack(userChangeset);
-        const assem = Changeset.mergingOpAssembler();
+        const cs = unpack(userChangeset);
+        const assem = new MergingOpAssembler();
 
-        for (const op of Changeset.deserializeOps(cs.ops)) {
+        for (const op of deserializeOps(cs.ops)) {
           if (op.opcode === '+') {
             const attribs = AttributeMap.fromString(op.attribs, apool);
             const oldAuthorId = attribs.get('author');
@@ -158,23 +159,23 @@ const makeChangesetTracker = (scheduler, apool, aceCallbacksProvider) => {
           assem.append(op);
         }
         assem.endDocument();
-        userChangeset = Changeset.pack(cs.oldLen, cs.newLen, assem.toString(), cs.charBank);
-        Changeset.checkRep(userChangeset);
+        userChangeset = pack(cs.oldLen, cs.newLen, assem.toString(), cs.charBank);
+        checkRep(userChangeset);
 
-        if (Changeset.isIdentity(userChangeset)) toSubmit = null;
+        if (isIdentity(userChangeset)) toSubmit = null;
         else toSubmit = userChangeset;
       }
 
       let cs = null;
       if (toSubmit) {
         submittedChangeset = toSubmit;
-        userChangeset = Changeset.identity(Changeset.newLen(toSubmit));
+        userChangeset = identity(newLen(toSubmit));
 
         cs = toSubmit;
       }
       let wireApool = null;
       if (cs) {
-        const forWire = Changeset.prepareForWire(cs, apool);
+        const forWire = prepareForWire(cs, apool);
         wireApool = forWire.pool.toJsonable();
         cs = forWire.translated;
       }
@@ -191,13 +192,13 @@ const makeChangesetTracker = (scheduler, apool, aceCallbacksProvider) => {
         throw new Error('applySubmittedChangesToBase: no submitted changes to apply');
       }
       // bumpDebug("applying committed changeset: "+submittedChangeset.encodeToString(false));
-      baseAText = Changeset.applyToAText(submittedChangeset, baseAText, apool);
+      baseAText = applyToAText(submittedChangeset, baseAText, apool);
       submittedChangeset = null;
     },
     setUserChangeNotificationCallback: (callback) => {
       changeCallback = callback;
     },
-    hasUncommittedChanges: () => !!(submittedChangeset || (!Changeset.isIdentity(userChangeset))),
+    hasUncommittedChanges: () => !!(submittedChangeset || (!isIdentity(userChangeset))),
   };
 };
 

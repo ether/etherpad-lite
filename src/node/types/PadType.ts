@@ -1,10 +1,11 @@
 import {MapArrayType} from "./MapType";
+import AttributePool from "../../static/js/AttributePool";
 
 export type PadType = {
     id: string,
-    apool: ()=>APool,
+    apool: ()=>AttributePool,
     atext: AText,
-    pool: APool,
+    pool: AttributePool,
     getInternalRevisionAText: (text:number|string)=>Promise<AText>,
     getValidRevisionRange: (fromRev: string, toRev: string)=>PadRange,
     getRevisionAuthor: (rev: number)=>Promise<string>,

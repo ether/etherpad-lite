@@ -26,7 +26,7 @@
 const makeCSSManager = require('./cssmanager').makeCSSManager;
 const domline = require('./domline').domline;
 import AttribPool from './AttributePool';
-const Changeset = require('./Changeset');
+import {compose, deserializeOps, inverse, moveOpsToNewPool, mutateAttributionLines, mutateTextLines, splitAttributionLines, splitTextLines, unpack} from './Changeset';
 const attributes = require('./attributes');
 const linestylefilter = require('./linestylefilter').linestylefilter;
 const colorutils = require('./colorutils').colorutils;
@@ -54,11 +54,11 @@ const loadBroadcastJS = (socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
     currentRevision: clientVars.collab_client_vars.rev,
     currentTime: clientVars.collab_client_vars.time,
     currentLines:
-        Changeset.splitTextLines(clientVars.collab_client_vars.initialAttributedText.text),
+        splitTextLines(clientVars.collab_client_vars.initialAttributedText.text),
     currentDivs: null,
     // to be filled in once the dom loads
     apool: (new AttribPool()).fromJsonable(clientVars.collab_client_vars.apool),
-    alines: Changeset.splitAttributionLines(
+    alines: splitAttributionLines(
         clientVars.collab_client_vars.initialAttributedText.attribs,
         clientVars.collab_client_vars.initialAttributedText.text),
 
@@ -121,7 +121,7 @@ const loadBroadcastJS = (socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
     getActiveAuthors() {
       const authorIds = new Set();
       for (const aline of this.alines) {
-        for (const op of Changeset.deserializeOps(aline)) {
+        for (const op of deserializeOps(aline)) {
           for (const [k, v] of attributes.attribsFromString(op.attribs, this.apool)) {
             if (k !== 'author') continue;
             if (v) authorIds.add(v);
@@ -142,7 +142,7 @@ const loadBroadcastJS = (socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
     const oldAlines = padContents.alines.slice();
     try {
       // must mutate attribution lines before text lines
-      Changeset.mutateAttributionLines(changeset, padContents.alines, padContents.apool);
+      mutateAttributionLines(changeset, padContents.alines, padContents.apool);
     } catch (e) {
       debugLog(e);
     }
@@ -164,7 +164,7 @@ const loadBroadcastJS = (socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
       // some chars are replaced (no attributes change and no length change)
       // test if there are keep ops at the start of the cs
       if (lineChanged === undefined) {
-        const [op] = Changeset.deserializeOps(Changeset.unpack(changeset).ops);
+        const [op] = deserializeOps(unpack(changeset).ops);
         lineChanged = op != null && op.opcode === '=' ? op.lines : 0;
       }
 
@@ -184,7 +184,7 @@ const loadBroadcastJS = (socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
       goToLineNumber(lineChanged);
     }
 
-    Changeset.mutateTextLines(changeset, padContents);
+    mutateTextLines(changeset, padContents);
     padContents.currentRevision = revision;
     padContents.currentTime += timeDelta * 1000;
 
@@ -273,7 +273,7 @@ const loadBroadcastJS = (socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
       let changeset = cs[0];
       let timeDelta = path.times[0];
       for (let i = 1; i < cs.length; i++) {
-        changeset = Changeset.compose(changeset, cs[i], padContents.apool);
+        changeset = compose(changeset, cs[i], padContents.apool);
         timeDelta += path.times[i];
       }
       if (changeset) applyChangeset(changeset, path.rev, true, timeDelta);
@@ -291,7 +291,7 @@ const loadBroadcastJS = (socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
       let changeset = cs[0];
       let timeDelta = path.times[0];
       for (let i = 1; i < cs.length; i++) {
-        changeset = Changeset.compose(changeset, cs[i], padContents.apool);
+        changeset = compose(changeset, cs[i], padContents.apool);
         timeDelta += path.times[i];
       }
       if (changeset) applyChangeset(changeset, path.rev, true, timeDelta);
@@ -397,9 +397,9 @@ const loadBroadcastJS = (socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
         if (aend > data.actualEndNum - 1) aend = data.actualEndNum - 1;
         // debugLog("adding changeset:", astart, aend);
         const forwardcs =
-            Changeset.moveOpsToNewPool(data.forwardsChangesets[i], pool, padContents.apool);
+            moveOpsToNewPool(data.forwardsChangesets[i], pool, padContents.apool);
         const backwardcs =
-            Changeset.moveOpsToNewPool(data.backwardsChangesets[i], pool, padContents.apool);
+            moveOpsToNewPool(data.backwardsChangesets[i], pool, padContents.apool);
         window.revisionInfo.addChangeset(astart, aend, forwardcs, backwardcs, data.timeDeltas[i]);
       }
       if (callback) callback(start - 1, start + data.forwardsChangesets.length * granularity - 1);
@@ -409,13 +409,13 @@ const loadBroadcastJS = (socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
         obj = obj.data;
 
         if (obj.type === 'NEW_CHANGES') {
-          const changeset = Changeset.moveOpsToNewPool(
+          const changeset = moveOpsToNewPool(
               obj.changeset, (new AttribPool()).fromJsonable(obj.apool), padContents.apool);
 
-          let changesetBack = Changeset.inverse(
+          let changesetBack = inverse(
               obj.changeset, padContents.currentLines, padContents.alines, padContents.apool);
 
-          changesetBack = Changeset.moveOpsToNewPool(
+          changesetBack = moveOpsToNewPool(
               changesetBack, (new AttribPool()).fromJsonable(obj.apool), padContents.apool);
 
           loadedNewChangeset(changeset, changesetBack, obj.newRev - 1, obj.timeDelta);

@@ -1,11 +1,10 @@
 // @ts-nocheck
-'use strict';
-
 import AttributeMap from './AttributeMap';
-const Changeset = require('./Changeset');
-const ChangesetUtils = require('./ChangesetUtils');
-const attributes = require('./attributes');
-const underscore = require("underscore")
+import {compose, deserializeOps, isIdentity} from './Changeset';
+import {Builder} from "./Builder";
+import {buildKeepRange, buildKeepToStartOfRange, buildRemoveRange} from './ChangesetUtils';
+import attributes from './attributes';
+import underscore from "underscore";
 
 const lineMarkerAttribute = 'lmkr';
 
@@ -52,7 +51,7 @@ AttributeManager.prototype = underscore.default(AttributeManager.prototype).exte
     if (!this.applyChangesetCallback) return changeset;
 
     const cs = changeset.toString();
-    if (!Changeset.isIdentity(cs)) {
+    if (!isIdentity(cs)) {
       this.applyChangesetCallback(cs);
     }
 
@@ -86,7 +85,7 @@ AttributeManager.prototype = underscore.default(AttributeManager.prototype).exte
       // as the range might not be continuous
       // due to the presence of line markers on the rows
       if (allChangesets) {
-        allChangesets = Changeset.compose(
+        allChangesets = compose(
             allChangesets.toString(), rowChangeset.toString(), this.rep.apool);
       } else {
         allChangesets = rowChangeset;
@@ -126,9 +125,9 @@ AttributeManager.prototype = underscore.default(AttributeManager.prototype).exte
    * @param attribs an array of attributes
    */
   _setAttributesOnRangeByLine(row, startCol, endCol, attribs) {
-    const builder = Changeset.builder(this.rep.lines.totalWidth());
-    ChangesetUtils.buildKeepToStartOfRange(this.rep, builder, [row, startCol]);
-    ChangesetUtils.buildKeepRange(
+    const builder = new Builder(this.rep.lines.totalWidth());
+    buildKeepToStartOfRange(this.rep, builder, [row, startCol]);
+    buildKeepRange(
         this.rep, builder, [row, startCol], [row, endCol], attribs, this.rep.apool);
     return builder;
   },
@@ -151,7 +150,7 @@ AttributeManager.prototype = underscore.default(AttributeManager.prototype).exte
     // get  `attributeName` attribute of first char of line
     const aline = this.rep.alines[lineNum];
     if (!aline) return '';
-    const [op] = Changeset.deserializeOps(aline);
+    const [op] = deserializeOps(aline);
     if (op == null) return '';
     return AttributeMap.fromString(op.attribs, this.rep.apool).get(attributeName) || '';
   },
@@ -164,7 +163,7 @@ AttributeManager.prototype = underscore.default(AttributeManager.prototype).exte
     // get attributes of first char of line
     const aline = this.rep.alines[lineNum];
     if (!aline) return [];
-    const [op] = Changeset.deserializeOps(aline);
+    const [op] = deserializeOps(aline);
     if (op == null) return [];
     return [...attributes.attribsFromString(op.attribs, this.rep.apool)];
   },
@@ -222,7 +221,7 @@ AttributeManager.prototype = underscore.default(AttributeManager.prototype).exte
       let hasAttrib = true;
 
       let indexIntoLine = 0;
-      for (const op of Changeset.deserializeOps(rep.alines[lineNum])) {
+      for (const op of deserializeOps(rep.alines[lineNum])) {
         const opStartInLine = indexIntoLine;
         const opEndInLine = opStartInLine + op.chars;
         if (!hasIt(op.attribs)) {
@@ -259,7 +258,7 @@ AttributeManager.prototype = underscore.default(AttributeManager.prototype).exte
     // we need to sum up how much characters each operations take until the wanted position
     let currentPointer = 0;
 
-    for (const currentOperation of Changeset.deserializeOps(aline)) {
+    for (const currentOperation of deserializeOps(aline)) {
       currentPointer += currentOperation.chars;
       if (currentPointer <= column) continue;
       return [...attributes.attribsFromString(currentOperation.attribs, this.rep.apool)];
@@ -286,13 +285,13 @@ AttributeManager.prototype = underscore.default(AttributeManager.prototype).exte
   */
   setAttributeOnLine(lineNum, attributeName, attributeValue) {
     let loc = [0, 0];
-    const builder = Changeset.builder(this.rep.lines.totalWidth());
+    const builder = new Builder(this.rep.lines.totalWidth());
     const hasMarker = this.lineHasMarker(lineNum);
 
-    ChangesetUtils.buildKeepRange(this.rep, builder, loc, (loc = [lineNum, 0]));
+    buildKeepRange(this.rep, builder, loc, (loc = [lineNum, 0]));
 
     if (hasMarker) {
-      ChangesetUtils.buildKeepRange(this.rep, builder, loc, (loc = [lineNum, 1]), [
+      buildKeepRange(this.rep, builder, loc, (loc = [lineNum, 1]), [
         [attributeName, attributeValue],
       ], this.rep.apool);
     } else {
@@ -315,7 +314,7 @@ AttributeManager.prototype = underscore.default(AttributeManager.prototype).exte
    *  @param attributeValue if given only attributes with equal value will be removed
    */
   removeAttributeOnLine(lineNum, attributeName, attributeValue) {
-    const builder = Changeset.builder(this.rep.lines.totalWidth());
+    const builder = new Builder(this.rep.lines.totalWidth());
     const hasMarker = this.lineHasMarker(lineNum);
     let found = false;
 
@@ -334,16 +333,16 @@ AttributeManager.prototype = underscore.default(AttributeManager.prototype).exte
       return;
     }
 
-    ChangesetUtils.buildKeepToStartOfRange(this.rep, builder, [lineNum, 0]);
+    buildKeepToStartOfRange(this.rep, builder, [lineNum, 0]);
 
     const countAttribsWithMarker = underscore.chain(attribs).filter((a) => !!a[1])
         .map((a) => a[0]).difference(DEFAULT_LINE_ATTRIBUTES).size().value();
 
     // if we have marker and any of attributes don't need to have marker. we need delete it
     if (hasMarker && !countAttribsWithMarker) {
-      ChangesetUtils.buildRemoveRange(this.rep, builder, [lineNum, 0], [lineNum, 1]);
+      buildRemoveRange(this.rep, builder, [lineNum, 0], [lineNum, 1]);
     } else {
-      ChangesetUtils.buildKeepRange(
+      buildKeepRange(
           this.rep, builder, [lineNum, 0], [lineNum, 1], attribs, this.rep.apool);
     }
 

@@ -23,7 +23,7 @@
  * limitations under the License.
  */
 
-const Changeset = require('./Changeset');
+import {characterRangeFollow, compose, follow, isIdentity, unpack} from './Changeset';
 const _ = require('./underscore');
 
 const undoModule = (() => {
@@ -62,7 +62,7 @@ const undoModule = (() => {
       const idx = stackElements.length - 1;
       if (stackElements[idx].elementType === EXTERNAL_CHANGE) {
         stackElements[idx].changeset =
-            Changeset.compose(stackElements[idx].changeset, cs, getAPool());
+            compose(stackElements[idx].changeset, cs, getAPool());
       } else {
         stackElements.push(
             {
@@ -83,10 +83,10 @@ const undoModule = (() => {
           if (un.backset) {
             const excs = ex.changeset;
             const unbs = un.backset;
-            un.backset = Changeset.follow(excs, un.backset, false, getAPool());
-            ex.changeset = Changeset.follow(unbs, ex.changeset, true, getAPool());
+            un.backset = follow(excs, un.backset, false, getAPool());
+            ex.changeset = follow(unbs, ex.changeset, true, getAPool());
             if ((typeof un.selStart) === 'number') {
-              const newSel = Changeset.characterRangeFollow(excs, un.selStart, un.selEnd);
+              const newSel = characterRangeFollow(excs, un.selStart, un.selEnd);
               un.selStart = newSel[0];
               un.selEnd = newSel[1];
               if (un.selStart === un.selEnd) {
@@ -98,7 +98,7 @@ const undoModule = (() => {
           stackElements[idx] = un;
           if (idx >= 2 && stackElements[idx - 2].elementType === EXTERNAL_CHANGE) {
             ex.changeset =
-                Changeset.compose(stackElements[idx - 2].changeset, ex.changeset, getAPool());
+                compose(stackElements[idx - 2].changeset, ex.changeset, getAPool());
             stackElements.splice(idx - 2, 1);
             idx--;
           }
@@ -154,7 +154,7 @@ const undoModule = (() => {
     return count;
   };
 
-  const _opcodeOccurrences = (cs, opcode) => _charOccurrences(Changeset.unpack(cs).ops, opcode);
+  const _opcodeOccurrences = (cs, opcode) => _charOccurrences(unpack(cs).ops, opcode);
 
   const _mergeChangesets = (cs1, cs2) => {
     if (!cs1) return cs2;
@@ -171,14 +171,14 @@ const undoModule = (() => {
     const minusCount1 = _opcodeOccurrences(cs1, '-');
     const minusCount2 = _opcodeOccurrences(cs2, '-');
     if (plusCount1 === 1 && plusCount2 === 1 && minusCount1 === 0 && minusCount2 === 0) {
-      const merge = Changeset.compose(cs1, cs2, getAPool());
+      const merge = compose(cs1, cs2, getAPool()!);
       const plusCount3 = _opcodeOccurrences(merge, '+');
       const minusCount3 = _opcodeOccurrences(merge, '-');
       if (plusCount3 === 1 && minusCount3 === 0) {
         return merge;
       }
     } else if (plusCount1 === 0 && plusCount2 === 0 && minusCount1 === 1 && minusCount2 === 1) {
-      const merge = Changeset.compose(cs1, cs2, getAPool());
+      const merge = compose(cs1, cs2, getAPool()!);
       const plusCount3 = _opcodeOccurrences(merge, '+');
       const minusCount3 = _opcodeOccurrences(merge, '-');
       if (plusCount3 === 0 && minusCount3 === 1) {
@@ -199,7 +199,7 @@ const undoModule = (() => {
       }
     };
 
-    if ((!event.backset) || Changeset.isIdentity(event.backset)) {
+    if ((!event.backset) || isIdentity(event.backset)) {
       applySelectionToTop();
     } else {
       let merged = false;
@@ -227,7 +227,7 @@ const undoModule = (() => {
   };
 
   const reportExternalChange = (changeset) => {
-    if (changeset && !Changeset.isIdentity(changeset)) {
+    if (changeset && !isIdentity(changeset)) {
       stack.pushExternalChange(changeset);
     }
   };
