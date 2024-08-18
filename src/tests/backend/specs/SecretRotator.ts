@@ -3,7 +3,7 @@
 import {strict} from "assert";
 const common = require('../common');
 const crypto = require('../../../node/security/crypto');
-const db = require('../../../node/db/DB');
+import db from '../../../node/db/DB';
 const SecretRotator = require("../../../node/security/SecretRotator").SecretRotator;
 
 const logger = common.logger;
@@ -121,7 +121,8 @@ describe(__filename, function () {
     if (sr != null) sr.stop();
     sr = null;
     await Promise.all(
-        (await db.findKeys(`${dbPrefix}:*`, null)).map(async (dbKey: string) => await db.remove(dbKey)));
+      // @ts-ignore
+      (await db.findKeys(`${dbPrefix}:*`, null)).map(async (dbKey: string) => await db.remove(dbKey)));
   });
 
   describe('constructor', function () {
@@ -163,6 +164,7 @@ describe(__filename, function () {
       sr = newRotator();
       const fc = setFakeClock(sr);
       await sr.start();
+      // @ts-ignore
       const dbKeys = await db.findKeys(`${dbPrefix}:*`, null);
       strict.equal(dbKeys.length, 1);
       const [id] = dbKeys;
@@ -196,12 +198,14 @@ describe(__filename, function () {
       const fc = setFakeClock(sr);
       await sr.start();
       const {secrets} = sr;
+      // @ts-ignore
       const dbKeys = await db.findKeys(`${dbPrefix}:*`, null);
       sr.stop();
       sr = newRotator();
       setFakeClock(sr, fc);
       await sr.start();
       strict.deepEqual(sr.secrets, secrets);
+      // @ts-ignore
       strict.deepEqual(await db.findKeys(`${dbPrefix}:*`, null), dbKeys);
     });
 
@@ -209,6 +213,7 @@ describe(__filename, function () {
       sr = newRotator();
       const fc = setFakeClock(sr);
       await sr.start();
+      // @ts-ignore
       const [oldId] = await db.findKeys(`${dbPrefix}:*`, null);
       strict(oldId != null);
       sr.stop();
@@ -217,6 +222,7 @@ describe(__filename, function () {
       sr = newRotator();
       setFakeClock(sr, fc);
       await sr.start();
+      // @ts-ignore
       const ids = await db.findKeys(`${dbPrefix}:*`, null);
       strict.equal(ids.length, 1);
       const [newId] = ids;
@@ -229,6 +235,7 @@ describe(__filename, function () {
       await sr.start();
       const [, , future] = sr.secrets;
       sr.stop();
+      // @ts-ignore
       const [origId] = await db.findKeys(`${dbPrefix}:*`, null);
       const p = await db.get(origId);
       await fc.advance(p.end + p.lifetime + p.interval - 1);
@@ -237,6 +244,7 @@ describe(__filename, function () {
       await sr.start();
       strict(sr.secrets.slice(1).includes(future));
       // It should have created a new publication, not extended the life of the old publication.
+      // @ts-ignore
       strict.equal((await db.findKeys(`${dbPrefix}:*`, null)).length, 2);
       strict.deepEqual(await db.get(origId), p);
     });
@@ -247,10 +255,12 @@ describe(__filename, function () {
       await sr.start();
       strict.equal(fc.timeouts.size, 1);
       const secrets = [...sr.secrets];
+      // @ts-ignore
       const dbKeys = await db.findKeys(`${dbPrefix}:*`, null);
       await sr.start();
       strict.equal(fc.timeouts.size, 1);
       strict.deepEqual(sr.secrets, secrets);
+      // @ts-ignore
       strict.deepEqual(await db.findKeys(`${dbPrefix}:*`, null), dbKeys);
     });
 
@@ -335,6 +345,7 @@ describe(__filename, function () {
       await sr.start();
       strict.equal(sr.secrets.length, 4); // 1 for the legacy secret, 3 for past, current, future
       strict(sr.secrets.slice(1).includes('legacy')); // Should not be the current secret.
+      // @ts-ignore
       const ids = await db.findKeys(`${dbPrefix}:*`, null);
       const params = (await Promise.all(ids.map(async (id:string) => await db.get(id))))
           .sort((a, b) => a.algId - b.algId);
@@ -380,6 +391,7 @@ describe(__filename, function () {
       await sr.start();
       strict.equal(sr.secrets.length, 5); // s0 through s3 and the legacy secret.
       strict.deepEqual(sr.secrets, [s2, s1, s0, sr.secrets[3], 'legacy']);
+      // @ts-ignore
       const ids = await db.findKeys(`${dbPrefix}:*`, null);
       const params = (await Promise.all(ids.map(async (id:string) => await db.get(id))))
           .sort((a, b) => a.algId - b.algId);
@@ -425,6 +437,7 @@ describe(__filename, function () {
       await sr.start();
       strict.deepEqual(sr.secrets, [...new Set(sr.secrets)]);
       // There shouldn't be multiple publications for the same legacy secret.
+      // @ts-ignore
       strict.equal((await db.findKeys(`${dbPrefix}:*`, null)).length, 2);
     });
 
@@ -511,8 +524,10 @@ describe(__filename, function () {
       sr = newRotator();
       setFakeClock(sr, fc);
       await sr.start();
+      // @ts-ignore
       strict.equal((await db.findKeys(`${dbPrefix}:*`, null)).length, 2);
       await fc.advance(lifetime + (3 * origInterval));
+      // @ts-ignore
       strict.equal((await db.findKeys(`${dbPrefix}:*`, null)).length, 1);
     });
 

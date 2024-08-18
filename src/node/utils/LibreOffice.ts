@@ -23,7 +23,7 @@ const log4js = require('log4js');
 const os = require('os');
 const path = require('path');
 const runCmd = require('./run_cmd');
-const settings = require('./Settings');
+import settings from './Settings';
 
 const logger = log4js.getLogger('LibreOffice');
 

@@ -13,7 +13,7 @@ import {promises as fs} from "fs";
 const plugins = require('./plugins');
 const hooks = require('./hooks');
 const runCmd = require('../../../node/utils/run_cmd');
-const settings = require('../../../node/utils/Settings');
+import settings from '../../../node/utils/Settings';
 import {LinkInstaller} from "./LinkInstaller";
 
 const {findEtherpadRoot} = require('../../../node/utils/AbsolutePaths');

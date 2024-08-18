@@ -30,14 +30,14 @@ const AttributeManager = require('../../static/js/AttributeManager');
 const authorManager = require('../db/AuthorManager');
 import padutils from '../../static/js/pad_utils';
 const readOnlyManager = require('../db/ReadOnlyManager');
-const settings = require('../utils/Settings');
+import settings from '../utils/Settings';
 const securityManager = require('../db/SecurityManager');
 const plugins = require('../../static/js/pluginfw/plugin_defs');
 import log4js from 'log4js';
 const messageLogger = log4js.getLogger('message');
 const accessLogger = log4js.getLogger('access');
-const hooks = require('../../static/js/pluginfw/hooks');
-const stats = require('../stats')
+const hooks = require('../../static/js/pluginfw/hooks.js');
+import stats from '../stats';
 const assert = require('assert').strict;
 import {RateLimiterMemory} from 'rate-limiter-flexible';
 import {ChangesetRequest, PadUserInfo, SocketClientRequest} from "../types/SocketClientRequest";

@@ -1,6 +1,6 @@
 'use strict';
 const semver = require('semver');
-const settings = require('./Settings');
+import settings from './Settings';
 import axios from 'axios';
 const headers = {
   'User-Agent': 'Etherpad/' + settings.getEpVersion(),

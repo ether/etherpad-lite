@@ -20,8 +20,8 @@
  */
 
 
-const db = require('./DB');
-const randomString = require('../utils/randomstring');
+import db from './DB';
+import randomString from '../utils/randomstring';
 
 
 /**

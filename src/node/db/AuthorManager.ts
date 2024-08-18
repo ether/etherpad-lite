@@ -19,7 +19,7 @@
  * limitations under the License.
  */
 
-const db = require('./DB');
+import db from './DB';
 const CustomError = require('../utils/customError');
 const hooks = require('../../static/js/pluginfw/hooks');
 import padutils, {randomString} from "../../static/js/pad_utils";
@@ -131,6 +131,7 @@ const mapAuthorWithDBKey = async (mapperkey: string, mapper:string) => {
 
   // there is an author with this mapper
   // update the timestamp of this author
+  // @ts-ignore
   await db.setSub(`globalAuthor:${author}`, ['timestamp'], Date.now());
 
   // return the author
@@ -222,6 +223,7 @@ exports.getAuthor = async (author: string) => await db.get(`globalAuthor:${autho
  * Returns the color Id of the author
  * @param {String} author The id of the author
  */
+// @ts-ignore
 exports.getAuthorColorId = async (author: string) => await db.getSub(`globalAuthor:${author}`, ['colorId']);
 
 /**
@@ -230,12 +232,14 @@ exports.getAuthorColorId = async (author: string) => await db.getSub(`globalAuth
  * @param {String} colorId The color id of the author
  */
 exports.setAuthorColorId = async (author: string, colorId: string) => await db.setSub(
-    `globalAuthor:${author}`, ['colorId'], colorId);
+  // @ts-ignore
+  `globalAuthor:${author}`, ['colorId'], colorId);
 
 /**
  * Returns the name of the author
  * @param {String} author The id of the author
  */
+// @ts-ignore
 exports.getAuthorName = async (author: string) => await db.getSub(`globalAuthor:${author}`, ['name']);
 
 /**
@@ -244,7 +248,8 @@ exports.getAuthorName = async (author: string) => await db.getSub(`globalAuthor:
  * @param {String} name The name of the author
  */
 exports.setAuthorName = async (author: string, name: string) => await db.setSub(
-    `globalAuthor:${author}`, ['name'], name);
+  // @ts-ignore
+  `globalAuthor:${author}`, ['name'], name);
 
 /**
  * Returns an array of all pads this author contributed to
