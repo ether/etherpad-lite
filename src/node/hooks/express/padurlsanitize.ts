@@ -6,7 +6,7 @@ const padManager = require('../../db/PadManager');
 
 exports.expressCreateServer = (hookName:string, args:ArgsExpressType, cb:Function) => {
   // redirects browser to the pad's sanitized url if needed. otherwise, renders the html
-  args.app.param('pad', (req:any, res:any, next:Function, padId:string) => {
+  /*args.app.param('pad', (req:any, res:any, next:Function, padId:string) => {
     (async () => {
       // ensure the padname is valid and the url doesn't end with a /
       if (!padManager.isValidPadId(padId) || /\/$/.test(req.url)) {
@@ -27,6 +27,6 @@ exports.expressCreateServer = (hookName:string, args:ArgsExpressType, cb:Functio
         res.status(302).send(`You should be redirected to <a href="${realURL}">${realURL}</a>`);
       }
     })().catch((err) => next(err || new Error(err)));
-  });
+  });*/
   return cb();
 };

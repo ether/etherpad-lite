@@ -218,6 +218,9 @@ importers:
       mime-types:
         specifier: ^2.1.35
         version: 2.1.35
+      nanoexpress:
+        specifier: ^6.4.4
+        version: 6.4.4
       oidc-provider:
         specifier: ^8.5.1
         version: 8.5.1
@@ -548,6 +551,12 @@ packages:
   '@babel/types@7.24.7':
     resolution: {integrity: sha512-XEFXSlxiG5td2EJRe8vOmRbaXVgfcBlszKujvVmWIK/UpywWljQCfzAv3RQCGujWQ1RD4YYWEAqDXfuJiy8f5Q==}
     engines: {node: '>=6.9.0'}
+
+  '@dalisoft/args@0.1.1':
+    resolution: {integrity: sha512-PwmLEhnTyK6+AUwD0oqS57nLs1vpB17vEDlMc1i27zH8mrtFJmBmYfQv4FszoUHDHv3PtFk8M0X9yWxry2TSwA==}
+
+  '@dalisoft/events@0.2.0':
+    resolution: {integrity: sha512-2NS/0vS9eL8ZxhgCVZQgPS4uoqbcSk9FN3G8Eqakcej7wOpH72z1kmDEDGI5T+MOp9IueKT2qI0XUdXhKeK9GA==}
 
   '@docsearch/css@3.6.0':
     resolution: {integrity: sha512-+sbxb71sWre+PwDK7X2T8+bhS6clcVMLwBPznX45Qu6opJcgRjAp7gYSDzVFp187J+feSj5dNBN1mJoi6ckkUQ==}
@@ -2646,6 +2655,9 @@ packages:
   extend@3.0.2:
     resolution: {integrity: sha512-fjquC59cD7CyW6urNXK0FBufkZcoiGG80wTuPujX590cB5Ttln20E2UB4S/WARVqhXffZl2LNgS+gQdPIIim/g==}
 
+  fast-decode-uri-component@1.0.1:
+    resolution: {integrity: sha512-WKgKWg5eUxvRZGwW8FvfbaH7AXSh2cL+3j5fMGzUMCxWBJ3dV3a7Wz8y2f/uQ0e3B6WmodD3oS54jTQ9HVTIIg==}
+
   fast-deep-equal@3.1.3:
     resolution: {integrity: sha512-f3qQ9oQy9j2AhBe/H9VC91wLmKBCCU/gDOnKNAYG5hswO7BLKj09Hc5HYNz9cGI++xlpDCIgDaitVs03ATR84Q==}
 
@@ -2658,6 +2670,9 @@ packages:
 
   fast-levenshtein@2.0.6:
     resolution: {integrity: sha512-DCXu6Ifhqcks7TZKY3Hxp3y6qphY5SJZmrWMDrKcERSOXWQdMhU9Ig/PYrzyw/ul9jOIyh0N4M0tbC5hodg8dw==}
+
+  fast-query-parse@3.0.0:
+    resolution: {integrity: sha512-u4vMOOKVZalfh0JygVJQLE1POZrgdKtptmNHt6CVRCVSClNIP7T1yjI/EyT+YlVJTb1PsnVWKMjDzbsTRtPm6Q==}
 
   fast-safe-stringify@2.1.1:
     resolution: {integrity: sha512-W+KJc2dmILlPplD/H4K9l9LcAHAfPtP6BY84uVLXQ6Evcz9Lcg33Y2z1IVblT6xdY54PXYVHEv+0Wpq8Io6zkA==}
@@ -3505,6 +3520,10 @@ packages:
   ms@2.1.3:
     resolution: {integrity: sha512-6FlzubTLZG3J2a/NVCAleEhjzq5oxgHyaCU9yYXvcLsvoVaHJq/s5xXI6/XXP6tz7R9xAOtHnSO/tXtF3WRTlA==}
 
+  nanoexpress@6.4.4:
+    resolution: {integrity: sha512-yyGHOl9koJf7C/a6Ojs6boKaZyrTneCG76vL+/SqDC1uRn9f/h6LL84PbVT22rX1SVQ5NB8v7mfoRrjbUPWpyQ==}
+    engines: {node: '>=18.20.4'}
+
   nanoid@3.3.7:
     resolution: {integrity: sha512-eSRppjcPIatRIMC1U6UngP8XFcz8MQWGQdt1MTBQ7NaAmvXDfvNxbvWV3x2y6CdEUciCSsDHDQZbhYaB8QEo2g==}
     engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
@@ -4306,6 +4325,10 @@ packages:
     engines: {node: '>=14.17'}
     hasBin: true
 
+  uWebSockets.js@https://codeload.github.com/uNetworking/uWebSockets.js/tar.gz/6f4b450fc642abba540535f0755c990b42a16026:
+    resolution: {tarball: https://codeload.github.com/uNetworking/uWebSockets.js/tar.gz/6f4b450fc642abba540535f0755c990b42a16026}
+    version: 20.47.0
+
   ueberdb2@4.2.93:
     resolution: {integrity: sha512-inWXazVuEJc33aRBm6kCT8/ymgSvHcXbakKf4nxVf8Wp86Le0cQd3URn3cCUhxRV05qP14kDdvAQho9LUiXWwg==}
     engines: {node: '>=16.20.1'}
@@ -4926,6 +4949,12 @@ snapshots:
       '@babel/helper-string-parser': 7.24.7
       '@babel/helper-validator-identifier': 7.24.7
       to-fast-properties: 2.0.0
+
+  '@dalisoft/args@0.1.1': {}
+
+  '@dalisoft/events@0.2.0':
+    dependencies:
+      '@dalisoft/args': 0.1.1
 
   '@docsearch/css@3.6.0': {}
 
@@ -7137,6 +7166,8 @@ snapshots:
 
   extend@3.0.2: {}
 
+  fast-decode-uri-component@1.0.1: {}
+
   fast-deep-equal@3.1.3: {}
 
   fast-glob@3.3.2:
@@ -7150,6 +7181,10 @@ snapshots:
   fast-json-stable-stringify@2.1.0: {}
 
   fast-levenshtein@2.0.6: {}
+
+  fast-query-parse@3.0.0:
+    dependencies:
+      fast-decode-uri-component: 1.0.1
 
   fast-safe-stringify@2.1.1: {}
 
@@ -8102,6 +8137,14 @@ snapshots:
 
   ms@2.1.3: {}
 
+  nanoexpress@6.4.4:
+    dependencies:
+      '@dalisoft/events': 0.2.0
+      ajv: 8.17.1
+      cookie: 0.6.0
+      fast-query-parse: 3.0.0
+      uWebSockets.js: https://codeload.github.com/uNetworking/uWebSockets.js/tar.gz/6f4b450fc642abba540535f0755c990b42a16026
+
   nanoid@3.3.7: {}
 
   nanoid@5.0.7: {}
@@ -9008,6 +9051,8 @@ snapshots:
       possible-typed-array-names: 1.0.0
 
   typescript@5.5.4: {}
+
+  uWebSockets.js@https://codeload.github.com/uNetworking/uWebSockets.js/tar.gz/6f4b450fc642abba540535f0755c990b42a16026: {}
 
   ueberdb2@4.2.93: {}
 

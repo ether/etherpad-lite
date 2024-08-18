@@ -18,6 +18,7 @@ const settings = require('../utils/Settings');
 const stats = require('../stats')
 import util from 'util';
 const webaccess = require('./express/webaccess');
+import nanoexpress from 'nanoexpress';
 
 import SecretRotator from '../security/SecretRotator';
 
@@ -100,7 +101,7 @@ exports.createServer = async () => {
 exports.restartServer = async () => {
   await closeServer();
 
-  const app = express(); // New syntax for express v3
+  const app = nanoexpress(); // New syntax for express v3
 
   if (settings.ssl) {
     console.log('SSL -- enabled');

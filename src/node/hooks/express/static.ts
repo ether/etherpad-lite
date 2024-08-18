@@ -34,7 +34,7 @@ exports.expressPreSession = async (hookName:string, {app}:any) => {
 
   // Minify will serve static files compressed (minify enabled). It also has
   // file-specific hacks for ace/require-kernel/etc.
-  app.all('/static/:filename(*)', minify);
+  app.get('/static/:filename(*)', minify);
 
   // serve plugin definitions
   // not very static, but served here so that client can do
