@@ -35,7 +35,7 @@ $._farbtastic = function (container, options) {
   fb.linkTo = function (callback) {
     // Unbind previous nodes
     if (typeof fb.callback == 'object') {
-      $(fb.callback).off('keyup').on('keyup', fb.updateValue);
+      $(document.body).find(fb.callback).off('keyup').on('keyup', fb.updateValue);
     }
 
     // Reset color
@@ -46,7 +46,7 @@ $._farbtastic = function (container, options) {
       fb.callback = callback;
     }
     else if (typeof callback == 'object' || typeof callback == 'string') {
-      fb.callback = $(callback);
+      fb.callback = $(document.body).find(callback);
       fb.callback.on('keyup', fb.updateValue);
       if (fb.callback[0].value) {
         fb.setColor(fb.callback[0].value);
@@ -357,13 +357,14 @@ $._farbtastic = function (container, options) {
     // Linked elements or callback
     if (typeof fb.callback == 'object') {
       // Set background/foreground color
-      $(fb.callback).css({
+      $(document.body).find(fb.callback).css({
         backgroundColor: fb.color,
         color: fb.invert ? '#fff' : '#000'
       });
 
+
       // Change linked value
-      $(fb.callback).each(function() {
+      $(document.body).find(fb.callback).each(function() {
         if ((typeof this.value == 'string') && this.value != fb.color) {
           this.value = fb.color;
         }
