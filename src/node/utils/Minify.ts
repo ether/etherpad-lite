@@ -146,7 +146,8 @@ const compatPaths = {
  * @param res the Express response
  */
 const _minify = async (req:any, res:any) => {
-  let filename = req.params.filename;
+
+  let filename = req.path.split('/static/')[1]
   try {
     filename = sanitizePathname(filename);
   } catch (err) {
@@ -211,23 +212,26 @@ const _minify = async (req:any, res:any) => {
   }
 
   if (!exists) {
-    res.writeHead(404, {});
+    res.status(404)
+    //res.writeHead(404, {});
     res.end();
   } else if (new Date(req.headers['if-modified-since']) >= date) {
-    res.writeHead(304, {});
+    res.status(304)
     res.end();
   } else if (req.method === 'HEAD') {
     res.header('Content-Type', contentType);
-    res.writeHead(200, {});
+    res.status(200)
     res.end();
   } else if (req.method === 'GET') {
     const content = await getFileCompressed(filename, contentType as string);
     res.header('Content-Type', contentType);
-    res.writeHead(200, {});
+    res.status(200)
+    //res.writeHead(200, {});
     res.write(content);
     res.end();
   } else {
-    res.writeHead(405, {allow: 'HEAD, GET'});
+    //res.writeHead(405, {allow: 'HEAD, GET'});
+    res.status(405)
     res.end();
   }
 };

@@ -25,7 +25,7 @@ exports.expressCreateServer = (hookName:string, args:ArgsExpressType, cb:Functio
   });
 
   // handle export requests
-  args.app.use('/p/:pad/:rev?/export/:type', limiter);
+  args.app.use('/p/pad/rev/export/type', limiter);
   args.app.get('/p/:pad/:rev?/export/:type', (req:any, res:any, next:Function) => {
     (async () => {
       const types = ['pdf', 'doc', 'txt', 'html', 'odt', 'etherpad'];
@@ -71,7 +71,7 @@ exports.expressCreateServer = (hookName:string, args:ArgsExpressType, cb:Functio
   });
 
   // handle import requests
-  args.app.use('/p/:pad/import', limiter);
+  args.app.use('/p/pad/import', limiter);
   args.app.post('/p/:pad/import', (req:any, res:any, next:Function) => {
     (async () => {
       // @ts-ignore

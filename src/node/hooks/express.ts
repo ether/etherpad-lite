@@ -18,7 +18,7 @@ const settings = require('../utils/Settings');
 const stats = require('../stats')
 import util from 'util';
 const webaccess = require('./express/webaccess');
-import nanoexpress from 'nanoexpress';
+import HyperExpress from 'hyper-express';
 
 import SecretRotator from '../security/SecretRotator';
 
@@ -101,7 +101,7 @@ exports.createServer = async () => {
 exports.restartServer = async () => {
   await closeServer();
 
-  const app = nanoexpress(); // New syntax for express v3
+  const app = new HyperExpress.Server(); // New syntax for express v3
 
   if (settings.ssl) {
     console.log('SSL -- enabled');
@@ -252,7 +252,10 @@ exports.restartServer = async () => {
       socketsEvents.emit('updated');
     });
   });
-  await util.promisify(exports.server.listen).bind(exports.server)(settings.port, settings.ip);
+  app.listen(settings.port, settings.ip, ()=>{
+    console.log("running")
+  })
+  //await util.promisify(exports.server.listen).bind(exports.server)(settings.port, settings.ip);
   startTime.setValue(Date.now());
   logger.info('HTTP server listening for connections');
 };

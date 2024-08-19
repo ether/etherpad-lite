@@ -121,14 +121,10 @@ const handleLiveReload = async (args: any, padString: string, timeSliderString: 
   };
   args.app.use((req: any, res: any, next: Function) => {
     if (req.path.startsWith('/p/') && req.path.split('/').length == 3) {
-      req.params = {
-        pad: req.path.split('/')[2]
-      }
+      req.padId = req.path.split('/')[2]
       routeHandlers['/p/:pad'](req, res);
     } else if (req.path.startsWith('/p/') && req.path.split('/').length == 4) {
-      req.params = {
-        pad: req.path.split('/')[2]
-      }
+      req.padId = req.path.split('/')[2]
       routeHandlers['/p/:pad/timeslider'](req, res);
     } else if (req.path == "/"){
       routeHandlers['/'](req, res);
@@ -163,7 +159,7 @@ const handleLiveReload = async (args: any, padString: string, timeSliderString: 
 
       setRouteHandler("/p/:pad", (req: any, res: any, next: Function) => {
         // The below might break for pads being rewritten
-        const isReadOnly = !webaccess.userCanModify(req.params.pad, req);
+        const isReadOnly = !webaccess.userCanModify(req.padId, req);
 
         hooks.callAll('padInitToolbar', {
           toolbar,
@@ -192,7 +188,7 @@ const handleLiveReload = async (args: any, padString: string, timeSliderString: 
       setRouteHandler("/p/:pad/timeslider", (req: any, res: any, next: Function) => {
         console.log("Reloading pad")
         // The below might break for pads being rewritten
-        const isReadOnly = !webaccess.userCanModify(req.params.pad, req);
+        const isReadOnly = !webaccess.userCanModify(req.padId, req);
 
         hooks.callAll('padInitToolbar', {
           toolbar,
@@ -331,7 +327,7 @@ exports.expressCreateServer = async (hookName: string, args: any, cb: Function) 
     // serve pad.html under /p
     args.app.get('/p/:pad', (req: any, res: any, next: Function) => {
       // The below might break for pads being rewritten
-      const isReadOnly = !webaccess.userCanModify(req.params.pad, req);
+      const isReadOnly = !webaccess.userCanModify(req.padId, req);
 
       hooks.callAll('padInitToolbar', {
         toolbar,
