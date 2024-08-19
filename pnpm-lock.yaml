@@ -144,7 +144,7 @@ importers:
   src:
     dependencies:
       '@etherpad/express-session':
-        specifier: ^1.18.4
+        specifier: 1.18.4
         version: 1.18.4
       async:
         specifier: ^3.2.5

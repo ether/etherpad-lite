@@ -17,6 +17,7 @@ import {Http2Server} from "node:http2";
 import {SignJWT} from "jose";
 import {privateKeyExported} from "../../node/security/OAuth2Provider";
 const webaccess = require('../../node/hooks/express/webaccess');
+import crypto from 'crypto';
 
 const backups:MapArrayType<any> = {};
 let agentPromise:Promise<any>|null = null;
@@ -74,16 +75,22 @@ export const init = async function () {
                 'To enable non-test logging, change the loglevel setting to DEBUG.');
   }
 
+  const generateRandomPort = () => {
+    const minPort = 1024;
+    const maxPort = 65535;
+    return crypto.randomInt(minPort, maxPort + 1);
+  };
+
   // Note: This is only a shallow backup.
   backups.settings = Object.assign({}, settings);
   // Start the Etherpad server on a random unused port.
-  settings.port = 0;
+  settings.port = generateRandomPort();
   settings.ip = 'localhost';
   settings.importExportRateLimiting = {max: 999999};
   settings.commitRateLimiting = {duration: 0.001, points: 1e6};
   httpServer = await server.start();
   // @ts-ignore
-  baseUrl = `http://localhost:${httpServer!.address()!.port}`;
+  baseUrl = `http://localhost:${settings.port}`;
   logger.debug(`HTTP server at ${baseUrl}`);
   // Create a supertest user agent for the HTTP server.
   agent = supertest(baseUrl)
