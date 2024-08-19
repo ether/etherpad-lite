@@ -30,10 +30,12 @@
     "remove-plugins": "pnpm --filter bin run remove-plugins",
     "list-plugins": "pnpm --filter bin run list-plugins",
     "build:etherpad": "pnpm --filter admin run build-copy && pnpm --filter ui run build-copy",
-    "build:ui": "pnpm --filter ui run build-copy && pnpm --filter admin run build-copy"
+    "build:ui": "pnpm --filter ui run build-copy && pnpm --filter admin run build-copy",
+    "postinstall": "node ./postinstall.js"
   },
   "dependencies": {
-    "ep_etherpad-lite": "workspace:./src"
+    "ep_etherpad-lite": "workspace:./src",
+    "cross-env": "^7.0.3"
   },
   "devDependencies": {
     "admin": "workspace:./admin",

@@ -147,7 +147,7 @@ const compatPaths = {
  */
 const _minify = async (req:any, res:any) => {
 
-  let filename = req.path.split('/static/')[1]
+  let filename = req.path.replace('/static/', '');
   try {
     filename = sanitizePathname(filename);
   } catch (err) {

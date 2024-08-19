@@ -6,8 +6,9 @@ import * as url from "node:url";
 import {MapArrayType} from "../../types/MapType";
 
 const settings = require('ep_etherpad-lite/node/utils/Settings');
+import LiveDirectory from "live-directory";
 
-const ADMIN_PATH = path.join(settings.root, 'src', 'templates');
+const ADMIN_PATH = path.join(settings.root, 'src', 'templates', 'admin');
 const PROXY_HEADER = "x-proxy-path"
 /**
  * Add the admin navigation link
@@ -22,63 +23,28 @@ exports.expressCreateServer = (hookName: string, args: ArgsExpressType, cb: Func
     console.error('admin template not found, skipping admin interface. You need to rebuild it in /admin with pnpm run build-copy')
     return cb();
   }
-  args.app.get('/admin/*', (req: any, res: any) => {
-    // parse URL
-    const parsedUrl = url.parse(req.url);
-    // extract URL path
-    let pathname = ADMIN_PATH + `${parsedUrl.pathname}`;
-    // based on the URL path, extract the file extension. e.g. .js, .doc, ...
-    let ext = path.parse(pathname).ext;
-    // maps file extension to MIME typere
-    const map: MapArrayType<string> = {
-      '.ico': 'image/x-icon',
-      '.html': 'text/html',
-      '.js': 'text/javascript',
-      '.json': 'application/json',
-      '.css': 'text/css',
-      '.png': 'image/png',
-      '.jpg': 'image/jpeg',
-      '.wav': 'audio/wav',
-      '.mp3': 'audio/mpeg',
-      '.svg': 'image/svg+xml',
-      '.pdf': 'application/pdf',
-      '.doc': 'application/msword'
-    };
 
-    fs.exists(pathname, function (exist) {
-      if (!exist) {
-        // if the file is not found, return 404
-        res.statusCode = 200;
-        pathname = ADMIN_PATH + "/admin/index.html"
-        ext = path.parse(pathname).ext;
-      }
+  const livedir = new LiveDirectory(ADMIN_PATH)
 
-      // if is a directory search for index file matching the extension
-      if (fs.statSync(pathname).isDirectory()) {
-        pathname = pathname + '/index.html';
-        ext = path.parse(pathname).ext;
-      }
 
-      // read file from file system
-      fs.readFile(pathname, function (err, data) {
-        if (err) {
-          res.statusCode = 500;
-          res.end(`Error getting the file: ${err}.`);
-        } else {
-          let dataToSend:Buffer|string = data
-          // if the file is found, set Content-type and send data
-          res.setHeader('Content-type', map[ext] || 'text/plain');
-          if (ext === ".html" || ext === ".js" || ext === ".css") {
-            if (req.header(PROXY_HEADER)) {
-              let string = data.toString()
-              dataToSend = string.replaceAll("/admin", req.header(PROXY_HEADER) + "/admin")
-              dataToSend = dataToSend.replaceAll("/socket.io", req.header(PROXY_HEADER) + "/socket.io")
-            }
-          }
-          res.end(dataToSend);
-        }
-      });
-    })
+  args.app.get('/admin/*', (req, res) => {
+    const path = req.path.replace('/admin', '');
+    const file = livedir.get(path)||livedir.get('/index.html');
+
+    // Return a 404 if no asset/file exists on the derived path
+    if (file === undefined) return res.status(404).send();
+
+    const fileParts = file.path.split(".");
+    const ext = fileParts[fileParts.length - 1];
+    // Retrieve the file content and serve it depending on the type of content available for this file
+    const content = file.content;
+    if (content instanceof Buffer) {
+      // Set appropriate mime-type and serve file content Buffer as response body (This means that the file content was cached in memory)
+      return res.type(ext).send(content);
+    } else {
+      // Set the type and stream the content as the response body (This means that the file content was NOT cached in memory)
+      return res.type(ext).stream(content);
+    }
   });
   args.app.get('/admin', (req: any, res: any, next: Function) => {
     if ('/' !== req.path[req.path.length - 1]) return res.redirect('./admin/');

@@ -152,10 +152,11 @@ const Ace2Editor = function () {
   this.prepareUserChangeset = () => loaded ? info.ace_prepareUserChangeset() : null;
 
   const addStyleTagsFor = (doc, files) => {
-    for (const file of files) {
+    for (let file of files) {
       const link = doc.createElement('link');
       link.rel = 'stylesheet';
       link.type = 'text/css';
+      file = file.replaceAll('//', '/')
       link.href = absUrl(encodeURI(file));
       doc.head.appendChild(link);
     }

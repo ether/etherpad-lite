@@ -7,7 +7,6 @@ import _ from 'underscore';
 // @ts-ignore
 import cookieParser from 'cookie-parser';
 import events from 'events';
-import express from 'express';
 // @ts-ignore
 import expressSession from '@etherpad/express-session';
 import fs from 'fs';
