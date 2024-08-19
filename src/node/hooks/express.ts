@@ -18,9 +18,10 @@ const settings = require('../utils/Settings');
 const stats = require('../stats')
 import util from 'util';
 const webaccess = require('./express/webaccess');
-import HyperExpress from 'hyper-express';
+import HyperExpress, {ServerConstructorOptions} from 'hyper-express';
 
 import SecretRotator from '../security/SecretRotator';
+import {Server} from "hyper-express/types/components/Server";
 
 let secretRotator: SecretRotator|null = null;
 const logger = log4js.getLogger('http');
@@ -31,6 +32,7 @@ const socketsEvents = new events.EventEmitter();
 const startTime = stats.settableGauge('httpStartTime');
 
 exports.server = null;
+let appInstance: Server|null = null;
 
 const closeServer = async () => {
   if (exports.server != null) {
@@ -55,8 +57,10 @@ const closeServer = async () => {
       await events.once(socketsEvents, 'updated');
     }
     await p;
+    appInstance!.close()
     clearTimeout(timeout);
     exports.server = null;
+    appInstance = null
     startTime.setValue(0);
     logger.info('HTTP server closed');
   }
@@ -100,13 +104,20 @@ exports.createServer = async () => {
 
 exports.restartServer = async () => {
   await closeServer();
+  const opts: ServerConstructorOptions = {
+    auto_close: true
 
-  const app = new HyperExpress.Server(); // New syntax for express v3
+  }
+  let app: Server
 
   if (settings.ssl) {
     console.log('SSL -- enabled');
     console.log(`SSL -- server key file: ${settings.ssl.key}`);
     console.log(`SSL -- Certificate Authority's certificate file: ${settings.ssl.cert}`);
+
+
+    opts.cert_file_name = settings.ssl.cert
+    opts.key_file_name = settings.ssl.key
 
     const options: MapArrayType<any> = {
       key: fs.readFileSync(settings.ssl.key),
@@ -120,13 +131,15 @@ exports.restartServer = async () => {
         options.ca.push(fs.readFileSync(caFileName));
       }
     }
-
+    app =  new HyperExpress.Server(opts); // New syntax for express v3
     const https = require('https');
     exports.server = https.createServer(options, app);
   } else {
+    app =  new HyperExpress.Server(opts); // New syntax for express v3
     const http = require('http');
     exports.server = http.createServer(app);
   }
+  exports.appInstance = app
 
   app.use((req, res, next) => {
     // res.header("X-Frame-Options", "deny"); // breaks embedded pads
@@ -163,7 +176,7 @@ exports.restartServer = async () => {
      *
      * Source: https://expressjs.com/en/guide/behind-proxies.html
      */
-    app.enable('trust proxy');
+    opts.trust_proxy = true
   }
 
   // Measure response time

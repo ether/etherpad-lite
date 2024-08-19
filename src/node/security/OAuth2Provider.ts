@@ -10,6 +10,7 @@ import {format} from 'url'
 import {ParsedUrlQuery} from "node:querystring";
 import {Http2ServerRequest, Http2ServerResponse} from "node:http2";
 import {MapArrayType} from "../types/MapType";
+import LiveDirectory from "live-directory";
 
 const configuration: Configuration = {
     scopes: ['openid', 'profile', 'email'],
@@ -153,12 +154,13 @@ export const expressCreateServer = async (hookName: string, args: ArgsExpressTyp
     });
 
 
-    args.app.post('/interaction/:uid', async (req: Http2ServerRequest, res: Http2ServerResponse, next:Function) => {
+    args.app.post('/interaction/:uid', async (req, res, next) => {
         const formid = new IncomingForm();
         try {
             // @ts-ignore
             const {login, password} = (await formid.parse(req))[0]
-            const {prompt, jti, session,cid, params, grantId} = await oidc.interactionDetails(req, res);
+            // @ts-ignore
+          const {prompt, jti, session,cid, params, grantId} = await oidc.interactionDetails(req, res);
 
             const client = await oidc.Client.find(params.client_id as string);
 
@@ -181,7 +183,8 @@ export const expressCreateServer = async (hookName: string, args: ArgsExpressTyp
                     }
 
                     if (account) {
-                        await oidc.interactionFinished(req, res, {
+                        // @ts-ignore
+                      await oidc.interactionFinished(req, res, {
                             login: {accountId: account.username}
                         }, {mergeWithLastSubmission: false});
                     }
@@ -213,24 +216,26 @@ export const expressCreateServer = async (hookName: string, args: ArgsExpressTyp
                         }
                     }
                     const result = {consent: {grantId: await grant!.save()}};
-                    await oidc.interactionFinished(req, res, result, {
+                    // @ts-ignore
+                  await oidc.interactionFinished(req, res, result, {
                         mergeWithLastSubmission: true,
                     });
                     break;
                 }
             }
-            await next();
+          next();
         } catch (err:any) {
-            return res.writeHead(500).end(err.message);
+            return res.status(500).end(err.message);
         }
     })
 
 
-    args.app.get('/interaction/:uid', async (req: Request, res: Response, next: Function) => {
+    args.app.get('/interaction/:uid', async (req, res, next) => {
         try {
-            const {
+          const {
                 uid, prompt, params, session,
-            } = await oidc.interactionDetails(req, res);
+            // @ts-ignore
+          } = await oidc.interactionDetails(req, res);
 
             params["state"] = uid
 
@@ -253,12 +258,35 @@ export const expressCreateServer = async (hookName: string, args: ArgsExpressTyp
                     return res.sendFile(path.join(settings.root,'src','static', 'oidc','login.html'));
             }
         } catch (err) {
-            return next(err);
+            throw new Error("Invalid name");
         }
     });
 
+  const LiveAssets = new LiveDirectory(path.join(settings.root,'src','static', 'oidc'), {
+  })
 
-    args.app.use('/views/', express.static(path.join(settings.root,'src','static', 'oidc'), {maxAge: 1000 * 60 * 60 * 24}));
+    args.app.get('/views/*', (request, response)=>{
+      // Strip away '/assets' from the request path to get asset relative path
+      // Lookup LiveFile instance from our LiveDirectory instance.
+      const path = request.path.replace('/views', '');
+      const file = LiveAssets.get(path);
+
+      // Return a 404 if no asset/file exists on the derived path
+      if (file === undefined) return response.status(404).send();
+
+      const fileParts = file.path.split(".");
+      const extension = fileParts[fileParts.length - 1];
+
+      // Retrieve the file content and serve it depending on the type of content available for this file
+      const content = file.content;
+      if (content instanceof Buffer) {
+        // Set appropriate mime-type and serve file content Buffer as response body (This means that the file content was cached in memory)
+        return response.type(extension).send(content);
+      } else {
+        // Set the type and stream the content as the response body (This means that the file content was NOT cached in memory)
+        return response.type(extension).stream(content);
+      }
+    });
 
 
     oidc.on('authorization.error', (ctx, error) => {
@@ -277,6 +305,7 @@ export const expressCreateServer = async (hookName: string, args: ArgsExpressTyp
     oidc.on('revocation.error', (ctx, error) => {
         console.log('revocation.error', error);
     })
-    args.app.use("/oidc", oidc.callback());
+    // @ts-ignore
+  args.app.use("/oidc", oidc.callback());
     //cb();
 }

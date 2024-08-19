@@ -6,17 +6,16 @@ import {ErrorCaused} from "../../types/ErrorCaused";
 const stats = require('../../stats')
 
 exports.expressCreateServer = (hook_name:string, args: ArgsExpressType, cb:Function) => {
-  exports.app = args.app;
-
   // Handle errors
-  /*args.app.use((req:any, res:any, next:Function) => {
+  args.app.set_error_handler((req, res, error)=>{
     // if an error occurs Connect will pass it down
     // through these "error-handling" middleware
     // allowing you to respond however you like
-    res.status(500).send({error: 'Sorry, something bad happened!'});
-    console.error(err.stack ? err.stack : err.toString());
+    res.status(500).json({error: 'Sorry, something bad happened!'});
+    console.error(error.stack ? error.stack : error.toString());
     stats.meter('http500').mark();
-  });*/
+  })
+
 
   return cb();
 };
