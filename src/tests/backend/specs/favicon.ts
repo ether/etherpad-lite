@@ -36,10 +36,8 @@ describe(__filename, function () {
     delete settings.skinName;
     Object.assign(settings, backupSettings);
     try {
-      // TODO: The {recursive: true} option wasn't added to fsp.rmdir() until Node.js v12.10.0 so we
-      // can't rely on it until support for Node.js v10 is dropped.
       await fsp.unlink(path.join(skinDir, 'favicon.ico'));
-      await fsp.rmdir(skinDir, {recursive: true});
+      await fsp.rm(skinDir, {recursive: true});
     } catch (err) { /* intentionally ignored */ }
   });
 
