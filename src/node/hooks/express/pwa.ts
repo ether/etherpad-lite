@@ -24,8 +24,8 @@ const pwa = {
 }
 
 exports.expressCreateServer = (hookName:string, args:ArgsExpressType, cb:Function) => {
-  args.app.get('/manifest.json', (req:any, res:any) => {
-    res.json(pwa);
+  args.app.get('/manifest.json', (req, res) => {
+    return res.json(pwa);
   });
 
   return cb();

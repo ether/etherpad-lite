@@ -16,6 +16,7 @@ import {Attribute} from "./types/Attribute";
 import AttributePool from "./AttributePool";
 import {opsFromText, pack} from "./Changeset";
 
+
 /**
  * @param {number} oldLen - Old length
  * @returns {Builder}

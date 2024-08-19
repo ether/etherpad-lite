@@ -251,6 +251,7 @@ exports.exit = async (err: ErrorCaused|string|null = null) => {
   } else if (typeof err == "object" && err != null) {
     logger.error(`Metrics at time of fatal error:\n${JSON.stringify(stats.toJSON(), null, 2)}`);
     logger.error(err.stack || err.toString());
+    console.trace();
     process.exitCode = 1;
     if (exitCalled) {
       logger.error('Error occurred while waiting to exit. Forcing an immediate unclean exit...');

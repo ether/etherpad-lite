@@ -76,7 +76,7 @@ export const expressCreateServer = (hookName:string, args:ArgsExpressType, cb:Fu
     maxHttpBufferSize: settings.socketIo.maxHttpBufferSize,
   })
 
-  io.attachApp(args.app)
+  io.attachApp(args.app.uws_instance)
 
 
   const handleConnection = (socket:Socket) => {

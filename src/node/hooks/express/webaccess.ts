@@ -72,8 +72,10 @@ const checkAccess = async (req:any, res:any, next: Function) => {
         (r) => (skip || (r != null && r.filter((x) => (!requireAdmin || !x)).length > 0))) as boolean[];
   } catch (err:any) {
     httpLogger.error(`Error in preAuthorize hook: ${err.stack || err.toString()}`);
-    if (!skip) res.status(500).send('Internal Server Error');
-    return;
+    if (!skip) {
+      res.status(500).send('Internal Server Error');
+      return;
+    }
   }
   if (skip) return;
   if (requireAdmin) {
@@ -189,7 +191,7 @@ const checkAccess = async (req:any, res:any, next: Function) => {
   }
   if (req.session.user == null) {
     httpLogger.error('authenticate hook failed to add user settings to session');
-    return res.status(500).send('Internal Server Error');
+    throw new Error('authenticate hook failed to add user settings to session')
   }
   const {username = '<no username>'} = req.session.user;
   httpLogger.info(`Successful authentication from IP ${req.ip} for user ${username}`);
@@ -211,6 +213,7 @@ const checkAccess = async (req:any, res:any, next: Function) => {
   if (await aCallFirst0('authFailure', {req, res, next})) return;
   // No plugin handled the authorization failure.
   res.status(403).send('Forbidden');
+  return
 };
 
 /**
@@ -218,5 +221,5 @@ const checkAccess = async (req:any, res:any, next: Function) => {
  * express-session middleware.
  */
 exports.checkAccess = (req:any, res:any, next:Function) => {
-  checkAccess(req, res, next).catch((err) => next(err || new Error(err)));
+  checkAccess(req, res, next);
 };

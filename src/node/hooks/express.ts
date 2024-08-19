@@ -140,6 +140,27 @@ exports.restartServer = async () => {
   }
   exports.appInstance = app
 
+
+
+  // Measure response time
+  app.use((_, res, next) => {
+    const stopWatch = stats.timer('httpRequests').start();
+    const sendFn = res.send.bind(res);
+    res.send = (...args) => {   stopWatch.end(); return sendFn(...args); };
+    next();
+  });
+
+  // If the log level specified in the config file is WARN or ERROR the application server never
+  // starts listening to requests as reported in issue #158. Not installing the log4js connect
+  // logger when the log level has a higher severity than INFO since it would not log at that level
+  // anyway.
+  if (!(settings.loglevel === 'WARN' && settings.loglevel === 'ERROR')) {
+    app.use((request, _, next)=>{
+      console.debug(`${request.method} ${request.url}`);
+      next()
+    });
+  }
+
   app.use((req, res, next) => {
     // res.header("X-Frame-Options", "deny"); // breaks embedded pads
     if (settings.ssl) {
@@ -178,24 +199,7 @@ exports.restartServer = async () => {
     opts.trust_proxy = true
   }
 
-  // Measure response time
-  app.use((req, res, next) => {
-    const stopWatch = stats.timer('httpRequests').start();
-    const sendFn = res.send.bind(res);
-    res.send = (...args) => {   stopWatch.end(); return sendFn(...args); };
-    next();
-  });
 
-  // If the log level specified in the config file is WARN or ERROR the application server never
-  // starts listening to requests as reported in issue #158. Not installing the log4js connect
-  // logger when the log level has a higher severity than INFO since it would not log at that level
-  // anyway.
-  if (!(settings.loglevel === 'WARN' && settings.loglevel === 'ERROR')) {
-    app.use(log4js.connectLogger(logger, {
-      level: log4js.levels.DEBUG.levelStr,
-      format: ':status, :method :url',
-    }));
-  }
 
   const {keyRotationInterval, sessionLifetime} = settings.cookie;
   let secret = settings.sessionKey;

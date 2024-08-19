@@ -12,6 +12,8 @@ const webaccess = require('./webaccess');
 const plugins = require('../../../static/js/pluginfw/plugin_defs');
 
 import {build, buildSync} from 'esbuild'
+import {ArgsExpressType} from "../../types/ArgsExpressType";
+import LiveDirectory from "live-directory";
 let ioI: { sockets: { sockets: any[]; }; } | null = null
 
 exports.socketio = (hookName: string, {io}: any) => {
@@ -19,7 +21,7 @@ exports.socketio = (hookName: string, {io}: any) => {
 }
 
 
-exports.expressPreSession = async (hookName:string, {app}:any) => {
+exports.expressPreSession = async (hookName:string, {app}:ArgsExpressType) => {
   // This endpoint is intended to conform to:
   // https://www.ietf.org/archive/id/draft-inadarei-api-health-check-06.html
   app.get('/health', (req:any, res:any) => {
@@ -50,36 +52,35 @@ exports.expressPreSession = async (hookName:string, {app}:any) => {
     });
   });
 
-  app.get('/favicon.ico', (req:any, res:any, next:Function) => {
-    (async () => {
-      /*
-        If this is a url we simply redirect to that one.
-       */
-      if (settings.favicon && settings.favicon.startsWith('http')) {
-        res.redirect(settings.favicon);
-        res.send();
-        return;
-      }
+  app.get('/favicon.ico', async (req, res, next) => {
+
+    /*
+      If this is a url we simply redirect to that one.
+     */
+    if (settings.favicon && settings.favicon.startsWith('http')) {
+      res.redirect(settings.favicon);
+      res.send();
+      return;
+    }
 
 
-      const fns = [
-        ...(settings.favicon ? [path.resolve(settings.root, settings.favicon)] : []),
-        path.join(settings.root, 'src', 'static', 'skins', settings.skinName, 'favicon.ico'),
-        path.join(settings.root, 'src', 'static', 'favicon.ico'),
-      ];
-      for (const fn of fns) {
-        try {
-          await fsp.access(fn, fs.constants.R_OK);
-        } catch (err) {
-          continue;
-        }
-        res.setHeader('Cache-Control', `public, max-age=${settings.maxAge}`);
-        await util.promisify(res.sendFile.bind(res))(fn);
-        return;
+    const fns = [
+      ...(settings.favicon ? [path.resolve(settings.root, settings.favicon)] : []),
+      path.join(settings.root, 'src', 'static', 'skins', settings.skinName, 'favicon.ico'),
+      path.join(settings.root, 'src', 'static', 'favicon.ico'),
+    ];
+    for (const fn of fns) {
+      try {
+        await fsp.access(fn, fs.constants.R_OK);
+      } catch (err) {
+        continue;
       }
-      next();
-    })().catch((err) => next(err || new Error(err)));
-  });
+      res.setHeader('Cache-Control', `public, max-age=${settings.maxAge}`);
+      res.sendFile.bind(res)(fn);
+      return;
+    }
+    next();
+  })
 };
 
 
@@ -111,131 +112,85 @@ const convertTypescript = (content: string) => {
   }
 }
 
-const handleLiveReload = async (args: any, padString: string, timeSliderString: string, indexString: any) => {
-  const chokidar = await import('chokidar')
-  const watcher = chokidar.watch(path.join(settings.root, 'src', 'static', 'js'));
-  let routeHandlers: { [key: string]: Function } = {};
-
-  const setRouteHandler = (path: string, newHandler: Function) => {
-    routeHandlers[path] = newHandler;
-  };
-  args.app.use((req: any, res: any, next: Function) => {
-    if (req.path.startsWith('/p/') && req.path.split('/').length == 3) {
-      req.padId = req.path.split('/')[2]
-      routeHandlers['/p/:pad'](req, res);
-    } else if (req.path.startsWith('/p/') && req.path.split('/').length == 4) {
-      req.padId = req.path.split('/')[2]
-      routeHandlers['/p/:pad/timeslider'](req, res);
-    } else if (req.path == "/"){
-      routeHandlers['/'](req, res);
-    } else if (routeHandlers[req.path]) {
-      routeHandlers[req.path](req, res);
-    } else {
-      next();
-    }
-  });
-
-  function handleUpdate() {
-
-    convertTypescriptWatched(indexString, (output, hash) => {
-      setRouteHandler('/watch/index', (req: any, res: any) => {
-        res.header('Content-Type', 'application/javascript');
-        res.send(output)
-      })
-      setRouteHandler('/', (req: any, res: any) => {
-        res.send(eejs.require('ep_etherpad-lite/templates/index.html', {req, entrypoint: '/watch/index?hash=' + hash, settings}));
-      })
-    })
-
-    convertTypescriptWatched(padString, (output, hash) => {
-      console.log("New pad hash is", hash)
-      setRouteHandler('/watch/pad', (req: any, res: any) => {
-        res.header('Content-Type', 'application/javascript');
-        res.send(output)
-      })
+const handleLiveReload = async (args: ArgsExpressType, padString: string, timeSliderString: string, indexString: any) => {
 
 
+  const livedir = new LiveDirectory(path.join(settings.root, 'src', 'static', 'js'))
+  let indexJS = convertTypescript(indexString)
+  let padJS = convertTypescript(padString)
+  let timeSliderJS = convertTypescript(timeSliderString)
 
+  const updateLive = ()=>{
+    indexJS = convertTypescript(indexString)
+    padJS = convertTypescript(padString)
+    timeSliderJS = convertTypescript(timeSliderString)
 
-      setRouteHandler("/p/:pad", (req: any, res: any, next: Function) => {
-        // The below might break for pads being rewritten
-        const isReadOnly = !webaccess.userCanModify(req.padId, req);
-
-        hooks.callAll('padInitToolbar', {
-          toolbar,
-          isReadOnly
-        });
-
-        const content = eejs.require('ep_etherpad-lite/templates/pad.html', {
-          req,
-          toolbar,
-          isReadOnly,
-          entrypoint: '/watch/pad?hash=' + hash
-        })
-        res.send(content);
-      })
-      ioI!.sockets.sockets.forEach(socket => socket.emit('liveupdate'))
-    })
-    convertTypescriptWatched(timeSliderString, (output, hash) => {
-      // serve timeslider.html under /p/$padname/timeslider
-      console.log("New timeslider hash is", hash)
-
-      setRouteHandler('/watch/timeslider', (req: any, res: any) => {
-        res.header('Content-Type', 'application/javascript');
-        res.send(output)
-      })
-
-      setRouteHandler("/p/:pad/timeslider", (req: any, res: any, next: Function) => {
-        console.log("Reloading pad")
-        // The below might break for pads being rewritten
-        const isReadOnly = !webaccess.userCanModify(req.padId, req);
-
-        hooks.callAll('padInitToolbar', {
-          toolbar,
-          isReadOnly
-        });
-
-        const content = eejs.require('ep_etherpad-lite/templates/timeslider.html', {
-          req,
-          toolbar,
-          isReadOnly,
-          entrypoint: '/watch/timeslider?hash=' + hash
-        })
-        res.send(content);
-      })
-    })
+    ioI!.sockets.sockets.forEach(socket => socket.emit('liveupdate'))
   }
 
-  watcher.on('change', path => {
-    console.log(`File ${path} has been changed`);
-    handleUpdate();
-  });
-  handleUpdate()
-}
 
-const convertTypescriptWatched = (content: string, cb: (output:string, hash: string)=>void) => {
-  build({
-    stdin: {
-      contents: content,
-      resolveDir: path.join(settings.root, 'var','js'),
-      loader: 'js'
-    },
-    alias:{
-      "ep_etherpad-lite/static/js/browser": 'ep_etherpad-lite/static/js/vendors/browser',
-      "ep_etherpad-lite/static/js/nice-select": 'ep_etherpad-lite/static/js/vendors/nice-select'
-    },
-    bundle: true, // Bundle the files together
-    minify: process.env.NODE_ENV === "production", // Minify the output
-    sourcemap: !(process.env.NODE_ENV === "production"), // Generate source maps
-    sourceRoot: settings.root+"/src/static/js/",
-    target: ['es2020'], // Target ECMAScript version
-    metafile: true,
-    write: false, // Do not write to file system,
-  }).then((outputRaw) => {
-    cb(
-      outputRaw.outputFiles[0].text,
-      outputRaw.outputFiles[0].hash.replaceAll('/','2').replaceAll("+",'5').replaceAll("^","7")
-    )
+  args.app.get('/', (req, res)=>{
+    res.send(eejs.require('ep_etherpad-lite/templates/index.html', {req, entrypoint: '/watch/index?hash=' + indexJS.hash, settings}));
+  })
+  args.app.get('/watch/index', (req, res)=>{
+    res.header('Content-Type', 'application/javascript');
+    res.send(indexJS.output)
+  })
+
+  args.app.get('/watch/pad', (req, res)=>{
+    res.header('Content-Type', 'application/javascript');
+    res.send(padJS.output)
+  })
+
+  args.app.get('/watch/timeslider', (req, res)=>{
+    res.header('Content-Type', 'application/javascript');
+    res.send(timeSliderJS.output)
+  })
+
+  args.app.get('/p/:pad', (req, res, next)=>{
+    const isReadOnly = !webaccess.userCanModify(req.params.pad, req);
+
+    hooks.callAll('padInitToolbar', {
+      toolbar,
+      isReadOnly
+    });
+
+    const content = eejs.require('ep_etherpad-lite/templates/pad.html', {
+      req,
+      toolbar,
+      isReadOnly,
+      entrypoint: '/watch/pad?hash=' + padJS.hash
+    })
+    res.send(content);
+  })
+
+  args.app.get('/p/:pad/timeslider', (req, res, next)=>{
+    console.log("Reloading pad")
+    // The below might break for pads being rewritten
+    const isReadOnly = !webaccess.userCanModify(req.params.pad, req);
+
+    hooks.callAll('padInitToolbar', {
+      toolbar,
+      isReadOnly
+    });
+
+    const content = eejs.require('ep_etherpad-lite/templates/timeslider.html', {
+      req,
+      toolbar,
+      isReadOnly,
+      entrypoint: '/watch/timeslider?hash=' + timeSliderJS.hash
+    })
+    res.send(content);
+  })
+
+  livedir.on('ready', (path: string) => {
+    livedir.on('update', ()=>{
+      updateLive()
+    })
+  })
+
+  livedir.on('delete', ()=>{
+    updateLive()
   })
 }
 
