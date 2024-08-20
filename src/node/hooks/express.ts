@@ -56,8 +56,7 @@ const closeServer = async () => {
       await events.once(socketsEvents, 'updated');
     }
     await p;
-    await appInstance?.shutdown()
-    appInstance!.close()
+    appInstance?.close()
     clearTimeout(timeout);
     exports.server = null;
     appInstance = null

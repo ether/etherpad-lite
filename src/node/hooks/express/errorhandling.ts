@@ -15,6 +15,7 @@ exports.expressCreateServer = (hook_name:string, args: ArgsExpressType, cb:Funct
     console.error(error.stack ? error.stack : error.toString());
     //res.status(500).json({error: 'Sorry, something bad happened!'});
     stats.meter('http500').mark();
+    res.status(500).json({error: 'Sorry, something bad happened123!'});
   })
 
 

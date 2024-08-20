@@ -18,8 +18,8 @@ const aCallFirst = (hookName: string, context:any, pred = null) => new Promise((
 });
 
 const aCallFirst0 =
-    // @ts-ignore
-    async (hookName: string, context:any, pred = null) => (await aCallFirst(hookName, context, pred))[0];
+  // @ts-ignore
+  async (hookName: string, context:any, pred = null) => (await aCallFirst(hookName, context, pred))[0];
 
 exports.normalizeAuthzLevel = (level: string|boolean) => {
   if (!level) return false;
@@ -63,19 +63,17 @@ const checkAccess = async (req:any, res:any, next: Function) => {
   const preAuthorizeNext = (...args:any) => { skip = true; next(...args); };
   try {
     results = await aCallFirst('preAuthorize', {req, res, next: preAuthorizeNext},
-        // This predicate will cause aCallFirst to call the hook functions one at a time until one
-        // of them returns a non-empty list, with an exception: If the request is for an /admin
-        // page, truthy entries are filtered out before checking to see whether the list is empty.
-        // This prevents plugin authors from accidentally granting admin privileges to the general
-        // public.
-        // @ts-ignore
-        (r) => (skip || (r != null && r.filter((x) => (!requireAdmin || !x)).length > 0))) as boolean[];
+      // This predicate will cause aCallFirst to call the hook functions one at a time until one
+      // of them returns a non-empty list, with an exception: If the request is for an /admin
+      // page, truthy entries are filtered out before checking to see whether the list is empty.
+      // This prevents plugin authors from accidentally granting admin privileges to the general
+      // public.
+      // @ts-ignore
+      (r) => (skip || (r != null && r.filter((x) => (!requireAdmin || !x)).length > 0))) as boolean[];
   } catch (err:any) {
     httpLogger.error(`Error in preAuthorize hook: ${err.stack || err.toString()}`);
-    if (!skip) {
-      res.status(500).send('Internal Server Error');
-      return;
-    }
+    if (!skip) res.status(500).send('Internal Server Error');
+    return;
   }
   if (skip) return;
   if (requireAdmin) {
@@ -130,8 +128,8 @@ const checkAccess = async (req:any, res:any, next: Function) => {
 
   if (await authorize()) {
     if(requireAdmin) {
-        res.status(200).send('Authorized')
-        return
+      res.status(200).send('Authorized')
+      return
     }
     return next();
   }
@@ -151,7 +149,7 @@ const checkAccess = async (req:any, res:any, next: Function) => {
   const httpBasicAuth = req.headers.authorization && req.headers.authorization.startsWith('Basic ');
   if (httpBasicAuth) {
     const userpass =
-        Buffer.from(req.headers.authorization.split(' ')[1], 'base64').toString().split(':');
+      Buffer.from(req.headers.authorization.split(' ')[1], 'base64').toString().split(':');
     ctx.username = userpass.shift();
     // Prevent prototype pollution vulnerabilities in plugins. This also silences a prototype
     // pollution warning below (when setting settings.users[ctx.username]) that isn't actually a
@@ -165,8 +163,8 @@ const checkAccess = async (req:any, res:any, next: Function) => {
     const {[ctx.username]: {password} = {}} = settings.users as SettingsUser;
 
     if (!httpBasicAuth ||
-        !ctx.username ||
-        password == null || password.toString() !== ctx.password) {
+      !ctx.username ||
+      password == null || password.toString() !== ctx.password) {
       httpLogger.info(`Failed authentication from IP ${req.ip}`);
       if (await aCallFirst0('authnFailure', {req, res})) return;
       if (await aCallFirst0('authFailure', {req, res, next})) return;
@@ -191,7 +189,7 @@ const checkAccess = async (req:any, res:any, next: Function) => {
   }
   if (req.session.user == null) {
     httpLogger.error('authenticate hook failed to add user settings to session');
-    throw new Error('authenticate hook failed to add user settings to session')
+    return res.status(500).send('Internal Server Error');
   }
   const {username = '<no username>'} = req.session.user;
   httpLogger.info(`Successful authentication from IP ${req.ip} for user ${username}`);
@@ -213,7 +211,6 @@ const checkAccess = async (req:any, res:any, next: Function) => {
   if (await aCallFirst0('authFailure', {req, res, next})) return;
   // No plugin handled the authorization failure.
   res.status(403).send('Forbidden');
-  return
 };
 
 /**
@@ -221,5 +218,5 @@ const checkAccess = async (req:any, res:any, next: Function) => {
  * express-session middleware.
  */
 exports.checkAccess = (req:any, res:any, next:Function) => {
-  checkAccess(req, res, next);
+  checkAccess(req, res, next).catch((err) => next(err || new Error(err)));
 };
