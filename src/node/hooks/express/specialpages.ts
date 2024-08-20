@@ -194,7 +194,7 @@ const handleLiveReload = async (args: ArgsExpressType, padString: string, timeSl
   })
 }
 
-exports.expressCreateServer = async (hookName: string, args: any, cb: Function) => {
+exports.expressCreateServer = async (hookName: string, args: ArgsExpressType, cb: Function) => {
   const padString =   eejs.require('ep_etherpad-lite/templates/padBootstrap.js', {
       pluginModules: (() => {
         const pluginModules = new Set();
@@ -280,9 +280,9 @@ exports.expressCreateServer = async (hookName: string, args: any, cb: Function) 
 
 
     // serve pad.html under /p
-    args.app.get('/p/:pad', (req: any, res: any, next: Function) => {
+    args.app.get('/p/:pad', (req, res) => {
       // The below might break for pads being rewritten
-      const isReadOnly = !webaccess.userCanModify(req.padId, req);
+      const isReadOnly = !webaccess.userCanModify(req.params.pad, req);
 
       hooks.callAll('padInitToolbar', {
         toolbar,
