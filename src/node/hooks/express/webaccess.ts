@@ -72,7 +72,9 @@ const checkAccess = async (req:any, res:any, next: Function) => {
       (r) => (skip || (r != null && r.filter((x) => (!requireAdmin || !x)).length > 0))) as boolean[];
   } catch (err:any) {
     httpLogger.error(`Error in preAuthorize hook: ${err.stack || err.toString()}`);
-    if (!skip) res.status(500).send('Internal Server Error');
+    if (!skip) {
+      res.status(500).send('Internal Server Error');
+    }
     return;
   }
   if (skip) return;
