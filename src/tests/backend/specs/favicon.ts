@@ -4,8 +4,10 @@ import {MapArrayType} from "../../../node/types/MapType";
 
 const assert = require('assert').strict;
 const common = require('../common');
-const fs = require('fs');
-const fsp = fs.promises;
+import {mkdtempSync, readFile, readFileSync} from 'fs';
+import {rmSync, unlinkSync} from "node:fs";
+
+
 const path = require('path');
 const settings = require('../../../node/utils/Settings');
 const superagent = require('superagent');
@@ -14,20 +16,20 @@ describe(__filename, function () {
   let agent:any;
   let backupSettings:MapArrayType<any>;
   let skinDir: string;
-  let wantCustomIcon: boolean;
-  let wantDefaultIcon: boolean;
-  let wantSkinIcon: boolean;
+  let wantCustomIcon: Buffer;
+  let wantDefaultIcon: Buffer;
+  let wantSkinIcon: Buffer;
 
   before(async function () {
     agent = await common.init();
-    wantCustomIcon = await fsp.readFile(path.join(__dirname, 'favicon-test-custom.png'));
-    wantDefaultIcon = await fsp.readFile(path.join(settings.root, 'src', 'static', 'favicon.ico'));
-    wantSkinIcon = await fsp.readFile(path.join(__dirname, 'favicon-test-skin.png'));
+    wantCustomIcon = readFileSync(path.join(__dirname, 'favicon-test-custom.png'));
+    wantDefaultIcon = readFileSync(path.join(settings.root, 'src', 'static', 'favicon.ico'));
+    wantSkinIcon = readFileSync(path.join(__dirname, 'favicon-test-skin.png'));
   });
 
   beforeEach(async function () {
     backupSettings = {...settings};
-    skinDir = await fsp.mkdtemp(path.join(settings.root, 'src', 'static', 'skins', 'test-'));
+    skinDir = mkdtempSync(path.join(settings.root, 'src', 'static', 'skins', 'test-'));
     settings.skinName = path.basename(skinDir);
   });
 
@@ -36,8 +38,8 @@ describe(__filename, function () {
     delete settings.skinName;
     Object.assign(settings, backupSettings);
     try {
-      await fsp.unlink(path.join(skinDir, 'favicon.ico'));
-      await fsp.rm(skinDir, {recursive: true});
+      unlinkSync(path.join(skinDir, 'favicon.ico'));
+      rmSync(skinDir, {recursive: true});
     } catch (err) { /* intentionally ignored */ }
   });
 
