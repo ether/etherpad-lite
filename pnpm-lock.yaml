@@ -141,8 +141,8 @@ importers:
   src:
     dependencies:
       '@etherpad/express-session':
-        specifier: ^1.18.2
-        version: 1.18.2
+        specifier: ^1.18.4
+        version: 1.18.4
       async:
         specifier: ^3.2.6
         version: 3.2.6
@@ -1024,8 +1024,8 @@ packages:
     resolution: {integrity: sha512-BsWiH1yFGjXXS2yvrf5LyuoSIIbPrGUWob917o+BTKuZ7qJdxX8aJLRxs1fS9n6r7vESrq1OUqb68dANcFXuQQ==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
 
-  '@etherpad/express-session@1.18.2':
-    resolution: {integrity: sha512-5S+mdCxqSR5AX9jj1G3Qzxv/EX4jyWr9ikHzwtv+uV9fPu7EPFF6oNkhrUCZ19RJ5975KulPyrBB35hUK5x7LA==}
+  '@etherpad/express-session@1.18.4':
+    resolution: {integrity: sha512-uiUtcfv0hyEA+Lur00V6yINaa/qe09HiFqmc+DzSXYChILFLgOV3G4p4XJkIRrUOGmqaJRiliB1BoQIiY3Tnjw==}
     engines: {node: '>= 0.8.0'}
 
   '@humanwhocodes/module-importer@1.0.1':
@@ -5348,11 +5348,11 @@ snapshots:
 
   '@eslint/object-schema@2.1.4': {}
 
-  '@etherpad/express-session@1.18.2':
+  '@etherpad/express-session@1.18.4':
     dependencies:
       cookie: 0.4.2
       cookie-signature: 1.0.6
-      debug: 2.6.9
+      debug: 4.3.5(supports-color@8.1.1)
       depd: 2.0.0
       on-headers: 1.0.2
       parseurl: 1.3.3
