@@ -69,7 +69,7 @@
     "socket.io-client": "^4.7.5",
     "superagent": "10.0.2",
     "tinycon": "0.6.8",
-    "tsx": "4.17.0",
+    "tsx": "4.19.0",
     "ueberdb2": "^4.2.93",
     "underscore": "1.13.7",
     "unorm": "1.6.0",
