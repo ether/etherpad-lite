@@ -70,7 +70,7 @@
     "superagent": "10.1.0",
     "tinycon": "0.6.8",
     "tsx": "4.19.0",
-    "ueberdb2": "^4.2.94",
+    "ueberdb2": "^4.2.95",
     "underscore": "1.13.7",
     "unorm": "1.6.0",
     "wtfnode": "^0.9.3"
