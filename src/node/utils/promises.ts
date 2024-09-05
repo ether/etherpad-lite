@@ -7,7 +7,7 @@
 // `predicate`. Resolves to `undefined` if none of the Promises satisfy `predicate`, or if
 // `promises` is empty. If `predicate` is nullish, the truthiness of the resolved value is used as
 // the predicate.
-exports.firstSatisfies = <T>(promises: Promise<T>[], predicate: null|Function) => {
+export const firstSatisfies = <T>(promises: Promise<T>[], predicate: null|Function) => {
   if (predicate == null) {
     predicate = (x: any) => x;
   }
@@ -44,7 +44,7 @@ exports.firstSatisfies = <T>(promises: Promise<T>[], predicate: null|Function) =
 // `total` is greater than `concurrency`, then `concurrency` Promises will be created right away,
 // and each remaining Promise will be created once one of the earlier Promises resolves.) This async
 // function resolves once all `total` Promises have resolved.
-exports.timesLimit = async (total: number, concurrency: number, promiseCreator: Function) => {
+export const timesLimit = async (total: number, concurrency: number, promiseCreator: Function) => {
   if (total > 0 && concurrency <= 0) throw new RangeError('concurrency must be positive');
   let next = 0;
   const addAnother = () => promiseCreator(next++).finally(() => {
@@ -61,7 +61,7 @@ exports.timesLimit = async (total: number, concurrency: number, promiseCreator: 
  * An ordinary Promise except the `resolve` and `reject` executor functions are exposed as
  * properties.
  */
-class Gate<T> extends Promise<T> {
+export class Gate<T> extends Promise<T> {
   // Coax `.then()` into returning an ordinary Promise, not a Gate. See
   // https://stackoverflow.com/a/65669070 for the rationale.
   static get [Symbol.species]() { return Promise; }
@@ -75,4 +75,3 @@ class Gate<T> extends Promise<T> {
     Object.assign(this, props);
   }
 }
-exports.Gate = Gate;

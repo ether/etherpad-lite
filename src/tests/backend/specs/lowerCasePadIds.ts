@@ -40,7 +40,7 @@ describe(__filename, function () {
 
     it('do nothing', async function () {
       await agent.get('/p/UPPERCASEpad')
-          .expect(200);
+        .expect(200);
     });
   });
 
@@ -50,8 +50,8 @@ describe(__filename, function () {
     });
     it('lowercase pad ids', async function () {
       await agent.get('/p/UPPERCASEpad')
-          .expect(302)
-          .expect('location', 'uppercasepad');
+        .expect(302)
+        .expect('location', 'uppercasepad');
     });
 
     it('keeps old pads accessible', async function () {

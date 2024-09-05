@@ -30,7 +30,8 @@
     "remove-plugins": "pnpm --filter bin run remove-plugins",
     "list-plugins": "pnpm --filter bin run list-plugins",
     "build:etherpad": "pnpm --filter admin run build-copy && pnpm --filter ui run build-copy",
-    "build:ui": "pnpm --filter ui run build-copy && pnpm --filter admin run build-copy"
+    "build:ui": "pnpm --filter ui run build-copy && pnpm --filter admin run build-copy",
+    "makeDocs": "pnpm --filter bin run makeDocs"
   },
   "dependencies": {
     "ep_etherpad-lite": "workspace:./src"
@@ -49,6 +50,6 @@
     "type": "git",
     "url": "https://github.com/ether/etherpad-lite.git"
   },
-  "version": "2.2.2",
+  "version": "2.2.3",
   "license": "Apache-2.0"
 }

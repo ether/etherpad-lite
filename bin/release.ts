@@ -197,7 +197,7 @@ try {
 
 try {
   console.log('Building documentation...');
-  run('node ./make_docs.js');
+  run('pnpm run makeDocs');
   console.log('Updating ether.github.com master branch...');
   run('git pull --ff-only', {cwd: '../ether.github.com/'});
   console.log('Committing documentation...');

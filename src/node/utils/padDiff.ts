@@ -3,8 +3,13 @@
 import {PadAuthor, PadType} from "../types/PadType";
 import {MapArrayType} from "../types/MapType";
 
-const AttributeMap = require('../../static/js/AttributeMap');
-const Changeset = require('../../static/js/Changeset');
+import AttributeMap from '../../static/js/AttributeMap';
+import {applyToAText, checkRep, compose, deserializeOps, pack, splitAttributionLines, splitTextLines, unpack} from '../../static/js/Changeset';
+import {Builder} from "../../static/js/Builder";
+import {OpAssembler} from "../../static/js/OpAssembler";
+import {numToString} from "../../static/js/ChangesetUtils";
+import Op from "../../static/js/Op";
+import {StringAssembler} from "../../static/js/StringAssembler";
 const attributes = require('../../static/js/attributes');
 const exportHtml = require('./ExportHtml');
 
@@ -33,7 +38,7 @@ class PadDiff {
   }
   _isClearAuthorship(changeset: any){
     // unpack
-    const unpacked = Changeset.unpack(changeset);
+    const unpacked = unpack(changeset);
 
     // check if there is nothing in the charBank
     if (unpacked.charBank !== '') {
@@ -45,7 +50,7 @@ class PadDiff {
       return false;
     }
 
-    const [clearOperator, anotherOp] = Changeset.deserializeOps(unpacked.ops);
+    const [clearOperator, anotherOp] = deserializeOps(unpacked.ops);
 
     // check if there is only one operator
     if (anotherOp != null) return false;
@@ -78,7 +83,7 @@ class PadDiff {
     const atext = await this._pad.getInternalRevisionAText(rev);
 
     // build clearAuthorship changeset
-    const builder = Changeset.builder(atext.text.length);
+    const builder = new Builder(atext.text.length);
     builder.keepText(atext.text, [['author', '']], this._pad.pool);
     const changeset = builder.toString();
 
@@ -93,7 +98,7 @@ class PadDiff {
     const changeset = await this._createClearAuthorship(rev);
 
     // apply the clearAuthorship changeset
-    const newAText = Changeset.applyToAText(changeset, atext, this._pad.pool);
+    const newAText = applyToAText(changeset, atext, this._pad.pool);
 
     return newAText;
   }
@@ -157,7 +162,7 @@ class PadDiff {
         if (superChangeset == null) {
           superChangeset = changeset;
         } else {
-          superChangeset = Changeset.compose(superChangeset, changeset, this._pad.pool);
+          superChangeset = compose(superChangeset, changeset, this._pad.pool);
         }
       }
 
@@ -171,10 +176,10 @@ class PadDiff {
       const deletionChangeset = this._createDeletionChangeset(superChangeset, atext, this._pad.pool);
 
       // apply the superChangeset, which includes all addings
-      atext = Changeset.applyToAText(superChangeset, atext, this._pad.pool);
+      atext = applyToAText(superChangeset, atext, this._pad.pool);
 
       // apply the deletionChangeset, which adds a deletions
-      atext = Changeset.applyToAText(deletionChangeset, atext, this._pad.pool);
+      atext = applyToAText(deletionChangeset, atext, this._pad.pool);
     }
 
     return atext;
@@ -209,22 +214,22 @@ class PadDiff {
 
   _extendChangesetWithAuthor(changeset: any, author: any, apool: any){
     // unpack
-    const unpacked = Changeset.unpack(changeset);
+    const unpacked = unpack(changeset);
 
-    const assem = Changeset.opAssembler();
+    const assem = new OpAssembler();
 
     // create deleted attribs
     const authorAttrib = apool.putAttrib(['author', author || '']);
     const deletedAttrib = apool.putAttrib(['removed', true]);
-    const attribs = `*${Changeset.numToString(authorAttrib)}*${Changeset.numToString(deletedAttrib)}`;
+    const attribs = `*${numToString(authorAttrib)}*${numToString(deletedAttrib)}`;
 
-    for (const operator of Changeset.deserializeOps(unpacked.ops)) {
+    for (const operator of deserializeOps(unpacked.ops)) {
       if (operator.opcode === '-') {
         // this is a delete operator, extend it with the author
         operator.attribs = attribs;
       } else if (operator.opcode === '=' && operator.attribs) {
         // this is operator changes only attributes, let's mark which author did that
-        operator.attribs += `*${Changeset.numToString(authorAttrib)}`;
+        operator.attribs += `*${numToString(authorAttrib)}`;
       }
 
       // append the new operator to our assembler
@@ -232,26 +237,31 @@ class PadDiff {
     }
 
     // return the modified changeset
-    return Changeset.pack(unpacked.oldLen, unpacked.newLen, assem.toString(), unpacked.charBank);
+    return pack(unpacked.oldLen, unpacked.newLen, assem.toString(), unpacked.charBank);
   }
   _createDeletionChangeset(cs: any, startAText: any, apool: any){
-    const lines = Changeset.splitTextLines(startAText.text);
-    const alines = Changeset.splitAttributionLines(startAText.attribs, startAText.text);
+    const lines = splitTextLines(startAText.text);
+    const alines = splitAttributionLines(startAText.attribs, startAText.text);
 
     // lines and alines are what the exports is meant to apply to.
     // They may be arrays or objects with .get(i) and .length methods.
     // They include final newlines on lines.
 
     const linesGet = (idx: number) => {
+      // @ts-ignore
       if (lines.get) {
+        // @ts-ignore
         return lines.get(idx);
       } else {
+        // @ts-ignore
         return lines[idx];
       }
     };
 
     const aLinesGet = (idx: number) => {
+      // @ts-ignore
       if (alines.get) {
+        // @ts-ignore
         return alines.get(idx);
       } else {
         return alines[idx];
@@ -263,14 +273,14 @@ class PadDiff {
     let curLineOps: { next: () => any; } | null = null;
     let curLineOpsNext: { done: any; value: any; } | null = null;
     let curLineOpsLine: number;
-    let curLineNextOp = new Changeset.Op('+');
+    let curLineNextOp = new Op('+');
 
-    const unpacked = Changeset.unpack(cs);
-    const builder = Changeset.builder(unpacked.newLen);
+    const unpacked = unpack(cs);
+    const builder = new Builder(unpacked.newLen);
 
     const consumeAttribRuns = (numChars: number, func: Function /* (len, attribs, endsLine)*/) => {
       if (!curLineOps || curLineOpsLine !== curLine) {
-        curLineOps = Changeset.deserializeOps(aLinesGet(curLine));
+        curLineOps = deserializeOps(aLinesGet(curLine));
         curLineOpsNext = curLineOps!.next();
         curLineOpsLine = curLine;
         let indexIntoLine = 0;
@@ -291,13 +301,13 @@ class PadDiff {
           curChar = 0;
           curLineOpsLine = curLine;
           curLineNextOp.chars = 0;
-          curLineOps = Changeset.deserializeOps(aLinesGet(curLine));
+          curLineOps = deserializeOps(aLinesGet(curLine));
           curLineOpsNext = curLineOps!.next();
         }
 
         if (!curLineNextOp.chars) {
           if (curLineOpsNext!.done) {
-            curLineNextOp = new Changeset.Op();
+            curLineNextOp = new Op();
           } else {
             curLineNextOp = curLineOpsNext!.value;
             curLineOpsNext = curLineOps!.next();
@@ -332,7 +342,7 @@ class PadDiff {
 
     const nextText = (numChars: number) => {
       let len = 0;
-      const assem = Changeset.stringAssembler();
+      const assem = new StringAssembler();
       const firstString = linesGet(curLine).substring(curChar);
       len += firstString.length;
       assem.append(firstString);
@@ -360,7 +370,7 @@ class PadDiff {
       };
     };
 
-    for (const csOp of Changeset.deserializeOps(unpacked.ops)) {
+    for (const csOp of deserializeOps(unpacked.ops)) {
       if (csOp.opcode === '=') {
         const textBank = nextText(csOp.chars);
 
@@ -442,7 +452,7 @@ class PadDiff {
       }
     }
 
-    return Changeset.checkRep(builder.toString());
+    return checkRep(builder.toString());
   }
 
 }
@@ -450,6 +460,7 @@ class PadDiff {
 
 // this method is 80% like Changeset.inverse. I just changed so instead of reverting,
 // it adds deletions and attribute changes to the atext.
+// @ts-ignore
 PadDiff.prototype._createDeletionChangeset = function (cs, startAText, apool) {
 
 };

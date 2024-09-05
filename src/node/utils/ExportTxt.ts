@@ -22,7 +22,9 @@
 import {AText, PadType} from "../types/PadType";
 import {MapType} from "../types/MapType";
 
-const Changeset = require('../../static/js/Changeset');
+import {deserializeOps, splitAttributionLines, subattribution} from '../../static/js/Changeset';
+import {StringIterator} from "../../static/js/StringIterator";
+import {StringAssembler} from "../../static/js/StringAssembler";
 const attributes = require('../../static/js/attributes');
 const padManager = require('../db/PadManager');
 const _analyzeLine = require('./ExportHelper')._analyzeLine;
@@ -45,13 +47,14 @@ const getPadTXT = async (pad: PadType, revNum: string) => {
 const getTXTFromAtext = (pad: PadType, atext: AText, authorColors?:string) => {
   const apool = pad.apool();
   const textLines = atext.text.slice(0, -1).split('\n');
-  const attribLines = Changeset.splitAttributionLines(atext.attribs, atext.text);
+  const attribLines = splitAttributionLines(atext.attribs, atext.text);
 
   const props = ['heading1', 'heading2', 'bold', 'italic', 'underline', 'strikethrough'];
   const anumMap: MapType = {};
   const css = '';
 
   props.forEach((propName, i) => {
+    // @ts-ignore
     const propTrueNum = apool.putAttrib([propName, true], true);
     if (propTrueNum >= 0) {
       anumMap[propTrueNum] = i;
@@ -69,8 +72,8 @@ const getTXTFromAtext = (pad: PadType, atext: AText, authorColors?:string) => {
     // <b>Just bold<b> <b><i>Bold and italics</i></b> <i>Just italics</i>
     // becomes
     // <b>Just bold <i>Bold and italics</i></b> <i>Just italics</i>
-    const taker = Changeset.stringIterator(text);
-    const assem = Changeset.stringAssembler();
+    const taker = new StringIterator(text);
+    const assem = new StringAssembler();
 
     let idx = 0;
 
@@ -79,7 +82,7 @@ const getTXTFromAtext = (pad: PadType, atext: AText, authorColors?:string) => {
         return;
       }
 
-      const ops = Changeset.deserializeOps(Changeset.subattribution(attribs, idx, idx + numChars));
+      const ops = deserializeOps(subattribution(attribs, idx, idx + numChars));
       idx += numChars;
 
       for (const o of ops) {

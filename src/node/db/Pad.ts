@@ -7,10 +7,10 @@ import {MapArrayType} from "../types/MapType";
  * The pad object, defined with joose
  */
 
-const AttributeMap = require('../../static/js/AttributeMap');
-const Changeset = require('../../static/js/Changeset');
-const ChatMessage = require('../../static/js/ChatMessage');
-const AttributePool = require('../../static/js/AttributePool');
+import AttributeMap from '../../static/js/AttributeMap';
+import {applyToAText, checkRep, copyAText, deserializeOps, makeAText, makeSplice, opsFromAText, pack, unpack} from '../../static/js/Changeset';
+import ChatMessage from '../../static/js/ChatMessage';
+import AttributePool from '../../static/js/AttributePool';
 const Stream = require('../utils/Stream');
 const assert = require('assert').strict;
 const db = require('./DB');
@@ -23,8 +23,10 @@ const CustomError = require('../utils/customError');
 const readOnlyManager = require('./ReadOnlyManager');
 const randomString = require('../utils/randomstring');
 const hooks = require('../../static/js/pluginfw/hooks');
-const {padutils: {warnDeprecated}} = require('../../static/js/pad_utils');
-const promises = require('../utils/promises');
+import pad_utils from "../../static/js/pad_utils";
+import {SmartOpAssembler} from "../../static/js/SmartOpAssembler";
+import {} from '../utils/promises';
+import {timesLimit} from "async";
 
 /**
  * Copied from the Etherpad source code. It converts Windows line breaks to Unix
@@ -40,7 +42,7 @@ exports.cleanText = (txt:string): string => txt.replace(/\r\n/g, '\n')
 class Pad {
   private db: Database;
   private atext: AText;
-  private pool: APool;
+  private pool: AttributePool;
   private head: number;
     private chatHead: number;
     private publicStatus: boolean;
@@ -56,7 +58,7 @@ class Pad {
    */
   constructor(id:string, database = db) {
     this.db = database;
-    this.atext = Changeset.makeAText('\n');
+    this.atext = makeAText('\n');
     this.pool = new AttributePool();
     this.head = -1;
     this.chatHead = -1;
@@ -93,13 +95,13 @@ class Pad {
    * @param {String} authorId The id of the author
    * @return {Promise<number|string>}
    */
-  async appendRevision(aChangeset:AChangeSet, authorId = '') {
-    const newAText = Changeset.applyToAText(aChangeset, this.atext, this.pool);
+  async appendRevision(aChangeset:string, authorId = '') {
+    const newAText = applyToAText(aChangeset, this.atext, this.pool);
     if (newAText.text === this.atext.text && newAText.attribs === this.atext.attribs &&
         this.head !== -1) {
       return this.head;
     }
-    Changeset.copyAText(newAText, this.atext);
+    copyAText(newAText, this.atext);
 
     const newRev = ++this.head;
 
@@ -126,11 +128,11 @@ class Pad {
         pad: this,
         authorId,
         get author() {
-          warnDeprecated(`${hook} hook author context is deprecated; use authorId instead`);
+          pad_utils.warnDeprecated(`${hook} hook author context is deprecated; use authorId instead`);
           return this.authorId;
         },
         set author(authorId) {
-          warnDeprecated(`${hook} hook author context is deprecated; use authorId instead`);
+          pad_utils.warnDeprecated(`${hook} hook author context is deprecated; use authorId instead`);
           this.authorId = authorId;
         },
         ...this.head === 0 ? {} : {
@@ -215,7 +217,7 @@ class Pad {
     ]);
     const apool = this.apool();
     let atext = keyAText;
-    for (const cs of changesets) atext = Changeset.applyToAText(cs, atext, apool);
+    for (const cs of changesets) atext = applyToAText(cs, atext, apool);
     return atext;
   }
 
@@ -293,7 +295,7 @@ class Pad {
         (!ins && start > 0 && orig[start - 1] === '\n');
     if (!willEndWithNewline) ins += '\n';
     if (ndel === 0 && ins.length === 0) return;
-    const changeset = Changeset.makeSplice(orig, start, ndel, ins);
+    const changeset = makeSplice(orig, start, ndel, ins);
     await this.appendRevision(changeset, authorId);
   }
 
@@ -330,7 +332,7 @@ class Pad {
    * @param {?number} [time] - Message timestamp (milliseconds since epoch). Deprecated; use
    *     `msgOrText.time` instead.
    */
-  async appendChatMessage(msgOrText: string|typeof ChatMessage, authorId = null, time = null) {
+  async appendChatMessage(msgOrText: string| ChatMessage, authorId = null, time = null) {
     const msg =
           msgOrText instanceof ChatMessage ? msgOrText : new ChatMessage(msgOrText, authorId, time);
     this.chatHead++;
@@ -393,7 +395,7 @@ class Pad {
         if (context.type !== 'text') throw new Error(`unsupported content type: ${context.type}`);
         text = exports.cleanText(context.content);
       }
-      const firstChangeset = Changeset.makeSplice('\n', 0, 0, text);
+      const firstChangeset = makeSplice('\n', 0, 0, text);
       await this.appendRevision(firstChangeset, authorId);
     }
     await hooks.aCallAll('padLoad', {pad: this});
@@ -437,11 +439,11 @@ class Pad {
     // let the plugins know the pad was copied
     await hooks.aCallAll('padCopy', {
       get originalPad() {
-        warnDeprecated('padCopy originalPad context property is deprecated; use srcPad instead');
+        pad_utils.warnDeprecated('padCopy originalPad context property is deprecated; use srcPad instead');
         return this.srcPad;
       },
       get destinationID() {
-        warnDeprecated(
+        pad_utils.warnDeprecated(
             'padCopy destinationID context property is deprecated; use dstPad.id instead');
         return this.dstPad.id;
       },
@@ -520,8 +522,8 @@ class Pad {
     const oldAText = this.atext;
 
     // based on Changeset.makeSplice
-    const assem = Changeset.smartOpAssembler();
-    for (const op of Changeset.opsFromAText(oldAText)) assem.append(op);
+    const assem = new SmartOpAssembler();
+    for (const op of opsFromAText(oldAText)) assem.append(op);
     assem.endDocument();
 
     // although we have instantiated the dstPad with '\n', an additional '\n' is
@@ -533,16 +535,16 @@ class Pad {
 
     // create a changeset that removes the previous text and add the newText with
     // all atributes present on the source pad
-    const changeset = Changeset.pack(oldLength, newLength, assem.toString(), newText);
+    const changeset = pack(oldLength, newLength, assem.toString(), newText);
     dstPad.appendRevision(changeset, authorId);
 
     await hooks.aCallAll('padCopy', {
       get originalPad() {
-        warnDeprecated('padCopy originalPad context property is deprecated; use srcPad instead');
+        pad_utils.warnDeprecated('padCopy originalPad context property is deprecated; use srcPad instead');
         return this.srcPad;
       },
       get destinationID() {
-        warnDeprecated(
+        pad_utils.warnDeprecated(
             'padCopy destinationID context property is deprecated; use dstPad.id instead');
         return this.dstPad.id;
       },
@@ -585,12 +587,14 @@ class Pad {
     p.push(db.remove(`pad2readonly:${padID}`));
 
     // delete all chat messages
-    p.push(promises.timesLimit(this.chatHead + 1, 500, async (i: string) => {
+    // @ts-ignore
+    p.push(timesLimit(this.chatHead + 1, 500, async (i: string) => {
       await this.db.remove(`pad:${this.id}:chat:${i}`, null);
     }));
 
     // delete all revisions
-    p.push(promises.timesLimit(this.head + 1, 500, async (i: string) => {
+    // @ts-ignore
+    p.push(timesLimit(this.head + 1, 500, async (i: string) => {
       await this.db.remove(`pad:${this.id}:revs:${i}`, null);
     }));
 
@@ -603,7 +607,7 @@ class Pad {
     p.push(padManager.removePad(padID));
     p.push(hooks.aCallAll('padRemove', {
       get padID() {
-        warnDeprecated('padRemove padID context property is deprecated; use pad.id instead');
+        pad_utils.warnDeprecated('padRemove padID context property is deprecated; use pad.id instead');
         return this.pad.id;
       },
       pad: this,
@@ -706,7 +710,7 @@ class Pad {
           }
         })
         .batch(100).buffer(99);
-    let atext = Changeset.makeAText('\n');
+    let atext = makeAText('\n');
     for await (const [r, changeset, authorId, timestamp, isKeyRev, keyAText] of revs) {
       try {
         assert(authorId != null);
@@ -717,10 +721,10 @@ class Pad {
         assert(timestamp > 0);
         assert(changeset != null);
         assert.equal(typeof changeset, 'string');
-        Changeset.checkRep(changeset);
-        const unpacked = Changeset.unpack(changeset);
+        checkRep(changeset);
+        const unpacked = unpack(changeset);
         let text = atext.text;
-        for (const op of Changeset.deserializeOps(unpacked.ops)) {
+        for (const op of deserializeOps(unpacked.ops)) {
           if (['=', '-'].includes(op.opcode)) {
             assert(text.length >= op.chars);
             const consumed = text.slice(0, op.chars);
@@ -731,7 +735,7 @@ class Pad {
           }
           assert.equal(op.attribs, AttributeMap.fromString(op.attribs, pool).toString());
         }
-        atext = Changeset.applyToAText(changeset, atext, pool);
+        atext = applyToAText(changeset, atext, pool);
         if (isKeyRev) assert.deepEqual(keyAText, atext);
       } catch (err:any) {
         err.message = `(pad ${this.id} revision ${r}) ${err.message}`;

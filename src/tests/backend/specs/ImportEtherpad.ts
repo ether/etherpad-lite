@@ -8,7 +8,7 @@ const db = require('../../../node/db/DB');
 const importEtherpad = require('../../../node/utils/ImportEtherpad');
 const padManager = require('../../../node/db/PadManager');
 const plugins = require('../../../static/js/pluginfw/plugin_defs');
-const {randomString} = require('../../../static/js/pad_utils');
+import {randomString} from '../../../static/js/pad_utils';
 
 describe(__filename, function () {
   let padId: string;

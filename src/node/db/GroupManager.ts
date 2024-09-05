@@ -20,7 +20,7 @@
  */
 
 const CustomError = require('../utils/customError');
-const randomString = require('../../static/js/pad_utils').randomString;
+import {randomString} from "../../static/js/pad_utils";
 const db = require('./DB');
 const padManager = require('./PadManager');
 const sessionManager = require('./SessionManager');

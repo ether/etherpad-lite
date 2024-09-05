@@ -3,6 +3,7 @@
 		"authors": [
 			"Aefgh39622",
 			"Andibecker",
+			"Ekminarin",
 			"Patsagorn Y.",
 			"Trisorn Triboon"
 		]
@@ -121,7 +122,7 @@
 	"pad.share.readonly": "อ่านเท่านั้น",
 	"pad.share.link": "ลิงก์",
 	"pad.share.emebdcode": "URL แบบฝังตัว",
-	"pad.chat": "แชท",
+	"pad.chat": "แชต",
 	"pad.chat.title": "เปิดการแชทสำหรับแผ่นจดบันทึกนี้",
 	"pad.chat.loadmessages": "โหลดข้อความเพิ่มเติม",
 	"pad.chat.stick.title": "ปักการสนทนาไว้บนหน้าจอ",

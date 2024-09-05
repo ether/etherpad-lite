@@ -19,8 +19,10 @@
  * limitations under the License.
  */
 
-const Changeset = require('../../static/js/Changeset');
-const ChatMessage = require('../../static/js/ChatMessage');
+import {deserializeOps} from '../../static/js/Changeset';
+import ChatMessage from '../../static/js/ChatMessage';
+import {Builder} from "../../static/js/Builder";
+import {Attribute} from "../../static/js/types/Attribute";
 const CustomError = require('../utils/customError');
 const padManager = require('./PadManager');
 const padMessageHandler = require('../handler/PadMessageHandler');
@@ -563,11 +565,11 @@ exports.restoreRevision = async (padID: string, rev: number, authorId = '') => {
   const oldText = pad.text();
   atext.text += '\n';
 
-  const eachAttribRun = (attribs: string[], func:Function) => {
+  const eachAttribRun = (attribs: string, func:Function) => {
     let textIndex = 0;
     const newTextStart = 0;
     const newTextEnd = atext.text.length;
-    for (const op of Changeset.deserializeOps(attribs)) {
+    for (const op of deserializeOps(attribs)) {
       const nextIndex = textIndex + op.chars;
       if (!(nextIndex <= newTextStart || textIndex >= newTextEnd)) {
         func(Math.max(newTextStart, textIndex), Math.min(newTextEnd, nextIndex), op.attribs);
@@ -577,10 +579,10 @@ exports.restoreRevision = async (padID: string, rev: number, authorId = '') => {
   };
 
   // create a new changeset with a helper builder object
-  const builder = Changeset.builder(oldText.length);
+  const builder = new Builder(oldText.length);
 
   // assemble each line into the builder
-  eachAttribRun(atext.attribs, (start: number, end: number, attribs:string[]) => {
+  eachAttribRun(atext.attribs, (start: number, end: number, attribs:Attribute[]) => {
     builder.insert(atext.text.substring(start, end), attribs);
   });
 
