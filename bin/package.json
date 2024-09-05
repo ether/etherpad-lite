@@ -12,7 +12,7 @@
     "log4js": "^6.9.1",
     "semver": "^7.6.3",
     "tsx": "^4.19.0",
-    "ueberdb2": "^4.2.94"
+    "ueberdb2": "^4.2.100"
   },
   "devDependencies": {
     "@types/node": "^22.5.3",
@@ -34,7 +34,8 @@
     "stalePlugins": "node --import tsx ./plugins/stalePlugins.ts",
     "checkPlugin": "node --import tsx ./plugins/checkPlugin.ts",
     "plugins": "node --import tsx ./plugins.ts",
-    "generateChangelog": "node --import tsx generateReleaseNotes.ts"
+    "generateChangelog": "node --import tsx generateReleaseNotes.ts",
+    "migrateDB": "node --import tsx migrateDB.ts"
   },
   "author": "",
   "license": "ISC"

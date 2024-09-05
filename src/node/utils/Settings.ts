@@ -169,11 +169,11 @@ exports.authenticationMethod = 'sso'
 /*
  * The Type of the database
  */
-exports.dbType = 'dirty';
+exports.dbType = 'rustydb';
 /**
  * This setting is passed with dbType to ueberDB to set up the database
  */
-exports.dbSettings = {filename: path.join(exports.root, 'var/dirty.db')};
+exports.dbSettings = {filename: path.join(exports.root, 'var/rusty.db')};
 
 /**
  * The default Text of a new pad
@@ -939,6 +939,11 @@ exports.reloadSettings = () => {
 
         exports.dbSettings.filename = absolutePaths.makeAbsolute(exports.dbSettings.filename);
         logger.warn(`${dirtyWarning} File location: ${exports.dbSettings.filename}`);
+    }
+
+    if (exports.dbType === 'rustydb') {
+      exports.dbSettings.filename = absolutePaths.makeAbsolute(exports.dbSettings.filename);
+      logger.warn(`File location: ${exports.dbSettings.filename}`);
     }
 
     if (exports.ip === '') {
