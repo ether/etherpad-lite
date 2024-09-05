@@ -10,6 +10,6 @@ REM Etherpad internals via `require('ep_etherpad-lite/foo')`,
 REM `node_modules\ep_etherpad-lite` is used here.
 cd src
 
-start microsoftedge "http://localhost:9001"
+start microsoftedge "http://localhost:9002"
 pnpm run prod
 

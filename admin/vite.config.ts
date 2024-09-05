@@ -21,16 +21,16 @@ export default defineConfig({
   server:{
     proxy: {
       '/socket.io/*': {
-        target: 'http://localhost:9001',
+        target: 'http://localhost:9002',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, '')
       },
         '/admin-auth/': {
-            target: 'http://localhost:9001',
+            target: 'http://localhost:9002',
             changeOrigin: true,
         },
         '/stats': {
-            target: 'http://localhost:9001',
+            target: 'http://localhost:9002',
             changeOrigin: true,
         }
         }

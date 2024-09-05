@@ -3,7 +3,7 @@ import {loginToAdmin} from "../helper/adminhelper";
 
 test.beforeEach(async ({ page })=>{
     await loginToAdmin(page, 'admin', 'changeme1');
-    await page.goto('http://localhost:9001/admin/plugins')
+    await page.goto('http://localhost:9002/admin/plugins')
 })
 
 

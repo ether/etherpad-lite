@@ -852,7 +852,7 @@ grow! :)
 # 1.8.3
 * FEATURE: colibris is now the default skin for new installs
 * FEATURE: improved colibris visuals, and migrated to Flexbox layout
-* FEATURE: skin variants: colibris skin colors can be easily customized. Visit http://127.0.0.1:9001/p/test#skinvariantsbuilder
+* FEATURE: skin variants: colibris skin colors can be easily customized. Visit http://127.0.0.1:9002/p/test#skinvariantsbuilder
 * REQUIREMENTS: minimum required Node version is **10.13.0 LTS**.
 * MINOR: stability fixes for the async migration in 1.8.0 (fixed many UnhandledPromiseRejectionWarning and the few remaining crashes)
 * MINOR: improved stability of import/export functionality

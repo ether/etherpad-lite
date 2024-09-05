@@ -44,7 +44,7 @@ export const generateJWTToken =  () => {
     jti: '123',
     exp: Math.floor(Date.now() / 1000) + 60 * 60,
     aud: 'account',
-    iss: 'http://localhost:9001',
+    iss: 'http://localhost:9002',
     admin: true
   })
   jwt.setProtectedHeader({alg: 'RS256'})
@@ -58,7 +58,7 @@ export const generateJWTTokenUser =  () => {
     jti: '123',
     exp: Math.floor(Date.now() / 1000) + 60 * 60,
     aud: 'account',
-    iss: 'http://localhost:9001',
+    iss: 'http://localhost:9002',
   })
   jwt.setProtectedHeader({alg: 'RS256'})
   return jwt.sign(privateKeyExported!)

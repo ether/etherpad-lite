@@ -50,14 +50,14 @@
  *     specify "null" as the default value.
  *
  * EXAMPLE:
- *    "port":     "${PORT:9001}"
+ *    "port":     "${PORT:9002}"
  *    "minify":   "${MINIFY}"
  *    "skinName": "${SKIN_NAME:colibris}"
  *
  * Would read the configuration values for those items from the environment
  * variables PORT, MINIFY and SKIN_NAME.
  *
- * If PORT and SKIN_NAME variables were not defined, the default values 9001 and
+ * If PORT and SKIN_NAME variables were not defined, the default values 9002 and
  * "colibris" would be used.
  * The configuration value "minify", on the other hand, does not have a
  * designated default value. Thus, if the environment variable MINIFY were
@@ -66,18 +66,18 @@
  * REMARKS:
  * 1) please note that variable substitution always needs to be quoted.
  *
- *    "port":     9001,            <-- Literal values. When not using
+ *    "port":     9002,            <-- Literal values. When not using
  *    "minify":   false                substitution, only strings must be
  *    "skinName": "colibris"           quoted. Booleans and numbers must not.
  *
- *    "port":     "${PORT:9001}"   <-- CORRECT: if you want to use a variable
+ *    "port":     "${PORT:9002}"   <-- CORRECT: if you want to use a variable
  *    "minify":   "${MINIFY:true}"     substitution, put quotes around its name,
  *    "skinName": "${SKIN_NAME}"       even if the required value is a number or
  *                                     a boolean.
  *                                     Etherpad will take care of rewriting it
  *                                     to the proper type if necessary.
  *
- *    "port":     ${PORT:9001}     <-- ERROR: this is not valid json. Quotes
+ *    "port":     ${PORT:9002}     <-- ERROR: this is not valid json. Quotes
  *    "minify":   ${MINIFY}            around variable names are missing.
  *    "skinName": ${SKIN_NAME}
  *
@@ -162,7 +162,7 @@
    *    "port" : "/somepath/etherpad.socket", // <-- path to a Unix socket
    */
   "ip": "${IP:0.0.0.0}",
-  "port": "${PORT:9001}",
+  "port": "${PORT:9002}",
 
   /*
    * Option to hide/show the settings.json in admin page.
@@ -659,21 +659,21 @@
    */
   "lowerCasePadIds": "${LOWER_CASE_PAD_IDS:false}",
   "sso": {
-    "issuer": "${SSO_ISSUER:http://localhost:9001}",
+    "issuer": "${SSO_ISSUER:http://localhost:9002}",
       "clients": [
         {
           "client_id": "${ADMIN_CLIENT:admin_client}",
           "client_secret": "${ADMIN_SECRET:admin}",
           "grant_types": ["authorization_code"],
           "response_types": ["code"],
-          "redirect_uris": ["${ADMIN_REDIRECT:http://localhost:9001/admin/}"]
+          "redirect_uris": ["${ADMIN_REDIRECT:http://localhost:9002/admin/}"]
         },
         {
           "client_id": "${USER_CLIENT:user_client}",
           "client_secret": "${USER_SECRET:user}",
           "grant_types": ["authorization_code"],
           "response_types": ["code"],
-          "redirect_uris": ["${USER_REDIRECT:http://localhost:9001/}"]
+          "redirect_uris": ["${USER_REDIRECT:http://localhost:9002/}"]
         }
       ]
     },

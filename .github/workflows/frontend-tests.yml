@@ -69,7 +69,7 @@ jobs:
           pnpm run prod &
           connected=false
           can_connect() {
-          curl -sSfo /dev/null http://localhost:9001/ || return 1
+          curl -sSfo /dev/null http://localhost:9002/ || return 1
           connected=true
           }
           now() { date +%s; }
@@ -139,7 +139,7 @@ jobs:
           pnpm run prod &
           connected=false
           can_connect() {
-          curl -sSfo /dev/null http://localhost:9001/ || return 1
+          curl -sSfo /dev/null http://localhost:9002/ || return 1
           connected=true
           }
           now() { date +%s; }
@@ -216,7 +216,7 @@ jobs:
           pnpm run prod &
           connected=false
           can_connect() {
-          curl -sSfo /dev/null http://localhost:9001/ || return 1
+          curl -sSfo /dev/null http://localhost:9002/ || return 1
           connected=true
           }
           now() { date +%s; }

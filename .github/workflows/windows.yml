@@ -70,7 +70,7 @@ jobs:
           pnpm i
           pnpm exec playwright install --with-deps
           pnpm run prod &
-          curl --connect-timeout 10 --max-time 20 --retry 5 --retry-delay 10 --retry-max-time 60 --retry-connrefused http://127.0.0.1:9001/p/test
+          curl --connect-timeout 10 --max-time 20 --retry 5 --retry-delay 10 --retry-max-time 60 --retry-connrefused http://127.0.0.1:9002/p/test
           pnpm exec playwright install chromium  --with-deps
           pnpm run test-ui --project=chromium
       # On release, create release

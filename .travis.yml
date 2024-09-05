@@ -72,7 +72,7 @@ jobs:
         - "cd src && pnpm install && cd -"
       script:
         - "docker build -t etherpad:test ."
-        - "docker run -d -p 9001:9001 etherpad:test && sleep 3"
+        - "docker run -d -p 9002:9002 etherpad:test && sleep 3"
         - "cd src && pnpm run test-container"
     - name: "Load test Etherpad without Plugins"
       install:
@@ -115,7 +115,7 @@ jobs:
         - "cd src && pnpm install && cd -"
       script:
         - "docker build -t etherpad:test ."
-        - "docker run -d -p 9001:9001 etherpad:test && sleep 3"
+        - "docker run -d -p 9002:9002 etherpad:test && sleep 3"
         - "cd src && pnpm run test-container"
     - name: "Load test Etherpad with Plugins"
       install:
@@ -133,7 +133,7 @@ jobs:
         - "docker build -f src/tests/ratelimit/Dockerfile.nginx -t nginx-latest ."
         - "docker build -f src/tests/ratelimit/Dockerfile.anotherip -t anotherip ."
         - "docker run -p 8081:80 --rm --network ep_net --ip 172.23.42.1 -d nginx-latest"
-        - "docker run --name etherpad-docker -p 9000:9001 --rm --network ep_net --ip 172.23.42.2 -e 'TRUST_PROXY=true' epl-debian-slim &"
+        - "docker run --name etherpad-docker -p 9000:9002 --rm --network ep_net --ip 172.23.42.2 -e 'TRUST_PROXY=true' epl-debian-slim &"
         - "docker run --rm --network ep_net --ip 172.23.42.3 --name anotherip -dt anotherip"
         - "./bin/installDeps.sh"
       script:

@@ -54,7 +54,7 @@ const sauceTestWorker = async.queue(async ({name, pfx, browser, version, platfor
   const driver = await builder.build();
   const url = `https://saucelabs.com/jobs/${(await driver.getSession()).getId()}`;
   try {
-    await driver.get('http://localhost:9001/tests/frontend/');
+    await driver.get('http://localhost:9002/tests/frontend/');
     log(`Remote sauce test started! ${url}`, pfx);
     // @TODO this should be configured in testSettings, see
     // https://wiki.saucelabs.com/display/DOCS/Test+Configuration+Options#TestConfigurationOptions-Timeouts

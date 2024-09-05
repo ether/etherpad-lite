@@ -9,7 +9,7 @@ test.describe('admin settings',()=> {
 
 
     test('Are Settings visible, populated, does save work', async ({page}) => {
-        await page.goto('http://localhost:9001/admin/settings');
+        await page.goto('http://localhost:9002/admin/settings');
         await page.waitForSelector('.settings');
         const settings =  page.locator('.settings');
         await expect(settings).not.toBeEmpty();
@@ -48,7 +48,7 @@ test.describe('admin settings',()=> {
     })
 
     test('restart works', async function ({page}) {
-        await page.goto('http://localhost:9001/admin/settings');
+        await page.goto('http://localhost:9002/admin/settings');
         await page.waitForSelector('.settings')
         await restartEtherpad(page)
         await page.waitForSelector('.settings')

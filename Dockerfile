@@ -156,7 +156,7 @@ COPY --chown=etherpad:etherpad ${SETTINGS} "${EP_DIR}"/settings.json
 USER etherpad
 
 HEALTHCHECK --interval=5s --timeout=3s \
-  CMD curl --silent http://localhost:9001/health | grep -E "pass|ok|up" > /dev/null || exit 1
+  CMD curl --silent http://localhost:9002/health | grep -E "pass|ok|up" > /dev/null || exit 1
 
-EXPOSE 9001
+EXPOSE 9002
 CMD ["pnpm", "run", "prod"]

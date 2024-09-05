@@ -69,7 +69,7 @@ docker build --build-arg ETHERPAD_PLUGINS="ep_comments_page ep_author_neat" --ta
 
 To run your instance:
 ```bash
-docker run --detach --publish <DESIRED_PORT>:9001 <YOUR_USERNAME>/etherpad
+docker run --detach --publish <DESIRED_PORT>:9002 <YOUR_USERNAME>/etherpad
 ```
 
 And point your browser to `http://<YOUR_IP>:<DESIRED_PORT>`
@@ -86,7 +86,7 @@ The `settings.json.docker` available by default allows to control almost every s
 | `FAVICON`          | favicon default name, or a fully specified URL to your own favicon                         | `favicon.ico`                                                                                                                                                                                                                       |
 | `DEFAULT_PAD_TEXT` | The default text of a pad                                                                  | `Welcome to Etherpad! This pad text is synchronized as you type, so that everyone viewing this page sees the same text. This allows you to collaborate seamlessly on documents! Get involved with Etherpad at https://etherpad.org` |
 | `IP`               | IP which etherpad should bind at. Change to `::` for IPv6                                  | `0.0.0.0`                                                                                                                                                                                                                           |
-| `PORT`             | port which etherpad should bind at                                                         | `9001`                                                                                                                                                                                                                              |
+| `PORT`             | port which etherpad should bind at                                                         | `9002`                                                                                                                                                                                                                              |
 | `ADMIN_PASSWORD`   | the password for the `admin` user (leave unspecified if you do not want to create it)      |                                                                                                                                                                                                                                     |
 | `USER_PASSWORD`    | the password for the first user `user` (leave unspecified if you do not want to create it) |                                                                                                                                                                                                                                     |
 
@@ -244,7 +244,7 @@ Use a Postgres database, no admin user enabled:
 ```shell
 docker run -d \
 	--name etherpad         \
-	-p 9001:9001            \
+	-p 9002:9002            \
 	-e 'DB_TYPE=postgres'   \
 	-e 'DB_HOST=db.local'   \
 	-e 'DB_PORT=4321'       \
@@ -259,7 +259,7 @@ Run enabling the administrative user `admin`:
 ```shell
 docker run -d \
 	--name etherpad \
-	-p 9001:9001 \
+	-p 9002:9002 \
 	-e 'ADMIN_PASSWORD=supersecret' \
 	etherpad/etherpad
 ```
@@ -269,7 +269,7 @@ Run a test instance running DirtyDB on a persistent volume:
 ```shell
 docker run -d \
 	-v etherpad_data:/opt/etherpad-lite/var \
-	-p 9001:9001 \
+	-p 9002:9002 \
 	etherpad/etherpad
 ```
 
@@ -306,7 +306,7 @@ services:
       TRUST_PROXY: ${DOCKER_COMPOSE_APP_TRUST_PROXY:-true}
     restart: always
     ports:
-      - "${DOCKER_COMPOSE_APP_PORT_PUBLISHED:-9001}:${DOCKER_COMPOSE_APP_PORT_TARGET:-9001}"
+      - "${DOCKER_COMPOSE_APP_PORT_PUBLISHED:-9002}:${DOCKER_COMPOSE_APP_PORT_TARGET:-9002}"
 
   postgres:
     image: postgres:15-alpine

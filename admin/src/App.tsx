@@ -8,7 +8,7 @@ import {LoadingScreen} from "./utils/LoadingScreen.tsx";
 import {Trans, useTranslation} from "react-i18next";
 import {Cable, Construction, Crown, NotepadText, Wrench, PhoneCall} from "lucide-react";
 
-const WS_URL = import.meta.env.DEV? 'http://localhost:9001' : ''
+const WS_URL = import.meta.env.DEV? 'http://localhost:9002' : ''
 export const App = ()=> {
     const setSettings = useStore(state => state.setSettings);
     const {t} = useTranslation()

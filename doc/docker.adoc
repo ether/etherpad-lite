@@ -24,7 +24,7 @@ By default, the Etherpad Docker image is built and run in `production` mode: no 
 A docker compose file is provided in the project. Please first copy `.env.default` to `.env` and adjust the variables to your preference.
 
 ```
-docker compose up -d # will build and start the docker container on port 9001 with development settings.
+docker compose up -d # will build and start the docker container on port 9002 with development settings.
 ```
 
 Starting dev server:
@@ -108,7 +108,7 @@ To run your instance:
 
 [source,bash]
 ----
-docker run --detach --publish <DESIRED_PORT>:9001 <YOUR_USERNAME>/etherpad
+docker run --detach --publish <DESIRED_PORT>:9002 <YOUR_USERNAME>/etherpad
 ----
 
 And point your browser to `http://<YOUR_IP>:<DESIRED_PORT>`
@@ -140,7 +140,7 @@ The `settings.json.docker` available by default allows to control almost every s
 | `0.0.0.0`
 | `PORT`
 | port which etherpad should bind at
-| `9001`
+| `9002`
 | `ADMIN_PASSWORD`
 | the password for the `admin` user (leave unspecified if you do not want to create it)
 |
@@ -533,7 +533,7 @@ Use a Postgres database, no admin user enabled:
 ----
 docker run -d \
 	--name etherpad         \
-	-p 9001:9001            \
+	-p 9002:9002            \
 	-e 'DB_TYPE=postgres'   \
 	-e 'DB_HOST=db.local'   \
 	-e 'DB_PORT=4321'       \
@@ -549,7 +549,7 @@ Run enabling the administrative user `admin`:
 ----
 docker run -d \
 	--name etherpad \
-	-p 9001:9001 \
+	-p 9002:9002 \
 	-e 'ADMIN_PASSWORD=supersecret' \
 	etherpad/etherpad
 ----
@@ -560,6 +560,6 @@ Run a test instance running DirtyDB on a persistent volume:
 ----
 docker run -d \
 	-v etherpad_data:/opt/etherpad-lite/var \
-	-p 9001:9001 \
+	-p 9002:9002 \
 	etherpad/etherpad
 ----

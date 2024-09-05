@@ -14,10 +14,10 @@ log "Assuming bin/installDeps.sh has already been run"
 (cd src && npm run dev --experimental-worker "${@}" &
 ep_pid=$!)
 
-log "Waiting for Etherpad to accept connections (http://localhost:9001)..."
+log "Waiting for Etherpad to accept connections (http://localhost:9002)..."
 connected=false
 can_connect() {
-    curl -sSfo /dev/null http://localhost:9001/ || return 1
+    curl -sSfo /dev/null http://localhost:9002/ || return 1
     connected=true
 }
 now() { date +%s; }
@@ -27,7 +27,7 @@ while [ $(($(now) - $start)) -le 15 ] && ! can_connect; do
 done
 [ "$connected" = true ] \
     || fatal "Timed out waiting for Etherpad to accept connections"
-log "Successfully connected to Etherpad on http://localhost:9001"
+log "Successfully connected to Etherpad on http://localhost:9002"
 
 # start the remote runner
 try cd "${MY_DIR}"

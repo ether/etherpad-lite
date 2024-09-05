@@ -58,7 +58,7 @@ jobs:
       -
         name: run docker images
         run: |
-          docker run --name etherpad-docker -p 9000:9001 --rm --network ep_net --ip 172.23.42.2 -e 'TRUST_PROXY=true' epl-debian-slim &
+          docker run --name etherpad-docker -p 9000:9002 --rm --network ep_net --ip 172.23.42.2 -e 'TRUST_PROXY=true' epl-debian-slim &
           docker run -p 8081:80 --rm --network ep_net --ip 172.23.42.1 -d nginx-latest
           docker run --rm --network ep_net --ip 172.23.42.3 --name anotherip -dt anotherip
       -

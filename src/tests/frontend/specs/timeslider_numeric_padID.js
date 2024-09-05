@@ -17,8 +17,8 @@ describe('timeslider', function () {
     await helper.waitForPromise(() => helper.contentWindow().location.hash === '#1');
 
     // expect URI to be similar to
-    // http://192.168.1.48:9001/p/2/1/export/html
-    // http://192.168.1.48:9001/p/735773577399/1/export/html
+    // http://192.168.1.48:9002/p/2/1/export/html
+    // http://192.168.1.48:9002/p/735773577399/1/export/html
     const rev1ExportLink = helper.contentWindow().$('#exporthtmla').attr('href');
     expect(rev1ExportLink).to.contain('/1/export/html');
 

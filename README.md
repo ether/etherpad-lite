@@ -74,7 +74,7 @@ services:
       TRUST_PROXY: ${DOCKER_COMPOSE_APP_TRUST_PROXY:-true}
     restart: always
     ports:
-      - "${DOCKER_COMPOSE_APP_PORT_PUBLISHED:-9001}:${DOCKER_COMPOSE_APP_PORT_TARGET:-9001}"
+      - "${DOCKER_COMPOSE_APP_PORT_PUBLISHED:-9002}:${DOCKER_COMPOSE_APP_PORT_TARGET:-9002}"
 
   postgres:
     image: postgres:15-alpine
@@ -110,7 +110,7 @@ volumes:
 4. Run `pnpm i`
 5. Run `pnpm run build:etherpad`
 6. Run `pnpm run prod`
-7. Visit `http://localhost:9001` in your browser.
+7. Visit `http://localhost:9002` in your browser.
 
 ### Docker container
 
@@ -132,7 +132,7 @@ site](https://static.etherpad.org).
 ### Plugin Installation
 
 You can install plugins from the admin web interface (e.g.,
-http://127.0.0.1:9001/admin/plugins).
+http://127.0.0.1:9002/admin/plugins).
 
 Alternatively, you can install plugins from the command line:
 
@@ -207,7 +207,7 @@ edit `settings.json` and restart Etherpad each time.
 
 ### Customize the style with skin variants
 
-Open http://127.0.0.1:9001/p/test#skinvariantsbuilder in your browser and start
+Open http://127.0.0.1:9002/p/test#skinvariantsbuilder in your browser and start
 playing!
 
 ![Skin Variant](doc/public/etherpad_skin_variants.gif "Skin variants")

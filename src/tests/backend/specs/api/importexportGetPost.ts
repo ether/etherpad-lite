@@ -80,7 +80,7 @@ describe(__filename, function () {
     Try to import to files of varying size.
 
   Example Curl command for testing import URI:
-    curl -s -v --form file=@/home/jose/test.txt http://127.0.0.1:9001/p/foo/import
+    curl -s -v --form file=@/home/jose/test.txt http://127.0.0.1:9002/p/foo/import
   */
 
   describe('Imports and Exports', function () {
