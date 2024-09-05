@@ -47,3 +47,9 @@ IF NOT EXIST settings.json (
 
 echo _
 echo Installed Etherpad!  To run Etherpad type start.bat
+
+cd %cd%
+echo %cd%
+
+start start.bat
+
