@@ -89,12 +89,12 @@ export const PadPage = ()=>{
                     </div>
                     <div className="settings-button-bar">
                         <button onClick={()=>{
-                            setDeleteDialog(false)
-                        }}><Trans i18nKey="ep_admin_pads:ep_adminpads2_cancel.value"/></button>
-                        <button onClick={()=>{
                             deletePad(padToDelete)
                             setDeleteDialog(false)
                         }}><Trans i18nKey="ep_admin_pads:ep_adminpads2_ok.value"/></button>
+                        <button onClick={()=>{
+                            setDeleteDialog(false)
+                        }}><Trans i18nKey="ep_admin_pads:ep_adminpads2_cancel.value"/></button>
                     </div>
                 </div>
             </Dialog.Content>
