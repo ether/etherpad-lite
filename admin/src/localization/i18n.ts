@@ -28,7 +28,7 @@ const LazyImportPlugin: BackendModule = {
         try {
             json = JSON.parse(await localeJSON.text())
         } catch(e) {
-             callback(new Error("Error loading"), null);
+             callback(new Error("加载错误"), null);
         }
 
 

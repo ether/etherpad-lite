@@ -21,13 +21,13 @@ export const SettingsPage = ()=>{
                     settingsSocket!.emit('saveSettings', settings!);
                     useStore.getState().setToastState({
                         open: true,
-                        title: "Succesfully saved settings",
+                        title: "保存设置成功",
                         success: true
                     })
                 } else {
                     useStore.getState().setToastState({
                         open: true,
-                        title: "Error saving settings",
+                        title: "保存设置出错",
                         success: false
                     })
                 }

@@ -19,7 +19,7 @@ if (process.argv.length !== 2) throw new Error('Use: node bin/checkAllPads.js');
     try {
       await pad.check();
     } catch (err:any) {
-      console.error(`Error in pad ${padId}: ${err.stack || err}`);
+      console.error(`文档错误: ${padId}: ${err.stack || err}`);
       return;
     }
     console.log(`Pad ${padId}: OK`);

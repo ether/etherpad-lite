@@ -32,7 +32,7 @@ const newPadId = process.argv[4] || `${padId}-rebuilt`;
     throw new Error('Cannot create a pad with that id as it is invalid');
   }
   const exists = await PadManager.doesPadExist(newPadId);
-  if (exists) throw new Error('Cannot create a pad with that id as it already exists');
+  if (exists) throw new Error('由于该 ID 已存在，无法创建具有该 ID 的文档');
 
   const oldPad = await PadManager.getPad(padId);
   const newPad = new Pad(newPadId);
@@ -54,7 +54,7 @@ const newPadId = process.argv[4] || `${padId}-rebuilt`;
   newPad.pool.numToAttrib = oldPad.pool.numToAttrib;
   for (let curRevNum = 0; curRevNum <= newRevHead; curRevNum++) {
     const rev = await db.get(`pad:${padId}:revs:${curRevNum}`);
-    if (!rev || !rev.meta) throw new Error('The specified revision number could not be found.');
+    if (!rev || !rev.meta) throw new Error('指定的修订号无法找到。 ');
     const newRevNum = ++newPad.head;
     const newRevId = `pad:${newPad.id}:revs:${newRevNum}`;
     await Promise.all([

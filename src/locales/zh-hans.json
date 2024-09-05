@@ -24,7 +24,7 @@
 			"燃玉"
 		]
 	},
-	"admin.page-title": "管理员面板 - Etherpad",
+	"admin.page-title": "管理后台 - Etherpad",
 	"admin_plugins": "插件管理",
 	"admin_plugins.available": "可用插件",
 	"admin_plugins.available_not-found": "找不到插件。",
