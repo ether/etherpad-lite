@@ -1,3 +1,14 @@
+# 2.2.3
+
+### Notable enhancements and fixes
+
+- Introduced a new in process database `rustydb` that represents a fast key value store written in Rust.
+- Readded window._ as a shortcut for getting text
+- Added support for migrating any ueberdb database to another. You can now switch as you please. See here: https://docs.etherpad.org/cli.html
+- Further Typescript movements
+- A lot of security issues fixed and reviewed in this release. Please update.
+
+
 # 2.2.2
 
 ### Notable enhancements and fixes

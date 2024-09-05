@@ -3,7 +3,7 @@
 import {MapArrayType} from "../../../node/types/MapType";
 import {PluginDef} from "../../../node/types/PartType";
 
-const ChatMessage = require('../../../static/js/ChatMessage');
+import ChatMessage from '../../../static/js/ChatMessage';
 const {Pad} = require('../../../node/db/Pad');
 const assert = require('assert').strict;
 const common = require('../common');
@@ -103,10 +103,14 @@ describe(__filename, function () {
         checkHook('chatNewMessage', ({message}) => {
           assert(message != null);
           assert(message instanceof ChatMessage);
-          assert.equal(message.authorId, authorId);
-          assert.equal(message.text, this.test!.title);
-          assert(message.time >= start);
-          assert(message.time <= Date.now());
+          // @ts-ignore
+          assert.equal(message!.authorId, authorId);
+          // @ts-ignore
+          assert.equal(message!.text, this.test!.title);
+          // @ts-ignore
+          assert(message!.time >= start);
+          // @ts-ignore
+          assert(message!.time <= Date.now());
         }),
         sendChat(socket, {text: this.test!.title}),
       ]);
@@ -153,7 +157,9 @@ describe(__filename, function () {
       const customMetadata = {foo: this.test!.title};
       await Promise.all([
         checkHook('chatNewMessage', ({message}) => {
+          // @ts-ignore
           message.text = modifiedText;
+          // @ts-ignore
           message.customMetadata = customMetadata;
         }),
         (async () => {

@@ -1,5 +1,5 @@
 'use strict';
-const fs = require('fs');
+import fs from 'node:fs';
 
 const check = (path:string) => {
   const existsSync = fs.statSync || fs.existsSync;
@@ -13,4 +13,4 @@ const check = (path:string) => {
   return result;
 };
 
-module.exports = check;
+export default check;

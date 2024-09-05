@@ -74,7 +74,7 @@ const express = require('./hooks/express');
 const hooks = require('../static/js/pluginfw/hooks');
 const pluginDefs = require('../static/js/pluginfw/plugin_defs');
 const plugins = require('../static/js/pluginfw/plugins');
-const {Gate} = require('./utils/promises');
+import {Gate} from './utils/promises';
 const stats = require('./stats')
 
 const logger = log4js.getLogger('server');
@@ -100,7 +100,7 @@ const removeSignalListener = (signal: NodeJS.Signals, listener: NodeJS.SignalsLi
 };
 
 
-let startDoneGate: { resolve: () => void; }
+let startDoneGate: Gate<unknown>
 exports.start = async () => {
   switch (state) {
     case State.INITIAL:
@@ -181,12 +181,14 @@ exports.start = async () => {
   } catch (err) {
     logger.error('Error occurred while starting Etherpad');
     state = State.STATE_TRANSITION_FAILED;
+    // @ts-ignore
     startDoneGate.resolve();
     return await exports.exit(err);
   }
 
   logger.info('Etherpad is running');
   state = State.RUNNING;
+  // @ts-ignore
   startDoneGate.resolve();
 
   // Return the HTTP server to make it easier to write tests.
@@ -228,11 +230,13 @@ exports.stop = async () => {
   } catch (err) {
     logger.error('Error occurred while stopping Etherpad');
     state = State.STATE_TRANSITION_FAILED;
+    // @ts-ignore
     stopDoneGate.resolve();
     return await exports.exit(err);
   }
   logger.info('Etherpad stopped');
   state = State.STOPPED;
+  // @ts-ignore
   stopDoneGate.resolve();
 };
 

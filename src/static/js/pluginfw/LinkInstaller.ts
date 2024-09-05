@@ -44,6 +44,12 @@ export class LinkInstaller {
         await this.checkLinkedDependencies(installedPlugin)
     }
 
+    public async installFromGitHub(repository: string) {
+        const installedPlugin = await this.livePluginManager.installFromGithub(repository)
+        this.linkDependency(installedPlugin.name)
+        await this.checkLinkedDependencies(installedPlugin)
+    }
+
     public async installPlugin(pluginName: string, version?: string) {
         if (version) {
             const installedPlugin = await this.livePluginManager.install(pluginName, version);

@@ -995,3 +995,9 @@ export default html10n
 
 // @ts-ignore
 window.html10n = html10n
+
+// gettext-like shortcut
+if (window._ === undefined){
+  // @ts-ignore
+  window._ = html10n.get;
+}

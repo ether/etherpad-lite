@@ -9,6 +9,7 @@ services:
     build:
       context: .
       args:
+        # Attention: installed plugins in the node_modules folder get overwritten during volume mount in dev
         ETHERPAD_PLUGINS:
       # change from development to production if needed
       target: development

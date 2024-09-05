@@ -18,7 +18,7 @@ import {MapArrayType} from "../types/MapType";
  * limitations under the License.
  */
 
-const Changeset = require('../../static/js/Changeset');
+import {deserializeOps, splitAttributionLines, subattribution} from '../../static/js/Changeset';
 const attributes = require('../../static/js/attributes');
 const padManager = require('../db/PadManager');
 const _ = require('underscore');
@@ -27,7 +27,9 @@ const hooks = require('../../static/js/pluginfw/hooks');
 const eejs = require('../eejs');
 const _analyzeLine = require('./ExportHelper')._analyzeLine;
 const _encodeWhitespace = require('./ExportHelper')._encodeWhitespace;
-const padutils = require('../../static/js/pad_utils').padutils;
+import padutils from "../../static/js/pad_utils";
+import {StringIterator} from "../../static/js/StringIterator";
+import {StringAssembler} from "../../static/js/StringAssembler";
 
 const getPadHTML = async (pad: PadType, revNum: string) => {
   let atext = pad.atext;
@@ -44,7 +46,7 @@ const getPadHTML = async (pad: PadType, revNum: string) => {
 const getHTMLFromAtext = async (pad:PadType, atext: AText, authorColors?: string[]) => {
   const apool = pad.apool();
   const textLines = atext.text.slice(0, -1).split('\n');
-  const attribLines = Changeset.splitAttributionLines(atext.attribs, atext.text);
+  const attribLines = splitAttributionLines(atext.attribs, atext.text);
 
   const tags = ['h1', 'h2', 'strong', 'em', 'u', 's'];
   const props = ['heading1', 'heading2', 'bold', 'italic', 'underline', 'strikethrough'];
@@ -80,6 +82,7 @@ const getHTMLFromAtext = async (pad:PadType, atext: AText, authorColors?: string
     css += '<style>\n';
 
     for (const a of Object.keys(apool.numToAttrib)) {
+      // @ts-ignore
       const attr = apool.numToAttrib[a];
 
       // skip non author attributes
@@ -115,6 +118,7 @@ const getHTMLFromAtext = async (pad:PadType, atext: AText, authorColors?: string
       // see hook exportHtmlAdditionalTagsWithData
       attrib = propName;
     }
+    // @ts-ignore
     const propTrueNum = apool.putAttrib(attrib, true);
     if (propTrueNum >= 0) {
       anumMap[propTrueNum] = i;
@@ -127,8 +131,8 @@ const getHTMLFromAtext = async (pad:PadType, atext: AText, authorColors?: string
     // <b>Just bold<b> <b><i>Bold and italics</i></b> <i>Just italics</i>
     // becomes
     // <b>Just bold <i>Bold and italics</i></b> <i>Just italics</i>
-    const taker = Changeset.stringIterator(text);
-    const assem = Changeset.stringAssembler();
+    const taker = new StringIterator(text);
+    const assem = new StringAssembler();
     const openTags:string[] = [];
 
     const getSpanClassFor = (i: string) => {
@@ -204,7 +208,8 @@ const getHTMLFromAtext = async (pad:PadType, atext: AText, authorColors?: string
         return;
       }
 
-      const ops = Changeset.deserializeOps(Changeset.subattribution(attribs, idx, idx + numChars));
+      // @ts-ignore
+      const ops = deserializeOps(subattribution(attribs, idx, idx + numChars));
       idx += numChars;
 
       // this iterates over every op string and decides which tags to open or to close

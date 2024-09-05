@@ -177,6 +177,10 @@ const checkAccess = async (req:any, res:any, next: Function) => {
       res.status(401).send('Authentication Required');
       return;
     }
+    if (ctx.username === '__proto__' || ctx.username === 'constructor' || ctx.username === 'prototype') {
+      res.end(403);
+      return;
+    }
     settings.users[ctx.username].username = ctx.username;
     // Make a shallow copy so that the password property can be deleted (to prevent it from
     // appearing in logs or in the database) without breaking future authentication attempts.

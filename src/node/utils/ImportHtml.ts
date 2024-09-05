@@ -16,10 +16,11 @@
  */
 
 import log4js from 'log4js';
-const Changeset = require('../../static/js/Changeset');
+import {deserializeOps} from '../../static/js/Changeset';
 const contentcollector = require('../../static/js/contentcollector');
 import jsdom from 'jsdom';
 import {PadType} from "../types/PadType";
+import {Builder} from "../../static/js/Builder";
 
 const apiLogger = log4js.getLogger('ImportHtml');
 let processor:any;
@@ -69,13 +70,13 @@ exports.setPadHTML = async (pad: PadType, html:string, authorId = '') => {
   const newAttribs = `${result.lineAttribs.join('|1+1')}|1+1`;
 
   // create a new changeset with a helper builder object
-  const builder = Changeset.builder(1);
+  const builder = new Builder(1);
 
   // assemble each line into the builder
   let textIndex = 0;
   const newTextStart = 0;
   const newTextEnd = newText.length;
-  for (const op of Changeset.deserializeOps(newAttribs)) {
+  for (const op of deserializeOps(newAttribs)) {
     const nextIndex = textIndex + op.chars;
     if (!(nextIndex <= newTextStart || textIndex >= newTextEnd)) {
       const start = Math.max(newTextStart, textIndex);
