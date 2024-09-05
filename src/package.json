@@ -91,7 +91,7 @@
     "@types/jsonwebtoken": "^9.0.6",
     "@types/mime-types": "^2.1.4",
     "@types/mocha": "^10.0.7",
-    "@types/node": "^22.5.2",
+    "@types/node": "^22.5.3",
     "@types/oidc-provider": "^8.5.2",
     "@types/semver": "^7.5.8",
     "@types/sinon": "^17.0.3",
