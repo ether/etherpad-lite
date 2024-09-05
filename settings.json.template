@@ -93,7 +93,7 @@
   /*
    * Name your instance!
    */
-  "title": "Etherpad",
+  "title": "文档-Etherpad",
 
   /*
    * Pathname of the favicon you want to use. If null, the skin's favicon is
@@ -512,13 +512,13 @@
     "admin": {
       // 1) "password" can be replaced with "hash" if you install ep_hash_auth
       // 2) please note that if password is null, the user will not be created
-      "password": "changeme1",
+      "password": "admin",
       "is_admin": true
     },
     "user": {
       // 1) "password" can be replaced with "hash" if you install ep_hash_auth
       // 2) please note that if password is null, the user will not be created
-      "password": "changeme1",
+      "password": "user",
       "is_admin": false
     }
   },
