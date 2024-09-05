@@ -132,7 +132,7 @@ export const PadPage = ()=>{
                         sortBy: 'revisionNumber',
                         ascending: !searchParams.ascending
                     })
-                }}>Revision number</th>
+                }}><Trans i18nKey="ep_admin_pads:ep_adminpads2_revision_number"/></th>
                 <th><Trans i18nKey="ep_admin_pads:ep_adminpads2_action"/></th>
             </tr>
             </thead>
