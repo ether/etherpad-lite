@@ -106,7 +106,7 @@
             button[type="submit"] {
               position: absolute;
               left:253px;
-              width: 45px;
+              width: 80px;
               height: 38px;
             }
             @media only screen and (min-device-width: 320px) and (max-device-width: 800px) {
@@ -135,15 +135,16 @@
         <% e.begin_block("indexWrapper"); %>
             <div id="inner">
                 <% if (!settings.requireSession) { %>
-                    <% if (settings.editOnly) { %>
+                  <!-- 隐藏随机文档名功能，只保留手动输入名称 -->
+                    <!-- <% if (settings.editOnly) { %>
                         <label id="label" for="padname" data-l10n-id="index.openPad"></label>
                     <% } else {%>
                         <button id="button" data-l10n-id="index.newPad"></button>
                         <label id="label" for="padname" data-l10n-id="index.createOpenPad"></label>
-                    <% } %>
+                    <% } %> -->
                     <form action="#" id="go2Name">
-                        <input type="text" id="padname" maxlength="50" autofocus x-webkit-speech>
-                        <button type="submit">OK</button>
+                        <input type="text" id="padname"  placeholder="请输入一个文档名称" maxlength="50" autofocus x-webkit-speech>
+                        <button type="submit">创建文档</button>
                     </form>
                 <% } %>
             </div>
