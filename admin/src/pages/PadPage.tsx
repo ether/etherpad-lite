@@ -150,7 +150,7 @@ export const PadPage = ()=>{
                                     setPadToDelete(pad.padName)
                                     setDeleteDialog(true)
                                 }}/>
-                                <IconButton icon={<Eye/>} title="view" onClick={()=>window.open(`/p/${pad.padName}`, '_blank')}/>
+                                <IconButton icon={<Eye/>} title={<Trans i18nKey="ep_admin_pads:ep_adminpads2_view.value"/>} onClick={()=>window.open(`/p/${pad.padName}`, '_blank')}/>
                             </div>
                         </td>
                     </tr>
