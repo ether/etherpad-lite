@@ -4,12 +4,12 @@ import {AChangeSet} from "../types/PadType";
 import {Revision} from "../types/Revision";
 
 const promises = require('./promises');
-const AttributePool = require('ep_etherpad-lite/static/js/AttributePool');
-
 const padManager = require('ep_etherpad-lite/node/db/PadManager');
 const db = require('ep_etherpad-lite/node/db/DB');
 const Changeset = require('ep_etherpad-lite/static/js/Changeset');
 const padMessageHandler = require('ep_etherpad-lite/node/handler/PadMessageHandler');
+const log4js = require('log4js');
+const logger = log4js.getLogger('cleanup');
 
 exports.deleteAllRevisions = async (padID: string): Promise<void> => {
 
@@ -41,15 +41,17 @@ const createRevision = async (aChangeset: AChangeSet, timestamp: number, isKeyRe
 
 exports.deleteRevisions = async (padId: string, keepRevisions: number): Promise<void> => {
 
+  logger.debug('Start cleanup revisions', padId)
+
   let pad = await padManager.getPad(padId);
   await pad.check()
 
-  console.log('Initial pad is valid')
+  logger.debug('Initial pad is valid')
 
   padMessageHandler.kickSessionsFromPad(padId)
 
   const cleanupUntilRevision = pad.head - keepRevisions
-  console.log('Composing changesets: ', cleanupUntilRevision)
+  logger.debug('Composing changesets: ', cleanupUntilRevision)
   const changeset = await padMessageHandler.composePadChangesets(pad, 0, cleanupUntilRevision + 1)
 
   const revisions: Revision[] = [];
@@ -58,10 +60,9 @@ exports.deleteRevisions = async (padId: string, keepRevisions: number): Promise<
     revisions[rev] = await pad.getRevision(rev)
   }
 
-  console.log('Loaded revisions: ', revisions.length)
+  logger.debug('Loaded revisions: ', revisions.length)
 
-  await promises.timesLimit(cleanupUntilRevision, 500, async (i: string) => {
-    console.log('Delete revision: ', i)
+  await promises.timesLimit(pad.head + 1, 500, async (i: string) => {
     await db.remove(`pad:${padId}:revs:${i}`, null);
   });
 
@@ -70,10 +71,10 @@ exports.deleteRevisions = async (padId: string, keepRevisions: number): Promise<
   await db.set(`pad:${padId}`, padContent);
 
   let newAText = Changeset.makeAText('\n');
-  let newPool = new AttributePool()
+  let pool = pad.apool()
 
   for (let rev = 0; rev <= cleanupUntilRevision; ++rev) {
-    newAText = Changeset.applyToAText(revisions[rev].changeset, newAText, newPool);
+    newAText = Changeset.applyToAText(revisions[rev].changeset, newAText, pool);
   }
 
   const revision = await createRevision(
@@ -82,9 +83,8 @@ exports.deleteRevisions = async (padId: string, keepRevisions: number): Promise<
     0 === pad.getKeyRevisionNumber(0),
     '',
     newAText,
-    newPool
+    pool
   );
-  console.log('Create revision 0: ', revision);
 
   const p: Promise<void>[] = [];
 
@@ -93,9 +93,8 @@ exports.deleteRevisions = async (padId: string, keepRevisions: number): Promise<
   p.push(promises.timesLimit(keepRevisions, 500, async (i: number) => {
     const rev = i + cleanupUntilRevision + 1
     const newRev = rev - cleanupUntilRevision;
-    console.log('Map revision: ' + rev + ' => ' + newRev)
 
-    newAText = Changeset.applyToAText(revisions[rev].changeset, newAText, newPool);
+    newAText = Changeset.applyToAText(revisions[rev].changeset, newAText, pool);
 
     const revision = await createRevision(
       revisions[rev].changeset,
@@ -103,43 +102,47 @@ exports.deleteRevisions = async (padId: string, keepRevisions: number): Promise<
       newRev === pad.getKeyRevisionNumber(newRev),
       revisions[rev].meta.author,
       newAText,
-      newPool
+      pool
     );
-    console.log('Create revision: ', newRev, revision);
 
     await db.set(`pad:${padId}:revs:${newRev}`, revision);
   }));
 
   await Promise.all(p)
 
-  console.log('Finished migration. Checking pad now')
-
+  logger.debug('Finished migration. Checking pad now')
 
   padManager.unloadPad(padId);
 
   let newPad = await padManager.getPad(padId);
-  newPad.check();
+  await newPad.check();
 }
 
 exports.checkTodos = async () => {
   await new Promise(resolve => setTimeout(resolve, 5000));
 
+  // TODO: Move to settings
+  const settings = {
+    minHead: 100,
+    keepRevisions: 100,
+    minAge: 1,//1000 * 60 * 60 * 24,
+  }
+
   await Promise.all((await padManager.listAllPads()).padIDs.map(async (padId: string) => {
+    // TODO: Handle concurrency
     const pad = await padManager.getPad(padId);
 
-    console.log('pad user count', padId, padMessageHandler.padUsersCount(padId))
     const revisionDate = await pad.getRevisionDate(pad.getHeadRevisionNumber())
-    console.log('pad last modified', padId, Date.now() - revisionDate)
 
-    if (pad.head < 10000 || padMessageHandler.padUsersCount(padId) > 0 || Date.now() < revisionDate + 1000 * 60 * 60 * 24) {
+    if (pad.head < settings.minHead || padMessageHandler.padUsersCount(padId) > 0 || Date.now() < revisionDate + settings.minAge) {
       return
     }
 
     try {
-      await exports.deleteRevisions(padId, 100)
-      console.log('successful cleaned up pad: ', padId)
+      await exports.deleteRevisions(padId, settings.keepRevisions)
+      logger.info('successful cleaned up pad: ', padId)
     } catch (err: any) {
-      console.error(`Error in pad ${padId}: ${err.stack || err}`);
+      logger.error(`Error in pad ${padId}: ${err.stack || err}`);
       return;
     }
   }));
