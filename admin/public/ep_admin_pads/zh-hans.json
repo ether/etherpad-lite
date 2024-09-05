@@ -12,6 +12,8 @@
 	"ep_adminpads2_confirm": "您确定要删除文档 {{padID}}？",
 	"ep_adminpads2_delete.value": "删除",
 	"ep_adminpads2_view.value": "查看",
+	"ep_adminpads2_ok.value": "确认",
+	"ep_adminpads2_cancel.value": "取消",
 	"ep_adminpads2_last-edited": "编辑时间",
 	"ep_adminpads2_loading": "正在加载…",
 	"ep_adminpads2_manage-pads": "会话管理",
