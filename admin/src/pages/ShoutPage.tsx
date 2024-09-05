@@ -1,6 +1,7 @@
 import {useEffect, useState} from "react";
 import {SendHorizonal} from 'lucide-react'
 import {useStore} from "../store/store.ts";
+import {Trans} from "react-i18next";
 import * as Switch from '@radix-ui/react-switch';
 import {ShoutType} from "../components/ShoutType.ts";
 
@@ -36,8 +37,9 @@ export const ShoutPage = ()=>{
 
     return (
         <div>
-            <h1>Communication</h1>
-            {totalUsers > 0 && <p>There  {totalUsers>1?"are":"is"} currently {totalUsers} user{totalUsers>1?"s":""} online</p>}
+            <h1><Trans i18nKey="admin_communication.page-title"/></h1>
+            {/* {totalUsers > 0 && <p>There  {totalUsers>1?"are":"is"} currently {totalUsers} user{totalUsers>1?"s":""} online</p>} */}
+            {totalUsers > 0 && <p> 当前有 {totalUsers} 用户在线</p>}
             <div style={{height: '80vh', display: 'flex', flexDirection: 'column'}}>
                 <div style={{flexGrow: 1, backgroundColor: 'white', overflowY: "auto"}}>
                     {
@@ -60,7 +62,7 @@ export const ShoutPage = ()=>{
                     e.preventDefault()
                     sendMessage()
                 }} className="send-message search-field" style={{display: 'flex', gap: '10px'}}>
-                    <Switch.Root title="Change sticky message" className="SwitchRoot" checked={sticky}
+                    <Switch.Root title="更改置顶消息" className="SwitchRoot" checked={sticky}
                                  onCheckedChange={() => {
                                      setSticky(!sticky);
              }}>
