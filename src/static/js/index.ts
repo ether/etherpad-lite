@@ -46,7 +46,7 @@ $(() => {
     if (padname.length > 0) {
       window.location.href = `p/${encodeURIComponent(padname.trim())}`;
     } else {
-      alert('Please enter a name');
+      alert('请示输入一个文档名称');
     }
     return false;
   });
