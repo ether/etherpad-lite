@@ -34,8 +34,8 @@ div.menu {
     display: flex;
     align-items: center;
     justify-content: center;
-    max-width: 20%;
-    min-width: 20%;
+    max-width: 15%;
+    min-width: 10%;
 }
 
 .icon-button{
@@ -422,7 +422,7 @@ pre {
     margin: 0;
     text-align: center;
     color: var(--etherpad-color);
-    font-size: 4rem;
+    font-size: 2rem;
     font-weight: 1000;
 }
 

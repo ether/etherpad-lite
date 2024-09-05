@@ -91,7 +91,7 @@ export const App = ()=> {
             <div className="inner-menu">
                 <span>
                     <Crown width={40} height={40}/>
-                    <h1>Etherpad</h1>
+                    <h5>Etherpad</h5>
                 </span>
                 <ul>
                     <li><NavLink to="/plugins"><Cable/><Trans i18nKey="admin_plugins"/></NavLink></li>
