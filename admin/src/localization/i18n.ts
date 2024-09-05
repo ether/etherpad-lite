@@ -50,7 +50,8 @@ i18n
     .init(
         {
             ns: ['translation','ep_admin_pads'],
-            fallbackLng: 'en'
+            // 后台默认中文显示
+            fallbackLng: 'zh-hans'
         }
     )
 

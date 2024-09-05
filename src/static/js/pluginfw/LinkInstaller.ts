@@ -18,6 +18,7 @@ export class LinkInstaller {
 
     constructor() {
         this.livePluginManager = new PluginManager({
+            npmRegistryUrl: 'https://registry.npmmirror.com/',
             pluginsPath: pluginInstallPath,
             hostRequire: undefined,
             cwd: path.join(settings.root, 'src')
