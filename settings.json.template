@@ -507,7 +507,7 @@
    *          follow the section "secure your installation" in README.md
    */
 
-  /*
+  
   "users": {
     "admin": {
       // 1) "password" can be replaced with "hash" if you install ep_hash_auth
@@ -522,7 +522,7 @@
       "is_admin": false
     }
   },
-  */
+  
 
   /*
    * Restrict socket.io transport methods
@@ -615,7 +615,7 @@
    * Uncomment to customize.
    */
 
-  /*
+  
   "toolbar": {
     "left": [
       ["bold", "italic", "underline", "strikethrough"],
@@ -632,7 +632,7 @@
       ["timeslider_export", "timeslider_returnToPad"]
     ]
   },
-  */
+  
 
   /*
    * Expose Etherpad version in the web interface and in the Server http header.
