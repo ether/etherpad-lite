@@ -35,6 +35,7 @@
 
   "index.newPad": "New Pad",
   "index.createOpenPad": "or create/open a Pad with the name:",
+  "index.createOpenPad.ok": "Creat New Word",
   "index.openPad": "open an existing Pad with the name:",
 
   "pad.toolbar.bold.title": "Bold (Ctrl+B)",
