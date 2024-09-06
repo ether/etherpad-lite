@@ -53,7 +53,7 @@
     "live-plugin-manager": "^1.0.0",
     "lodash.clonedeep": "4.5.0",
     "log4js": "^6.9.1",
-    "lru-cache": "^11.0.0",
+    "lru-cache": "^11.0.1",
     "measured-core": "^2.0.0",
     "mime-types": "^2.1.35",
     "oidc-provider": "^8.5.1",
@@ -70,17 +70,18 @@
     "superagent": "10.1.0",
     "tinycon": "0.6.8",
     "tsx": "4.19.0",
-    "ueberdb2": "^4.2.100",
+    "ueberdb2": "^4.2.103",
     "underscore": "1.13.7",
     "unorm": "1.6.0",
-    "wtfnode": "^0.9.3"
+    "wtfnode": "^0.9.3",
+    "rusty-store-kv": "^1.2.0"
   },
   "bin": {
     "etherpad-healthcheck": "../bin/etherpad-healthcheck",
     "etherpad-lite": "node/server.ts"
   },
   "devDependencies": {
-    "@playwright/test": "^1.46.1",
+    "@playwright/test": "^1.47.0",
     "@types/async": "^3.2.24",
     "@types/express": "^4.17.21",
     "@types/formidable": "^3.4.5",
@@ -110,8 +111,7 @@
     "split-grid": "^1.0.11",
     "supertest": "^7.0.0",
     "typescript": "^5.5.4",
-    "vitest": "^2.0.5",
-    "rusty-store-kv": "^1.1.4"
+    "vitest": "^2.0.5"
   },
   "engines": {
     "node": ">=18.18.2",

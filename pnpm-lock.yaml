@@ -65,8 +65,8 @@ importers:
         specifier: ^8.0.0
         version: 8.0.0
       lucide-react:
-        specifier: ^0.438.0
-        version: 0.438.0(react@18.3.1)
+        specifier: ^0.439.0
+        version: 0.439.0(react@18.3.1)
       react:
         specifier: ^18.2.0
         version: 18.3.1
@@ -119,8 +119,8 @@ importers:
         specifier: ^4.19.0
         version: 4.19.0
       ueberdb2:
-        specifier: ^4.2.100
-        version: 4.2.101
+        specifier: ^4.2.103
+        version: 4.2.103
     devDependencies:
       '@types/node':
         specifier: ^22.5.4
@@ -210,8 +210,8 @@ importers:
         specifier: ^6.9.1
         version: 6.9.1
       lru-cache:
-        specifier: ^11.0.0
-        version: 11.0.0
+        specifier: ^11.0.1
+        version: 11.0.1
       measured-core:
         specifier: ^2.0.0
         version: 2.0.0
@@ -239,6 +239,9 @@ importers:
       resolve:
         specifier: 1.22.8
         version: 1.22.8
+      rusty-store-kv:
+        specifier: ^1.2.0
+        version: 1.2.0
       security:
         specifier: 1.0.0
         version: 1.0.0
@@ -261,8 +264,8 @@ importers:
         specifier: 4.19.0
         version: 4.19.0
       ueberdb2:
-        specifier: ^4.2.100
-        version: 4.2.101
+        specifier: ^4.2.103
+        version: 4.2.103
       underscore:
         specifier: 1.13.7
         version: 1.13.7
@@ -274,8 +277,8 @@ importers:
         version: 0.9.3
     devDependencies:
       '@playwright/test':
-        specifier: ^1.46.1
-        version: 1.46.1
+        specifier: ^1.47.0
+        version: 1.47.0
       '@types/async':
         specifier: ^3.2.24
         version: 3.2.24
@@ -348,9 +351,6 @@ importers:
       openapi-schema-validation:
         specifier: ^0.4.2
         version: 0.4.2
-      rusty-store-kv:
-        specifier: ^1.1.4
-        version: 1.1.4
       set-cookie-parser:
         specifier: ^2.7.0
         version: 2.7.0
@@ -936,8 +936,8 @@ packages:
     resolution: {integrity: sha512-oGB+UxlgWcgQkgwo8GcEGwemoTFt3FIO9ababBmaGwXIoBKZ+GTy0pP185beGg7Llih/NSHSV2XAs1lnznocSg==}
     engines: {node: '>= 8'}
 
-  '@playwright/test@1.46.1':
-    resolution: {integrity: sha512-Fq6SwLujA/DOIvNC2EL/SojJnkKf/rAwJ//APpJJHRyMi1PdKrY3Az+4XNQ51N4RTbItbIByQ0jgd1tayq1aeA==}
+  '@playwright/test@1.47.0':
+    resolution: {integrity: sha512-SgAdlSwYVpToI4e/IH19IHHWvoijAYH5hu2MWSXptRypLSnzj51PcGD+rsOXFayde4P9ZLi+loXVwArg6IUkCA==}
     engines: {node: '>=18'}
     hasBin: true
 
@@ -3351,8 +3351,8 @@ packages:
     resolution: {integrity: sha512-ozCC6gdQ+glXOQsveKD0YsDy8DSQFjDTz4zyzEHNV5+JP5D62LmfDZ6o1cycFx9ouG940M5dE8C8CTewdj2YWQ==}
     engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
 
-  lru-cache@11.0.0:
-    resolution: {integrity: sha512-Qv32eSV1RSCfhY3fpPE2GNZ8jgM9X7rdAfemLWqTUxwiyIC4jJ6Sy0fZ8H+oLWevO6i4/bizg7c8d8i6bxrzbA==}
+  lru-cache@11.0.1:
+    resolution: {integrity: sha512-CgeuL5uom6j/ZVrg7G/+1IXqRY8JXX4Hghfy5YE0EhoYQWvndP1kufu58cmZLNIDKnRhZrXfdS9urVWx98AipQ==}
     engines: {node: 20 || >=22}
 
   lru-cache@5.1.1:
@@ -3362,8 +3362,8 @@ packages:
     resolution: {integrity: sha512-jumlc0BIUrS3qJGgIkWZsyfAM7NCWiBcCDhnd+3NNM5KbBmLTgHVfWBcg6W+rLUsIpzpERPsvwUP7CckAQSOoA==}
     engines: {node: '>=12'}
 
-  lucide-react@0.438.0:
-    resolution: {integrity: sha512-uq6yCB+IzVfgIPMK8ibkecXSWTTSOMs9UjUgZigfrDCVqgdwkpIgYg1fSYnf0XXF2AoSyCJZhoZXQwzoai7VGw==}
+  lucide-react@0.439.0:
+    resolution: {integrity: sha512-PafSWvDTpxdtNEndS2HIHxcNAbd54OaqSYJO90/b63rab2HWYqDbH194j0i82ZFdWOAcf0AHinRykXRRK2PJbw==}
     peerDependencies:
       react: ^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0-rc
 
@@ -3718,13 +3718,13 @@ packages:
     resolution: {integrity: sha512-JU3teHTNjmE2VCGFzuY8EXzCDVwEqB2a8fsIvwaStHhAWJEeVd1o1QD80CU6+ZdEXXSLbSsuLwJjkCBWqRQUVA==}
     engines: {node: '>=8.6'}
 
-  playwright-core@1.46.1:
-    resolution: {integrity: sha512-h9LqIQaAv+CYvWzsZ+h3RsrqCStkBHlgo6/TJlFst3cOTlLghBQlJwPOZKQJTKNaD3QIB7aAVQ+gfWbN3NXB7A==}
+  playwright-core@1.47.0:
+    resolution: {integrity: sha512-1DyHT8OqkcfCkYUD9zzUTfg7EfTd+6a8MkD/NWOvjo0u/SCNd5YmY/lJwFvUZOxJbWNds+ei7ic2+R/cRz/PDg==}
     engines: {node: '>=18'}
     hasBin: true
 
-  playwright@1.46.1:
-    resolution: {integrity: sha512-oPcr1yqoXLCkgKtD5eNUPLiN40rYEM39odNpIb6VE6S7/15gJmA1NzVv6zJYusV0e7tzvkU/utBFNa/Kpxmwng==}
+  playwright@1.47.0:
+    resolution: {integrity: sha512-jOWiRq2pdNAX/mwLiwFYnPHpEZ4rM+fRSQpRHwEwZlP2PUANvL3+aJOF/bvISMhFD30rqMxUB4RJx9aQbfh4Ww==}
     engines: {node: '>=18'}
     hasBin: true
 
@@ -3954,68 +3954,68 @@ packages:
   run-parallel@1.2.0:
     resolution: {integrity: sha512-5l4VyZR86LZ/lDxZTR6jqL8AFE2S0IFLMP26AbjsLVADxHdhB/c0GUsH+y39UfCi3dzz8OlQuPmnaJOMoDHQBA==}
 
-  rusty-store-kv-darwin-arm64@1.1.4:
-    resolution: {integrity: sha512-Pwedf7Fe0BBVmuM6Z/7JYGtwjVLI+rCEEUNoZ9jA31QtfWHHFYPk0XULk4mLnngP14eBy9opEpJO2wYAUra5bg==}
+  rusty-store-kv-darwin-arm64@1.2.0:
+    resolution: {integrity: sha512-3kj/Sgs1WH+6edE8l7Db5+gpROpelYFX8PNloX0y6KzvUQgO1ZDs0Wa8kYG8MEDWIJlmw+7UcwpMmskMleU3Vw==}
     engines: {node: '>= 10'}
     cpu: [arm64]
     os: [darwin]
 
-  rusty-store-kv-darwin-x64@1.1.4:
-    resolution: {integrity: sha512-R1vuflgIjP6JtFGnxRoDgZaw9kVF+m9FYEIZH0dG3v4AU55Zh53lQBflHLhqsC10OuCo3ZO0w++bSVmcGXmSJg==}
+  rusty-store-kv-darwin-x64@1.2.0:
+    resolution: {integrity: sha512-svSiGraZRukY6m330epEnJdu2D54JPzQfMjPRg8LT6f70MELGNxWRirnM/ACIBpWUfh1Ojm9jyK8OoY5IeI4UA==}
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [darwin]
 
-  rusty-store-kv-freebsd-x64@1.1.4:
-    resolution: {integrity: sha512-GbYN5+k44RJS2n6mqdDQz64ZLXl2mEZFIpdk5KblmUZaf7JPai6o6d/2kaldw+htTlVabdXVrmVRhytsHtmdcQ==}
+  rusty-store-kv-freebsd-x64@1.2.0:
+    resolution: {integrity: sha512-h2/r4PKrRY92z2Ku5I5ACc8yaKdCma0rqak1l5ue/LsR6Zl2oXmzYKXJnzwrqCSIWDRrs5RG2TXMKuPO4telfw==}
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [freebsd]
 
-  rusty-store-kv-linux-arm-gnueabihf@1.1.4:
-    resolution: {integrity: sha512-hdPJTo/UR8kYSf6m6g530hzCRFCewyKhae/Dtol12fRqHlzr+RhygVkrxPblqwUFt8XJGG2A9xkc9CFJwbS7lg==}
+  rusty-store-kv-linux-arm-gnueabihf@1.2.0:
+    resolution: {integrity: sha512-ivrCOriUYOc/nedCszyPHFATtnLaSaMfNM8h6Cjv4S0gzScpd9rOKVg2hrPh+zApzV/O3dvf6haDtLL1WViKUg==}
     engines: {node: '>= 10'}
     cpu: [arm]
     os: [linux]
 
-  rusty-store-kv-linux-arm64-gnu@1.1.4:
-    resolution: {integrity: sha512-KEsvvdbYHf6o01RY6DPGLt1x3BbDUnLvkJuMr6NLcX2mDgtvDtC2auNGuslb+mzVG3GqtCfiEesz4JRrJkfimA==}
+  rusty-store-kv-linux-arm64-gnu@1.2.0:
+    resolution: {integrity: sha512-dZ3ZWsltagzP3U1J6WqWBRoIakqBP7i7y9MDBnKIFFYALVkvY2q2AhrN5cTBxZHaZTbrjyZyhE/rNbyqLZjXLg==}
     engines: {node: '>= 10'}
     cpu: [arm64]
     os: [linux]
 
-  rusty-store-kv-linux-arm64-musl@1.1.4:
-    resolution: {integrity: sha512-o1PMDeMFc3nWHksO0pBHNdr5n2ZRFje8WmK6fwRMcicdsiK+fqv2zJyAjdDfVoP0RS4QXkM9DwCyqN+bziBz6A==}
+  rusty-store-kv-linux-arm64-musl@1.2.0:
+    resolution: {integrity: sha512-J0Zg+wYzy+03DTFZgMPiTaRTk8dfFJv7zQGpeGgeyma3k7SUmUYT2P1b+0NNjbVxr5xNdFJURyJVglUMP3SJRA==}
     engines: {node: '>= 10'}
     cpu: [arm64]
     os: [linux]
 
-  rusty-store-kv-linux-x64-gnu@1.1.4:
-    resolution: {integrity: sha512-EG7qO20CLY5F5kki0CFQY+p+CXyCVYtcah3vWI/Opbd6HcVlcoaZJ24KYWuoUCpRS4qIHAue/JtZ7kANlRUwCQ==}
+  rusty-store-kv-linux-x64-gnu@1.2.0:
+    resolution: {integrity: sha512-8EK6nzC4o13v7zOtLucoQcSOPSsJe9Rw1cAWk7F5qYg/lfFAQNzOpp68rkCBnrHix8yswcafzcSktJHTKuO4yA==}
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [linux]
 
-  rusty-store-kv-linux-x64-musl@1.1.4:
-    resolution: {integrity: sha512-oJ5AJVjnTaWwvahGWceH73mVOjolE+BcBghJsxmlRgw0y4sYwk7qaF0r2heh1GDeMZsYMhZV0o8GAa3FH0W3lQ==}
+  rusty-store-kv-linux-x64-musl@1.2.0:
+    resolution: {integrity: sha512-8Z6xAYWBFKfspSJ1XrRs8P5qYE/aDl6LGhX/5IXg/9mr54quH+pH6YXx88SD0lTgRh+mAD3brCNfr15fOKZftA==}
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [linux]
 
-  rusty-store-kv-win32-arm64-msvc@1.1.4:
-    resolution: {integrity: sha512-kqvaa4DqNNmOMQDBOoRBbiesTkE4E/nrghIk5eSalLaUHt1TNZpuOeWGS1+xRIYuRDBeHAqD72AkcqrP+9dzcQ==}
+  rusty-store-kv-win32-arm64-msvc@1.2.0:
+    resolution: {integrity: sha512-YmhUBOzJc6yj1Im/WXcD20iuaZ2GWANG/heTk09enzwgza8i68sSlA39TPTyLE0tOZFdbT76GEuIXPHB0peRRg==}
     engines: {node: '>= 10'}
     cpu: [arm64]
     os: [win32]
 
-  rusty-store-kv-win32-x64-msvc@1.1.4:
-    resolution: {integrity: sha512-SPI/Up8QF46MA2PkADeyIUd82PTa89i91TjkE81vVyKNIwcfXb9lFDOJThWds8gwMjiWcsMiMA1TclyCDZ0HoQ==}
+  rusty-store-kv-win32-x64-msvc@1.2.0:
+    resolution: {integrity: sha512-z0/Snn9bZwsT9YnnG18Ol+pkLQpBHkAISq99NhbVdYj5lAYED/n2qIJpP1ROLJlFMJQ4PvftjCmAHUHy0tnkxA==}
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [win32]
 
-  rusty-store-kv@1.1.4:
-    resolution: {integrity: sha512-B8ibg3j9Wq2uY0FysjSpZ71GPj9x+oJUTvjzh0YUF4m+y7/4Lo+DwNLNU/4u5DTnGiXeAhWmXypjp+mWIN3GiQ==}
+  rusty-store-kv@1.2.0:
+    resolution: {integrity: sha512-XlzClGSiIfOrpCUEh/eAAktFbsF4IPpDDeOEIP+cWmLkbVzWuqXVLIBouBH4ybKBlw+bQCyjOnZwBdyM9UVpUg==}
     engines: {node: '>= 10'}
 
   safe-array-concat@1.1.2:
@@ -4373,8 +4373,8 @@ packages:
     engines: {node: '>=14.17'}
     hasBin: true
 
-  ueberdb2@4.2.101:
-    resolution: {integrity: sha512-4WyfwvewluxElZ/FqoSupi/88FQANEmD0Cjy2cpSSExca3skZfe1thqw3kkpBvPOsyvdSekEkxDZbVe12wzn3A==}
+  ueberdb2@4.2.103:
+    resolution: {integrity: sha512-jp+G38Za9vCKGRIGNEr28b7HOE0Et9J/txNSUrGnCGwpkkPLvqkX4tbx8sO3AVOynRuNMYfGy4cS0aoYt/2ePw==}
     engines: {node: '>=16.20.1'}
 
   uid-safe@2.1.5:
@@ -5256,9 +5256,9 @@ snapshots:
       '@nodelib/fs.scandir': 2.1.5
       fastq: 1.17.1
 
-  '@playwright/test@1.46.1':
+  '@playwright/test@1.47.0':
     dependencies:
-      playwright: 1.46.1
+      playwright: 1.47.0
 
   '@radix-ui/primitive@1.1.0': {}
 
@@ -8018,7 +8018,7 @@ snapshots:
 
   lowercase-keys@3.0.0: {}
 
-  lru-cache@11.0.0: {}
+  lru-cache@11.0.1: {}
 
   lru-cache@5.1.1:
     dependencies:
@@ -8026,7 +8026,7 @@ snapshots:
 
   lru-cache@7.18.3: {}
 
-  lucide-react@0.438.0(react@18.3.1):
+  lucide-react@0.439.0(react@18.3.1):
     dependencies:
       react: 18.3.1
 
@@ -8394,11 +8394,11 @@ snapshots:
 
   picomatch@2.3.1: {}
 
-  playwright-core@1.46.1: {}
+  playwright-core@1.47.0: {}
 
-  playwright@1.46.1:
+  playwright@1.47.0:
     dependencies:
-      playwright-core: 1.46.1
+      playwright-core: 1.47.0
     optionalDependencies:
       fsevents: 2.3.2
 
@@ -8638,48 +8638,48 @@ snapshots:
     dependencies:
       queue-microtask: 1.2.3
 
-  rusty-store-kv-darwin-arm64@1.1.4:
+  rusty-store-kv-darwin-arm64@1.2.0:
     optional: true
 
-  rusty-store-kv-darwin-x64@1.1.4:
+  rusty-store-kv-darwin-x64@1.2.0:
     optional: true
 
-  rusty-store-kv-freebsd-x64@1.1.4:
+  rusty-store-kv-freebsd-x64@1.2.0:
     optional: true
 
-  rusty-store-kv-linux-arm-gnueabihf@1.1.4:
+  rusty-store-kv-linux-arm-gnueabihf@1.2.0:
     optional: true
 
-  rusty-store-kv-linux-arm64-gnu@1.1.4:
+  rusty-store-kv-linux-arm64-gnu@1.2.0:
     optional: true
 
-  rusty-store-kv-linux-arm64-musl@1.1.4:
+  rusty-store-kv-linux-arm64-musl@1.2.0:
     optional: true
 
-  rusty-store-kv-linux-x64-gnu@1.1.4:
+  rusty-store-kv-linux-x64-gnu@1.2.0:
     optional: true
 
-  rusty-store-kv-linux-x64-musl@1.1.4:
+  rusty-store-kv-linux-x64-musl@1.2.0:
     optional: true
 
-  rusty-store-kv-win32-arm64-msvc@1.1.4:
+  rusty-store-kv-win32-arm64-msvc@1.2.0:
     optional: true
 
-  rusty-store-kv-win32-x64-msvc@1.1.4:
+  rusty-store-kv-win32-x64-msvc@1.2.0:
     optional: true
 
-  rusty-store-kv@1.1.4:
+  rusty-store-kv@1.2.0:
     optionalDependencies:
-      rusty-store-kv-darwin-arm64: 1.1.4
-      rusty-store-kv-darwin-x64: 1.1.4
-      rusty-store-kv-freebsd-x64: 1.1.4
-      rusty-store-kv-linux-arm-gnueabihf: 1.1.4
-      rusty-store-kv-linux-arm64-gnu: 1.1.4
-      rusty-store-kv-linux-arm64-musl: 1.1.4
-      rusty-store-kv-linux-x64-gnu: 1.1.4
-      rusty-store-kv-linux-x64-musl: 1.1.4
-      rusty-store-kv-win32-arm64-msvc: 1.1.4
-      rusty-store-kv-win32-x64-msvc: 1.1.4
+      rusty-store-kv-darwin-arm64: 1.2.0
+      rusty-store-kv-darwin-x64: 1.2.0
+      rusty-store-kv-freebsd-x64: 1.2.0
+      rusty-store-kv-linux-arm-gnueabihf: 1.2.0
+      rusty-store-kv-linux-arm64-gnu: 1.2.0
+      rusty-store-kv-linux-arm64-musl: 1.2.0
+      rusty-store-kv-linux-x64-gnu: 1.2.0
+      rusty-store-kv-linux-x64-musl: 1.2.0
+      rusty-store-kv-win32-arm64-msvc: 1.2.0
+      rusty-store-kv-win32-x64-msvc: 1.2.0
 
   safe-array-concat@1.1.2:
     dependencies:
@@ -9119,7 +9119,7 @@ snapshots:
 
   typescript@5.5.4: {}
 
-  ueberdb2@4.2.101: {}
+  ueberdb2@4.2.103: {}
 
   uid-safe@2.1.5:
     dependencies:
