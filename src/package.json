@@ -73,7 +73,8 @@
     "ueberdb2": "^4.2.103",
     "underscore": "1.13.7",
     "unorm": "1.6.0",
-    "wtfnode": "^0.9.3"
+    "wtfnode": "^0.9.3",
+    "rusty-store-kv": "^1.2.0"
   },
   "bin": {
     "etherpad-healthcheck": "../bin/etherpad-healthcheck",
@@ -110,8 +111,7 @@
     "split-grid": "^1.0.11",
     "supertest": "^7.0.0",
     "typescript": "^5.5.4",
-    "vitest": "^2.0.5",
-    "rusty-store-kv": "^1.2.0"
+    "vitest": "^2.0.5"
   },
   "engines": {
     "node": ">=18.18.2",

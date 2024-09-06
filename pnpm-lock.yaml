@@ -239,6 +239,9 @@ importers:
       resolve:
         specifier: 1.22.8
         version: 1.22.8
+      rusty-store-kv:
+        specifier: ^1.2.0
+        version: 1.2.0
       security:
         specifier: 1.0.0
         version: 1.0.0
@@ -348,9 +351,6 @@ importers:
       openapi-schema-validation:
         specifier: ^0.4.2
         version: 0.4.2
-      rusty-store-kv:
-        specifier: ^1.2.0
-        version: 1.2.0
       set-cookie-parser:
         specifier: ^2.7.0
         version: 2.7.0
