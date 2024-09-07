@@ -941,10 +941,11 @@ exports.reloadSettings = () => {
         logger.warn(`${dirtyWarning} File location: ${exports.dbSettings.filename}`);
     }
 
-    if (exports.dbType === 'rustydb') {
+    if (exports.dbType === 'rustydb' || exports.dbType === "sqlite") {
       exports.dbSettings.filename = absolutePaths.makeAbsolute(exports.dbSettings.filename);
       logger.warn(`File location: ${exports.dbSettings.filename}`);
     }
+
 
     if (exports.ip === '') {
         // using Unix socket for connectivity

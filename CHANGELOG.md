@@ -1,3 +1,11 @@
+# 2.2.4
+
+### Notable enhancements and fixes
+
+- Switched to new SQLite backend
+- Fixed rusty-store-kv module not found
+
+
 # 2.2.3
 
 ### Notable enhancements and fixes

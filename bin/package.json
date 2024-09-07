@@ -1,6 +1,6 @@
 {
   "name": "bin",
-  "version": "2.2.3",
+  "version": "2.2.4",
   "description": "",
   "main": "checkAllPads.js",
   "directories": {
@@ -12,7 +12,7 @@
     "log4js": "^6.9.1",
     "semver": "^7.6.3",
     "tsx": "^4.19.0",
-    "ueberdb2": "^4.2.100"
+    "ueberdb2": "^4.2.103"
   },
   "devDependencies": {
     "@types/node": "^22.5.4",
