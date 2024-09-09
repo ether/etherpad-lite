@@ -32,6 +32,7 @@ export default defineConfig({
                 { text: 'Stats', link: '/stats.md' },
                 {text: 'Skins', link: '/skins.md' },
                 {text: 'Demo', link: '/demo.md' },
+              {text: 'CLI', link: '/cli.md'},
                 ]
           },
           {

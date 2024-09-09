@@ -107,6 +107,7 @@ exports.ttl = {
     RefreshToken: 1 * 24 * 60 * 60, // 1 day in seconds
 }
 
+exports.updateServer = "https://static.etherpad.org"
 
 
 /*
