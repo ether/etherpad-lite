@@ -167,7 +167,7 @@ function Ace2Inner(editorInfo, cssManagers) {
     for (const name of names) console[name] = noop;
   }
 
-  const scheduler = parent; // hack for opera required
+  const scheduler = window; // hack for opera required
 
   const performDocumentReplaceRange = (start, end, newText) => {
     if (start === undefined) start = rep.selStart;
@@ -240,7 +240,7 @@ function Ace2Inner(editorInfo, cssManagers) {
         bgcolor = fadeColor(bgcolor, info.fade);
       }
       const textColor =
-          colorutils.textColorFromBackgroundColor(bgcolor, parent.parent.clientVars.skinName);
+          colorutils.textColorFromBackgroundColor(bgcolor, window.clientVars.skinName);
       const styles = [
         cssManagers.inner.selectorStyle(authorSelector),
         cssManagers.parent.selectorStyle(authorSelector),
@@ -1270,7 +1270,7 @@ function Ace2Inner(editorInfo, cssManagers) {
       const prevLine = rep.lines.prev(thisLine);
       const prevLineText = prevLine.text;
       let theIndent = /^ *(?:)/.exec(prevLineText)[0];
-      const shouldIndent = parent.parent.clientVars.indentationOnNewLine;
+      const shouldIndent = window.clientVars.indentationOnNewLine;
       if (shouldIndent && /[[(:{]\s*$/.exec(prevLineText)) {
         theIndent += THE_TAB;
       }
@@ -2023,7 +2023,7 @@ function Ace2Inner(editorInfo, cssManagers) {
   const isPadLoading = (t) => t === 'setup' || t === 'setBaseText' || t === 'importText';
 
   const updateStyleButtonState = (attribName, hasStyleOnRepSelection) => {
-    const $formattingButton = parent.parent.$(`[data-key="${attribName}"]`).find('a');
+    const $formattingButton = window.$(`[data-key="${attribName}"]`).find('a');
     $formattingButton.toggleClass(SELECT_BUTTON_CLASS, hasStyleOnRepSelection);
   };
 
@@ -2277,7 +2277,7 @@ function Ace2Inner(editorInfo, cssManagers) {
   };
 
   const hideEditBarDropdowns = () => {
-    window.parent.parent.padeditbar.toggleDropDown('none');
+    window.padeditbar.toggleDropDown('none');
   };
 
   const renumberList = (lineNum) => {
@@ -2582,7 +2582,7 @@ function Ace2Inner(editorInfo, cssManagers) {
           specialHandled = specialHandledInHook.indexOf(true) !== -1;
         }
 
-        const padShortcutEnabled = parent.parent.clientVars.padShortcutEnabled;
+        const padShortcutEnabled = window.clientVars.padShortcutEnabled;
         if (!specialHandled && isTypeForSpecialKey &&
             altKey && keyCode === 120 &&
             padShortcutEnabled.altF9) {
@@ -2591,7 +2591,7 @@ function Ace2Inner(editorInfo, cssManagers) {
           // As ubuntu cannot use Alt F10....
           // Focus on the editbar.
           // -- TODO: Move Focus back to previous state (we know it so we can use it)
-          const firstEditbarElement = parent.parent.$('#editbar')
+          const firstEditbarElement = window.$('#editbar')
               .children('ul').first().children().first()
               .children().first().children().first();
           $(this).trigger('blur');
@@ -2603,8 +2603,8 @@ function Ace2Inner(editorInfo, cssManagers) {
             padShortcutEnabled.altC) {
           // Alt c focuses on the Chat window
           $(this).trigger('blur');
-          parent.parent.chat.show();
-          parent.parent.$('#chatinput').trigger('focus');
+          window.chat.show();
+          window.$('#chatinput').trigger('focus');
           evt.preventDefault();
         }
         if (!specialHandled && type === 'keydown' &&
@@ -2626,12 +2626,12 @@ function Ace2Inner(editorInfo, cssManagers) {
               if (authorId) authorIds.add(authorId);
             }
           }
-          const idToName = new Map(parent.parent.pad.userList().map((a) => [a.userId, a.name]));
-          const myId = parent.parent.clientVars.userId;
+          const idToName = new Map(window.pad.userList().map((a) => [a.userId, a.name]));
+          const myId = window.clientVars.userId;
           const authors =
               [...authorIds].map((id) => id === myId ? 'me' : idToName.get(id) || 'unknown');
 
-          parent.parent.$.gritter.add({
+          window.$.gritter.add({
             title: 'Line Authors',
             text:
                 authors.length === 0 ? 'No author information is available'
@@ -2680,7 +2680,7 @@ function Ace2Inner(editorInfo, cssManagers) {
           specialHandled = true;
 
           // close all gritters when the user hits escape key
-          parent.parent.$.gritter.removeAll();
+          window.$.gritter.removeAll();
         }
         if (!specialHandled && isTypeForCmdKey &&
             /* Do a saved revision on ctrl S */
@@ -2688,13 +2688,13 @@ function Ace2Inner(editorInfo, cssManagers) {
             !evt.altKey &&
             padShortcutEnabled.cmdS) {
           evt.preventDefault();
-          const originalBackground = parent.parent.$('#revisionlink').css('background');
-          parent.parent.$('#revisionlink').css({background: 'lightyellow'});
+          const originalBackground = window.$('#revisionlink').css('background');
+          window.$('#revisionlink').css({background: 'lightyellow'});
           scheduler.setTimeout(() => {
-            parent.parent.$('#revisionlink').css({background: originalBackground});
+            window.$('#revisionlink').css({background: originalBackground});
           }, 1000);
-          /* The parent.parent part of this is BAD and I feel bad..  It may break something */
-          parent.parent.pad.collabClient.sendMessage({type: 'SAVE_REVISION'});
+
+          window.pad.collabClient.sendMessage({type: 'SAVE_REVISION'});
           specialHandled = true;
         }
         if (!specialHandled && isTypeForSpecialKey &&

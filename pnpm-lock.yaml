@@ -240,8 +240,8 @@ importers:
         specifier: 1.22.8
         version: 1.22.8
       rusty-store-kv:
-        specifier: ^1.2.0
-        version: 1.2.0
+        specifier: ^1.3.1
+        version: 1.3.1
       security:
         specifier: 1.0.0
         version: 1.0.0
@@ -3954,68 +3954,68 @@ packages:
   run-parallel@1.2.0:
     resolution: {integrity: sha512-5l4VyZR86LZ/lDxZTR6jqL8AFE2S0IFLMP26AbjsLVADxHdhB/c0GUsH+y39UfCi3dzz8OlQuPmnaJOMoDHQBA==}
 
-  rusty-store-kv-darwin-arm64@1.2.0:
-    resolution: {integrity: sha512-3kj/Sgs1WH+6edE8l7Db5+gpROpelYFX8PNloX0y6KzvUQgO1ZDs0Wa8kYG8MEDWIJlmw+7UcwpMmskMleU3Vw==}
+  rusty-store-kv-darwin-arm64@1.3.1:
+    resolution: {integrity: sha512-xJ4kZh22AcNkbl5yIxUFPEZ5xtgOfAn9fH1rcLf0pUHJKTh3FsdrggBqNBlBlJRQ9RWw92MYBSC318mn8mH14Q==}
     engines: {node: '>= 10'}
     cpu: [arm64]
     os: [darwin]
 
-  rusty-store-kv-darwin-x64@1.2.0:
-    resolution: {integrity: sha512-svSiGraZRukY6m330epEnJdu2D54JPzQfMjPRg8LT6f70MELGNxWRirnM/ACIBpWUfh1Ojm9jyK8OoY5IeI4UA==}
+  rusty-store-kv-darwin-x64@1.3.1:
+    resolution: {integrity: sha512-glm0uEKaetb6QBtfe5G7tsXA+tnkBCMDaxb3XCe9oCx3Pr7gR/we6OS9lPJHplaQPp10hGxOn7kjAqLVDlcT3w==}
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [darwin]
 
-  rusty-store-kv-freebsd-x64@1.2.0:
-    resolution: {integrity: sha512-h2/r4PKrRY92z2Ku5I5ACc8yaKdCma0rqak1l5ue/LsR6Zl2oXmzYKXJnzwrqCSIWDRrs5RG2TXMKuPO4telfw==}
+  rusty-store-kv-freebsd-x64@1.3.1:
+    resolution: {integrity: sha512-LWUD+JFvrUlo34XfEsTf29EPsktxqqbGlUHAN/6q5DUjg/s5sBFB2W+C1xlwkD+BumyIkN60ZCRVIoXS2UgJjg==}
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [freebsd]
 
-  rusty-store-kv-linux-arm-gnueabihf@1.2.0:
-    resolution: {integrity: sha512-ivrCOriUYOc/nedCszyPHFATtnLaSaMfNM8h6Cjv4S0gzScpd9rOKVg2hrPh+zApzV/O3dvf6haDtLL1WViKUg==}
+  rusty-store-kv-linux-arm-gnueabihf@1.3.1:
+    resolution: {integrity: sha512-Stpor+kqRZg9ykYLjAJn0YrXfgH96WmTcS1AKeHs6gBhVMJ2RZmn1CyF06g5wVQ7sQGrZWMm8Hp3PGjhM5Z2Ew==}
     engines: {node: '>= 10'}
     cpu: [arm]
     os: [linux]
 
-  rusty-store-kv-linux-arm64-gnu@1.2.0:
-    resolution: {integrity: sha512-dZ3ZWsltagzP3U1J6WqWBRoIakqBP7i7y9MDBnKIFFYALVkvY2q2AhrN5cTBxZHaZTbrjyZyhE/rNbyqLZjXLg==}
+  rusty-store-kv-linux-arm64-gnu@1.3.1:
+    resolution: {integrity: sha512-ZorAn0AumVbL/6kqswhB/vnLEwlSBMvnhDF6LApHhFTRIygq63dyRrwtM8hgEqL/cjOMotGft6INn429V0RWcw==}
     engines: {node: '>= 10'}
     cpu: [arm64]
     os: [linux]
 
-  rusty-store-kv-linux-arm64-musl@1.2.0:
-    resolution: {integrity: sha512-J0Zg+wYzy+03DTFZgMPiTaRTk8dfFJv7zQGpeGgeyma3k7SUmUYT2P1b+0NNjbVxr5xNdFJURyJVglUMP3SJRA==}
+  rusty-store-kv-linux-arm64-musl@1.3.1:
+    resolution: {integrity: sha512-QMNbq7G1Zr2Yk82XqGbs7z2X2gs9mO5lxnHXeHLSy++56EUBTW/zj4JSjdYdetnFBkGwlPSQLAs1s0MXefxc0g==}
     engines: {node: '>= 10'}
     cpu: [arm64]
     os: [linux]
 
-  rusty-store-kv-linux-x64-gnu@1.2.0:
-    resolution: {integrity: sha512-8EK6nzC4o13v7zOtLucoQcSOPSsJe9Rw1cAWk7F5qYg/lfFAQNzOpp68rkCBnrHix8yswcafzcSktJHTKuO4yA==}
+  rusty-store-kv-linux-x64-gnu@1.3.1:
+    resolution: {integrity: sha512-aD6Oj3PlRzLLcIMytTdzkh/mIu0pJjsug2tA8Gfd5lH2SdB6NFVrF/cjrFWgx5LSLcmI+vVpstqjLOIuc3tZ7g==}
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [linux]
 
-  rusty-store-kv-linux-x64-musl@1.2.0:
-    resolution: {integrity: sha512-8Z6xAYWBFKfspSJ1XrRs8P5qYE/aDl6LGhX/5IXg/9mr54quH+pH6YXx88SD0lTgRh+mAD3brCNfr15fOKZftA==}
+  rusty-store-kv-linux-x64-musl@1.3.1:
+    resolution: {integrity: sha512-oSkE6X96muX0cbhE754s7shfzEzUTDQi5d3xrNlA/VskWRjDwKmrqiLHLsxO9lamNcDi5wvK8O6byI9qBXigRg==}
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [linux]
 
-  rusty-store-kv-win32-arm64-msvc@1.2.0:
-    resolution: {integrity: sha512-YmhUBOzJc6yj1Im/WXcD20iuaZ2GWANG/heTk09enzwgza8i68sSlA39TPTyLE0tOZFdbT76GEuIXPHB0peRRg==}
+  rusty-store-kv-win32-arm64-msvc@1.3.1:
+    resolution: {integrity: sha512-HIJ2uJt5LzI/Flx73gnZX/tUfOH2EKS1UKMEzzMF8kqor3iSeGyr0NkLxdl0sZ31dZzRkW63bKxTESmIYjTgiQ==}
     engines: {node: '>= 10'}
     cpu: [arm64]
     os: [win32]
 
-  rusty-store-kv-win32-x64-msvc@1.2.0:
-    resolution: {integrity: sha512-z0/Snn9bZwsT9YnnG18Ol+pkLQpBHkAISq99NhbVdYj5lAYED/n2qIJpP1ROLJlFMJQ4PvftjCmAHUHy0tnkxA==}
+  rusty-store-kv-win32-x64-msvc@1.3.1:
+    resolution: {integrity: sha512-CY1pmACrPg1mgfWPk7/dtB24TGc0RWv34+8Eg2lXbD6V7ePSMOVeVcIH7ra/JIjxbJJV2ljWvhkgUnEnp1FSKA==}
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [win32]
 
-  rusty-store-kv@1.2.0:
-    resolution: {integrity: sha512-XlzClGSiIfOrpCUEh/eAAktFbsF4IPpDDeOEIP+cWmLkbVzWuqXVLIBouBH4ybKBlw+bQCyjOnZwBdyM9UVpUg==}
+  rusty-store-kv@1.3.1:
+    resolution: {integrity: sha512-Kk+55VwQ5qLWcSD6R0RrxFOEF70SH7BjYj60MCskJvRkuY7MFlAPEn3hY4WzRodWXj5cCOJ4AsDr+4OvtaW/SQ==}
     engines: {node: '>= 10'}
 
   safe-array-concat@1.1.2:
@@ -8638,48 +8638,48 @@ snapshots:
     dependencies:
       queue-microtask: 1.2.3
 
-  rusty-store-kv-darwin-arm64@1.2.0:
+  rusty-store-kv-darwin-arm64@1.3.1:
     optional: true
 
-  rusty-store-kv-darwin-x64@1.2.0:
+  rusty-store-kv-darwin-x64@1.3.1:
     optional: true
 
-  rusty-store-kv-freebsd-x64@1.2.0:
+  rusty-store-kv-freebsd-x64@1.3.1:
     optional: true
 
-  rusty-store-kv-linux-arm-gnueabihf@1.2.0:
+  rusty-store-kv-linux-arm-gnueabihf@1.3.1:
     optional: true
 
-  rusty-store-kv-linux-arm64-gnu@1.2.0:
+  rusty-store-kv-linux-arm64-gnu@1.3.1:
     optional: true
 
-  rusty-store-kv-linux-arm64-musl@1.2.0:
+  rusty-store-kv-linux-arm64-musl@1.3.1:
     optional: true
 
-  rusty-store-kv-linux-x64-gnu@1.2.0:
+  rusty-store-kv-linux-x64-gnu@1.3.1:
     optional: true
 
-  rusty-store-kv-linux-x64-musl@1.2.0:
+  rusty-store-kv-linux-x64-musl@1.3.1:
     optional: true
 
-  rusty-store-kv-win32-arm64-msvc@1.2.0:
+  rusty-store-kv-win32-arm64-msvc@1.3.1:
     optional: true
 
-  rusty-store-kv-win32-x64-msvc@1.2.0:
+  rusty-store-kv-win32-x64-msvc@1.3.1:
     optional: true
 
-  rusty-store-kv@1.2.0:
+  rusty-store-kv@1.3.1:
     optionalDependencies:
-      rusty-store-kv-darwin-arm64: 1.2.0
-      rusty-store-kv-darwin-x64: 1.2.0
-      rusty-store-kv-freebsd-x64: 1.2.0
-      rusty-store-kv-linux-arm-gnueabihf: 1.2.0
-      rusty-store-kv-linux-arm64-gnu: 1.2.0
-      rusty-store-kv-linux-arm64-musl: 1.2.0
-      rusty-store-kv-linux-x64-gnu: 1.2.0
-      rusty-store-kv-linux-x64-musl: 1.2.0
-      rusty-store-kv-win32-arm64-msvc: 1.2.0
-      rusty-store-kv-win32-x64-msvc: 1.2.0
+      rusty-store-kv-darwin-arm64: 1.3.1
+      rusty-store-kv-darwin-x64: 1.3.1
+      rusty-store-kv-freebsd-x64: 1.3.1
+      rusty-store-kv-linux-arm-gnueabihf: 1.3.1
+      rusty-store-kv-linux-arm64-gnu: 1.3.1
+      rusty-store-kv-linux-arm64-musl: 1.3.1
+      rusty-store-kv-linux-x64-gnu: 1.3.1
+      rusty-store-kv-linux-x64-musl: 1.3.1
+      rusty-store-kv-win32-arm64-msvc: 1.3.1
+      rusty-store-kv-win32-x64-msvc: 1.3.1
 
   safe-array-concat@1.1.2:
     dependencies:
