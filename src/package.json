@@ -99,7 +99,7 @@
     "@types/supertest": "^6.0.2",
     "@types/underscore": "^1.11.15",
     "chokidar": "^3.6.0",
-    "eslint": "^9.9.1",
+    "eslint": "^9.10.0",
     "eslint-config-etherpad": "^4.0.4",
     "etherpad-cli-client": "^3.0.2",
     "mocha": "^10.7.3",
