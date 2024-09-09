@@ -171,7 +171,7 @@ export const getAvailablePlugins = (maxCacheAge: number|false) => {
       return resolve(availablePlugins);
     }
 
-    await axios.get('https://static.etherpad.org/plugins.json', {headers})
+    await axios.get(`${settings.updateServer}/plugins.json`, {headers})
         .then((pluginsLoaded:AxiosResponse<MapArrayType<PackageInfo>>) => {
           availablePlugins = pluginsLoaded.data;
           cacheTimestamp = nowTimestamp;
