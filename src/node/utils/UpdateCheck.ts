@@ -20,7 +20,7 @@ const loadEtherpadInformations = () => {
     return infos;
   }
 
-  return axios.get('https://static.etherpad.org/info.json', {headers: headers})
+  return axios.get(`${settings.updateServer}/info.json`, {headers: headers})
   .then(async (resp: any) => {
     infos = await resp.data;
     if (infos === undefined || infos === null) {

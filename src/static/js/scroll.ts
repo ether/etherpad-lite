@@ -15,7 +15,8 @@ class Scroll {
     // DOM reference
     this.outerWin = outerWin;
     this.doc = this.outerWin.contentDocument!;
-    this.rootDocument = parent.parent.document;
+    this.rootDocument = document;
+    console.log(this.rootDocument)
   }
 
   scrollWhenCaretIsInTheLastLineOfViewportWhenNecessary(rep: RepModel, isScrollableEvent: boolean, innerHeight: number) {
@@ -112,7 +113,7 @@ class Scroll {
   };
 
   _getEditorPositionTop() {
-    const editor = parent.document.getElementsByTagName('iframe');
+    const editor = document.getElementsByTagName('iframe');
     const editorPositionTop = editor[0].offsetTop;
     return editorPositionTop;
   };
