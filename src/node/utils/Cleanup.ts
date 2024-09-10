@@ -61,9 +61,10 @@ exports.deleteRevisions = async (padId: string, keepRevisions: number): Promise<
 
   const revisions: Revision[] = [];
 
-  for (let rev = cleanupUntilRevision; rev <= pad.head; ++rev) {
+  await promises.timesLimit(keepRevisions + 1, 500, async (i: number) => {
+    const rev = i + cleanupUntilRevision
     revisions[rev] = await pad.getRevision(rev)
-  }
+  });
 
   logger.debug('Loaded revisions: ', revisions.length)
 
