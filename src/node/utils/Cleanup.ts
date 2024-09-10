@@ -61,7 +61,7 @@ exports.deleteRevisions = async (padId: string, keepRevisions: number): Promise<
 
   const revisions: Revision[] = [];
 
-  for (let rev = 0; rev <= pad.head; ++rev) {
+  for (let rev = cleanupUntilRevision; rev <= pad.head; ++rev) {
     revisions[rev] = await pad.getRevision(rev)
   }
 
@@ -78,9 +78,7 @@ exports.deleteRevisions = async (padId: string, keepRevisions: number): Promise<
   let newAText = Changeset.makeAText('\n');
   let pool = pad.apool()
 
-  for (let rev = 0; rev <= cleanupUntilRevision; ++rev) {
-    newAText = Changeset.applyToAText(revisions[rev].changeset, newAText, pool);
-  }
+  newAText = Changeset.applyToAText(changeset, newAText, pool);
 
   const revision = await createRevision(
     changeset,
