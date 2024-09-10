@@ -48,7 +48,7 @@ exports.deleteRevisions = async (padId: string, keepRevisions: number): Promise<
 
   logger.debug('Initial pad is valid')
 
-  if (pad.head < keepRevisions) {
+  if (pad.head <= keepRevisions) {
     logger.debug('Pad has not enough revisions')
     return false
   }

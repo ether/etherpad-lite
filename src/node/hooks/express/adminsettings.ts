@@ -254,6 +254,13 @@ exports.socketio = (hookName: string, {io}: any) => {
         })
 
         socket.on('cleanupPadRevisions', async (padId: string) => {
+          if (!settings.cleanup.enabled) {
+            socket.emit('results:cleanupPadRevisions', {
+              error: 'Cleanup disabled. Enable cleanup in settings.json: cleanup.enabled => true',
+            });
+            return;
+          }
+
           const padExists = await padManager.doesPadExists(padId);
           if (padExists) {
             logger.info(`Cleanup pad revisions: ${padId}`);
@@ -265,9 +272,16 @@ exports.socketio = (hookName: string, {io}: any) => {
                   keepRevisions: settings.cleanup.keepRevisions,
                 });
                 logger.info('successful cleaned up pad: ', padId)
+              } else {
+                socket.emit('results:cleanupPadRevisions', {
+                  error: 'Error cleaning up pad',
+                });
               }
             } catch (err: any) {
               logger.error(`Error in pad ${padId}: ${err.stack || err}`);
+              socket.emit('results:cleanupPadRevisions', {
+                error: err.toString(),
+              });
               return;
             }
           }

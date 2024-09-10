@@ -384,6 +384,7 @@ exports.showSettingsInAdminPage = true;
  * Settings for cleanup of pads
  */
 exports.cleanup = {
+  enabled: false,
   keepRevisions: 100,
 }
 

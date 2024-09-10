@@ -23,6 +23,7 @@ export const PadPage = ()=>{
     const pads = useStore(state=>state.pads)
     const [currentPage, setCurrentPage] = useState<number>(0)
     const [deleteDialog, setDeleteDialog] = useState<boolean>(false)
+    const [errorText, setErrorText] = useState<string|null>(null)
     const [padToDelete, setPadToDelete] = useState<string>('')
     const pages = useMemo(()=>{
         if(!pads){
@@ -72,6 +73,11 @@ export const PadPage = ()=>{
         settingsSocket.on('results:cleanupPadRevisions', (data)=>{
           let newPads = useStore.getState().pads?.results ?? []
 
+          if (data.error) {
+            setErrorText(data.error)
+            return
+          }
+
           newPads.forEach((pad)=>{
             if (pad.padName === data.padId) {
               pad.revisionNumber = data.keepRevisions
@@ -117,6 +123,21 @@ export const PadPage = ()=>{
                 </div>
             </Dialog.Content>
         </Dialog.Portal>
+        </Dialog.Root>
+        <Dialog.Root open={errorText !== null}>
+          <Dialog.Portal>
+            <Dialog.Overlay className="dialog-confirm-overlay"/>
+            <Dialog.Content className="dialog-confirm-content">
+              <div>
+                <div>Error occured: {errorText}</div>
+                <div className="settings-button-bar">
+                  <button onClick={() => {
+                    setErrorText(null)
+                  }}>OK</button>
+                </div>
+              </div>
+            </Dialog.Content>
+          </Dialog.Portal>
         </Dialog.Root>
         <h1><Trans i18nKey="ep_admin_pads:ep_adminpads2_manage-pads"/></h1>
         <SearchField value={searchTerm} onChange={v=>setSearchTerm(v.target.value)} placeholder={t('ep_admin_pads:ep_adminpads2_search-heading')}/>
