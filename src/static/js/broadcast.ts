@@ -186,7 +186,7 @@ const loadBroadcastJS = (socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
 
     mutateTextLines(changeset, padContents);
     padContents.currentRevision = revision;
-    padContents.currentTime += timeDelta * 1000;
+    padContents.currentTime += timeDelta;
 
     updateTimer();
 
