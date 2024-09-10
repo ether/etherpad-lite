@@ -39,7 +39,7 @@ const createRevision = async (aChangeset: AChangeSet, timestamp: number, isKeyRe
   };
 }
 
-exports.deleteRevisions = async (padId: string, keepRevisions: number): Promise<void> => {
+exports.deleteRevisions = async (padId: string, keepRevisions: number): Promise<boolean> => {
 
   logger.debug('Start cleanup revisions', padId)
 
@@ -47,6 +47,11 @@ exports.deleteRevisions = async (padId: string, keepRevisions: number): Promise<
   await pad.check()
 
   logger.debug('Initial pad is valid')
+
+  if (pad.head < keepRevisions) {
+    logger.debug('Pad has not enough revisions')
+    return false
+  }
 
   padMessageHandler.kickSessionsFromPad(padId)
 
@@ -116,6 +121,8 @@ exports.deleteRevisions = async (padId: string, keepRevisions: number): Promise<
 
   let newPad = await padManager.getPad(padId);
   await newPad.check();
+
+  return true
 }
 
 exports.checkTodos = async () => {
@@ -139,8 +146,10 @@ exports.checkTodos = async () => {
     }
 
     try {
-      await exports.deleteRevisions(padId, settings.keepRevisions)
-      logger.info('successful cleaned up pad: ', padId)
+      const result = await exports.deleteRevisions(padId, settings.keepRevisions)
+      if (result) {
+        logger.info('successful cleaned up pad: ', padId)
+      }
     } catch (err: any) {
       logger.error(`Error in pad ${padId}: ${err.stack || err}`);
       return;
