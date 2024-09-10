@@ -4,7 +4,7 @@
 import {PadQueryResult, PadSearchQuery} from "../../types/PadSearchQuery";
 import {PadType} from "../../types/PadType";
 import log4js from 'log4js';
-
+import {freemem, totalmem, loadavg} from 'node:os'
 const eejs = require('../../eejs');
 const fsp = require('fs').promises;
 const hooks = require('../../../static/js/pluginfw/hooks');
@@ -13,7 +13,6 @@ const settings = require('../../utils/Settings');
 const UpdateCheck = require('../../utils/UpdateCheck');
 const padManager = require('../../db/PadManager');
 const api = require('../../db/API');
-
 
 const queryPadLimit = 12;
 const logger = log4js.getLogger('adminSettings');
@@ -259,6 +258,19 @@ exports.socketio = (hookName: string, {io}: any) => {
             await hooks.aCallAll('loadSettings', {settings});
             await hooks.aCallAll('restartServer');
         });
+
+
+        socket.on('metrics', async()=>{
+
+          const memory = process.memoryUsage()
+          const freememTotal = freemem()
+          const totalAvailableMem = totalmem()
+          const cpu = loadavg()
+          socket.emit('metrics:response',{
+            cpu, memory,freememTotal, totalAvailableMem
+          })
+        })
+
     });
 };
 
