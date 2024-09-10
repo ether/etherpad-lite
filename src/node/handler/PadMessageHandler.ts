@@ -1153,7 +1153,7 @@ const getChangesetInfo = async (pad: PadType, startNum: number, endNum:number, g
     // Get all needed revision Dates.
     ...revTimesNeeded.map(async (revNum) => {
       const revDate = await pad.getRevisionDate(revNum);
-      revisionDate[revNum] = Math.floor(revDate / 1000);
+      revisionDate[revNum] = revDate;
     }),
   ]);
 

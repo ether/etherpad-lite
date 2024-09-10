@@ -186,7 +186,7 @@ const loadBroadcastJS = (socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
 
     mutateTextLines(changeset, padContents);
     padContents.currentRevision = revision;
-    padContents.currentTime += timeDelta * 1000;
+    padContents.currentTime += timeDelta;
 
     updateTimer();
 
@@ -299,7 +299,7 @@ const loadBroadcastJS = (socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
       // Loading changeset history for new revision
       loadChangesetsForRevision(newRevision, update);
       // Loading changeset history for old revision (to make diff between old and new revision)
-      loadChangesetsForRevision(padContents.currentRevision - 1);
+      loadChangesetsForRevision(padContents.currentRevision);
     }
 
     const authors = _.map(padContents.getActiveAuthors(), (name) => authorData[name]);
