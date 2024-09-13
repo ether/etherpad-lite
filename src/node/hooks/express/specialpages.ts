@@ -113,7 +113,7 @@ const convertTypescript = (content: string) => {
 
 const handleLiveReload = async (args: any, padString: string, timeSliderString: string, indexString: any) => {
   const chokidar = await import('chokidar')
-  const watcher = chokidar.watch(path.join(settings.root, 'src', 'static', 'js'));
+  const watcher = chokidar.watch(path.join(settings.root, 'src', 'static', 'js'), {});
   let routeHandlers: { [key: string]: Function } = {};
 
   const setRouteHandler = (path: string, newHandler: Function) => {

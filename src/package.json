@@ -63,6 +63,7 @@
     "rehype": "^13.0.1",
     "rehype-minify-whitespace": "^6.0.0",
     "resolve": "1.22.8",
+    "rusty-store-kv": "^1.3.1",
     "security": "1.0.0",
     "semver": "^7.6.3",
     "socket.io": "^4.7.5",
@@ -73,8 +74,7 @@
     "ueberdb2": "^5.0.2",
     "underscore": "1.13.7",
     "unorm": "1.6.0",
-    "wtfnode": "^0.9.3",
-    "rusty-store-kv": "^1.3.1"
+    "wtfnode": "^0.9.3"
   },
   "bin": {
     "etherpad-healthcheck": "../bin/etherpad-healthcheck",
@@ -98,6 +98,7 @@
     "@types/sinon": "^17.0.3",
     "@types/supertest": "^6.0.2",
     "@types/underscore": "^1.11.15",
+    "@types/whatwg-mimetype": "^3.0.2",
     "chokidar": "^4.0.0",
     "eslint": "^9.10.0",
     "eslint-config-etherpad": "^4.0.4",
