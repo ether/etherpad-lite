@@ -193,6 +193,7 @@ export const HomePage = () => {
         <h2><Trans i18nKey="admin_plugins.available"/></h2>
         <SearchField onChange={v=>{setSearchTerm(v.target.value)}} placeholder={t('admin_plugins.available_search.placeholder')} value={searchTerm}/>
 
+      <div className="table-container">
         <table id="available-plugins">
             <thead>
             <tr>
@@ -240,5 +241,6 @@ export const HomePage = () => {
             }
             </tbody>
         </table>
+      </div>
     </div>
 }
