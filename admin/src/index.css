@@ -129,7 +129,7 @@ div.innerwrapper {
   height: 100vh;
   flex-grow: 100;
   margin-left: var(--sidebar-width);
-  padding: 20px;
+  padding: 20px 20px 20px;
 }
 
 div.innerwrapper-err {
@@ -346,7 +346,6 @@ pre {
 @media (max-width: 800px) {
 
   div.innerwrapper {
-    padding: 0 15px 15px 15px;
     margin-left: 0;
   }
 
@@ -357,7 +356,7 @@ pre {
   div.menu {
     height: auto;
     border-right: none;
-    width: 100%;
+    --sidebar-width: 100%;
     float: left;
   }
 

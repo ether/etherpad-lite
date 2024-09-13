@@ -94,7 +94,9 @@ export const App = () => {
                     <Crown width={40} height={40}/>
                     <h1>Etherpad</h1>
                 </span>
-        <ul>
+        <ul onClick={()=>{
+          setSidebarOpen(false)
+        }}>
           <li><NavLink to="/plugins"><Cable/><Trans i18nKey="admin_plugins"/></NavLink></li>
           <li><NavLink to={"/settings"}><Wrench/><Trans i18nKey="admin_settings"/></NavLink></li>
           <li><NavLink to={"/help"}> <Construction/> <Trans i18nKey="admin_plugins_info"/></NavLink></li>
