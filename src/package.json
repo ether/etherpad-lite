@@ -108,11 +108,11 @@
     "nodeify": "^1.0.1",
     "openapi-schema-validation": "^0.4.2",
     "set-cookie-parser": "^2.7.0",
-    "sinon": "^19.0.0",
+    "sinon": "^19.0.2",
     "split-grid": "^1.0.11",
     "supertest": "^7.0.0",
     "typescript": "^5.6.2",
-    "vitest": "^2.1.0"
+    "vitest": "^2.1.1"
   },
   "engines": {
     "node": ">=18.18.2",
