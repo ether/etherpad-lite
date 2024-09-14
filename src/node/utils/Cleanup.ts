@@ -74,6 +74,17 @@ exports.deleteRevisions = async (padId: string, keepRevisions: number): Promise<
 
   let padContent = await db.get(`pad:${padId}`)
   padContent.head = keepRevisions
+  if (padContent.savedRevisions) {
+    let newSavedRevisions = []
+
+    for (let i = 0; i < padContent.savedRevisions.length; i++) {
+      if (padContent.savedRevisions[i].revNum > cleanupUntilRevision) {
+        padContent.savedRevisions[i].revNum = padContent.savedRevisions[i].revNum - cleanupUntilRevision
+        newSavedRevisions.push(padContent.savedRevisions[i])
+      }
+    }
+    padContent.savedRevisions = newSavedRevisions
+  }
   await db.set(`pad:${padId}`, padContent);
 
   let newAText = Changeset.makeAText('\n');
