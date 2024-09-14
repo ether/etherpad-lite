@@ -83,6 +83,12 @@
       }
     },
     {
+      "name": "restApi",
+      "hooks": {
+        "expressCreateServer": "ep_etherpad-lite/node/handler/RestAPI"
+      }
+    },
+    {
       "name": "socketio",
       "hooks": {
         "expressCloseServer": "ep_etherpad-lite/node/hooks/express/socketio",
