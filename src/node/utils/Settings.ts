@@ -381,6 +381,14 @@ exports.sso = {
 exports.showSettingsInAdminPage = true;
 
 /*
+ * Settings for cleanup of pads
+ */
+exports.cleanup = {
+  enabled: false,
+  keepRevisions: 100,
+}
+
+/*
  * By default, when caret is moved out of viewport, it scrolls the minimum
  * height needed to make this line visible.
  */

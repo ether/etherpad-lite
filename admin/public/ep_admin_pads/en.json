@@ -4,6 +4,7 @@
   "ep_adminpads2_autoupdate.title": "Enables or disables automatic updates for the current query.",
   "ep_adminpads2_confirm": "Do you really want to delete the pad {{padID}}?",
   "ep_adminpads2_delete.value": "Delete",
+  "ep_adminpads2_cleanup": "Cleanup revisions",
   "ep_adminpads2_last-edited": "Last edited",
   "ep_adminpads2_loading": "Loading…",
   "ep_adminpads2_manage-pads": "Manage pads",
