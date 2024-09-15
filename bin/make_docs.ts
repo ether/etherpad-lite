@@ -57,7 +57,7 @@ createDirIfNotExists('../out/doc/api')
 
 
 
-exec(`asciidoctor -D ../out/doc ../doc/index.adoc */**.adoc -a VERSION=${VERSION}`)
+exec(`asciidoctor -D ../out/doc ../doc/index.adoc ../*/**.adoc -a VERSION=${VERSION}`)
 exec(`asciidoctor -D ../out/doc/api  ../doc/api/*.adoc -a VERSION=${VERSION}`)
 
 copyFolderSync('../doc/public/', '../out/doc/')
