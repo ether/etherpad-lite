@@ -142,12 +142,6 @@ version['1.3.0'] = {
 };
 
 
-version['2.2.2'] = {
-  ...version['1.3.0'],
-
-}
-
-
 // set the latest available API version here
 exports.latestApiVersion = '1.3.0';
 

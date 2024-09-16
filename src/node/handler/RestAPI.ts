@@ -954,27 +954,30 @@ export const expressCreateServer = async (hookName: string, {app}: ArgsExpressTy
     summary: 'Get the chat history of a pad',
     tags: ['pad']
   }
-  mapping.get(GET)!["/pads/chatHead"] = {apiVersion: '1.2.7', functionName: 'getChatHead',
-    responses: prepareResponses({type: "object", properties: {
-      chatHead: {
-        type: "object",
-        properties: {
-          "text": {
-            "type": "string"
-          },
-          "userId": {
-            "type": "string"
-          },
-          "userName": {
-            "type": "string"
-          },
-          "time": {
-            "type": "integer"
+  mapping.get(GET)!["/pads/chatHead"] = {
+    apiVersion: '1.2.7', functionName: 'getChatHead',
+    responses: prepareResponses({
+      type: "object", properties: {
+        chatHead: {
+          type: "object",
+          properties: {
+            "text": {
+              "type": "string"
+            },
+            "userId": {
+              "type": "string"
+            },
+            "userName": {
+              "type": "string"
+            },
+            "time": {
+              "type": "integer"
+            }
           }
         }
-      }
 
-      }}),
+      }
+    }),
     requestBody: [
       {
         "name": "padID",
@@ -990,7 +993,8 @@ export const expressCreateServer = async (hookName: string, {app}: ArgsExpressTy
   }
 
   // Version 1.2.8
-  mapping.get(GET)!["/pads/attributePool"] = {apiVersion: '1.2.8', functionName: 'getAttributePool',
+  mapping.get(GET)!["/pads/attributePool"] = {
+    apiVersion: '1.2.8', functionName: 'getAttributePool',
     responses: prepareResponses({type: "object", properties: {}}),
     requestBody: [
       {
@@ -1004,7 +1008,8 @@ export const expressCreateServer = async (hookName: string, {app}: ArgsExpressTy
     summary: 'Get the attribute pool of a pad',
     tags: ['pad']
   }
-  mapping.get(GET)!["/pads/revisionChangeset"] = {apiVersion: '1.2.8', functionName: 'getRevisionChangeset',
+  mapping.get(GET)!["/pads/revisionChangeset"] = {
+    apiVersion: '1.2.8', functionName: 'getRevisionChangeset',
     responses: prepareResponses({type: "object", properties: {}}),
     requestBody: [
       {
@@ -1027,7 +1032,8 @@ export const expressCreateServer = async (hookName: string, {app}: ArgsExpressTy
   }
 
   // Version 1.2.9
-  mapping.get(POST)!["/pads/copypad"] = {apiVersion: '1.2.9', functionName: 'copyPad',
+  mapping.get(POST)!["/pads/copypad"] = {
+    apiVersion: '1.2.9', functionName: 'copyPad',
     requestBody: {
       content: {
         "application/json": {
@@ -1055,7 +1061,8 @@ export const expressCreateServer = async (hookName: string, {app}: ArgsExpressTy
   }
 
 
-  mapping.get(POST)!["/pads/movePad"] = {apiVersion: '1.2.9', functionName: 'movePad',
+  mapping.get(POST)!["/pads/movePad"] = {
+    apiVersion: '1.2.9', functionName: 'movePad',
     requestBody: {
       content: {
         "application/json": {
@@ -1083,7 +1090,8 @@ export const expressCreateServer = async (hookName: string, {app}: ArgsExpressTy
   }
 
   // Version 1.2.10
-  mapping.get(POST)!["/pads/padId"] = {apiVersion: '1.2.10', functionName: 'getPadID',
+  mapping.get(POST)!["/pads/padId"] = {
+    apiVersion: '1.2.10', functionName: 'getPadID',
     requestBody: {
       content: {
         "application/json": {
@@ -1105,7 +1113,8 @@ export const expressCreateServer = async (hookName: string, {app}: ArgsExpressTy
   }
 
   // Version 1.2.11
-  mapping.get(GET)!["/savedRevisions"] = {apiVersion: '1.2.11', functionName: 'listSavedRevisions',
+  mapping.get(GET)!["/savedRevisions"] = {
+    apiVersion: '1.2.11', functionName: 'listSavedRevisions',
     responses: prepareResponses({type: "object", properties: {savedRevisions: {type: "array", items: {type: "object"}}}}),
     requestBody: [
       {
@@ -1121,7 +1130,8 @@ export const expressCreateServer = async (hookName: string, {app}: ArgsExpressTy
   }
 
 
-  mapping.get(POST)!["/savedRevisions"] = {apiVersion: '1.2.11', functionName: 'saveRevision',
+  mapping.get(POST)!["/savedRevisions"] = {
+    apiVersion: '1.2.11', functionName: 'saveRevision',
     requestBody: {
       content: {
         "application/json": {
@@ -1145,7 +1155,8 @@ export const expressCreateServer = async (hookName: string, {app}: ArgsExpressTy
     tags: ['pad']
   }
 
-  mapping.get(GET)!["/savedRevisions/revisionsCount"] = {apiVersion: '1.2.11', functionName: 'getSavedRevisionsCount',
+  mapping.get(GET)!["/savedRevisions/revisionsCount"] = {
+    apiVersion: '1.2.11', functionName: 'getSavedRevisionsCount',
     responses: prepareResponses({type: "object", properties: {revisionsCount: {type: "integer"}}}),
     requestBody: [
       {
@@ -1161,7 +1172,8 @@ export const expressCreateServer = async (hookName: string, {app}: ArgsExpressTy
   }
 
   // Version 1.2.12
-  mapping.get(PATCH)!["/chats/messages"] = {apiVersion: '1.2.12', functionName: 'appendChatMessage',
+  mapping.get(PATCH)!["/chats/messages"] = {
+    apiVersion: '1.2.12', functionName: 'appendChatMessage',
     requestBody: {
       content: {
         "application/json": {
@@ -1194,7 +1206,8 @@ export const expressCreateServer = async (hookName: string, {app}: ArgsExpressTy
   // Version 1.2.13
 
   // Version 1.2.14
-  mapping.get(GET)!["/stats"] = {apiVersion: '1.2.14', functionName: 'getStats',
+  mapping.get(GET)!["/stats"] = {
+    apiVersion: '1.2.14', functionName: 'getStats',
     responses: prepareResponses({type: "object", properties: {stats: {type: "object"}}}),
     summary: 'Get stats',
     tags: ['stats']
@@ -1203,7 +1216,8 @@ export const expressCreateServer = async (hookName: string, {app}: ArgsExpressTy
   // Version 1.2.15
 
   // Version 1.3.0
-  mapping.get(PATCH)!["/pads/text"] = {apiVersion: '1.3.0', functionName: 'appendText',
+  mapping.get(PATCH)!["/pads/text"] = {
+    apiVersion: '1.3.0', functionName: 'appendText',
     requestBody: {
       content: {
         "application/json": {
@@ -1229,7 +1243,8 @@ export const expressCreateServer = async (hookName: string, {app}: ArgsExpressTy
     summary: 'Appends text to a pad',
     tags: ['pad']
   }
-  mapping.get(POST)!["/pads/copyWithoutHistory"] = {apiVersion: '1.3.0', functionName: 'copyPadWithoutHistory',
+  mapping.get(POST)!["/pads/copyWithoutHistory"] = {
+    apiVersion: '1.3.0', functionName: 'copyPadWithoutHistory',
     requestBody: {
       content: {
         "application/json": {
@@ -1242,14 +1257,14 @@ export const expressCreateServer = async (hookName: string, {app}: ArgsExpressTy
               destinationID: {
                 type: "string"
               },
-              force : {
+              force: {
                 type: "string"
               },
               authorID: {
                 type: "string"
               }
             },
-            required: ["sourceID", "destinationID","force", "authorID"]
+            required: ["sourceID", "destinationID", "force", "authorID"]
           }
         }
       }
@@ -1258,7 +1273,8 @@ export const expressCreateServer = async (hookName: string, {app}: ArgsExpressTy
     summary: 'Copies a pad without its history',
     tags: ['pad']
   }
-  mapping.get(POST)!["/pads/group"] = {apiVersion: '1.3.0', functionName: 'createGroupPad',
+  mapping.get(POST)!["/pads/group"] = {
+    apiVersion: '1.3.0', functionName: 'createGroupPad',
     requestBody: {
       content: {
         "application/json": {
@@ -1288,7 +1304,8 @@ export const expressCreateServer = async (hookName: string, {app}: ArgsExpressTy
     tags: ['pad']
 
   }
-  mapping.get(POST)!["/pads"] = {apiVersion: '1.3.0', functionName: 'createPad',
+  mapping.get(POST)!["/pads"] = {
+    apiVersion: '1.3.0', functionName: 'createPad',
     requestBody: {
       content: {
         "application/json": {
@@ -1343,7 +1360,8 @@ export const expressCreateServer = async (hookName: string, {app}: ArgsExpressTy
   }
 
 
-  mapping.get(POST)!["/pads/html"] = {apiVersion: '1.3.0', functionName: 'setHTML',
+  mapping.get(POST)!["/pads/html"] = {
+    apiVersion: '1.3.0', functionName: 'setHTML',
     requestBody: {
       content: {
         "application/json": {
@@ -1370,7 +1388,8 @@ export const expressCreateServer = async (hookName: string, {app}: ArgsExpressTy
     tags: ['pad']
   }
 
-  mapping.get(POST)!["/pads/text"] = {apiVersion: '1.3.0', functionName: 'setText',
+  mapping.get(POST)!["/pads/text"] = {
+    apiVersion: '1.3.0', functionName: 'setText',
     requestBody: {
       content: {
         "application/json": {

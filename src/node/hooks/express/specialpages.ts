@@ -370,8 +370,4 @@ exports.expressCreateServer = async (hookName: string, args: ArgsExpressType, cb
     // express-session automatically calls req.session.touch() so we don't need to do it here.
     res.json({status: 'ok'});
   });
-
-
-
-
 };
