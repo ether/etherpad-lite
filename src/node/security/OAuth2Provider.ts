@@ -153,7 +153,7 @@ export const expressCreateServer = async (hookName: string, args: ArgsExpressTyp
     });
 
 
-    args.app.post('/interaction/:uid', async (req: Http2ServerRequest, res: Http2ServerResponse, next:Function) => {
+    args.app.post('/interaction/:uid', async (req, res, next) => {
         const formid = new IncomingForm();
         try {
             // @ts-ignore
@@ -226,7 +226,7 @@ export const expressCreateServer = async (hookName: string, args: ArgsExpressTyp
     })
 
 
-    args.app.get('/interaction/:uid', async (req: Request, res: Response, next: Function) => {
+    args.app.get('/interaction/:uid', async (req, res, next) => {
         try {
             const {
                 uid, prompt, params, session,

@@ -1,5 +1,7 @@
+import {Express} from "express";
+
 export type ArgsExpressType = {
-    app:any,
+    app:Express,
     io: any,
     server:any
 }

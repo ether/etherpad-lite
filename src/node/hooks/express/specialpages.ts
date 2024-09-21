@@ -12,6 +12,7 @@ const webaccess = require('./webaccess');
 const plugins = require('../../../static/js/pluginfw/plugin_defs');
 
 import {build, buildSync} from 'esbuild'
+import {ArgsExpressType} from "../../types/ArgsExpressType";
 let ioI: { sockets: { sockets: any[]; }; } | null = null
 
 exports.socketio = (hookName: string, {io}: any) => {
@@ -19,7 +20,7 @@ exports.socketio = (hookName: string, {io}: any) => {
 }
 
 
-exports.expressPreSession = async (hookName:string, {app}:any) => {
+exports.expressPreSession = async (hookName:string, {app}:ArgsExpressType) => {
   // This endpoint is intended to conform to:
   // https://www.ietf.org/archive/id/draft-inadarei-api-health-check-06.html
   app.get('/health', (req:any, res:any) => {
@@ -243,7 +244,7 @@ const convertTypescriptWatched = (content: string, cb: (output:string, hash: str
   })
 }
 
-exports.expressCreateServer = async (hookName: string, args: any, cb: Function) => {
+exports.expressCreateServer = async (hookName: string, args: ArgsExpressType, cb: Function) => {
   const padString =   eejs.require('ep_etherpad-lite/templates/padBootstrap.js', {
       pluginModules: (() => {
         const pluginModules = new Set();

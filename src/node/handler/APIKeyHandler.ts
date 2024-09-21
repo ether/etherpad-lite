@@ -7,6 +7,16 @@ const settings = require('../utils/Settings');
 
 const apiHandlerLogger = log4js.getLogger('APIHandler');
 
+
+
+export type APIFields = {
+  apikey: string;
+  api_key: string;
+  padID: string;
+  padName: string;
+  authorization: string;
+}
+
 // ensure we have an apikey
 export let apikey:string|null = null;
 const apikeyFilename = absolutePaths.makeAbsolute(argv.apikey || './APIKEY.txt');

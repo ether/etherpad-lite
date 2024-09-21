@@ -24,10 +24,10 @@ import {MapArrayType} from "../types/MapType";
 const api = require('../db/API');
 const padManager = require('../db/PadManager');
 import createHTTPError from 'http-errors';
-import {Http2ServerRequest, Http2ServerResponse} from "node:http2";
+import {Http2ServerRequest} from "node:http2";
 import {publicKeyExported} from "../security/OAuth2Provider";
 import {jwtVerify} from "jose";
-import {apikey} from './APIKeyHandler'
+import {APIFields, apikey} from './APIKeyHandler'
 // a list of all functions
 const version:MapArrayType<any> = {};
 
@@ -141,6 +141,7 @@ version['1.3.0'] = {
   setText: ['padID', 'text', 'authorId'],
 };
 
+
 // set the latest available API version here
 exports.latestApiVersion = '1.3.0';
 
@@ -148,13 +149,6 @@ exports.latestApiVersion = '1.3.0';
 exports.version = version;
 
 
-type APIFields = {
-  apikey: string;
-  api_key: string;
-  padID: string;
-  padName: string;
-  authorization: string;
-}
 
 /**
  * Handles an HTTP API call
