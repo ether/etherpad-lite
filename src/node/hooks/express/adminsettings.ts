@@ -13,6 +13,7 @@ const settings = require('../../utils/Settings');
 const UpdateCheck = require('../../utils/UpdateCheck');
 const padManager = require('../../db/PadManager');
 const api = require('../../db/API');
+const cleanup = require('../../utils/Cleanup');
 
 
 const queryPadLimit = 12;
@@ -250,6 +251,40 @@ exports.socketio = (hookName: string, {io}: any) => {
                 await pad.remove();
                 socket.emit('results:deletePad', padId);
             }
+        })
+
+        socket.on('cleanupPadRevisions', async (padId: string) => {
+          if (!settings.cleanup.enabled) {
+            socket.emit('results:cleanupPadRevisions', {
+              error: 'Cleanup disabled. Enable cleanup in settings.json: cleanup.enabled => true',
+            });
+            return;
+          }
+
+          const padExists = await padManager.doesPadExists(padId);
+          if (padExists) {
+            logger.info(`Cleanup pad revisions: ${padId}`);
+            try {
+              const result = await cleanup.deleteRevisions(padId, settings.cleanup.keepRevisions)
+              if (result) {
+                socket.emit('results:cleanupPadRevisions', {
+                  padId: padId,
+                  keepRevisions: settings.cleanup.keepRevisions,
+                });
+                logger.info('successful cleaned up pad: ', padId)
+              } else {
+                socket.emit('results:cleanupPadRevisions', {
+                  error: 'Error cleaning up pad',
+                });
+              }
+            } catch (err: any) {
+              logger.error(`Error in pad ${padId}: ${err.stack || err}`);
+              socket.emit('results:cleanupPadRevisions', {
+                error: err.toString(),
+              });
+              return;
+            }
+          }
         })
 
         socket.on('restartServer', async () => {

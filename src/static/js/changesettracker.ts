@@ -140,7 +140,7 @@ const makeChangesetTracker = (scheduler, apool, aceCallbacksProvider) => {
         toSubmit = compose(submittedChangeset, userChangeset, apool);
       } else {
         // Get my authorID
-        const authorId = parent.parent.pad.myUserInfo.userId;
+        const authorId = window.pad.myUserInfo.userId;
 
         // Sanitize authorship: Replace all author attributes with this user's author ID in case the
         // text was copied from another author.

@@ -172,6 +172,14 @@
   "showSettingsInAdminPage": "${SHOW_SETTINGS_IN_ADMIN_PAGE:true}",
 
   /*
+   * Settings for cleanup of pads
+   */
+  "cleanup": {
+    "enabled": false,
+    "keepRevisions": 5
+  },
+
+  /*
     The authentication method used by the server.
     The default value is sso
     If you want to use the old authentication system, change this to apikey
@@ -193,6 +201,15 @@
             "ca": ["/path-to-your/epl-intermediate-cert1.crt", "/path-to-your/epl-intermediate-cert2.crt"]
           },
   */
+
+
+  /*
+   * Enables the use of a different server. We have a different one that syncs changes from the original server.
+   * It is hosted on GitHub and should not be blocked by many firewalls.
+   *  https://etherpad.org/ep_infos
+   */
+
+  "updateServer": "https://etherpad.org/ep_infos",
 
   /*
    * The type of the database.

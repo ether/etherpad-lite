@@ -107,6 +107,7 @@ exports.ttl = {
     RefreshToken: 1 * 24 * 60 * 60, // 1 day in seconds
 }
 
+exports.updateServer = "https://static.etherpad.org"
 
 
 /*
@@ -378,6 +379,14 @@ exports.sso = {
  * Show settings in admin page, by default it is true
  */
 exports.showSettingsInAdminPage = true;
+
+/*
+ * Settings for cleanup of pads
+ */
+exports.cleanup = {
+  enabled: false,
+  keepRevisions: 100,
+}
 
 /*
  * By default, when caret is moved out of viewport, it scrolls the minimum

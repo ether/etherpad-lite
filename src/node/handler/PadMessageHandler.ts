@@ -1147,13 +1147,13 @@ const getChangesetInfo = async (pad: PadType, startNum: number, endNum:number, g
     getPadLines(pad, startNum - 1),
     // Get all needed composite Changesets.
     ...compositesChangesetNeeded.map(async (item) => {
-      const changeset = await composePadChangesets(pad, item.start, item.end);
+      const changeset = await exports.composePadChangesets(pad, item.start, item.end);
       composedChangesets[`${item.start}/${item.end}`] = changeset;
     }),
     // Get all needed revision Dates.
     ...revTimesNeeded.map(async (revNum) => {
       const revDate = await pad.getRevisionDate(revNum);
-      revisionDate[revNum] = Math.floor(revDate / 1000);
+      revisionDate[revNum] = revDate;
     }),
   ]);
 
@@ -1213,7 +1213,7 @@ const getPadLines = async (pad: PadType, revNum: number) => {
  * Tries to rebuild the composePadChangeset function of the original Etherpad
  * https://github.com/ether/pad/blob/master/etherpad/src/etherpad/control/pad/pad_changeset_control.js#L241
  */
-const composePadChangesets = async (pad: PadType, startNum: number, endNum: number) => {
+exports.composePadChangesets = async (pad: PadType, startNum: number, endNum: number) => {
   // fetch all changesets we need
   const headNum = pad.getHeadRevisionNumber();
   endNum = Math.min(endNum, headNum + 1);

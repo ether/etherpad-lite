@@ -163,6 +163,14 @@
   "showSettingsInAdminPage": true,
 
   /*
+   * Settings for cleanup of pads
+   */
+  "cleanup": {
+    "enabled": false,
+    "keepRevisions": 5
+  },
+
+  /*
    * Node native SSL support
    *
    * This is disabled by default.
@@ -270,6 +278,14 @@
     "pageUp":    true,
     "pageDown":  true
   },
+
+  /*
+   * Enables the use of a different server. We have a different one that syncs changes from the original server.
+   * It is hosted on GitHub and should not be blocked by many firewalls.
+   *  https://etherpad.org/ep_infos
+   */
+
+  "updateServer": "https://etherpad.org/ep_infos",
 
   /*
    * Should we suppress errors from being visible in the default Pad Text?

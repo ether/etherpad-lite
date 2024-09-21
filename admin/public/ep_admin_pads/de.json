@@ -14,6 +14,7 @@
 	"ep_adminpads2_autoupdate.title": "Aktiviert oder deaktiviert automatische Aktualisierungen für die aktuelle Abfrage.",
 	"ep_adminpads2_confirm": "Willst du das Pad {{padID}} wirklich löschen?",
 	"ep_adminpads2_delete.value": "Löschen",
+  "ep_adminpads2_cleanup": "Historie aufräumen",
 	"ep_adminpads2_last-edited": "Zuletzt bearbeitet",
 	"ep_adminpads2_loading": "Lädt...",
 	"ep_adminpads2_manage-pads": "Pads verwalten",
