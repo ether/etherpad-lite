@@ -1,3 +1,11 @@
+# 2.2.5
+
+### Notable enhancements and fixes
+
+- Fixed timeslider not scrolling when the revision count is a multiple of 100
+- Added new Restful API for version 2 of Etherpad. It is available at /api-docs
+
+
 # 2.2.4
 
 ### Notable enhancements and fixes
