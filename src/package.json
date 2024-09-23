@@ -82,7 +82,7 @@
     "etherpad-lite": "node/server.ts"
   },
   "devDependencies": {
-    "@playwright/test": "^1.47.1",
+    "@playwright/test": "^1.47.2",
     "@types/async": "^3.2.24",
     "@types/express": "^4.17.21",
     "@types/formidable": "^3.4.5",
@@ -101,8 +101,8 @@
     "@types/swagger-ui-express": "^4.1.6",
     "@types/underscore": "^1.11.15",
     "@types/whatwg-mimetype": "^3.0.2",
-    "chokidar": "^4.0.0",
-    "eslint": "^9.10.0",
+    "chokidar": "^4.0.1",
+    "eslint": "^9.11.0",
     "eslint-config-etherpad": "^4.0.4",
     "etherpad-cli-client": "^3.0.2",
     "mocha": "^10.7.3",
