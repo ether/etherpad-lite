@@ -26,7 +26,7 @@
     "eslint-plugin-react-refresh": "^0.4.12",
     "i18next": "^23.15.1",
     "i18next-browser-languagedetector": "^8.0.0",
-    "lucide-react": "^0.445.0",
+    "lucide-react": "^0.446.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.53.0",
@@ -34,7 +34,7 @@
     "react-router-dom": "^6.26.2",
     "socket.io-client": "^4.8.0",
     "typescript": "^5.6.2",
-    "vite": "^5.4.7",
+    "vite": "^5.4.8",
     "vite-plugin-static-copy": "^1.0.6",
     "vite-plugin-svgr": "^4.2.0",
     "zustand": "^4.5.5"
