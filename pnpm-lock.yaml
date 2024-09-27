@@ -231,8 +231,8 @@ importers:
         specifier: ^5.0.3
         version: 5.0.3
       rehype:
-        specifier: ^13.0.1
-        version: 13.0.1
+        specifier: ^13.0.2
+        version: 13.0.2
       rehype-minify-whitespace:
         specifier: ^6.0.1
         version: 6.0.1
@@ -4080,8 +4080,8 @@ packages:
   rehype-stringify@10.0.0:
     resolution: {integrity: sha512-1TX1i048LooI9QoecrXy7nGFFbFSufxVRAfc6Y9YMRAi56l+oB0zP51mLSV312uRuvVLPV1opSlJmslozR1XHQ==}
 
-  rehype@13.0.1:
-    resolution: {integrity: sha512-AcSLS2mItY+0fYu9xKxOu1LhUZeBZZBx8//5HKzF+0XP+eP8+6a5MXn2+DW2kfXR6Dtp1FEXMVrjyKAcvcU8vg==}
+  rehype@13.0.2:
+    resolution: {integrity: sha512-j31mdaRFrwFRUIlxGeuPXXKWQxet52RBQRvCmzl5eCefn/KGbomK5GMHNMsOJf55fgo3qw5tST5neDuarDYR2A==}
 
   require-directory@2.1.1:
     resolution: {integrity: sha512-fGxEI7+wsG9xrvdjsrlmL22OMTTiHRwAMroiEeMgq8gzoLC/PQr7RsRDSTLUg/bZAZtF+TVIkHc6/4RIKrui+Q==}
@@ -8865,7 +8865,7 @@ snapshots:
       hast-util-to-html: 9.0.1
       unified: 11.0.5
 
-  rehype@13.0.1:
+  rehype@13.0.2:
     dependencies:
       '@types/hast': 3.0.4
       rehype-parse: 9.0.0
