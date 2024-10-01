@@ -146,7 +146,7 @@ const compatPaths = {
  * @param res the Express response
  */
 const _minify = async (req:any, res:any) => {
-  let filename = req.params.filename;
+  let filename = req.params.filename.join('/');
   try {
     filename = sanitizePathname(filename);
   } catch (err) {
