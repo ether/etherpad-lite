@@ -25,8 +25,8 @@ exports.expressCreateServer = (hookName:string, args:ArgsExpressType, cb:Functio
   });
 
   // handle export requests
-  args.app.use('/p/:pad/:rev{.:ext}/export/:type', limiter);
-  args.app.get('/p/:pad/:rev{.:ext}/export/:type', (req:any, res:any, next:Function) => {
+  args.app.use('/p/:pad{/:rev}/export/:type', limiter);
+  args.app.get('/p/:pad{/:rev}/export/:type', (req:any, res:any, next:Function) => {
     (async () => {
       const types = ['pdf', 'doc', 'txt', 'html', 'odt', 'etherpad'];
       // send a 404 if we don't support this filetype
