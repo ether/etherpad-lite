@@ -12,7 +12,7 @@
     "log4js": "^6.9.1",
     "semver": "^7.6.3",
     "tsx": "^4.19.1",
-    "ueberdb2": "^5.0.3"
+    "ueberdb2": "^5.0.6"
   },
   "devDependencies": {
     "@types/node": "^22.7.4",
