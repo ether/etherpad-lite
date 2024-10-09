@@ -6,10 +6,10 @@ import {QueryType} from "../../types/QueryType";
 
 import {getAvailablePlugins, install, search, uninstall} from "../../../static/js/pluginfw/installer";
 import {PackageData} from "../../types/PackageInfo";
-
-const pluginDefs = require('../../../static/js/pluginfw/plugin_defs');
 import semver from 'semver';
 import log4js from 'log4js';
+
+const pluginDefs = require('../../../static/js/pluginfw/plugin_defs');
 const logger = log4js.getLogger('adminPlugins');
 
 
@@ -20,10 +20,28 @@ exports.socketio = (hookName:string, args:ArgsExpressType, cb:Function) => {
     const {session: {user: {is_admin: isAdmin} = {}} = {}} = socket.conn.request;
     if (!isAdmin) return;
 
-    socket.on('getInstalled', (query:string) => {
+    const checkPluginForUpdates = async () => {
+      const results = await getAvailablePlugins(/* maxCacheAge:*/ 60 * 10);
+      return Object.keys(pluginDefs.plugins).filter((plugin) => {
+        if (!results[plugin]) return false;
+
+        const latestVersion = results[plugin].version;
+        const currentVersion = pluginDefs.plugins[plugin].package.version;
+
+        return semver.gt(latestVersion, currentVersion);
+      })
+    }
+
+    socket.on('getInstalled', async (query: string) => {
       // send currently installed plugins
       const installed =
-          Object.keys(pluginDefs.plugins).map((plugin) => pluginDefs.plugins[plugin].package);
+        Object.keys(pluginDefs.plugins).map((plugin) => pluginDefs.plugins[plugin].package);
+
+      const updatable = await checkPluginForUpdates();
+
+      installed.forEach((plugin) => {
+        plugin.updatable = updatable.includes(plugin.name);
+      })
 
       socket.emit('results:installed', {installed});
     });
@@ -31,16 +49,7 @@ exports.socketio = (hookName:string, args:ArgsExpressType, cb:Function) => {
     socket.on('checkUpdates', async () => {
       // Check plugins for updates
       try {
-        const results = await getAvailablePlugins(/* maxCacheAge:*/ 60 * 10);
-
-        const updatable = Object.keys(pluginDefs.plugins).filter((plugin) => {
-          if (!results[plugin]) return false;
-
-          const latestVersion = results[plugin].version;
-          const currentVersion = pluginDefs.plugins[plugin].package.version;
-
-          return semver.gt(latestVersion, currentVersion);
-        });
+        const updatable = checkPluginForUpdates();
 
         socket.emit('results:updatable', {updatable});
       } catch (err) {

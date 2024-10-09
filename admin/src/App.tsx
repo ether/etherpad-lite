@@ -95,7 +95,9 @@ export const App = () => {
                     <h1>Etherpad</h1>
                 </span>
         <ul onClick={()=>{
-          setSidebarOpen(false)
+          if (window.innerWidth < 768) {
+            setSidebarOpen(false)
+          }
         }}>
           <li><NavLink to="/plugins"><Cable/><Trans i18nKey="admin_plugins"/></NavLink></li>
           <li><NavLink to={"/settings"}><Wrench/><Trans i18nKey="admin_settings"/></NavLink></li>
