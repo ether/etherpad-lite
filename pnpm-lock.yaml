@@ -177,8 +177,8 @@ importers:
         specifier: 1.1.0
         version: 1.1.0
       formidable:
-        specifier: ^3.5.1
-        version: 3.5.1
+        specifier: ^3.5.2
+        version: 3.5.2
       http-errors:
         specifier: ^2.0.0
         version: 2.0.0
@@ -2989,8 +2989,8 @@ packages:
   formidable@2.1.2:
     resolution: {integrity: sha512-CM3GuJ57US06mlpQ47YcunuUZ9jpm8Vx+P2CGt2j7HpgkKZO/DJYQ0Bobim8G6PFQmK5lOqOOdUXboU+h73A4g==}
 
-  formidable@3.5.1:
-    resolution: {integrity: sha512-WJWKelbRHN41m5dumb0/k8TeAx7Id/y3a+Z7QfhxP/htI9Js5zYaEDtG8uMgG0vM0lOlqnmjE99/kfpOYi/0Og==}
+  formidable@3.5.2:
+    resolution: {integrity: sha512-Jqc1btCy3QzRbJaICGwKcBfGWuLADRerLzDqi2NwSt/UkXLsHJw2TVResiaoBufHVHy9aSgClOHCeJsSsFLTbg==}
 
   forwarded@0.2.0:
     resolution: {integrity: sha512-buRG0fpBtRHSTCOASe6hD258tEubFoRLb4ZNA6NxMVHNw2gOcwHo9wyablzMzOA5z9xA9L1KNjk/Nt6MT9aYow==}
@@ -3191,6 +3191,10 @@ packages:
 
   hexoid@1.0.0:
     resolution: {integrity: sha512-QFLV0taWQOZtvIRIAdBChesmogZrtuXvVWsFHZTk2SU+anspqZ2vMnoLg7IE1+Uk16N19APic1BuF8bC8c2m5g==}
+    engines: {node: '>=8'}
+
+  hexoid@2.0.0:
+    resolution: {integrity: sha512-qlspKUK7IlSQv2o+5I7yhUd7TxlOG2Vr5LTa3ve2XSNVKAL/n/u/7KLvKmFNimomDIKvZFXWHv0T12mv7rT8Aw==}
     engines: {node: '>=8'}
 
   hookable@5.5.3:
@@ -7711,10 +7715,10 @@ snapshots:
       once: 1.4.0
       qs: 6.13.0
 
-  formidable@3.5.1:
+  formidable@3.5.2:
     dependencies:
       dezalgo: 1.0.4
-      hexoid: 1.0.0
+      hexoid: 2.0.0
       once: 1.4.0
 
   forwarded@0.2.0: {}
@@ -7992,6 +7996,8 @@ snapshots:
   he@1.2.0: {}
 
   hexoid@1.0.0: {}
+
+  hexoid@2.0.0: {}
 
   hookable@5.5.3: {}
 
@@ -9351,7 +9357,7 @@ snapshots:
       debug: 4.3.5(supports-color@8.1.1)
       fast-safe-stringify: 2.1.1
       form-data: 4.0.0
-      formidable: 3.5.1
+      formidable: 3.5.2
       methods: 1.1.2
       mime: 2.6.0
       qs: 6.12.3
@@ -9380,7 +9386,7 @@ snapshots:
       debug: 4.3.7
       fast-safe-stringify: 2.1.1
       form-data: 4.0.0
-      formidable: 3.5.1
+      formidable: 3.5.2
       methods: 1.1.2
       mime: 2.6.0
       qs: 6.13.0
