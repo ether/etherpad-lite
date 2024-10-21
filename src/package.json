@@ -59,7 +59,7 @@
     "oidc-provider": "^8.5.1",
     "openapi-backend": "^5.11.0",
     "proxy-addr": "^2.0.7",
-    "rate-limiter-flexible": "^5.0.3",
+    "rate-limiter-flexible": "^5.0.4",
     "rehype": "^13.0.2",
     "rehype-minify-whitespace": "^6.0.2",
     "resolve": "1.22.8",
