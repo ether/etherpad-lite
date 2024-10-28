@@ -141,6 +141,6 @@
     "debug:socketio": "cross-env DEBUG=socket.io* node --require tsx/cjs node/server.ts",
     "test:vitest": "vitest"
   },
-  "version": "2.2.5",
+  "version": "2.2.6",
   "license": "Apache-2.0"
 }
