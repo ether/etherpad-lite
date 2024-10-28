@@ -81,3 +81,7 @@
 .skin-variant-container {
   text-transform: capitalize;
 }
+
+#delete-pad {
+  background-color: #ff7b72;
+}

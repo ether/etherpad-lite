@@ -43,7 +43,7 @@ import {RateLimiterMemory} from 'rate-limiter-flexible';
 import {ChangesetRequest, PadUserInfo, SocketClientRequest} from "../types/SocketClientRequest";
 import {APool, AText, PadAuthor, PadType} from "../types/PadType";
 import {ChangeSet} from "../types/ChangeSet";
-import {ChatMessageMessage, ClientReadyMessage, ClientSaveRevisionMessage, ClientSuggestUserName, ClientUserChangesMessage, ClientVarMessage, CustomMessage, UserNewInfoMessage} from "../../static/js/types/SocketIOMessage";
+import {ChatMessageMessage, ClientReadyMessage, ClientSaveRevisionMessage, ClientSuggestUserName, ClientUserChangesMessage, ClientVarMessage, CustomMessage, PadDeleteMessage, UserNewInfoMessage} from "../../static/js/types/SocketIOMessage";
 import {Builder} from "../../static/js/Builder";
 const webaccess = require('../hooks/express/webaccess');
 const { checkValidRev } = require('../utils/checkValidRev');
@@ -211,6 +211,45 @@ exports.handleDisconnect = async (socket:any) => {
   });
 };
 
+
+const handlePadDelete = async (socket: any, padDeleteMessage: PadDeleteMessage) => {
+  const session = sessioninfos[socket.id];
+  if (!session || !session.author || !session.padId) throw new Error('session not ready');
+  if (await padManager.doesPadExist(padDeleteMessage.data.padId)) {
+    const retrievedPad = await padManager.getPad(padDeleteMessage.data.padId)
+    // Only the one doing the first revision can delete the pad, otherwise people could troll a lot
+    const firstContributor = await retrievedPad.getRevisionAuthor(0)
+    if (session.author === firstContributor) {
+      retrievedPad.remove()
+    } else {
+
+      type ShoutMessage = {
+        message: string,
+        sticky: boolean,
+      }
+
+      const messageToShout: ShoutMessage = {
+        message: 'You are not the creator of this pad, so you cannot delete it',
+        sticky: false
+      }
+      const messageToSend = {
+        type: "COLLABROOM",
+        data: {
+          type: "shoutMessage",
+          payload: {
+            message: messageToShout,
+            timestamp: Date.now()
+          }
+        }
+      }
+      socket.emit('shout',
+        messageToSend
+      )
+    }
+  }
+}
+
+
 /**
  * Handles a message from a user
  * @param socket the socket.io Socket object for the client
@@ -350,6 +389,7 @@ exports.handleMessage = async (socket:any, message: ClientVarMessage) => {
               stats.counter('pendingEdits').inc();
               await padChannels.enqueue(thisSession.padId, {socket, message});
               break;
+            case 'PAD_DELETE': await handlePadDelete(socket, message.data as unknown as PadDeleteMessage); break;
             case 'USERINFO_UPDATE': await handleUserInfoUpdate(socket, message as unknown as UserNewInfoMessage); break;
             case 'CHAT_MESSAGE': await handleChatMessage(socket, message as unknown as ChatMessageMessage); break;
             case 'GET_CHAT_MESSAGES': await handleGetChatMessages(socket, message); break;
