@@ -250,6 +250,19 @@ export const sendUserChanges = async (socket:any, data:any) => await sendMessage
   },
 });
 
+
+/*
+  * Convenience function to send a delete pad request.
+ */
+export const sendPadDelete = async (socket:any, data:any) => await sendMessage(socket, {
+  type: 'PAD_DELETE',
+  component: 'pad',
+  data: {
+    padId: data.padId
+  },
+});
+
+
 /**
  * Convenience function that waits for an ACCEPT_COMMIT message. Asserts that the new revision
  * matches the expected revision.

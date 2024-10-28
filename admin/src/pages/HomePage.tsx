@@ -4,7 +4,7 @@ import {InstalledPlugin, PluginDef, SearchParams} from "./Plugin.ts";
 import {useDebounce} from "../utils/useDebounce.ts";
 import {Trans, useTranslation} from "react-i18next";
 import {SearchField} from "../components/SearchField.tsx";
-import {Download, Trash} from "lucide-react";
+import {ArrowUpFromDot, Download, Trash} from "lucide-react";
 import {IconButton} from "../components/IconButton.tsx";
 import {determineSorting} from "../utils/sorting.ts";
 
@@ -12,7 +12,8 @@ import {determineSorting} from "../utils/sorting.ts";
 export const HomePage = () => {
     const pluginsSocket = useStore(state=>state.pluginsSocket)
     const [plugins,setPlugins] = useState<PluginDef[]>([])
-    const [installedPlugins, setInstalledPlugins] = useState<InstalledPlugin[]>([])
+  const installedPlugins = useStore(state=>state.installedPlugins)
+  const setInstalledPlugins = useStore(state=>state.setInstalledPlugins)
   const [searchParams, setSearchParams] = useState<SearchParams>({
     offset: 0,
     limit: 99999,
@@ -49,7 +50,7 @@ export const HomePage = () => {
   }, [plugins, searchParams])
 
     const sortedInstalledPlugins = useMemo(()=>{
-        return installedPlugins.sort((a, b)=>{
+        return useStore.getState().installedPlugins.sort((a, b)=>{
 
             if(a.name < b.name){
                 return -1
@@ -78,17 +79,16 @@ export const HomePage = () => {
         })
 
         pluginsSocket.on('results:updatable', (data) => {
-            data.updatable.forEach((pluginName: string) => {
-                setInstalledPlugins(installedPlugins.map(plugin => {
-                    if (plugin.name === pluginName) {
-                        return {
-                            ...plugin,
-                            updatable: true
-                        }
-                    }
-                    return plugin
-                }))
-            })
+          const newInstalledPlugins = useStore.getState().installedPlugins.map(plugin => {
+            if (data.updatable.includes(plugin.name)) {
+              return {
+                ...plugin,
+                updatable: true
+              }
+            }
+            return plugin
+          })
+         setInstalledPlugins(newInstalledPlugins)
         })
 
         pluginsSocket.on('finished:install', () => {
@@ -159,6 +159,7 @@ export const HomePage = () => {
         })
     }, 500, [searchTerm])
 
+
     return <div>
         <h1><Trans i18nKey="admin_plugins"/></h1>
 
@@ -180,7 +181,7 @@ export const HomePage = () => {
                     <td>
                     {
                         plugin.updatable ?
-                            <button onClick={() => installPlugin(plugin.name)}>Update</button>
+                            <IconButton onClick={() => installPlugin(plugin.name)} icon={<ArrowUpFromDot/>} title="Update"></IconButton>
                             : <IconButton disabled={plugin.name == "ep_etherpad-lite"} icon={<Trash/>} title={<Trans i18nKey="admin_plugins.installed_uninstall.value"/>} onClick={() => uninstallPlugin(plugin.name)}/>
                     }
                     </td>

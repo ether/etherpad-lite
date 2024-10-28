@@ -75,10 +75,19 @@ const padeditor = (() => {
         padutils.setCheckbox($('#options-rtlcheck'), ('rtl' === html10n.getDirection()));
       });
 
+
+
       // font family change
       $('#viewfontmenu').on('change', () => {
         pad.changeViewOption('padFontFamily', $('#viewfontmenu').val());
       });
+
+      // delete pad
+      $('#delete-pad').on('click', () => {
+        if (window.confirm(html10n.get('pad.delete.confirm'))) {
+          pad.collabClient.sendMessage({type: 'PAD_DELETE', data:{padId: pad.getPadId()}});
+        }
+      })
 
       // Language
       html10n.bind('localized', () => {
