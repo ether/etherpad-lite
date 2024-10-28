@@ -174,6 +174,27 @@ following plugins:
     that each user's chosen color, display name, comment ownership, etc. is
     strongly linked to their account.
 
+### Upgrade Etherpad
+
+Run the following command in your Etherpad folder to upgrade
+
+1. Stop any running Etherpad (manual, systemd ...)
+2. List versions available
+```sh
+git -P tag --list "v*" --merged
+```
+3. Select the version
+```sh
+git checkout v2.2.5 
+git switch -c v2.2.5
+```
+4. Upgrade Etherpad
+```sh
+./bin/run.sh
+```
+5. Stop with [CTRL-C]
+6. Restart your Etherpad service
+
 ## Next Steps
 
 ### Tweak the settings
