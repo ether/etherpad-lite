@@ -1,3 +1,10 @@
+# 2.2.6
+
+### Notable enhancements and fixes
+
+- Added option to delete a pad by the creator. This option can be found in the settings menu. When you click on it you get a confirm dialog and after that you have the chance to completely erase the pad.
+
+
 # 2.2.5
 
 ### Notable enhancements and fixes
