@@ -82,6 +82,8 @@
 	"pad.settings.fontType": "글꼴 종류:",
 	"pad.settings.fontType.normal": "보통",
 	"pad.settings.language": "언어:",
+	"pad.settings.deletePad": "패드 삭제",
+	"pad.delete.confirm": "이 패드를 삭제하시겠습니까?",
 	"pad.settings.about": "소개",
 	"pad.settings.poweredBy": "제공:",
 	"pad.importExport.import_export": "가져오기/내보내기",

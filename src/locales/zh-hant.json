@@ -82,6 +82,8 @@
 	"pad.settings.fontType": "字型類型：",
 	"pad.settings.fontType.normal": "正常",
 	"pad.settings.language": "語言：",
+	"pad.settings.deletePad": "刪除記事本",
+	"pad.delete.confirm": "您確定要刪除此記事本？",
 	"pad.settings.about": "關於",
 	"pad.settings.poweredBy": "技術支援來自",
 	"pad.importExport.import_export": "導入/匯出",

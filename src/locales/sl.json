@@ -77,6 +77,8 @@
 	"pad.settings.fontType": "Vrsta pisave:",
 	"pad.settings.fontType.normal": "Normalno",
 	"pad.settings.language": "Jezik:",
+	"pad.settings.deletePad": "Izbriši ploščico",
+	"pad.delete.confirm": "Res želite izbrisati to ploščico?",
 	"pad.settings.about": "Kolofon",
 	"pad.settings.poweredBy": "Omogoča",
 	"pad.importExport.import_export": "Uvoz/Izvoz",
