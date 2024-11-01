@@ -53,7 +53,7 @@
     "live-plugin-manager": "^1.0.0",
     "lodash.clonedeep": "4.5.0",
     "log4js": "^6.9.1",
-    "lru-cache": "^11.0.1",
+    "lru-cache": "^11.0.2",
     "measured-core": "^2.0.0",
     "mime-types": "^2.1.35",
     "oidc-provider": "^8.5.2",
