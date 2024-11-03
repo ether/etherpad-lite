@@ -67,7 +67,7 @@
     "security": "1.0.0",
     "semver": "^7.6.3",
     "socket.io": "^4.8.1",
-    "socket.io-client": "^4.8.0",
+    "socket.io-client": "^4.8.1",
     "superagent": "10.1.1",
     "swagger-ui-express": "^5.0.1",
     "tinycon": "0.6.8",
