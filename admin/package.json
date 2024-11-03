@@ -18,15 +18,15 @@
     "@radix-ui/react-toast": "^1.2.2",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
-    "@typescript-eslint/eslint-plugin": "^8.11.0",
-    "@typescript-eslint/parser": "^8.11.0",
+    "@typescript-eslint/eslint-plugin": "^8.12.2",
+    "@typescript-eslint/parser": "^8.12.2",
     "@vitejs/plugin-react-swc": "^3.7.1",
-    "eslint": "^9.13.0",
+    "eslint": "^9.14.0",
     "eslint-plugin-react-hooks": "^5.0.0",
-    "eslint-plugin-react-refresh": "^0.4.13",
-    "i18next": "^23.16.2",
+    "eslint-plugin-react-refresh": "^0.4.14",
+    "i18next": "^23.16.4",
     "i18next-browser-languagedetector": "^8.0.0",
-    "lucide-react": "^0.453.0",
+    "lucide-react": "^0.454.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.53.1",
@@ -36,7 +36,7 @@
     "typescript": "^5.6.3",
     "vite": "^5.4.10",
     "vite-plugin-static-copy": "^2.0.0",
-    "vite-plugin-svgr": "^4.2.0",
-    "zustand": "^5.0.0"
+    "vite-plugin-svgr": "^4.3.0",
+    "zustand": "^5.0.1"
   }
 }
