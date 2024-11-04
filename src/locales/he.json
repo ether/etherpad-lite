@@ -76,6 +76,8 @@
 	"pad.settings.fontType": "סוג גופן:",
 	"pad.settings.fontType.normal": "רגיל",
 	"pad.settings.language": "שפה:",
+	"pad.settings.deletePad": "מחיקת פנקס",
+	"pad.delete.confirm": "למחוק את הפנקס הזה?",
 	"pad.settings.about": "על אודות",
 	"pad.settings.poweredBy": "מופעל על גבי",
 	"pad.importExport.import_export": "יבוא/יצוא",
