@@ -3,7 +3,6 @@
 import path from 'node:path';
 const eejs = require('../../eejs')
 import fs from 'node:fs';
-import os from 'node:os';
 const fsp = fs.promises;
 const toolbar = require('../../utils/toolbar');
 const hooks = require('../../../static/js/pluginfw/hooks');
@@ -42,7 +41,7 @@ exports.expressPreSession = async (hookName:string, {app}:ArgsExpressType) => {
 
   app.get('/robots.txt', (req:any, res:any) => {
     let filePath =
-        path.join(settings.root, 'src', 'static', 'skins', settings.skinName, 'robots.txt');
+      path.join(settings.root, 'src', 'static', 'skins', settings.skinName, 'robots.txt');
     res.sendFile(filePath, (err:any) => {
       // there is no custom robots.txt, send the default robots.txt which dissallows all
       if (err) {
@@ -90,7 +89,7 @@ const convertTypescript = (content: string) => {
   const outputRaw = buildSync({
     stdin: {
       contents: content,
-      resolveDir: settings.root,
+      resolveDir: path.join(settings.root, 'var','js'),
       loader: 'js'
     },
     alias:{
@@ -223,7 +222,7 @@ const convertTypescriptWatched = (content: string, cb: (output:string, hash: str
   build({
     stdin: {
       contents: content,
-      resolveDir: settings.root,
+      resolveDir: path.join(settings.root, 'var','js'),
       loader: 'js'
     },
     alias:{
@@ -245,40 +244,42 @@ const convertTypescriptWatched = (content: string, cb: (output:string, hash: str
   })
 }
 
-exports.expressCreateServer = async (hookName: string, args: ArgsExpressType, cb: Function) => {
+exports.expressCreateServer = async (_hookName: string, args: ArgsExpressType, cb: Function) => {
   const padString =   eejs.require('ep_etherpad-lite/templates/padBootstrap.js', {
-      pluginModules: (() => {
-        const pluginModules = new Set();
-        for (const part of plugins.parts) {
-          for (const [, hookFnName] of Object.entries(part.client_hooks || {})) {
-            // @ts-ignore
-            pluginModules.add(hookFnName.split(':')[0]);
-          }
+    pluginModules: (() => {
+      const pluginModules = new Set();
+      for (const part of plugins.parts) {
+        for (const [, hookFnName] of Object.entries(part.client_hooks || {})) {
+          // @ts-ignore
+          pluginModules.add(hookFnName.split(':')[0]);
         }
-        return [...pluginModules];
-      })(),
-      settings,
-    })
+      }
+      return [...pluginModules];
+    })(),
+    settings,
+  })
 
   const indexString = eejs.require('ep_etherpad-lite/templates/indexBootstrap.js', {
   })
 
-    const timeSliderString = eejs.require('ep_etherpad-lite/templates/timeSliderBootstrap.js', {
-      pluginModules: (() => {
-        const pluginModules = new Set();
-        for (const part of plugins.parts) {
-          for (const [, hookFnName] of Object.entries(part.client_hooks || {})) {
-            // @ts-ignore
-            pluginModules.add(hookFnName.split(':')[0]);
-          }
+  const timeSliderString = eejs.require('ep_etherpad-lite/templates/timeSliderBootstrap.js', {
+    pluginModules: (() => {
+      const pluginModules = new Set();
+      for (const part of plugins.parts) {
+        for (const [, hookFnName] of Object.entries(part.client_hooks || {})) {
+          // @ts-ignore
+          pluginModules.add(hookFnName.split(':')[0]);
         }
-        return [...pluginModules];
-      })(),
-      settings,
-    })
+      }
+      return [...pluginModules];
+    })(),
+    settings,
+  })
 
-  // Create a temporary directory to store runtime-built JS files
-  const outdir = path.join(os.tmpdir(), 'js');
+
+
+  const outdir = path.join(settings.root, 'var','js')
+  // Create the outdir if it doesn't exist
   if (!fs.existsSync(outdir)) {
     fs.mkdirSync(outdir);
   }
@@ -294,32 +295,20 @@ exports.expressCreateServer = async (hookName: string, args: ArgsExpressType, cb
     fileNamePad = `padbootstrap-${padSliderWrite.hash}.min.js`
     fileNameTimeSlider = `timeSliderBootstrap-${timeSliderWrite.hash}.min.js`
     fileNameIndex = `indexBootstrap-${indexWrite.hash}.min.js`
-    const pathNamePad = path.join(outdir, fileNamePad)
-    const pathNameTimeSlider = path.join(outdir, fileNameTimeSlider)
-    const pathNameIndex = path.join(outdir, 'index.js')
 
-    if (!fs.existsSync(pathNamePad)) {
-      fs.writeFileSync(pathNamePad, padSliderWrite.output);
-    }
-
-    if (!fs.existsSync(pathNameIndex)) {
-      fs.writeFileSync(pathNameIndex, indexWrite.output);
-    }
-
-    if (!fs.existsSync(pathNameTimeSlider)) {
-      fs.writeFileSync(pathNameTimeSlider,timeSliderWrite.output)
-    }
-
-    args.app.get("/"+fileNamePad, (req: any, res: any) => {
-      res.sendFile(pathNamePad)
+    args.app.get("/"+fileNamePad, (_req, res) => {
+      res.header('Content-Type', 'application/javascript');
+      res.send(padSliderWrite.output)
     })
 
-    args.app.get("/"+fileNameIndex, (req: any, res: any) => {
-      res.sendFile(pathNameIndex)
+    args.app.get("/"+fileNameIndex, (_req, res) => {
+      res.header('Content-Type', 'application/javascript');
+      res.send(indexWrite.output)
     })
 
-    args.app.get("/"+fileNameTimeSlider, (req: any, res: any) => {
-      res.sendFile(pathNameTimeSlider)
+    args.app.get("/"+fileNameTimeSlider, (_req, res) => {
+      res.header('Content-Type', 'application/javascript');
+      res.send(timeSliderWrite.output)
     })
 
     // serve index.html under /
