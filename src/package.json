@@ -35,7 +35,7 @@
     "axios": "^1.7.7",
     "cookie-parser": "^1.4.7",
     "cross-env": "^7.0.3",
-    "cross-spawn": "^7.0.3",
+    "cross-spawn": "^7.0.5",
     "ejs": "^3.1.10",
     "esbuild": "^0.24.0",
     "express": "4.21.1",
