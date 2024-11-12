@@ -538,7 +538,7 @@ export class Html10n {
       for (let i=0, n=langs.length; i < n; i++) {
         lang = langs[i]
         if(!lang) continue;
-        if(!(lang in langs)) {// uh, we don't have this lang availbable..
+        if(!langs.includes(lang)) {// uh, we don't have this lang availbable..
           // then check for related langs
           if(~lang.indexOf('-') != -1) {
             lang = lang.split('-')[0];
