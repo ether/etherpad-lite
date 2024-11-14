@@ -76,6 +76,8 @@
 	"pad.settings.fontType": "Typsnitt:",
 	"pad.settings.fontType.normal": "Normal",
 	"pad.settings.language": "Språk:",
+	"pad.settings.deletePad": "Radera block",
+	"pad.delete.confirm": "Vill du verkligen radera detta block?",
 	"pad.settings.about": "Om",
 	"pad.settings.poweredBy": "Drivs av",
 	"pad.importExport.import_export": "Importera/Exportera",
