@@ -1,0 +1,8 @@
+.buttonicon-exit:before {
+    content: "\2715"; 
+    margin-right: 5px;
+}
+
+#exit-button {
+    cursor: pointer;
+}

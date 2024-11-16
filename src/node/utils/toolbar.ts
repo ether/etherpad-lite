@@ -258,6 +258,11 @@ module.exports = {
             localizationId: 'timeslider.toolbar.returnbutton',
             class: 'buttontext',
         },
+        exit:{
+            command: 'exit',
+            localizationId: 'pad.toolbar.exit.title',
+            class: 'buttonicon buttonicon-exit',
+        },  
     },
 
     registerButton(buttonName: string, buttonInfo: any) {
