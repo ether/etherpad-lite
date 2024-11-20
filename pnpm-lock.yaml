@@ -276,8 +276,8 @@ importers:
         specifier: 1.6.0
         version: 1.6.0
       wtfnode:
-        specifier: ^0.9.3
-        version: 0.9.3
+        specifier: ^0.9.4
+        version: 0.9.4
     devDependencies:
       '@playwright/test':
         specifier: ^1.48.2
@@ -4910,8 +4910,9 @@ packages:
       utf-8-validate:
         optional: true
 
-  wtfnode@0.9.3:
-    resolution: {integrity: sha512-MXjgxJovNVYUkD85JBZTKT5S5ng/e56sNuRZlid7HcGTNrIODa5UPtqE3i0daj7fJ2SGj5Um2VmiphQVyVKK5A==}
+  wtfnode@0.9.4:
+    resolution: {integrity: sha512-5xgeLjIxZ8DVHU4ty3kOdd9QfHDxf89tmSy0+yN8n59S3wx6LBJh8XhEg61OPOGE65jEYGAtLq0GMzLKrsjfPQ==}
+    engines: {node: '>=0.10.0'}
     hasBin: true
 
   xml-name-validator@5.0.0:
@@ -9861,7 +9862,7 @@ snapshots:
 
   ws@8.18.0: {}
 
-  wtfnode@0.9.3: {}
+  wtfnode@0.9.4: {}
 
   xml-name-validator@5.0.0: {}
 
