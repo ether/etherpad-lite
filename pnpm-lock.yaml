@@ -219,8 +219,8 @@ importers:
         specifier: ^2.1.35
         version: 2.1.35
       oidc-provider:
-        specifier: ^8.5.3
-        version: 8.5.3
+        specifier: ^8.6.0
+        version: 8.6.0
       openapi-backend:
         specifier: ^5.11.1
         version: 5.11.1
@@ -3829,8 +3829,8 @@ packages:
     resolution: {integrity: sha512-yBYjY9QX2hnRmZHAjG/f13MzmBzxzYgQhFrke06TTyKY5zSTEqkOeukBzIdVA3j3ulu8Qa3MbVFShV7T2RmGtQ==}
     engines: {node: '>= 0.4'}
 
-  oidc-provider@8.5.3:
-    resolution: {integrity: sha512-eSHoHiPxdJ7Ar+hgaogeBVdGgjtIPp6GXFuzuTYdQ4rhhWC6jFapa0GQ49zk0M6I6OnqTYU3dU8j/QDaLu5BaA==}
+  oidc-provider@8.6.0:
+    resolution: {integrity: sha512-LTzQza+KA72fFWe/70ttjTpCPvwZRoaydPFY2izNfQjo6u33lFOzJeqA9Q0TblTShkaH56ChoE2KdMYIQlNHdw==}
 
   oidc-token-hash@5.0.3:
     resolution: {integrity: sha512-IF4PcGgzAr6XXSff26Sk/+P4KZFJVuHAJZj3wgO3vX2bMdNVp/QXTP3P7CEm9V1IdG8lDLY3HhiqpsE/nOwpPw==}
@@ -8668,7 +8668,7 @@ snapshots:
       define-properties: 1.2.1
       es-object-atoms: 1.0.0
 
-  oidc-provider@8.5.3:
+  oidc-provider@8.6.0:
     dependencies:
       '@koa/cors': 5.0.0
       '@koa/router': 13.1.0
