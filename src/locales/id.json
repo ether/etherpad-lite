@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"Akmaie Ajam",
 			"Atriwidada",
 			"Bennylin",
 			"IvanLanin",
@@ -19,6 +20,7 @@
 	"admin_plugins.installed": "Plugin terpasang",
 	"admin_plugins.installed_fetching": "Mengambil plugin yang terpasang…",
 	"admin_plugins.installed_nothing": "Anda belum memasang plugin apa pun.",
+	"admin_plugins.installed_uninstall.value": "Uninstal",
 	"admin_plugins.last-update": "Pembaruan terakhir",
 	"admin_plugins.name": "Nama",
 	"admin_plugins.page-title": "Manajer plugin - Etherpad",
@@ -74,6 +76,8 @@
 	"pad.settings.rtlcheck": "Membaca dari kanan ke kiri?",
 	"pad.settings.fontType": "Jenis fonta:",
 	"pad.settings.language": "Bahasa:",
+	"pad.settings.deletePad": "Hapus Pad",
+	"pad.delete.confirm": "Apakah Anda benar-benar ingin menghapus pad ini?",
 	"pad.settings.about": "Tentang",
 	"pad.settings.poweredBy": "Ditenagai oleh",
 	"pad.importExport.import_export": "Impor/Ekspor",
