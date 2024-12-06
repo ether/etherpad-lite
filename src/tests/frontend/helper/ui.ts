@@ -85,6 +85,14 @@ helper.toggleUserList = async () => {
   await helper.waitForPromise(() => !isVisible);
 };
 
+helper.exitButton = () => helper.padChrome$("button[data-l10n-id='pad.toolbar.exit.title']");
+
+helper.exitPad = async () => {
+    const button = helper.exitButton();
+    button.trigger('click');
+    await helper.waitForPromise(() => window.location.pathname === '/');
+};
+
 /**
  * Gets the user name input field
  *
