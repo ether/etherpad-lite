@@ -1,4 +1,4 @@
-import {FC, ReactElement} from "react";
+import {FC, JSX, ReactElement} from "react";
 
 export type IconButtonProps = {
     icon: JSX.Element,
