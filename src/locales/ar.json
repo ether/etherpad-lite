@@ -83,6 +83,8 @@
 	"pad.settings.fontType": "نوع الخط:",
 	"pad.settings.fontType.normal": "عادي",
 	"pad.settings.language": "اللغة:",
+	"pad.settings.deletePad": "حذف الوسادة",
+	"pad.delete.confirm": "هل تريد حقا حذف هذه الوسادة؟",
 	"pad.settings.about": "حول",
 	"pad.settings.poweredBy": "مدعوم من",
 	"pad.importExport.import_export": "استيراد/تصدير",

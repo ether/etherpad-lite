@@ -85,6 +85,8 @@
 	"pad.settings.fontType": "Lettertype:",
 	"pad.settings.fontType.normal": "Normaal",
 	"pad.settings.language": "Taal:",
+	"pad.settings.deletePad": "Pad verwijderen",
+	"pad.delete.confirm": "Wilt u dit pad echt verwijderen?",
 	"pad.settings.about": "Over",
 	"pad.settings.poweredBy": "Aangedreven door",
 	"pad.importExport.import_export": "Importeren/exporteren",

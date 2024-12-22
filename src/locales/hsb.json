@@ -72,6 +72,8 @@
 	"pad.settings.fontType": "Pismowa družina:",
 	"pad.settings.fontType.normal": "Normalny",
 	"pad.settings.language": "Rěč:",
+	"pad.settings.deletePad": "Zapisnik zhašeć",
+	"pad.delete.confirm": "Chceće woprawdźe tutón zapisnik zhašeć?",
 	"pad.settings.about": "Wo",
 	"pad.settings.poweredBy": "Spěchowany wot",
 	"pad.importExport.import_export": "Import/Eksport",

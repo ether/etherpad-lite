@@ -74,6 +74,8 @@
 	"pad.settings.fontType": "Тип на фонт:",
 	"pad.settings.fontType.normal": "Нормален",
 	"pad.settings.language": "Јазик:",
+	"pad.settings.deletePad": "Избриши тетратка",
+	"pad.delete.confirm": "Дали навистина сакате да ја избришете тетраткава?",
 	"pad.settings.about": "За додатоков",
 	"pad.settings.poweredBy": "Овозможено од",
 	"pad.importExport.import_export": "Увоз/Извоз",

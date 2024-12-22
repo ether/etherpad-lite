@@ -11,7 +11,7 @@
   },
   "devDependencies": {
     "ep_etherpad-lite": "workspace:../src",
-    "typescript": "^5.6.3",
-    "vite": "^5.4.10"
+    "typescript": "^5.7.2",
+    "vite": "^6.0.5"
   }
 }

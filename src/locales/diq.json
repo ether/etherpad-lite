@@ -3,6 +3,7 @@
 		"authors": [
 			"1917 Ekim Devrimi",
 			"Erdemaslancan",
+			"GolyatGeri",
 			"Gorizon",
 			"Gırd",
 			"Kumkumuk",
@@ -78,6 +79,8 @@
 	"pad.settings.fontType": "Babeta nuşti:",
 	"pad.settings.fontType.normal": "Normal",
 	"pad.settings.language": "Zıwan:",
+	"pad.settings.deletePad": "Defteri bıesterê",
+	"pad.delete.confirm": "Şıma raşti wazenê ke nê defteri bıesterên?",
 	"pad.settings.about": "Heqa",
 	"pad.settings.poweredBy": "Pheştidayoğ",
 	"pad.importExport.import_export": "Zerredayış/Teberdayış",

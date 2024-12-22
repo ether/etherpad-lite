@@ -72,6 +72,8 @@
 	"pad.settings.fontType": "Pismowa družyna:",
 	"pad.settings.fontType.normal": "Normalny",
 	"pad.settings.language": "Rěc:",
+	"pad.settings.deletePad": "Zapisnik lašowaś",
+	"pad.delete.confirm": "Cośo napšawdu toś ten zapisnik lašowaś?",
 	"pad.settings.about": "Wó",
 	"pad.settings.poweredBy": "Pódpěrany wót",
 	"pad.importExport.import_export": "Import/Eksport",

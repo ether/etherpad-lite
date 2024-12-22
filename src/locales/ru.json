@@ -87,6 +87,8 @@
 	"pad.settings.fontType": "Тип шрифта:",
 	"pad.settings.fontType.normal": "Обычный",
 	"pad.settings.language": "Язык:",
+	"pad.settings.deletePad": "Удалить документ",
+	"pad.delete.confirm": "Вы действительно хотите удалить этот документ?",
 	"pad.settings.about": "О проекте",
 	"pad.settings.poweredBy": "Проект основан на",
 	"pad.importExport.import_export": "Импорт/экспорт",
