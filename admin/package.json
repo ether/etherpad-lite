@@ -1,7 +1,7 @@
 {
   "name": "admin",
   "private": true,
-  "version": "2.2.6",
+  "version": "2.2.7",
   "type": "module",
   "scripts": {
     "dev": "vite",
