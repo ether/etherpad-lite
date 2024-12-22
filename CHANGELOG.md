@@ -1,3 +1,16 @@
+# 2.2.7
+
+
+### Notable enhancements and fixes
+
+- We migrated all important pages to React 19 and React Router v7
+
+Besides that only dependency updates.
+
+
+ -> Have a merry Christmas and a happy new year.  🎄 🎁
+
+
 # 2.2.6
 
 ### Notable enhancements and fixes
