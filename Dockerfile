@@ -3,9 +3,10 @@
 # https://github.com/ether/etherpad-lite
 #
 # Author: muxator
+ARG BUILD_ENV=git
 
 FROM node:alpine AS adminbuild
-RUN npm install -g pnpm@9.0.4
+RUN npm install -g pnpm@latest
 WORKDIR /opt/etherpad-lite
 COPY . .
 RUN pnpm install
@@ -99,7 +100,7 @@ RUN mkdir -p "${EP_DIR}" && chown etherpad:etherpad "${EP_DIR}"
 # https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=863199
 RUN  \
     mkdir -p /usr/share/man/man1 && \
-    npm install pnpm@9.0.4 -g  && \
+    npm install pnpm@latest -g  && \
     apk update && apk upgrade && \
     apk add --no-cache \
         ca-certificates \
@@ -120,7 +121,18 @@ COPY --chown=etherpad:etherpad ./var ./var
 COPY --chown=etherpad:etherpad ./bin ./bin
 COPY --chown=etherpad:etherpad ./pnpm-workspace.yaml ./package.json ./
 
-FROM build AS development
+
+
+FROM build AS build_git
+ONBUILD COPY --chown=etherpad:etherpad ./.git/HEA[D] ./.git/HEAD
+ONBUILD COPY --chown=etherpad:etherpad ./.git/ref[s] ./.git/refs
+
+FROM build AS build_copy
+
+
+
+
+FROM build_${BUILD_ENV} AS development
 
 COPY --chown=etherpad:etherpad ./src/ ./src/
 COPY --chown=etherpad:etherpad --from=adminbuild /opt/etherpad-lite/src/ templates/admin./src/templates/admin
@@ -132,7 +144,7 @@ RUN bin/installDeps.sh && \
     fi
 
 
-FROM build AS production
+FROM build_${BUILD_ENV} AS production
 
 ENV NODE_ENV=production
 ENV ETHERPAD_PRODUCTION=true
