@@ -53,7 +53,7 @@ jobs:
         run: pnpm config set auto-install-peers false
       -
         name: Install libreoffice
-        uses: awalsh128/cache-apt-pkgs-action@v1.4.2
+        uses: awalsh128/cache-apt-pkgs-action@v1.4.3
         with:
           packages: libreoffice libreoffice-pdfimport
           version: 1.0
@@ -113,7 +113,7 @@ jobs:
         run: pnpm config set auto-install-peers false
       -
         name: Install libreoffice
-        uses: awalsh128/cache-apt-pkgs-action@v1.4.2
+        uses: awalsh128/cache-apt-pkgs-action@v1.4.3
         with:
           packages: libreoffice libreoffice-pdfimport
           version: 1.0
