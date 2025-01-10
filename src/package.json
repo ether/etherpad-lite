@@ -46,7 +46,7 @@
     "http-errors": "^2.0.0",
     "jose": "^5.9.6",
     "js-cookie": "^3.0.5",
-    "jsdom": "^25.0.1",
+    "jsdom": "^26.0.0",
     "jsonminify": "0.4.2",
     "jsonwebtoken": "^9.0.2",
     "languages4translatewiki": "0.1.3",
