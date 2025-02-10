@@ -132,6 +132,10 @@ FROM build AS build_copy
 
 FROM build_${BUILD_ENV} AS development
 
+ARG ETHERPAD_PLUGINS=
+ARG ETHERPAD_LOCAL_PLUGINS=
+ARG ETHERPAD_GITHUB_PLUGINS=
+
 COPY --chown=etherpad:etherpad ./src/ ./src/
 COPY --chown=etherpad:etherpad --from=adminbuild /opt/etherpad-lite/src/ templates/admin./src/templates/admin
 COPY --chown=etherpad:etherpad --from=adminbuild /opt/etherpad-lite/src/static/oidc ./src/static/oidc
@@ -143,6 +147,10 @@ RUN bin/installDeps.sh && \
 
 
 FROM build_${BUILD_ENV} AS production
+
+ARG ETHERPAD_PLUGINS=
+ARG ETHERPAD_LOCAL_PLUGINS=
+ARG ETHERPAD_GITHUB_PLUGINS=
 
 ENV NODE_ENV=production
 ENV ETHERPAD_PRODUCTION=true
