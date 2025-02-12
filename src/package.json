@@ -114,7 +114,7 @@
     "split-grid": "^1.0.11",
     "supertest": "^7.0.0",
     "typescript": "^5.7.2",
-    "vitest": "^2.1.8"
+    "vitest": "^2.1.9"
   },
   "engines": {
     "node": ">=18.18.2",
