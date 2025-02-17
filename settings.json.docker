@@ -643,7 +643,7 @@
     "right": [
       ["importexport", "timeslider", "savedrevision"],
       ["settings", "embed"],
-      ["showusers"]
+      ["showusers", "home"]
     ],
     "timeslider": [
       ["timeslider_export", "timeslider_returnToPad"]
