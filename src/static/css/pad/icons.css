@@ -74,6 +74,9 @@
 .buttonicon-showusers:before {
   content: "\e835";
 }
+.buttonicon-showusers:before {
+  content: "\e835";
+}
 .buttonicon-savedRevision:before {
   content: "\e856";
 }

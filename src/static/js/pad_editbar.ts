@@ -387,6 +387,11 @@ exports.padeditbar = new class {
       $('#myusernameedit').trigger('focus');
     });
 
+    this.registerCommand('gohome', () => {
+      console.log('Go Home button clicked');
+      window.location.href = '/';
+    });
+
     this.registerCommand('embed', () => {
       this.setEmbedLinks();
       this.toggleDropDown('embed');

@@ -1,0 +1,9 @@
+.homeicon-exit:before {
+  content: "\2302"; 
+  margin-right: 5px;
+}
+
+.homeicon:hover{
+  background-color: grey;
+}
+
