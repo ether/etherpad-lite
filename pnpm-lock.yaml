@@ -183,8 +183,8 @@ importers:
         specifier: ^2.0.0
         version: 2.0.0
       jose:
-        specifier: ^5.9.6
-        version: 5.9.6
+        specifier: ^5.10.0
+        version: 5.10.0
       js-cookie:
         specifier: ^3.0.5
         version: 3.0.5
@@ -3691,8 +3691,8 @@ packages:
     engines: {node: '>=10'}
     hasBin: true
 
-  jose@5.9.6:
-    resolution: {integrity: sha512-AMlnetc9+CV9asI19zHmrgS/WYsWUwCn2R7RzlbJWD7F9eWYUTGyBmU9o6PxngtLGOiDGPRu+Uc4fhKzbpteZQ==}
+  jose@5.10.0:
+    resolution: {integrity: sha512-s+3Al/p9g32Iq+oqXxkW//7jk2Vig6FF1CFqzVXoTUXt2qz89YWbL+OwS17NFYEvxC35n0FKeGO2LGYSxeM2Gg==}
 
   js-cookie@3.0.5:
     resolution: {integrity: sha512-cEiJEAEoIbWfCZYKWhVwFuvPX1gETRYPw6LlaTKoxD3s2AkXzkCjnp6h0V77ozyqj0jakteJ4YqDJT830+lVGw==}
@@ -8795,7 +8795,7 @@ snapshots:
       filelist: 1.0.4
       minimatch: 3.1.2
 
-  jose@5.9.6: {}
+  jose@5.10.0: {}
 
   js-cookie@3.0.5: {}
 
@@ -9263,7 +9263,7 @@ snapshots:
       debug: 4.4.0
       eta: 3.5.0
       got: 13.0.0
-      jose: 5.9.6
+      jose: 5.10.0
       jsesc: 3.1.0
       koa: 2.15.3
       nanoid: 5.0.9
