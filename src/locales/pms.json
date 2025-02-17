@@ -71,6 +71,8 @@
 	"pad.settings.rtlcheck": "Ël contnù, dev-lo esse lesù da drita a snistra?",
 	"pad.settings.fontType": "Sòrt ëd caràter:",
 	"pad.settings.language": "Lenga:",
+	"pad.settings.deletePad": "Eliminé ël blochet",
+	"pad.delete.confirm": "Veul-lo për da bon eliminé cost blochet?",
 	"pad.settings.about": "A propòsit",
 	"pad.settings.poweredBy": "Potensià da",
 	"pad.importExport.import_export": "Amporté/Esporté",
