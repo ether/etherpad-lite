@@ -275,6 +275,7 @@
     "cmdShiftC": true, /* clear authorship */
     "cmdH":      true, /* backspace */
     "ctrlHome":  true, /* scroll to top of pad */
+    "cmdEsc":    true, /* Exit pad and go back to home */
     "pageUp":    true,
     "pageDown":  true
   },
@@ -642,7 +643,7 @@
     "right": [
       ["importexport", "timeslider", "savedrevision"],
       ["settings", "embed"],
-      ["showusers", "home"]
+      ["showusers", "gohome"]
     ],
     "timeslider": [
       ["timeslider_export", "timeslider_returnToPad"]

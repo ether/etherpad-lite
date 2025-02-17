@@ -290,6 +290,7 @@
     "cmdShiftC": "${PAD_SHORTCUTS_ENABLED_CMD_SHIFT_C:true}", /* clear authorship */
     "cmdH":      "${PAD_SHORTCUTS_ENABLED_CMD_H:true}",       /* backspace */
     "ctrlHome":  "${PAD_SHORTCUTS_ENABLED_CTRL_HOME:true}",   /* scroll to top of pad */
+    "cmdEsc":    "${PAD_SHORTCUTS_ENABLED_CMD_ESC:true}",     /* Exit pad and go back to home */
     "pageUp":    "${PAD_SHORTCUTS_ENABLED_PAGE_UP:true}",
     "pageDown":  "${PAD_SHORTCUTS_ENABLED_PAGE_DOWN:true}"
   },
@@ -643,7 +644,7 @@
     "right": [
       ["importexport", "timeslider", "savedrevision"],
       ["settings", "embed"],
-      ["showusers", "home"]
+      ["showusers", "gohome"]
     ],
     "timeslider": [
       ["timeslider_export", "timeslider_returnToPad"]

@@ -229,6 +229,7 @@ exports.padShortcutEnabled = {
     cmdShiftC: true,
     cmdH: true,
     ctrlHome: true,
+    cmdEsc: true,
     pageUp: true,
     pageDown: true,
 };
@@ -246,7 +247,7 @@ exports.toolbar = {
     right: [
         ['importexport', 'timeslider', 'savedrevision'],
         ['settings', 'embed'],
-        ['showusers'],
+        ['showusers', 'gohome'],
     ],
     timeslider: [
         ['timeslider_export', 'timeslider_settings', 'timeslider_returnToPad'],
