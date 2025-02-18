@@ -77,6 +77,9 @@
 .buttonicon-gohome:before {
   content: "\e80b"; /* Assuming \e80b is the Unicode for the home icon */
 }
+.buttonicon-logout:before {
+  content: "\e800"; /* Assuming \e800 is the Unicode for the logout icon */
+}
 .buttonicon-savedRevision:before {
   content: "\e856";
 }

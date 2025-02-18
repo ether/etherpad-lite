@@ -247,7 +247,7 @@ exports.toolbar = {
     right: [
         ['importexport', 'timeslider', 'savedrevision'],
         ['settings', 'embed'],
-        ['showusers', 'gohome'],
+        ['showusers', 'gohome', 'logout'],
     ],
     timeslider: [
         ['timeslider_export', 'timeslider_settings', 'timeslider_returnToPad'],

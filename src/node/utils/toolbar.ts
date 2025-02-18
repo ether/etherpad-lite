@@ -247,6 +247,12 @@ module.exports = {
             class: 'buttonicon buttonicon-gohome',
         },  
 
+        logout:{
+            command: 'logout',
+            localizationId: 'pad.toolbar.logout.title',
+            class: 'buttonicon buttonicon-logout',
+        },  
+
         timeslider_export: {
             command: 'import_export',
             localizationId: 'timeslider.toolbar.exportlink.title',
