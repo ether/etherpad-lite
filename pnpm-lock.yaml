@@ -219,8 +219,8 @@ importers:
         specifier: ^2.1.35
         version: 2.1.35
       oidc-provider:
-        specifier: ^8.6.1
-        version: 8.6.1
+        specifier: ^8.8.0
+        version: 8.8.0
       openapi-backend:
         specifier: ^5.11.1
         version: 5.11.1
@@ -316,8 +316,8 @@ importers:
         specifier: ^22.10.2
         version: 22.10.2
       '@types/oidc-provider':
-        specifier: ^8.5.2
-        version: 8.5.2
+        specifier: ^8.8.0
+        version: 8.8.0
       '@types/semver':
         specifier: ^7.5.8
         version: 7.5.8
@@ -1910,8 +1910,8 @@ packages:
   '@types/hast@3.0.4':
     resolution: {integrity: sha512-WPs+bbQw5aCj+x6laNGWLH3wviHtoCv/P3+otBhbOhJgG8qtpdAMlTCxLtsTWA7LH1Oh/bFCHsBn0TPS5m30EQ==}
 
-  '@types/http-assert@1.5.5':
-    resolution: {integrity: sha512-4+tE/lwdAahgZT1g30Jkdm9PzFRde0xwxBNUyRsCitRvCQB90iuA2uJYdUnhnANRcqGXaWOGY4FEoxeElNAK2g==}
+  '@types/http-assert@1.5.6':
+    resolution: {integrity: sha512-TTEwmtjgVbYAzZYWyeHPrrtWnfVkm8tQkP8P21uQifPgMRgjrow3XDEYqucuC8SKZJT7pUnhU/JymvjggxO9vw==}
 
   '@types/http-cache-semantics@4.0.4':
     resolution: {integrity: sha512-1m0bIFVc7eJWyve9S0RnuRgcQqF/Xd5QsUZAZeQFr1Q3/p9JWoQQEqmVy+DPTNpGXwhgIetAoYF8JSc33q29QA==}
@@ -1982,8 +1982,8 @@ packages:
   '@types/node@22.10.2':
     resolution: {integrity: sha512-Xxr6BBRCAOQixvonOye19wnzyDiUtTeqldOOmj3CkeblonbccA12PFwlufvRdrpjXxqnmUaeiU5EOA+7s5diUQ==}
 
-  '@types/oidc-provider@8.5.2':
-    resolution: {integrity: sha512-NiD3VG49+cRCAAe8+uZLM4onOcX8y9+cwaml8JG1qlgc98rWoCRgsnOB4Ypx+ysays5jiwzfUgT0nWyXPB/9uQ==}
+  '@types/oidc-provider@8.8.0':
+    resolution: {integrity: sha512-9Jtutw4dyAz0PN8EWlxqeNrGHsEZ9EH4QZjfkZIbhmKuiuHIrzoz/S1zHNXX8ogfhWtPp1swMyzXBSo6RTTj1Q==}
 
   '@types/qs@6.9.15':
     resolution: {integrity: sha512-uXHQKES6DQKKCLh441Xv/dwxOq1TVS3JPUMlEqoEglvlhR6Mxnlew/Xq/LRVHpLyk7iK3zODe1qYHIMltO7XGg==}
@@ -2492,8 +2492,8 @@ packages:
     resolution: {integrity: sha512-zkDT5WAF4hSSoUgyfg5tFIxz8XQK+25W/TLVojJTMKBaxevLBBtLxgqguAuVQB8PVW79FVjHcU+GJ9tVbDZ9mQ==}
     engines: {node: '>=14.16'}
 
-  call-bind-apply-helpers@1.0.1:
-    resolution: {integrity: sha512-BhYE+WDaywFg2TBWYNXAE+8B1ATnThNBqXHP5nQu0jWJdVvY2hvkpyB3qOmtmDePiS5/BDQ8wASEWGMWRG148g==}
+  call-bind-apply-helpers@1.0.2:
+    resolution: {integrity: sha512-Sp1ablJ0ivDkSzjcaJdxEunN5/XvksFJ2sMBFfq6x0ryhQV/2b/KwFe21cMpmHtPOSij8K99/wSfoEuTObmuMQ==}
     engines: {node: '>= 0.4'}
 
   call-bind@1.0.7:
@@ -3797,8 +3797,8 @@ packages:
     resolution: {integrity: sha512-asOvN6bFlSnxewce2e/DK3p4tltyfC4VM7ZwuTuepI7dEQVcvpyFuBcEARu1+Hxg8DIwytce2n7jrZtRlPrARA==}
     engines: {node: '>= 10'}
 
-  koa@2.15.3:
-    resolution: {integrity: sha512-j/8tY9j5t+GVMLeioLaxweJiKUayFhlGqNTzf2ZGwL0ZCQijd2RLHK0SLW5Tsko8YyyqCZC2cojIb0/s62qTAg==}
+  koa@2.15.4:
+    resolution: {integrity: sha512-7fNBIdrU2PEgLljXoPWoyY4r1e+ToWCmzS/wwMPbUNs7X+5MMET1ObhJBlUkF5uZG9B6QhM2zS1TsH6adegkiQ==}
     engines: {node: ^4.8.4 || ^6.10.1 || ^7.10.1 || >= 8.1.4}
 
   languages4translatewiki@0.1.3:
@@ -4039,8 +4039,8 @@ packages:
     engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
     hasBin: true
 
-  nanoid@5.0.9:
-    resolution: {integrity: sha512-Aooyr6MXU6HpvvWXKoVoXwKMs/KyVakWwg7xQfv5/S/RIgJMy0Ifa45H9qqYy7pTCszrHzP21Uk4PZq2HpEM8Q==}
+  nanoid@5.1.0:
+    resolution: {integrity: sha512-zDAl/llz8Ue/EblwSYwdxGBYfj46IM1dhjVi8dyp9LQffoIGxJEAHj2oeZ4uNcgycSRcQ83CnfcZqEJzVDLcDw==}
     engines: {node: ^18 || >=20}
     hasBin: true
 
@@ -4118,8 +4118,8 @@ packages:
     resolution: {integrity: sha512-yBYjY9QX2hnRmZHAjG/f13MzmBzxzYgQhFrke06TTyKY5zSTEqkOeukBzIdVA3j3ulu8Qa3MbVFShV7T2RmGtQ==}
     engines: {node: '>= 0.4'}
 
-  oidc-provider@8.6.1:
-    resolution: {integrity: sha512-wJ+nhwkCjRtQiwJKACjjV8FAIn7QXGDc1UOAE5WW0i8fsqN1GgXi42S/ccOxEx/JV3tyVLEwIipAvJNsJ/3djA==}
+  oidc-provider@8.8.0:
+    resolution: {integrity: sha512-5b4QncVOVsU8BLpD0ofQBRq2aX9Juhc0wFbaZSQbAmgN1jVfCZfYt3GEPPmJ8Tc/mvfX735PNH/LnuyWzMn9tQ==}
 
   oidc-token-hash@5.0.3:
     resolution: {integrity: sha512-IF4PcGgzAr6XXSff26Sk/+P4KZFJVuHAJZj3wgO3vX2bMdNVp/QXTP3P7CEm9V1IdG8lDLY3HhiqpsE/nOwpPw==}
@@ -6597,7 +6597,7 @@ snapshots:
     dependencies:
       '@types/unist': 3.0.2
 
-  '@types/http-assert@1.5.5': {}
+  '@types/http-assert@1.5.6': {}
 
   '@types/http-cache-semantics@4.0.4': {}
 
@@ -6634,7 +6634,7 @@ snapshots:
       '@types/accepts': 1.3.7
       '@types/content-disposition': 0.5.8
       '@types/cookies': 0.9.0
-      '@types/http-assert': 1.5.5
+      '@types/http-assert': 1.5.6
       '@types/http-errors': 2.0.4
       '@types/keygrip': 1.0.6
       '@types/koa-compose': 3.2.8
@@ -6674,8 +6674,9 @@ snapshots:
     dependencies:
       undici-types: 6.20.0
 
-  '@types/oidc-provider@8.5.2':
+  '@types/oidc-provider@8.8.0':
     dependencies:
+      '@types/keygrip': 1.0.6
       '@types/koa': 2.15.0
       '@types/node': 22.10.2
 
@@ -7302,7 +7303,7 @@ snapshots:
       normalize-url: 8.0.1
       responselike: 3.0.0
 
-  call-bind-apply-helpers@1.0.1:
+  call-bind-apply-helpers@1.0.2:
     dependencies:
       es-errors: 1.3.0
       function-bind: 1.1.2
@@ -7317,7 +7318,7 @@ snapshots:
 
   call-bound@1.0.3:
     dependencies:
-      call-bind-apply-helpers: 1.0.1
+      call-bind-apply-helpers: 1.0.2
       get-intrinsic: 1.2.7
 
   callsites@3.1.0: {}
@@ -7593,7 +7594,7 @@ snapshots:
 
   dunder-proto@1.0.1:
     dependencies:
-      call-bind-apply-helpers: 1.0.1
+      call-bind-apply-helpers: 1.0.2
       es-errors: 1.3.0
       gopd: 1.2.0
 
@@ -8333,7 +8334,7 @@ snapshots:
 
   get-intrinsic@1.2.7:
     dependencies:
-      call-bind-apply-helpers: 1.0.1
+      call-bind-apply-helpers: 1.0.2
       es-define-property: 1.0.1
       es-errors: 1.3.0
       es-object-atoms: 1.1.1
@@ -8914,7 +8915,7 @@ snapshots:
       co: 4.6.0
       koa-compose: 4.1.0
 
-  koa@2.15.3:
+  koa@2.15.4:
     dependencies:
       accepts: 1.3.8
       cache-content-type: 1.0.1
@@ -9181,7 +9182,7 @@ snapshots:
 
   nanoid@3.3.8: {}
 
-  nanoid@5.0.9: {}
+  nanoid@5.1.0: {}
 
   natural-compare@1.4.0: {}
 
@@ -9256,7 +9257,7 @@ snapshots:
       define-properties: 1.2.1
       es-object-atoms: 1.0.0
 
-  oidc-provider@8.6.1:
+  oidc-provider@8.8.0:
     dependencies:
       '@koa/cors': 5.0.0
       '@koa/router': 13.1.0
@@ -9265,8 +9266,8 @@ snapshots:
       got: 13.0.0
       jose: 5.9.6
       jsesc: 3.1.0
-      koa: 2.15.3
-      nanoid: 5.0.9
+      koa: 2.15.4
+      nanoid: 5.1.0
       object-hash: 3.0.0
       oidc-token-hash: 5.0.3
       quick-lru: 7.0.0
