@@ -244,7 +244,7 @@ module.exports = {
         gohome:{
             command: 'gohome',
             localizationId: 'pad.toolbar.gohome.title',
-            class: 'homeicon homeicon-exit',
+            class: 'buttonicon buttonicon-gohome',
         },  
 
         timeslider_export: {

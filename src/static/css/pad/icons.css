@@ -74,8 +74,8 @@
 .buttonicon-showusers:before {
   content: "\e835";
 }
-.buttonicon-showusers:before {
-  content: "\e835";
+.buttonicon-gohome:before {
+  content: "\e80b"; /* Assuming \e80b is the Unicode for the home icon */
 }
 .buttonicon-savedRevision:before {
   content: "\e856";
