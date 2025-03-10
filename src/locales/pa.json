@@ -9,6 +9,8 @@
 			"ਪ੍ਰਚਾਰਕ"
 		]
 	},
+	"admin_plugins.available_fetching": "ਲਿਆਉਣਾ ਪਿਆਂ...",
+	"admin_plugins.available_install.value": "ਜੜੋ",
 	"admin_plugins.description": "ਵੇਰਵਾ",
 	"admin_plugins.last-update": "ਆਖਰੀ ਵਾਰ ਨਵਿਆਈਆ ਗਿਆ",
 	"admin_plugins.name": "ਨਾਂ",
@@ -48,7 +50,7 @@
 	"pad.settings.colorcheck": "ਲੇਖਕੀ ਰੰਗ",
 	"pad.settings.linenocheck": "ਲਕੀਰ ਨੰਬਰ",
 	"pad.settings.rtlcheck": "ਸਮੱਗਰੀ ਸੱਜੇ ਤੋਂ ਖੱਬੇ ਪੜ੍ਹਨੀ ਹੈ?",
-	"pad.settings.fontType": "ਫੋਂਟ ਕਿਸਮ:",
+	"pad.settings.fontType": "ਅੱਖਰ ਦੀ ਕਿਸਮ:",
 	"pad.settings.fontType.normal": "ਆਮ",
 	"pad.settings.language": "ਭਾਸ਼ਾ:",
 	"pad.settings.about": "ਬਾਬਤ",
