@@ -183,8 +183,8 @@ importers:
         specifier: ^2.0.0
         version: 2.0.0
       jose:
-        specifier: ^5.10.0
-        version: 5.10.0
+        specifier: ^6.0.10
+        version: 6.0.10
       js-cookie:
         specifier: ^3.0.5
         version: 3.0.5
@@ -3703,6 +3703,9 @@ packages:
 
   jose@5.10.0:
     resolution: {integrity: sha512-s+3Al/p9g32Iq+oqXxkW//7jk2Vig6FF1CFqzVXoTUXt2qz89YWbL+OwS17NFYEvxC35n0FKeGO2LGYSxeM2Gg==}
+
+  jose@6.0.10:
+    resolution: {integrity: sha512-skIAxZqcMkOrSwjJvplIPYrlXGpxTPnro2/QWTDCxAdWQrSTV5/KqspMWmi5WAx5+ULswASJiZ0a+1B/Lxt9cw==}
 
   js-cookie@3.0.5:
     resolution: {integrity: sha512-cEiJEAEoIbWfCZYKWhVwFuvPX1gETRYPw6LlaTKoxD3s2AkXzkCjnp6h0V77ozyqj0jakteJ4YqDJT830+lVGw==}
@@ -8819,6 +8822,8 @@ snapshots:
       minimatch: 3.1.2
 
   jose@5.10.0: {}
+
+  jose@6.0.10: {}
 
   js-cookie@3.0.5: {}
 
