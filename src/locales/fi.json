@@ -87,6 +87,8 @@
 	"pad.settings.fontType": "Fonttityyppi:",
 	"pad.settings.fontType.normal": "normaali",
 	"pad.settings.language": "Kieli:",
+	"pad.settings.deletePad": "Poista muistio",
+	"pad.delete.confirm": "Haluatko todella poistaa tämän muistion?",
 	"pad.settings.about": "Tietoja",
 	"pad.settings.poweredBy": "Palvelun mahdollistaa",
 	"pad.importExport.import_export": "Tuonti/vienti",
