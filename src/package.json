@@ -55,7 +55,7 @@
     "log4js": "^6.9.1",
     "lru-cache": "^11.0.2",
     "measured-core": "^2.0.0",
-    "mime-types": "^2.1.35",
+    "mime-types": "^3.0.1",
     "oidc-provider": "^8.8.1",
     "openapi-backend": "^5.11.1",
     "proxy-addr": "^2.0.7",
