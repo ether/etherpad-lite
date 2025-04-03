@@ -72,6 +72,8 @@
 	"pad.settings.fontType": "Typo de litteras:",
 	"pad.settings.fontType.normal": "Normal",
 	"pad.settings.language": "Lingua:",
+	"pad.settings.deletePad": "Deler pad",
+	"pad.delete.confirm": "Es tu secur de voler deler iste pad?",
 	"pad.settings.about": "A proposito",
 	"pad.settings.poweredBy": "Actionate per",
 	"pad.importExport.import_export": "Importar/Exportar",
