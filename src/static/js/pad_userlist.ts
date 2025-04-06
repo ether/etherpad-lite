@@ -186,7 +186,7 @@ const paduserlist = (() => {
         const tr = input.closest('tr');
         if (tr.length > 0) {
           const index = tr.parent().children().index(tr);
-          if (index >= 0) {
+          if (index >= 0 && rowsPresent.length > index) {
             const userId = rowsPresent[index].data.id;
             rowManagerMakeNameEditor($(this), userId);
           }

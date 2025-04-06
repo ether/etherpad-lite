@@ -1,3 +1,18 @@
+# 2.3.0
+
+### Notable enhancements and fixes
+
+- Added possibility to cluster Etherpads behind reverse proxy. There is now a new reverse proxy designed for Etherpads that handles multiple Etherpads and the created pads in them. It will assign the pad assignement to an Etherpad at random but once the choice was made it will always reverse proxy the same backend. This allows to host multiple concurrent Etherpads and benefit from multi core systems even though one Etherpad is singlethreaded.
+- Added reverse proxy configuration for replacing Nginx. In the past there were some issues with nginx and its configuration. This reverse proxy allows you to handle your configuration with ease.
+
+If you want to find out more about the reverse proxy method check out the repository https://github.com/ether/etherpad-proxy . It also contains a sample docker-compose file with three Etherpads and one etherpad-proxy. Of course you need to adapt the settings.json.template to your liking and map it into the reverse proxy image before you are ready :).
+
+
+- Added client authorization to work with Etherpad. Before it would get blocked because it doesn't have the required claim. As this is now fixed etherpad-proxy can also work with your new OAuth2 configuration and retrieve a token via client credentials flow.
+
+
+
+
 # 2.2.7
 
 

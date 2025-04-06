@@ -24,7 +24,7 @@ const connect = (etherpadBaseUrl, namespace = '/', options = {}) => {
   let socketOptions = {
     path: socketioUrl.pathname,
     upgrade: true,
-    transports: ['websocket'],
+    transports: ['polling', 'websocket'],
   };
   socketOptions = Object.assign(options, socketOptions);
 

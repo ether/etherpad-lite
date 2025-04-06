@@ -9,6 +9,8 @@
 			"ਪ੍ਰਚਾਰਕ"
 		]
 	},
+	"admin_plugins.available_fetching": "ਲਿਆਉਣਾ ਪਿਆਂ...",
+	"admin_plugins.available_install.value": "ਜੜੋ",
 	"admin_plugins.description": "ਵੇਰਵਾ",
 	"admin_plugins.last-update": "ਆਖਰੀ ਵਾਰ ਨਵਿਆਈਆ ਗਿਆ",
 	"admin_plugins.name": "ਨਾਂ",
@@ -48,7 +50,7 @@
 	"pad.settings.colorcheck": "ਲੇਖਕੀ ਰੰਗ",
 	"pad.settings.linenocheck": "ਲਕੀਰ ਨੰਬਰ",
 	"pad.settings.rtlcheck": "ਸਮੱਗਰੀ ਸੱਜੇ ਤੋਂ ਖੱਬੇ ਪੜ੍ਹਨੀ ਹੈ?",
-	"pad.settings.fontType": "ਫੋਂਟ ਕਿਸਮ:",
+	"pad.settings.fontType": "ਅੱਖਰ ਦੀ ਕਿਸਮ:",
 	"pad.settings.fontType.normal": "ਆਮ",
 	"pad.settings.language": "ਭਾਸ਼ਾ:",
 	"pad.settings.about": "ਬਾਬਤ",
@@ -126,13 +128,13 @@
 	"pad.userlist.entername": "ਆਪਣਾ ਨਾਂ ਦਿਉ",
 	"pad.userlist.unnamed": "ਬੇਨਾਮ",
 	"pad.editbar.clearcolors": "ਪੂਰੇ ਦਸਾਤਵੇਜ਼ ਉੱਤੇ ਪਰਮਾਣਕਿਤਾ ਰੰਗ ਸਾਫ਼ ਕਰਨੇ ਹਨ?",
-	"pad.impexp.importbutton": "ਹੁਣੇ ਇੰਪੋਰਟ ਕਰੋ",
+	"pad.impexp.importbutton": "ਹੁਣੇ ਦਰਾਮਦ ਕਰੋ",
 	"pad.impexp.importing": "...ਇੰਪੋਰਟ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ",
 	"pad.impexp.confirmimport": "ਕੋਈ ਫ਼ਾਈਲ ਦਰਾਮਦ ਕਾਰਨ ਨਾਲ਼ ਪੈਡ ਦੀ ਮੌਜੂਦਾ ਲਿਖਤ ਉੱਤੇ ਲਿਖਿਆ ਜਾਵੇਗਾ। ਕੀ ਤੁਸੀਂ ਸੱਚੀਂ ਇਹ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ?",
 	"pad.impexp.convertFailed": "ਅਸੀਂ ਇਸ ਫ਼ਾਈਲ ਦੀ ਦਰਾਮਦ ਨਹੀਂ ਕਰ ਸਕੇ। ਮਿਹਰਬਾਨੀ ਕਰਕੇ ਕੋਈ ਵੱਖਰੀ ਦਸਤਾਵੇਜ਼ੀ ਰੂਪ-ਰੇਖਾ ਵਰਤੋ ਜਾਂ ਹੱਥੀਂ ਨਕਲ-ਚੇਪੀ ਕਰੋ।",
-	"pad.impexp.padHasData": "ਅਸੀ ਇਸ ਫਾਈਲ ਨੂੰ ਆਯਾਤ ਨਹੀੰ ਕਰ ਸਕੇ ਕਿਉੰਕਿ ਇਸ ਪੈਡ ਉੱਤੇ ਪਹਿਲਾੰ ਹੀ ਤਬਦੀਲੀਆੰ ਕੀਤੀਆੰ ਜਾ ਚੁਕੀਆੰ ਹਨ, ਕਿਰਪਾ ਕਰਕੇ ਨਵੇੰ ਪੈਡ ਵਿਚ ਆਯਾਤ ਕਰੋ",
+	"pad.impexp.padHasData": "ਅਸੀ ਇਸ ਫਾਈਲ ਨੂੰ ਦਰਾਮਦ ਨਹੀੰ ਕਰ ਸਕੇ ਕਿਉੰਕਿ ਇਸ ਕਾਗਜ਼ ਉੱਤੇ ਪਹਿਲਾਂ ਹੀ ਤਬਦੀਲੀਆਂ ਕੀਤੀਆਂ ਜਾ ਚੁਕੀਆਂ ਹਨ, ਕਿਰਪਾ ਕਰਕੇ ਨਵੇਂ ਕਾਗਜ਼ ਵਿਚ ਦਰਾਮਦ ਕਰੋ",
 	"pad.impexp.uploadFailed": "ਅੱਪਲੋਡ ਲਈ ਫੇਲ੍ਹ ਹੈ, ਫੇਰ ਕੋਸ਼ਿਸ਼ ਕਰੋ ਜੀ।",
-	"pad.impexp.importfailed": "ਇੰਪੋਰਟ ਫੇਲ੍ਹ ਹੈ",
+	"pad.impexp.importfailed": "ਦਰਾਮਦ ਨਾਕਾਮ",
 	"pad.impexp.copypaste": "ਕਾਪੀ ਕਰੋ ਚੇਪੋ ਜੀ",
 	"pad.impexp.exportdisabled": "{{type}} ਫਾਰਮੈਟ ਵਜੋਂ ਬਰਾਮਦ ਕਰਨਾ ਬੰਦ ਹੈ। ਵੇਰਵੇ ਵਾਸਤੇ ਆਪਣੇ ਸਿਸਟਮ ਦੇ ਪਰਬੰਧਕ ਨਾਲ ਸੰਪਰਕ ਕਰੋ।"
 }

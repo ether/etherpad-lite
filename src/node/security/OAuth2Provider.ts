@@ -30,7 +30,7 @@ const configuration: Configuration = {
         if(account === undefined) {
             return undefined
         }
-        if (account.is_admin) {
+        if (account.is_admin ) {
             return {
                 accountId: id,
                 claims: () => ({
