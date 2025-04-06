@@ -20,9 +20,10 @@
  */
 
 import {MapArrayType} from "../types/MapType";
-
+import { jwtDecode } from "jwt-decode";
 const api = require('../db/API');
 const padManager = require('../db/PadManager');
+const settings = require('../utils/Settings');
 import createHTTPError from 'http-errors';
 import {Http2ServerRequest} from "node:http2";
 import {publicKeyExported} from "../security/OAuth2Provider";
@@ -182,8 +183,17 @@ exports.handle = async function (apiVersion: string, functionName: string, field
       throw new createHTTPError.Unauthorized('no or wrong API Key');
     }
     try {
-      await jwtVerify(req.headers.authorization!.replace("Bearer ", ""), publicKeyExported!, {algorithms: ['RS256'],
-        requiredClaims: ["admin"]})
+      const clientIds: string[] = settings.sso.clients?.map((client: {client_id: string}) => client.client_id);
+      const jwtToCheck = req.headers.authorization.replace("Bearer ", "")
+      const payload = jwtDecode(jwtToCheck)
+      // client_credentials
+      if (clientIds.includes(<string>payload.sub)) {
+        await jwtVerify(jwtToCheck, publicKeyExported!, {algorithms: ['RS256']})
+      } else {
+        // authorization_code
+        await jwtVerify(jwtToCheck, publicKeyExported!, {algorithms: ['RS256'],
+          requiredClaims: ["admin"]})
+      }
     } catch (e) {
       throw new createHTTPError.Unauthorized('no or wrong OAuth token');
     }

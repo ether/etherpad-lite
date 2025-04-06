@@ -70,6 +70,7 @@
     "socket.io-client": "^4.8.1",
     "superagent": "10.2.0",
     "swagger-ui-express": "^5.0.1",
+    "jwt-decode": "^4.0.0",
     "tinycon": "0.6.8",
     "tsx": "4.19.3",
     "ueberdb2": "^5.0.6",
