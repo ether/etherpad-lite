@@ -23,7 +23,9 @@ jobs:
       -
         name: Check out
         uses: actions/checkout@v4
-        path: etherpad
+        with: 
+          path: etherpad
+           
       -
         name: Set up QEMU
         if: github.event_name == 'push'
@@ -35,7 +37,7 @@ jobs:
         name: Build and export to Docker
         uses: docker/build-push-action@v6
         with:
-          context: .
+          context: ./etherpad
           target: production
           load: true
           tags: ${{ env.TEST_TAG }}
@@ -64,7 +66,7 @@ jobs:
             ${{ runner.os }}-pnpm-store-
       -
         name: Test
-        path: etherpad
+        working-directory: etherpad
         run: |
           docker run --rm -d -p 9001:9001 --name test ${{ env.TEST_TAG }}
           ./bin/installDeps.sh
@@ -85,7 +87,6 @@ jobs:
         if: github.event_name == 'push'
         id: meta
         uses: docker/metadata-action@v5
-        path: etherpad
         with:
           images: etherpad/etherpad
           tags: |
@@ -96,7 +97,6 @@ jobs:
       -
         name: Log in to Docker Hub
         if: github.event_name == 'push'
-        path: etherpad
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
@@ -104,10 +104,9 @@ jobs:
       -
         name: Build and push
         if: github.event_name == 'push'
-        path: etherpad
         uses: docker/build-push-action@v6
         with:
-          context: .
+          context: ./etherpad
           target: production
           platforms: linux/amd64,linux/arm64
           push: true
@@ -115,26 +114,26 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
       - name: Update repo description
         uses: peter-evans/dockerhub-description@v4
-        path: etherpad
         if: github.ref == 'refs/heads/master'
         with:
+          readme-filepath: ./etherpad/README.md
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
           repository: etherpad/etherpad
           enable-url-completion: true
       - name: Check out
         uses: actions/checkout@v4
-        path: ether-charts
         with:
+          path: ether-charts
           repository: https://github.com/ether/ether-charts
           token: ${{ secrets.GITHUB_TOKEN }}
       - name: Update tag in values-dev.yaml
         #if: github.event == 'push' && github.ref == 'refs/heads/develop'
-        path: ether-charts
+        working-directory: ether-charts
         run: |
           sed -i 's/tag: ".*"/tag: "${{ steps.meta.outputs.sha }}"/' values-dev.yaml
       - name: Commit and push changes
-        path: ether-charts
+        working-directory: ether-charts
         #if: github.event == 'push' && github.ref == 'refs/heads/develop'
         run: |
           git config --global user.name 'github-actions[bot]'
