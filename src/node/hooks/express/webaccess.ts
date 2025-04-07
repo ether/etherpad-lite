@@ -51,6 +51,7 @@ exports.authnFailureDelayMs = 1000;
 
 const staticResources = [
   /^\/padbootstrap-[a-zA-Z0-9]+\.min\.js$/,
+  /^\/timeSliderBootstrap-[a-zA-Z0-9]+\.min\.js$/,
   /^\/manifest.json$/
 ]
 
