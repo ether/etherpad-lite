@@ -103,6 +103,7 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       -
         name: Build and push
+        id: build-docker
         if: github.event_name == 'push'
         uses: docker/build-push-action@v6
         with:
@@ -131,7 +132,7 @@ jobs:
         #if: github.event == 'push' && github.ref == 'refs/heads/develop'
         working-directory: ether-charts
         run: |
-          sed -i 's/tag: ".*"/tag: "${{ steps.meta.outputs.sha }}"/' values-dev.yaml
+          sed -i 's/tag: ".*"/tag: "${{ steps.build-docker.outputs.digest }}"/' values-dev.yaml
       - name: Commit and push changes
         working-directory: ether-charts
         #if: github.event == 'push' && github.ref == 'refs/heads/develop'
