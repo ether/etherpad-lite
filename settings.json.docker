@@ -96,7 +96,7 @@
  * 3) if you want to use newlines in the default value of a string parameter,
  *    use "\n" as usual.
  *
- *    "defaultPadText" : "${DEFAULT_PAD_TEXT}Line 1\nLine 2"
+ *    "defaultPadText" : "${DEFAULT_PAD_TEXT:Line 1\nLine 2}"
  */
 {
   /*
