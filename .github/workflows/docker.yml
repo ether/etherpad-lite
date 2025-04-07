@@ -128,13 +128,13 @@ jobs:
           repository: ether/ether-charts
           token: ${{ secrets.ETHER_CHART_TOKEN }}
       - name: Update tag in values-dev.yaml
-        if: github.event == 'push' && github.ref == 'refs/heads/develop'
+        if: success() && github.ref == 'refs/heads/develop'
         working-directory: ether-charts
         run: |
           sed -i 's/tag: ".*"/tag: "${{ steps.build-docker.outputs.digest }}"/' values-dev.yaml
       - name: Commit and push changes
         working-directory: ether-charts
-        if: github.event == 'push' && github.ref == 'refs/heads/develop'
+        if: success() && github.ref == 'refs/heads/develop'
         run: |
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
