@@ -23,9 +23,9 @@ jobs:
       -
         name: Check out
         uses: actions/checkout@v4
-        with: 
+        with:
           path: etherpad
-           
+
       -
         name: Set up QEMU
         if: github.event_name == 'push'
@@ -125,7 +125,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           path: ether-charts
-          repository: https://github.com/ether/ether-charts
+          repository: ether/ether-charts
           token: ${{ secrets.GITHUB_TOKEN }}
       - name: Update tag in values-dev.yaml
         #if: github.event == 'push' && github.ref == 'refs/heads/develop'
