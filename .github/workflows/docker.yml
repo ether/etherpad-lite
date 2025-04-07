@@ -126,7 +126,7 @@ jobs:
         with:
           path: ether-charts
           repository: ether/ether-charts
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.ETHER_CHART_TOKEN }}
       - name: Update tag in values-dev.yaml
         #if: github.event == 'push' && github.ref == 'refs/heads/develop'
         working-directory: ether-charts
