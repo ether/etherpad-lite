@@ -28,7 +28,7 @@ exports.expressCreateServer = (hookName:string, args:ArgsExpressType, cb:Functio
   args.app.use('/p/:pad/:rev?/export/:type', limiter);
   args.app.get('/p/:pad/:rev?/export/:type', (req:any, res:any, next:Function) => {
     (async () => {
-      const types = ['pdf', 'doc', 'txt', 'html', 'odt', 'etherpad'];
+      const types = ['pdf', 'docx', 'txt', 'html', 'odt', 'etherpad'];
       // send a 404 if we don't support this filetype
       if (types.indexOf(req.params.type) === -1) {
         return next();
@@ -36,7 +36,7 @@ exports.expressCreateServer = (hookName:string, args:ArgsExpressType, cb:Functio
 
       // if abiword is disabled, and this is a format we only support with abiword, output a message
       if (settings.exportAvailable() === 'no' &&
-          ['odt', 'pdf', 'doc'].indexOf(req.params.type) !== -1) {
+          ['odt', 'pdf', 'docx'].indexOf(req.params.type) !== -1) {
         console.error(`Impossible to export pad "${req.params.pad}" in ${req.params.type} format.` +
                       ' There is no converter configured');
 
