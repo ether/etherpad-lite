@@ -6,6 +6,7 @@ on:
   push:
     branches:
       - 'develop'
+      - 'feature/update-tag-on-push'
     paths-ignore:
       - 'doc/**'
     tags:
