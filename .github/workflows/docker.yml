@@ -106,8 +106,6 @@ jobs:
         if: github.event_name == 'push'
         uses: docker/build-push-action@v6
         with:
-          outputs:
-            - digest
           context: ./etherpad
           target: production
           platforms: linux/amd64,linux/arm64
