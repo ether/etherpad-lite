@@ -172,12 +172,14 @@ export const getAvailablePlugins = (maxCacheAge: number|false) => {
     }
 
     await axios.get(`${settings.updateServer}/plugins.json`, {headers})
-        .then((pluginsLoaded:AxiosResponse<MapArrayType<PackageInfo>>) => {
+        .then((pluginsLoaded: AxiosResponse<MapArrayType<PackageInfo>>) => {
           availablePlugins = pluginsLoaded.data;
           cacheTimestamp = nowTimestamp;
           resolve(availablePlugins);
         })
-        .catch(async (err) => reject(err));
+        .catch(async (err) => {
+          logger.error(`Error fetching available plugins: ${err}`);
+        });
   });
 };
 

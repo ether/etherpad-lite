@@ -42,6 +42,10 @@ if (settings.dumpOnUncleanExit) {
 const addProxyToAxios = (url: URL) => {
   axios.defaults.proxy = {
     host: url.hostname,
+    auth: {
+      username: url.username,
+      password: url.password,
+    },
     port: Number(url.port),
     protocol: url.protocol,
   }
