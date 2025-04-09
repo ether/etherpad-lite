@@ -25,7 +25,9 @@ export const setUserName = async (page: Page, userName: string) => {
     await page.click("input[data-l10n-id='pad.userlist.entername']");
     await page.keyboard.type(userName);
 }
-
+export const exitPad = async (page: Page) => {
+    await page.locator("button[data-l10n-id='pad.toolbar.exit.title']").click();
+}
 
 export const showChat = async (page: Page) => {
     const chatIcon = page.locator("#chaticon")
