@@ -241,6 +241,18 @@ module.exports = {
         embed: defaultButtonAttributes('embed'),
         showusers: defaultButtonAttributes('showusers'),
 
+        gohome:{
+            command: 'gohome',
+            localizationId: 'pad.toolbar.gohome.title',
+            class: 'buttonicon buttonicon-gohome',
+        },  
+
+        logout:{
+            command: 'logout',
+            localizationId: 'pad.toolbar.logout.title',
+            class: 'buttonicon buttonicon-logout',
+        },  
+
         timeslider_export: {
             command: 'import_export',
             localizationId: 'timeslider.toolbar.exportlink.title',
