@@ -225,8 +225,8 @@ importers:
         specifier: ^8.8.1
         version: 8.8.1
       openapi-backend:
-        specifier: ^5.11.1
-        version: 5.11.1
+        specifier: ^5.12.0
+        version: 5.12.0
       proxy-addr:
         specifier: ^2.0.7
         version: 2.0.7
@@ -3889,8 +3889,8 @@ packages:
   only@0.0.2:
     resolution: {integrity: sha512-Fvw+Jemq5fjjyWz6CpKx6w9s7xxqo3+JCyM0WXWeCSOboZ8ABkyvP8ID4CZuChA/wxSx+XSJmdOm8rGVyJ1hdQ==}
 
-  openapi-backend@5.11.1:
-    resolution: {integrity: sha512-TsIbku0692sU1X5Ewhzj49ivd8EIT0GDtwbB7XvT234lY3+oJfTe3cUWaBzeKGeX+a1mjcluuJ4V+wTancRbdA==}
+  openapi-backend@5.12.0:
+    resolution: {integrity: sha512-tD4Ak8w5XBlGVi4gso/QNbxcfrj3j6ypuKg9bx7l6hQaeMVxEdf5Ro8M/SVoNg7L8VptzIkwE8Lp3H+Ba88hWA==}
     engines: {node: '>=12.0.0'}
 
   openapi-schema-validation@0.4.2:
@@ -8857,7 +8857,7 @@ snapshots:
 
   only@0.0.2: {}
 
-  openapi-backend@5.11.1:
+  openapi-backend@5.12.0:
     dependencies:
       '@apidevtools/json-schema-ref-parser': 11.9.3
       ajv: 8.17.1
