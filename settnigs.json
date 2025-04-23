@@ -1,0 +1,9 @@
+{
+  "defaultPadText": "Welcome to YOURE Etherpad.",
+  "users": {
+    "admin": {
+      "password": "password",
+      "is_admin": true
+    }
+  }
+}
