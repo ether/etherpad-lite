@@ -7,7 +7,7 @@ import _ from 'underscore';
 // @ts-ignore
 import cookieParser from 'cookie-parser';
 import events from 'events';
-import express from 'express';
+import express from 'ultimate-express';
 // @ts-ignore
 import expressSession from '@etherpad/express-session';
 import fs from 'fs';
@@ -124,7 +124,7 @@ exports.restartServer = async () => {
     exports.server = https.createServer(options, app);
   } else {
     const http = require('http');
-    exports.server = http.createServer(app);
+    exports.server = app;
   }
 
   app.use((req, res, next) => {
@@ -251,7 +251,8 @@ exports.restartServer = async () => {
       socketsEvents.emit('updated');
     });
   });
-  await util.promisify(exports.server.listen).bind(exports.server)(settings.port, settings.ip);
+  app.listen(settings.port);
+  //await util.promisify(exports.server.listen).bind(exports.server)(settings.port, settings.ip);
   startTime.setValue(Date.now());
   logger.info('HTTP server listening for connections');
 };

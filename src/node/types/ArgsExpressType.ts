@@ -1,4 +1,4 @@
-import {Express} from "express";
+import {Express} from "ultimate-express";
 
 export type ArgsExpressType = {
     app:Express,

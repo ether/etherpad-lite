@@ -9,6 +9,7 @@ const path = require('path');
 const _ = require('underscore');
 const pluginDefs = require('../../static/js/pluginfw/plugin_defs');
 import existsSync from '../utils/path_exists';
+import {Express} from "ultimate-express";
 const settings = require('../utils/Settings');
 
 // returns all existing messages merged together and grouped by langcode
@@ -123,14 +124,15 @@ const generateLocaleIndex = (locales:MapArrayType<string>) => {
 };
 
 
-exports.expressPreSession = async (hookName:string, {app}:any) => {
+exports.expressPreSession = async (hookName:string, {app}:{app: Express}) => {
   // regenerate locales on server restart
   const locales = getAllLocales();
   const localeIndex = generateLocaleIndex(locales);
   exports.availableLangs = getAvailableLangs(locales);
 
-  app.get('/locales/:locale', (req:any, res:any) => {
+  app.get('/locales/:locale', (req, res) => {
     // works with /locale/en and /locale/en.json requests
+    console.log(req.params)
     const locale = req.params.locale.split('.')[0];
     if (Object.prototype.hasOwnProperty.call(exports.availableLangs, locale)) {
       res.setHeader('Cache-Control', `public, max-age=${settings.maxAge}`);

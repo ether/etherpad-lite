@@ -6,7 +6,7 @@ import createHTTPError from "http-errors";
 
 const apiHandler = require('./APIHandler')
 import {serve, setup} from 'swagger-ui-express'
-import express from "express";
+import express from "ultimate-express";
 
 const settings = require('../utils/Settings')
 

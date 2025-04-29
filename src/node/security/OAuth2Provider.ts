@@ -5,7 +5,7 @@ import MemoryAdapter from "./OIDCAdapter";
 import path from "path";
 const settings = require('../utils/Settings');
 import {IncomingForm} from 'formidable'
-import express, {Request, Response} from 'express';
+import express, {Request, Response} from 'ultimate-express';
 import {format} from 'url'
 import {ParsedUrlQuery} from "node:querystring";
 import {Http2ServerRequest, Http2ServerResponse} from "node:http2";
