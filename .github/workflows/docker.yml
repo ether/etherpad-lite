@@ -122,6 +122,7 @@ jobs:
           repository: etherpad/etherpad
           enable-url-completion: true
       - name: Check out
+        if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
         uses: actions/checkout@v4
         with:
           path: ether-charts
