@@ -59,7 +59,7 @@ exports.deleteGroup = async (groupID: string): Promise<void> => {
 
   // Delete associated sessions in parallel. This should be done before deleting the group2sessions
   // record because deleting a session updates the group2sessions record.
-  const {sessionIDs = {}} = await db.get(`group2sessions:${groupID}`) || {};
+  const {sessionIDs = {}} = (await db.get(`group2sessions:${groupID}`)) || {};
   await Promise.all(Object.keys(sessionIDs).map(async (sessionId) => {
     await sessionManager.deleteSession(sessionId);
   }));
@@ -113,7 +113,7 @@ exports.createGroupIfNotExistsFor = async (groupMapper: string|object) => {
     throw new CustomError('groupMapper is not a string', 'apierror');
   }
   const groupID = await db.get(`mapper2group:${groupMapper}`);
-  if (groupID && await exports.doesGroupExist(groupID)) return {groupID};
+  if (groupID && (await exports.doesGroupExist(groupID))) return {groupID};
   const result = await exports.createGroup();
   await Promise.all([
     db.set(`mapper2group:${groupMapper}`, result.groupID),

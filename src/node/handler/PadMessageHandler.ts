@@ -327,7 +327,7 @@ exports.handleMessage = async (socket:any, message: ClientVarMessage) => {
       `IP:${settings.disableIPlogging ? 'ANONYMOUS' : socket.request.ip}`,
       `originalAuthorID:${thisSession.author}`,
       `newAuthorID:${authorID}`,
-      ...(user && user.username) ? [`username:${user.username}`] : [],
+      ...((user && user.username) ? [`username:${user.username}`] : []),
       `message:${message}`,
     ].join(' '));
   }
@@ -1097,7 +1097,7 @@ const handleClientReady = async (socket:any, message: ClientReadyMessage) => {
     if (authorId == null) return;
 
     // reuse previously created cache of author's data
-    const authorInfo = historicalAuthorData[authorId] || await authorManager.getAuthor(authorId);
+    const authorInfo = historicalAuthorData[authorId] || (await authorManager.getAuthor(authorId));
     if (authorInfo == null) {
       messageLogger.error(
           `Author ${authorId} connected via socket.io session ${roomSocket.id} is missing from ` +

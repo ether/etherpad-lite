@@ -17,7 +17,7 @@ const performCheck = async () => {
   await db.init();
   console.log("Checking if " + padId + " exists")
   const padManager = require('ep_etherpad-lite/node/db/PadManager');
-  if (!await padManager.doesPadExists(padId)) throw new Error('Pad does not exist');
+  if (!(await padManager.doesPadExists(padId))) throw new Error('Pad does not exist');
   const pad = await padManager.getPad(padId);
   await pad.check();
   console.log('Finished checking pad.');

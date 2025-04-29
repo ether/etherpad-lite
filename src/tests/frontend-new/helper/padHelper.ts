@@ -85,7 +85,7 @@ export const isChatBoxSticky = async (page: Page):Promise<boolean> => {
 }
 
 export const hideChat = async (page: Page) => {
-    if(!await isChatBoxShown(page)|| await isChatBoxSticky(page)) return
+    if(!(await isChatBoxShown(page))|| (await isChatBoxSticky(page))) return
     await page.locator('#titlecross').click()
     await page.waitForFunction(`!document.querySelector('#chatbox').classList.contains('stickyChat')`)
 
@@ -98,7 +98,7 @@ export const enableStickyChatviaIcon = async (page: Page) => {
 }
 
 export const disableStickyChatviaIcon = async (page: Page) => {
-    if(!await isChatBoxSticky(page)) return
+    if(!(await isChatBoxSticky(page))) return
     await page.locator('#titlecross').click()
     await page.waitForFunction(`!document.querySelector('#chatbox').classList.contains('stickyChat')`)
 }

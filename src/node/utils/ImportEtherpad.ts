@@ -41,7 +41,7 @@ exports.setPadRaw = async (padId: string, r: string, authorId = '') => {
   // DB key prefixes for pad records. Each key is expected to have the form `${prefix}:${padId}` or
   // `${prefix}:${padId}:${otherstuff}`.
   const padKeyPrefixes = [
-    ...await hooks.aCallAll('exportEtherpadAdditionalContent'),
+    ...(await hooks.aCallAll('exportEtherpadAdditionalContent')),
     'pad',
   ];
 

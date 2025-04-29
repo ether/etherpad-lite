@@ -12,7 +12,7 @@ describe(__filename, function () {
 
   beforeEach(async function () {
     padId = common.randomString();
-    assert(!await padManager.doesPadExist(padId));
+    assert(!(await padManager.doesPadExist(padId)));
   });
 
   describe('exportEtherpadAdditionalContent', function () {

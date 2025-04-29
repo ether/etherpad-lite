@@ -53,7 +53,7 @@ describe(__filename, function () {
 
   beforeEach(async function () {
     padId = randomString(10);
-    assert(!await padManager.doesPadExist(padId));
+    assert(!(await padManager.doesPadExist(padId)));
   });
 
   it('unknown db records are ignored', async function () {
@@ -62,7 +62,7 @@ describe(__filename, function () {
       [badKey]: 'value',
       ...makeExport(makeAuthorId()),
     }));
-    assert(await db.get(badKey) == null);
+    assert((await db.get(badKey)) == null);
   });
 
   it('changes are all or nothing', async function () {
@@ -71,8 +71,8 @@ describe(__filename, function () {
     data['pad:differentPadId:revs:0'] = data['pad:testing:revs:0'];
     delete data['pad:testing:revs:0'];
     assert.rejects(importEtherpad.setPadRaw(padId, JSON.stringify(data)), /unexpected pad ID/);
-    assert(!await authorManager.doesAuthorExist(authorId));
-    assert(!await padManager.doesPadExist(padId));
+    assert(!(await authorManager.doesAuthorExist(authorId)));
+    assert(!(await padManager.doesPadExist(padId)));
   });
 
   describe('author pad IDs', function () {
@@ -85,7 +85,7 @@ describe(__filename, function () {
       assert.deepEqual((await authorManager.listPadsOfAuthor(existingAuthorId)).padIDs, []);
       newAuthorId = makeAuthorId();
       assert.notEqual(newAuthorId, existingAuthorId);
-      assert(!await authorManager.doesAuthorExist(newAuthorId));
+      assert(!(await authorManager.doesAuthorExist(newAuthorId)));
     });
 
     it('author does not yet exist', async function () {
@@ -199,12 +199,12 @@ describe(__filename, function () {
         ...makeExport(makeAuthorId()),
         'custom:testingx': 'x',
       })), /unexpected pad ID/);
-      assert(await db.get(`custom:${padId}x`) == null);
+      assert((await db.get(`custom:${padId}x`)) == null);
       await assert.rejects(importEtherpad.setPadRaw(padId, JSON.stringify({
         ...makeExport(makeAuthorId()),
         'custom:testingx:foo': 'x',
       })), /unexpected pad ID/);
-      assert(await db.get(`custom:${padId}x:foo`) == null);
+      assert((await db.get(`custom:${padId}x:foo`)) == null);
     });
   });
 });

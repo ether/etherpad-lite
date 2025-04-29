@@ -165,7 +165,7 @@ const getCollabClient = (ace2editor, serverVars, initialUserInfo, options, _pad)
         });
   };
 
-  const serverMessageTaskQueue = new class {
+  const serverMessageTaskQueue = new (class {
     constructor() {
       this._promiseChain = Promise.resolve();
     }
@@ -178,7 +178,7 @@ const getCollabClient = (ace2editor, serverVars, initialUserInfo, options, _pad)
       // fn() throws/rejects (due to the .catch() added above).
       return await taskPromise;
     }
-  }();
+  })();
 
   const handleMessageFromServer = (evt) => {
     if (!getSocket()) return;
@@ -371,7 +371,7 @@ const getCollabClient = (ace2editor, serverVars, initialUserInfo, options, _pad)
   // is connected for the first time.
   let deferredActions = [];
 
-  const defer = (func, tag) => function (...args) {
+  const defer = (func, tag) => (function(...args) {
     const action = () => {
       func.call(this, ...args);
     };
@@ -381,7 +381,7 @@ const getCollabClient = (ace2editor, serverVars, initialUserInfo, options, _pad)
     } else {
       action();
     }
-  };
+  });
 
   const doDeferredActions = (tag) => {
     const newArray = [];

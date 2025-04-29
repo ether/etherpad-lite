@@ -218,7 +218,7 @@ const helper = {};
 
     const check = async () => {
       try {
-        if (!await conditionFunc()) return;
+        if (!(await conditionFunc())) return;
         deferred.resolve();
       } catch (err) {
         deferred.reject(err);

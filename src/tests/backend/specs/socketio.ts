@@ -358,7 +358,7 @@ describe(__filename, function () {
       const connected = new Promise((resolve) => resolveConnected = resolve);
       let resolveDisconnected: (value: void | PromiseLike<void>) => void ;
       const disconnected = new Promise<void>((resolve) => resolveDisconnected = resolve);
-      socketIoRouter.addComponent(this.test!.fullTitle(), new class extends Module {
+      socketIoRouter.addComponent(this.test!.fullTitle(), new (class extends Module {
         private _socket: any;
         handleConnect(socket:any) {
           this._socket = socket;
@@ -371,7 +371,7 @@ describe(__filename, function () {
           assert.equal(socket, this._socket);
           resolveDisconnected();
         }
-      }());
+      })());
       socket = await common.connect();
       await connected;
       socket.close();
@@ -387,13 +387,13 @@ describe(__filename, function () {
       };
       let rx:Function;
       const got = new Promise((resolve) => { rx = resolve; });
-      socketIoRouter.addComponent(this.test!.fullTitle(), new class extends Module {
+      socketIoRouter.addComponent(this.test!.fullTitle(), new (class extends Module {
         handleConnect(socket:any) { serverSocket = socket; }
         handleMessage(socket:any, message:string) { assert.equal(socket, serverSocket); rx(message); }
-      }());
-      socketIoRouter.addComponent(`${this.test!.fullTitle()} #2`, new class extends Module {
+      })());
+      socketIoRouter.addComponent(`${this.test!.fullTitle()} #2`, new (class extends Module {
         handleMessage(socket:any, message:any) { assert.fail('wrong handler called'); }
-      }());
+      })());
       socket = await common.connect();
       socket.emit('message', want);
       assert.deepEqual(await got, want);

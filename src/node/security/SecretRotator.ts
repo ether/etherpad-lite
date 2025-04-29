@@ -173,7 +173,7 @@ export class SecretRotator {
     // TODO: This is racy. If two instances start up at the same time and there are no existing
     // matching publications, each will generate and publish their own paramters. In practice this
     // is unlikely to happen, and if it does it can be fixed by restarting both Etherpad instances.
-    const dbKeys:string[] = await db.findKeys(`${this._dbPrefix}:*`, null) || [];
+    const dbKeys:string[] = (await db.findKeys(`${this._dbPrefix}:*`, null)) || [];
     let currentParams:any = null;
     let currentId = null;
     const dbWrites:any[] = [];
@@ -245,7 +245,7 @@ export class SecretRotator {
     // The secrets derived from currentParams MUST be the first secrets.
     const secrets = await this._deriveSecrets(currentParams, now);
     await Promise.all(
-        allParams.map(async (p) => secrets.push(...await this._deriveSecrets(p, now))));
+        allParams.map(async (p) => secrets.push(...(await this._deriveSecrets(p, now)))));
     // Update this.secrets all at once to avoid race conditions.
     this.secrets.length = 0;
     this.secrets.push(...secrets);

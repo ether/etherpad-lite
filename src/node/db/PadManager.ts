@@ -57,7 +57,7 @@ const globalPads:MapArrayType<any> = {
  *
  * Updated without db access as new pads are created/old ones removed.
  */
-const padList = new class {
+const padList = new (class {
   private _cachedList: string[] | null;
     private _list: Set<string>;
     private _loaded: Promise<void> | null;
@@ -95,7 +95,7 @@ const padList = new class {
     this._list.delete(name);
     this._cachedList = null;
   }
-}();
+})();
 
 // initialises the all-knowing data structure
 

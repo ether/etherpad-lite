@@ -19,7 +19,7 @@
 
 import {Cookies} from "./pad_utils";
 
-exports.padcookie = new class {
+exports.padcookie = new (class {
   constructor() {
     this.cookieName_ = window.location.protocol === 'https:' ? 'prefs' : 'prefsHttp';
   }
@@ -68,4 +68,4 @@ exports.padcookie = new class {
   clear() {
     this.writePrefs_({});
   }
-}();
+})();

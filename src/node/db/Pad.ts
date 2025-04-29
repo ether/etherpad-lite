@@ -116,10 +116,10 @@ class Pad {
         meta: {
           author: authorId,
           timestamp: Date.now(),
-          ...newRev === this.getKeyRevisionNumber(newRev) ? {
+          ...(newRev === this.getKeyRevisionNumber(newRev) ? {
             pool: this.pool,
             atext: this.atext,
-          } : {},
+          } : {}),
         },
       }),
       this.saveToDatabase(),
@@ -135,10 +135,10 @@ class Pad {
           pad_utils.warnDeprecated(`${hook} hook author context is deprecated; use authorId instead`);
           this.authorId = authorId;
         },
-        ...this.head === 0 ? {} : {
+        ...(this.head === 0 ? {} : {
           revs: newRev,
           changeset: aChangeset,
-        },
+        }),
       }),
     ]);
     return newRev;

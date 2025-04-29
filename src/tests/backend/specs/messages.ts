@@ -27,7 +27,7 @@ describe(__filename, function () {
     backups.hooks = {handleMessageSecurity: plugins.hooks.handleMessageSecurity};
     plugins.hooks.handleMessageSecurity = [];
     padId = common.randomString();
-    assert(!await padManager.doesPadExist(padId));
+    assert(!(await padManager.doesPadExist(padId)));
     pad = await padManager.getPad(padId, 'dummy text\n');
     await pad!.setText('\n'); // Make sure the pad is created.
     assert.equal(pad!.text(), '\n');
@@ -57,7 +57,7 @@ describe(__filename, function () {
   describe('CHANGESET_REQ', function () {
     it('users are unable to read changesets from other pads', async function () {
       const otherPadId = `${padId}other`;
-      assert(!await padManager.doesPadExist(otherPadId));
+      assert(!(await padManager.doesPadExist(otherPadId)));
       const otherPad = await padManager.getPad(otherPadId, 'other text\n');
       try {
         await otherPad.setText('other text\n');
@@ -84,7 +84,7 @@ describe(__filename, function () {
 
     it('CHANGESET_REQ: verify revNum is a number (regression)', async function () {
       const otherPadId = `${padId}other`;
-      assert(!await padManager.doesPadExist(otherPadId));
+      assert(!(await padManager.doesPadExist(otherPadId)));
       const otherPad = await padManager.getPad(otherPadId, 'other text\n');
       let errorCatched = 0;
       try {
@@ -113,7 +113,7 @@ describe(__filename, function () {
 
     it('CHANGESET_REQ: revNum is converted to number if possible (regression)', async function () {
       const otherPadId = `${padId}other`;
-      assert(!await padManager.doesPadExist(otherPadId));
+      assert(!(await padManager.doesPadExist(otherPadId)));
       const otherPad = await padManager.getPad(otherPadId, 'other text\n');
       try {
         await otherPad.setText('other text\n');
@@ -140,7 +140,7 @@ describe(__filename, function () {
 
     it('CHANGESET_REQ: revNum 2 is converted to head rev 1 (regression)', async function () {
       const otherPadId = `${padId}other`;
-      assert(!await padManager.doesPadExist(otherPadId));
+      assert(!(await padManager.doesPadExist(otherPadId)));
       const otherPad = await padManager.getPad(otherPadId, 'other text\n');
       try {
         await otherPad.setText('other text\n');

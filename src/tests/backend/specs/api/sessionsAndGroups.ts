@@ -131,7 +131,7 @@ describe(__filename, function () {
           .expect((res:any) => {
             assert.equal(res.body.code, 0);
           });
-      assert(await db.get(`mapper2group:${mapper}`) == null);
+      assert((await db.get(`mapper2group:${mapper}`)) == null);
     });
 
     // Test coverage for https://github.com/ether/etherpad-lite/issues/4227

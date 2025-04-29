@@ -31,10 +31,10 @@ const createRevision = async (aChangeset: AChangeSet, timestamp: number, isKeyRe
     meta: {
       author: authorId,
       timestamp: timestamp,
-      ...isKeyRev ? {
+      ...(isKeyRev ? {
         pool: pool,
         atext: atext,
-      } : {},
+      } : {}),
     },
   };
 }

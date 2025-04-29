@@ -595,9 +595,7 @@
 
       // Support: IE 9 - 11+
       // IE doesn't have `contains` on SVG.
-      a.contains ?
-        a.contains( bup ) :
-        a.compareDocumentPosition && a.compareDocumentPosition( bup ) & 16
+      (a.contains ? a.contains( bup ) : a.compareDocumentPosition && a.compareDocumentPosition( bup ) & 16)
     ) );
   };
 

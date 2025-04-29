@@ -44,7 +44,7 @@ describe(__filename, function () {
   describe('set', function () {
     it('set of null is a no-op', async function () {
       await set(null);
-      assert(await db.get(`sessionstorage:${sid}`) == null);
+      assert((await db.get(`sessionstorage:${sid}`)) == null);
     });
 
     it('set of non-expiring session', async function () {
@@ -59,14 +59,14 @@ describe(__filename, function () {
       assert.equal(JSON.stringify(await db.get(`sessionstorage:${sid}`)), JSON.stringify(sess));
       await new Promise((resolve) => setTimeout(resolve, 110));
       // Writing should start a timeout.
-      assert(await db.get(`sessionstorage:${sid}`) == null);
+      assert((await db.get(`sessionstorage:${sid}`)) == null);
     });
 
     it('set of already expired session', async function () {
       const sess:any  = {foo: 'bar', cookie: {expires: new Date(1)}};
       await set(sess);
       // No record should have been created.
-      assert(await db.get(`sessionstorage:${sid}`) == null);
+      assert((await db.get(`sessionstorage:${sid}`)) == null);
     });
 
     it('switch from non-expiring to expiring', async function () {
@@ -75,7 +75,7 @@ describe(__filename, function () {
       const sess2:any  = {foo: 'bar', cookie: {expires: new Date(Date.now() + 100)}};
       await set(sess2);
       await new Promise((resolve) => setTimeout(resolve, 110));
-      assert(await db.get(`sessionstorage:${sid}`) == null);
+      assert((await db.get(`sessionstorage:${sid}`)) == null);
     });
 
     it('switch from expiring to non-expiring', async function () {
@@ -90,7 +90,7 @@ describe(__filename, function () {
 
   describe('get', function () {
     it('get of non-existent entry', async function () {
-      assert(await get() == null);
+      assert((await get()) == null);
     });
 
     it('set+get round trip', async function () {
@@ -111,14 +111,14 @@ describe(__filename, function () {
       assert.equal(JSON.stringify(await get()), JSON.stringify(sess));
       await new Promise((resolve) => setTimeout(resolve, 110));
       // Reading should start a timeout.
-      assert(await db.get(`sessionstorage:${sid}`) == null);
+      assert((await db.get(`sessionstorage:${sid}`)) == null);
     });
 
     it('get of record from previous run (already expired)', async function () {
       const sess = {foo: 'bar', cookie: {expires: new Date(1)}};
       await db.set(`sessionstorage:${sid}`, sess);
-      assert(await get() == null);
-      assert(await db.get(`sessionstorage:${sid}`) == null);
+      assert((await get()) == null);
+      assert((await db.get(`sessionstorage:${sid}`)) == null);
     });
 
     it('external expiration update is picked up', async function () {
@@ -151,7 +151,7 @@ describe(__filename, function () {
       const sess:any  = {cookie: {expires: new Date(Date.now() + 100)}};
       await set(sess);
       await destroy();
-      assert(await db.get(`sessionstorage:${sid}`) == null);
+      assert((await db.get(`sessionstorage:${sid}`)) == null);
     });
 
     it('destroy cancels the timeout', async function () {

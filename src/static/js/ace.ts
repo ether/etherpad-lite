@@ -94,11 +94,11 @@ const Ace2Editor = function () {
 
   let actionsPendingInit = [];
 
-  const pendingInit = (func) => function (...args) {
+  const pendingInit = (func) => (function(...args) {
     const action = () => func.apply(this, args);
     if (loaded) return action();
     actionsPendingInit.push(action);
-  };
+  });
 
   const doActionsPendingInit = () => {
     for (const fn of actionsPendingInit) fn();

@@ -124,7 +124,7 @@ const syncAnimation = (() => {
   };
 })();
 
-exports.padeditbar = new class {
+exports.padeditbar = new (class {
   constructor() {
     this._editbarPosition = 0;
     this.commands = {};
@@ -479,4 +479,4 @@ exports.padeditbar = new class {
       }
     });
   }
-}();
+})();
