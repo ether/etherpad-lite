@@ -94,7 +94,7 @@
     "@types/jsonwebtoken": "^9.0.9",
     "@types/mime-types": "^2.1.4",
     "@types/mocha": "^10.0.9",
-    "@types/node": "^22.14.1",
+    "@types/node": "^22.15.3",
     "@types/oidc-provider": "^8.8.1",
     "@types/semver": "^7.7.0",
     "@types/sinon": "^17.0.3",
@@ -103,7 +103,7 @@
     "@types/underscore": "^1.13.0",
     "@types/whatwg-mimetype": "^3.0.2",
     "chokidar": "^4.0.3",
-    "eslint": "^9.23.0",
+    "eslint": "^9.25.1",
     "eslint-config-etherpad": "^4.0.4",
     "etherpad-cli-client": "^3.0.2",
     "mocha": "^11.1.0",
@@ -115,7 +115,7 @@
     "split-grid": "^1.0.11",
     "supertest": "^7.1.0",
     "typescript": "^5.8.2",
-    "vitest": "^3.1.1"
+    "vitest": "^3.1.2"
   },
   "engines": {
     "node": ">=18.18.2",
