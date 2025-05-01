@@ -162,8 +162,8 @@ importers:
         specifier: ^3.1.10
         version: 3.1.10
       esbuild:
-        specifier: ^0.25.2
-        version: 0.25.2
+        specifier: ^0.25.3
+        version: 0.25.3
       express:
         specifier: 4.21.2
         version: 4.21.2

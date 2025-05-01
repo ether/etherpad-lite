@@ -37,7 +37,7 @@
     "cross-env": "^7.0.3",
     "cross-spawn": "^7.0.6",
     "ejs": "^3.1.10",
-    "esbuild": "^0.25.2",
+    "esbuild": "^0.25.3",
     "express": "4.21.2",
     "express-rate-limit": "^7.5.0",
     "fast-deep-equal": "^3.1.3",
