@@ -177,8 +177,8 @@ importers:
         specifier: 1.1.0
         version: 1.1.0
       formidable:
-        specifier: ^3.5.2
-        version: 3.5.2
+        specifier: ^3.5.4
+        version: 3.5.4
       http-errors:
         specifier: ^2.0.0
         version: 2.0.0
@@ -3013,9 +3013,6 @@ packages:
   formidable@2.1.5:
     resolution: {integrity: sha512-Oz5Hwvwak/DCaXVVUtPn4oLMLLy1CdclLKO1LFgU7XzDpVMUU5UjlSLpGMocyQNNk8F6IJW9M/YdooSn2MRI+Q==}
 
-  formidable@3.5.2:
-    resolution: {integrity: sha512-Jqc1btCy3QzRbJaICGwKcBfGWuLADRerLzDqi2NwSt/UkXLsHJw2TVResiaoBufHVHy9aSgClOHCeJsSsFLTbg==}
-
   formidable@3.5.4:
     resolution: {integrity: sha512-YikH+7CUTOtP44ZTnUhR7Ic2UASBPOqmaRkRKxRbywPTe5VxF7RRCck4af9wutiZ/QKM5nME9Bie2fFaPz5Gug==}
     engines: {node: '>=14.0.0'}
@@ -3198,10 +3195,6 @@ packages:
   he@1.2.0:
     resolution: {integrity: sha512-F/1DnUGPopORZi0ni+CvrCgHQ5FyEAHRLSApuYWMmrbSwoN2Mn/7k+Gl38gJnR7yyDZk6WLXwiGod1JOWNDKGw==}
     hasBin: true
-
-  hexoid@2.0.0:
-    resolution: {integrity: sha512-qlspKUK7IlSQv2o+5I7yhUd7TxlOG2Vr5LTa3ve2XSNVKAL/n/u/7KLvKmFNimomDIKvZFXWHv0T12mv7rT8Aw==}
-    engines: {node: '>=8'}
 
   hookable@5.5.3:
     resolution: {integrity: sha512-Yc+BQe8SvoXH1643Qez1zqLRmbA5rCL+sSmk6TVos0LWVfNIB7PGncdlId77WzLGSIB5KaWgTaNTs2lNVEI6VQ==}
@@ -7933,12 +7926,6 @@ snapshots:
       once: 1.4.0
       qs: 6.14.0
 
-  formidable@3.5.2:
-    dependencies:
-      dezalgo: 1.0.4
-      hexoid: 2.0.0
-      once: 1.4.0
-
   formidable@3.5.4:
     dependencies:
       '@paralleldrive/cuid2': 2.2.2
@@ -8169,8 +8156,6 @@ snapshots:
       space-separated-tokens: 2.0.2
 
   he@1.2.0: {}
-
-  hexoid@2.0.0: {}
 
   hookable@5.5.3: {}
 
@@ -9689,7 +9674,7 @@ snapshots:
       debug: 4.4.0(supports-color@8.1.1)
       fast-safe-stringify: 2.1.1
       form-data: 4.0.2
-      formidable: 3.5.2
+      formidable: 3.5.4
       methods: 1.1.2
       mime: 2.6.0
       qs: 6.14.0
