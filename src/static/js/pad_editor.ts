@@ -217,3 +217,7 @@ exports.focusOnLine = (ace) => {
   }
   // End of setSelection / set Y position of editor
 };
+
+// toolbar.registerCommand('exit', () => {
+//   window.location.href = '/';
+// });
