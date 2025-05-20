@@ -1,7 +1,7 @@
 # Changeset Library
 
 The [changeset
-library](https://github.com/ether/etherpad-lite/blob/develop/src/static/js/Changeset.js)
+library](https://github.com/ether/etherpad-lite/blob/develop/src/static/js/Changeset.ts)
 provides tools to create, read, and apply changesets.
 
 ## Changeset
