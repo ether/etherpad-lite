@@ -20,6 +20,10 @@ export const toggleUserList = async (page: Page) => {
     await page.locator("button[data-l10n-id='pad.toolbar.showusers.title']").click()
 }
 
+export const leavePad = async (page: Page) => {
+    await page.locator("button[data-l10n-id='pad.toolbar.gohome.title']").click();
+}
+
 export const setUserName = async (page: Page, userName: string) => {
     await page.waitForSelector('[class="popup popup-show"]')
     await page.click("input[data-l10n-id='pad.userlist.entername']");

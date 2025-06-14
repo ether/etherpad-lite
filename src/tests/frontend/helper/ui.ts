@@ -85,6 +85,21 @@ helper.toggleUserList = async () => {
   await helper.waitForPromise(() => !isVisible);
 };
 
+helper.homeButton = () => helper.padChrome$("button[data-l10n-id='pad.toolbar.gohome.title']");
+
+helper.leavePad = async () => {
+    const button = helper.homeButton();
+    button.trigger('click');
+    await helper.waitForPromise(() => window.location.pathname === '/');
+};
+
+helper.newPad = async (page: Page) => {
+    // create a new pad before each test run
+    const padId = "FRONTEND_TESTS"+randomUUID();
+    await page.goto('http://localhost:9001/p/'+padId);
+    await page.waitForSelector('iframe[name="ace_outer"]');
+    return padId;
+}
 /**
  * Gets the user name input field
  *
