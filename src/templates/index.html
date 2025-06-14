@@ -8,6 +8,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
         <link rel="shortcut icon" href="favicon.ico">
         <link rel="localizations" type="application/l10n+json" href="locales.json">
+        <!-- Add in index.html -->
 
         <style>
             html, body {
@@ -145,11 +146,14 @@
                         <input type="text" id="padname" maxlength="50" autofocus x-webkit-speech>
                         <button type="submit">OK</button>
                     </form>
+                    <button onclick="logout()" id="logoutBtn">Logout</button>
+                    <button onclick="exitToHome()" id="exitBtn">Exit</button>
                 <% } %>
             </div>
         <% e.end_block(); %>
         </div>
         <script src="<%=entrypoint%>"></script>
+        <script src="../static/js/index.js"></script>
 
         <% e.begin_block("indexCustomScripts"); %>
         <script src="static/skins/<%=encodeURI(settings.skinName)%>/index.js?v=<%=settings.randomVersionString%>"></script>

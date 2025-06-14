@@ -79,3 +79,13 @@ input {
   margin-left:auto;
   margin-right:auto;
 }
+
+#logoutBtn, #exitBtn {
+  margin-left: 10px;
+  padding: 6px 12px;
+  background-color: #f44336;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
