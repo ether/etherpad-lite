@@ -1,3 +1,9 @@
+# 2.3.2
+
+### Notable enhancements and fixes
+
+- Fixed admin ui displaying incorrect text
+
 # 2.3.1
 
 ### Notable enhancements and fixes
