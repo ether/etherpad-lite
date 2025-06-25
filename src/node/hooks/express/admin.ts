@@ -24,7 +24,7 @@ exports.expressCreateServer = (hookName: string, args: ArgsExpressType, cb: Func
   }
   args.app.get('/admin/*', (req: any, res: any) => {
     // extract URL path
-    let pathname = path.join(ADMIN_PATH + req.url);
+    let pathname = path.join(ADMIN_PATH, req.url);
     pathname = path.normalize(pathname)
 
     if (!pathname.startsWith(ADMIN_PATH)) {
