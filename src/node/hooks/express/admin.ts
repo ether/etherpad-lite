@@ -23,11 +23,9 @@ exports.expressCreateServer = (hookName: string, args: ArgsExpressType, cb: Func
     return cb();
   }
   args.app.get('/admin/*', (req: any, res: any) => {
-    // parse URL
-    const parsedUrl = url.parse(req.url);
     // extract URL path
-    let pathname = ADMIN_PATH + `${parsedUrl.pathname}`;
-    pathname = path.normalize(path.join(ADMIN_PATH), parsedUrl.pathname)
+    let pathname = path.join(ADMIN_PATH + req.url);
+    pathname = path.normalize(pathname)
 
     if (!pathname.startsWith(ADMIN_PATH)) {
       res.statusCode = 403;
