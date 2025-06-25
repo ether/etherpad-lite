@@ -27,6 +27,12 @@ exports.expressCreateServer = (hookName: string, args: ArgsExpressType, cb: Func
     const parsedUrl = url.parse(req.url);
     // extract URL path
     let pathname = ADMIN_PATH + `${parsedUrl.pathname}`;
+    pathname = path.normalize(path.join(ADMIN_PATH), parsedUrl.pathname)
+
+    if (!pathname.startsWith(ADMIN_PATH)) {
+      res.statusCode = 403;
+      return res.end("Forbidden");
+    }
     // based on the URL path, extract the file extension. e.g. .js, .doc, ...
     let ext = path.parse(pathname).ext;
     // maps file extension to MIME typere

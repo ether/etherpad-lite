@@ -1,3 +1,9 @@
+# 2.3.1
+
+### Notable enhancements and fixes
+
+- Dependency updates
+
 # 2.3.0
 
 ### Notable enhancements and fixes

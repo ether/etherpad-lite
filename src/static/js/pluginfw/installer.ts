@@ -162,23 +162,18 @@ export const install = async (pluginName: string, cb:Function|null = null) => {
 export let availablePlugins:MapArrayType<PackageInfo>|null = null;
 let cacheTimestamp = 0;
 
-export const getAvailablePlugins = (maxCacheAge: number|false) => {
+export const getAvailablePlugins = async (maxCacheAge: number | false) => {
   const nowTimestamp = Math.round(Date.now() / 1000);
 
-  return new Promise<MapArrayType<PackageInfo>>(async (resolve, reject) => {
-    // check cache age before making any request
-    if (availablePlugins && maxCacheAge && (nowTimestamp - cacheTimestamp) <= maxCacheAge) {
-      return resolve(availablePlugins);
-    }
+  // check cache age before making any request
+  if (availablePlugins && maxCacheAge && (nowTimestamp - cacheTimestamp) <= maxCacheAge) {
+    return availablePlugins;
+  }
 
-    await axios.get(`${settings.updateServer}/plugins.json`, {headers})
-        .then((pluginsLoaded:AxiosResponse<MapArrayType<PackageInfo>>) => {
-          availablePlugins = pluginsLoaded.data;
-          cacheTimestamp = nowTimestamp;
-          resolve(availablePlugins);
-        })
-        .catch(async (err) => reject(err));
-  });
+  const pluginsLoaded: AxiosResponse<MapArrayType<PackageInfo>> = await axios.get(`${settings.updateServer}/plugins.json`, {headers})
+  availablePlugins = pluginsLoaded.data;
+  cacheTimestamp = nowTimestamp;
+  return availablePlugins;
 };
 
 
@@ -211,4 +206,7 @@ export const search = (searchTerm: string, maxCacheAge: number) => getAvailableP
 
       return res;
     }
-);
+).catch((err)=>{
+  logger.error(`Error searching plugins: ${err}`);
+  return {} as MapArrayType<PackageInfo>;
+});

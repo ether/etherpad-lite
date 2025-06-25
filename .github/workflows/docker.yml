@@ -22,6 +22,9 @@ jobs:
       -
         name: Check out
         uses: actions/checkout@v4
+        with:
+          path: etherpad
+
       -
         name: Set up QEMU
         if: github.event_name == 'push'
@@ -33,7 +36,7 @@ jobs:
         name: Build and export to Docker
         uses: docker/build-push-action@v6
         with:
-          context: .
+          context: ./etherpad
           target: production
           load: true
           tags: ${{ env.TEST_TAG }}
@@ -62,6 +65,7 @@ jobs:
             ${{ runner.os }}-pnpm-store-
       -
         name: Test
+        working-directory: etherpad
         run: |
           docker run --rm -d -p 9001:9001 --name test ${{ env.TEST_TAG }}
           ./bin/installDeps.sh
@@ -98,10 +102,11 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       -
         name: Build and push
+        id: build-docker
         if: github.event_name == 'push'
         uses: docker/build-push-action@v6
         with:
-          context: .
+          context: ./etherpad
           target: production
           platforms: linux/amd64,linux/arm64
           push: true
@@ -111,7 +116,29 @@ jobs:
         uses: peter-evans/dockerhub-description@v4
         if: github.ref == 'refs/heads/master'
         with:
+          readme-filepath: ./etherpad/README.md
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
           repository: etherpad/etherpad
           enable-url-completion: true
+      - name: Check out
+        if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
+        uses: actions/checkout@v4
+        with:
+          path: ether-charts
+          repository: ether/ether-charts
+          token: ${{ secrets.ETHER_CHART_TOKEN }}
+      - name: Update tag in values-dev.yaml
+        if: success() && github.ref == 'refs/heads/develop'
+        working-directory: ether-charts
+        run: |
+          sed -i 's/tag: ".*"/tag: "${{ steps.build-docker.outputs.digest }}"/' values-dev.yaml
+      - name: Commit and push changes
+        working-directory: ether-charts
+        if: success() && github.ref == 'refs/heads/develop'
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git add values-dev.yaml
+          git commit -m 'Update develop image tag'
+          git push
