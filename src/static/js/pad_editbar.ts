@@ -381,6 +381,10 @@ exports.padeditbar = new class {
         $('.exportlink').first().trigger('focus');
       }
     });
+    this.registerCommand('exit', () => {
+      console.log('Exit button clicked');
+      window.location.href = '/';
+    });
 
     this.registerCommand('showusers', () => {
       this.toggleDropDown('users');
@@ -478,5 +482,8 @@ exports.padeditbar = new class {
             .substring(0, document.location.href.lastIndexOf('/'));
       }
     });
+
+    
+
   }
 }();
