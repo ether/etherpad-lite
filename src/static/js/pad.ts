@@ -52,6 +52,7 @@ import {randomString} from "./pad_utils";
 const socketio = require('./socketio');
 
 const hooks = require('./pluginfw/hooks');
+const skinVariants = require('./skin_variants');
 
 // This array represents all GET-parameters which can be used to change a setting.
 //   name:     the parameter-name, eg  `?noColors=true`  =>  `noColors`
@@ -479,6 +480,10 @@ const pad = {
       setTimeout(() => { checkChatAndUsersVisibility(mobileMatch); }, 0); // check now after load
 
       $('#editorcontainer').addClass('initialized');
+
+      if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        skinVariants.updateSkinVariantsClasses(['dark-editor', 'dark-background', 'dark-toolbar']);
+      }
 
       hooks.aCallAll('postAceInit', {ace: padeditor.ace, clientVars, pad});
     };
