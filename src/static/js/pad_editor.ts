@@ -168,6 +168,20 @@ const padeditor = (() => {
   };
   return self;
 })();
+function logout() {
+  // Clear all cookies
+  document.cookie.split(";").forEach((c) => {
+    document.cookie = c
+      .replace(/^ +/, "")
+      .replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+  });
+  window.location.href = "/";
+}
+
+function exitToHome() {
+  window.location.href = "/";
+}
+
 
 exports.padeditor = padeditor;
 
