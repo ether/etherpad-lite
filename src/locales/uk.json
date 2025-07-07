@@ -84,6 +84,8 @@
 	"pad.settings.fontType": "Тип шрифту:",
 	"pad.settings.fontType.normal": "Звичайний",
 	"pad.settings.language": "Мова:",
+	"pad.settings.deletePad": "Вилучити документ",
+	"pad.delete.confirm": "Ви дійсно хочете вилучити цей документ?",
 	"pad.settings.about": "Про програму",
 	"pad.settings.poweredBy": "Працює на",
 	"pad.importExport.import_export": "Імпорт/Експорт",
