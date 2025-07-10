@@ -10,7 +10,8 @@
 			"Notramo",
 			"Ovari",
 			"R-Joe",
-			"Tgr"
+			"Tgr",
+			"Urbalazs"
 		]
 	},
 	"admin.page-title": "Admin irányítópult - Etherpad",
@@ -67,7 +68,7 @@
 	"pad.toolbar.embed.title": "Jegyzetfüzet beágyazása és megosztása",
 	"pad.toolbar.showusers.title": "Jegyzetfüzet felhasználóinak megmutatása",
 	"pad.colorpicker.save": "Mentés",
-	"pad.colorpicker.cancel": "Mégsem",
+	"pad.colorpicker.cancel": "Mégse",
 	"pad.loading": "Betöltés…",
 	"pad.noCookie": "Nem található a süti. Engedélyezd a böngésződben a sütik használatát! A munkamenet és a beállítások nem kerülnek mentésre a látogatások között. Ennek oka lehet az, hogy az Etherpad egyes böngészőkben szerepel az iFrame-ben. Ellenőrizze, hogy az Etherpad ugyanabban az altartomány / tartományban van-e, mint a szülő iFrame",
 	"pad.permissionDenied": "Nincs engedélyed ezen jegyzetfüzet eléréséhez",
