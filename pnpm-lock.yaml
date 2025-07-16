@@ -225,8 +225,8 @@ importers:
         specifier: ^9.3.0
         version: 9.3.0
       openapi-backend:
-        specifier: ^5.12.0
-        version: 5.12.0
+        specifier: ^5.13.0
+        version: 5.13.0
       proxy-addr:
         specifier: ^2.0.7
         version: 2.0.7
@@ -4022,8 +4022,8 @@ packages:
   oniguruma-to-es@3.1.1:
     resolution: {integrity: sha512-bUH8SDvPkH3ho3dvwJwfonjlQ4R80vjyvrU8YpxuROddv55vAEJrTuCuCVUhhsHbtlD9tGGbaNApGQckXhS8iQ==}
 
-  openapi-backend@5.12.0:
-    resolution: {integrity: sha512-tD4Ak8w5XBlGVi4gso/QNbxcfrj3j6ypuKg9bx7l6hQaeMVxEdf5Ro8M/SVoNg7L8VptzIkwE8Lp3H+Ba88hWA==}
+  openapi-backend@5.13.0:
+    resolution: {integrity: sha512-dE2f0MCpL2ZKctVG4w+Nl+1C4GQput5dQ4QYy6XeblGvM2Z1b3JcP2FzL6DrLzzDYEKTLgAaQM3jD7yhftwKSg==}
     engines: {node: '>=12.0.0'}
 
   openapi-schema-validation@0.4.2:
@@ -9066,7 +9066,7 @@ snapshots:
       regex: 6.0.1
       regex-recursion: 6.0.2
 
-  openapi-backend@5.12.0:
+  openapi-backend@5.13.0:
     dependencies:
       '@apidevtools/json-schema-ref-parser': 11.9.3
       ajv: 8.17.1
