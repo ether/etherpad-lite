@@ -106,4 +106,37 @@ test.describe('ordered_list.js', function () {
 
       await expect(padBody.locator('div').first().locator('.list-number2')).toHaveCount(1)
     });
+
+
+    test('issue 5718 stops numbering OLs after ULs', async function ({page}) {
+
+      const padBody = await getPadBody(page);
+      await clearPadContent(page)
+
+      await writeToPad(page, 'Line 1')
+      await page.keyboard.press('Enter')
+      await writeToPad(page, 'Line 2')
+      await page.keyboard.press('Enter')
+      await writeToPad(page, 'Line 3')
+
+      const $insertunorderedlistButton = page.locator('.buttonicon-insertunorderedlist')
+      const $insertorderedlistButton = page.locator('.buttonicon-insertorderedlist')
+      const firstLine = padBody.locator('div').nth(7)
+      const secondLine = padBody.locator('div').nth(8)
+      const thirdLine = padBody.locator('div').nth(9)
+
+      await firstLine.selectText()
+      await $insertunorderedlistButton.first().click()
+
+      await secondLine.selectText()
+      await $insertorderedlistButton.first().click()
+
+      await thirdLine.selectText()
+      await $insertorderedlistButton.first().click()
+
+
+      expect(await thirdLine.locator('ol').getAttribute('start')).toEqual('3'); // This passes
+      expect(await thirdLine.locator('ol').getAttribute('class')).toEqual('list-number2'); // This fails
+
+    });
   });
