@@ -28,10 +28,6 @@ export default defineConfig({
         '/admin-auth/': {
             target: 'http://localhost:9001',
             changeOrigin: true,
-        },
-        '/stats': {
-            target: 'http://localhost:9001',
-            changeOrigin: true,
         }
         }
   }
