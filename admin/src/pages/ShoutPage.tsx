@@ -9,22 +9,29 @@ export const ShoutPage = ()=>{
     const [message, setMessage] = useState<string>("");
     const [sticky, setSticky] = useState<boolean>(false);
     const socket = useStore(state => state.settingsSocket);
+    const pluginSocket = useStore(state => state.pluginsSocket);
     const [shouts, setShouts] = useState<ShoutType[]>([]);
 
-    useEffect(() => {
-        fetch('/stats')
-            .then(response => response.json())
-            .then(data => setTotalUsers(data.totalUsers));
-    }, []);
-
 
     useEffect(() => {
-        if(socket) {
+        if(socket && pluginSocket) {
+          console.log('Socket connected', socket.id);
             socket.on('shout', (shout) => {
                 setShouts([...shouts, shout])
             })
+          pluginSocket.on('results:stats', (statData) => {
+            console.log('Shoutdata', statData);
+            setTotalUsers(statData.totalUsers);
+          })
         }
-    }, [socket, shouts])
+    }, [socket, shouts, pluginSocket])
+
+
+  useEffect(() => {
+    if (pluginSocket) {
+      pluginSocket.emit('getStats', {});
+    }
+  }, [pluginSocket]);
 
     const sendMessage = () => {
         socket?.emit('shout', {

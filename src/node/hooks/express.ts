@@ -234,7 +234,7 @@ exports.restartServer = async () => {
   // Give plugins an opportunity to install handlers/middleware before the express-session
   // middleware. This allows plugins to avoid creating an express-session record in the database
   // when it is not needed (e.g., public static content).
-  await hooks.aCallAll('expressPreSession', {app});
+  await hooks.aCallAll('expressPreSession', {app, settings});
   app.use(exports.sessionMiddleware);
 
   app.use(webaccess.checkAccess);

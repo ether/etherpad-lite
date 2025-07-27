@@ -172,6 +172,14 @@
   "showSettingsInAdminPage": "${SHOW_SETTINGS_IN_ADMIN_PAGE:true}",
 
   /*
+   * Enable/disable the metrics endpoint.
+   *
+   * This is used by the monitoring plugins to collect metrics about Etherpad.
+   * If you do not use any monitoring plugins, you can disable this.
+   */
+  "enableMetrics": ${ENABLE_METRICS:true},
+
+  /*
    * Settings for cleanup of pads
    */
   "cleanup": {
