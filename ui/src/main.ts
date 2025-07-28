@@ -16,7 +16,8 @@ form.addEventListener('submit', function (event) {
     });
     const sessionId = new URLSearchParams(window.location.search).get('state');
 
-    fetch('/interaction/' + sessionId, {
+    const basePath = window.location.pathname.split('/interaction')[0];
+    fetch(`${basePath}/interaction/${sessionId}`, {    
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

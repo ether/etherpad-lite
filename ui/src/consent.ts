@@ -4,7 +4,8 @@ import "./style.css"
 const form = document.querySelector('form')!;
 const sessionId = new URLSearchParams(window.location.search).get('state');
 
-form.action = '/interaction/' + sessionId;
+const basePath = window.location.pathname.split('/interaction')[0];
+form.action = `${basePath}/interaction/${sessionId}`;
 
 /*form.addEventListener('submit', function (event) {
     event.preventDefault();

@@ -5,10 +5,13 @@ const clientLogger = log4js.getLogger('client');
 const {Formidable} = require('formidable');
 const apiHandler = require('../../handler/APIHandler');
 const util = require('util');
+const settings = require('ep_etherpad-lite/node/utils/Settings');
+
+const subdir = settings.subdirectory || '';
 
 exports.expressPreSession = async (hookName:string, {app}:any) => {
   // The Etherpad client side sends information about how a disconnect happened
-  app.post('/ep/pad/connection-diagnostic-info', async (req:any, res:any) => {
+  app.post(`${subdir}/ep/pad/connection-diagnostic-info`, async (req:any, res:any) => {
     const [fields, files] = await (new Formidable({})).parse(req);
     clientLogger.info(`DIAGNOSTIC-INFO: ${fields.diagnosticInfo}`);
     res.end('OK');
@@ -23,7 +26,7 @@ exports.expressPreSession = async (hookName:string, {app}:any) => {
   };
 
   // The Etherpad client side sends information about client side javscript errors
-  app.post('/jserror', (req:any, res:any, next:Function) => {
+  app.post(`${subdir}/jserror`, (req:any, res:any, next:Function) => {
     (async () => {
       const data = JSON.parse(await parseJserrorForm(req));
       clientLogger.warn(`${data.msg} --`, {
@@ -38,7 +41,7 @@ exports.expressPreSession = async (hookName:string, {app}:any) => {
   });
 
   // Provide a possibility to query the latest available API version
-  app.get('/api', (req:any, res:any) => {
+  app.get(`${subdir}/api`, (req:any, res:any) => {
     res.json({currentVersion: apiHandler.latestApiVersion});
   });
 };
