@@ -650,6 +650,7 @@
     "right": [
       ["importexport", "timeslider", "savedrevision"],
       ["settings", "embed"],
+      ["home"],
       ["showusers"]
     ],
     "timeslider": [
