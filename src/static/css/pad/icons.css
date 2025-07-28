@@ -101,7 +101,7 @@
 .buttonicon-pencil-alt:before { content: '\e808'; } /* '' */
 .buttonicon-file-code:before { content: '\e809'; } /* '' */
 .buttonicon-mail:before { content: '\e80a'; } /* '' */
-.buttonicon-home:before { content: '\e80b'; } /* '' */
+.buttonicon-home:before { content: '\e80b'; font-size: 20px } /* '' */
 .buttonicon-trash:before { content: '\e80e'; } /* '' */
 .buttonicon-times:before { content: '\e826'; } /* '' */
 .buttonicon-pause:before { content: '\e829'; } /* '' */
