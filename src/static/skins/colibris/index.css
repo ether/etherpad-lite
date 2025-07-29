@@ -103,6 +103,10 @@ h1 {
   cursor: pointer;
 }
 
+#go2Name [type="submit"]:hover {
+  background-color: oklch(52.7% 0.154 150.069)
+}
+
 #button, #button:hover {
   order: 2;
 }
@@ -149,7 +153,7 @@ body nav {
 }
 
 
-#wrapper {
+#wrapper, .pad-datalist {
   width: 100%;
   max-width: 28rem;
   background: #fff;
@@ -157,6 +161,26 @@ body nav {
   border-radius: 0.75rem;
   box-shadow: 0 1px 2px 0 #0001;
   margin: 2rem auto auto;
+}
+
+.pad-datalist {
+  max-width: 56rem;
+}
+
+ul {
+  list-style-type: none;
+}
+
+.pad-datalist h2 {
+  border-bottom: 1px solid var(--muted-border);
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+  border-bottom-width: 1px;
+  border-bottom-style: solid;
+  border-bottom-color: #e5e7eb;
+  width: 100%;
 }
 
 .card-content {
