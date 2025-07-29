@@ -34,7 +34,10 @@ window.customStart = () => {
       const li = document.createElement('li');
       li.className = 'recent-pad';
       const padPath = `${window.location.href}p/${pad.name}`;
-      li.innerHTML = `<a href="${padPath}">${pad}</a>`;
+      const link = document.createElement('a');
+      link.href = padPath;
+      link.innerText = pad;
+      li.appendChild(link);
       recentPadList.appendChild(li);
     });
   }
