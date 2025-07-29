@@ -8,7 +8,7 @@ window.customStart = () => {
   const recentPadList = document.getElementById('recent-pads');
   const parentStyle = recentPadList.parentElement.style;
   const recentPadListHeading = document.querySelector('[data-l10n-id="index.recentPads"]');
-  const recentPadsFromLocalStorage = localStorage.getItem('recent-pads');
+  const recentPadsFromLocalStorage = localStorage.getItem('recentPads');
   let recentPadListData = [];
   if (recentPadsFromLocalStorage != null) {
     recentPadListData = JSON.parse(recentPadsFromLocalStorage);
