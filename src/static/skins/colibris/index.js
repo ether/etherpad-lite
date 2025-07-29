@@ -38,6 +38,7 @@ window.customStart = () => {
       link.href = padPath;
       link.innerText = pad;
       li.appendChild(link);
+      //https://v0.dev/chat/etherpad-design-clone-qZnwOrVRXxH
       recentPadList.appendChild(li);
     });
   }
