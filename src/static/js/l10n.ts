@@ -7,8 +7,6 @@ let language = document.cookie.match(/language=((\w{2,3})(-\w+)?)/);
 if (language) regexpLang = language[1];
 
 html10n.mt.bind('indexed', () => {
-  console.log('Navigator language', navigator.language)
-  console.log('Localizing things', [regexpLang, navigator.language, 'en'])
   html10n.localize([regexpLang, navigator.language, 'en']);
 });
 

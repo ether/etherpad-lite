@@ -54,6 +54,8 @@
 	"index.newPad": "Neues Pad",
 	"index.createOpenPad": "oder ein Pad mit folgendem Namen erstellen/öffnen:",
 	"index.openPad": "Öffne ein vorhandenes Pad mit folgendem Namen:",
+  "index.recentPads": "Zuletzt bearbeitete Pads",
+  "index.recentPadsEmpty": "Keine kürzlich bearbeiteten Pads gefunden.",
 	"pad.toolbar.bold.title": "Fett (Strg-B)",
 	"pad.toolbar.italic.title": "Kursiv (Strg-I)",
 	"pad.toolbar.underline.title": "Unterstrichen (Strg-U)",

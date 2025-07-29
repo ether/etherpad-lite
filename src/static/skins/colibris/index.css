@@ -16,6 +16,16 @@ body {
   background-size: cover;
 }
 
+
+.pad-datalist {
+  position: absolute;
+  top: 110%;
+  background-color: #586a69;
+  border-radius: 3px;
+  min-height: 200px;
+  width: 350px;
+}
+
 #wrapper {
   border-top: none;
   margin-top: 0;
@@ -35,6 +45,7 @@ input {
   max-width: 350px;
   text-align: center;
   color:#FFF;
+  position: relative;
 }
 
 #label {

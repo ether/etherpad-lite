@@ -472,7 +472,6 @@ export class Html10n {
   }
 
   localize(langs: (string|undefined)[]|string) {
-    console.log('Available langs ', langs)
     if ('string' === typeof langs) {
       langs = [langs];
     }
