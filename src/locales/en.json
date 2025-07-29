@@ -34,10 +34,12 @@
   "admin_settings.page-title": "Settings - Etherpad",
 
   "index.newPad": "New Pad",
-  "index.createOpenPad": "or create/open a Pad with the name:",
+  "index.createOpenPad": "Open pad by name",
   "index.openPad": "open an existing Pad with the name:",
   "index.recentPads": "Recent Pads",
   "index.recentPadsEmpty": "No recent pads found.",
+  "index.generateNewPad": "Generate random pad name",
+  "index.labelPad": "Pad name (optional)",
 
 
   "pad.toolbar.bold.title": "Bold (Ctrl+B)",

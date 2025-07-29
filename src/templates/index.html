@@ -109,6 +109,10 @@
               width: 45px;
               height: 38px;
             }
+            nav {
+              display: none;
+            }
+
             @media only screen and (min-device-width: 320px) and (max-device-width: 800px) {
               body {
                 background: #bbb;
@@ -131,28 +135,43 @@
         <link href="static/skins/<%=encodeURI(settings.skinName)%>/index.css?v=<%=settings.randomVersionString%>" rel="stylesheet">
         <% e.end_block(); %>
 
+        <nav>
+          <div class="logo-box">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-file-text w-5 h-5 text-white"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path><path d="M10 9H8"></path><path d="M16 13H8"></path><path d="M16 17H8"></path></svg>
+          </div>
+          <h1>Etherpad</h1>
+        </nav>
+
+
+        <div class="mission-statement">
+          <h2>Create and share documents</h2>
+          <p>
+            Etherpad allows you to edit documents collaboratively in real-time, much like a live multi-player editor that runs in your browser.
+          </p>
+        </div>
+
         <div id="wrapper">
         <% e.begin_block("indexWrapper"); %>
             <div id="inner">
                 <% if (!settings.requireSession) { %>
                     <% if (settings.editOnly) { %>
-                        <label id="label" for="padname" data-l10n-id="index.openPad"></label>
+                        <button data-l10n-id="index.openPad"></button>
                     <% } else {%>
-                        <button id="button" data-l10n-id="index.newPad"></button>
-                        <label id="label" for="padname" data-l10n-id="index.createOpenPad"></label>
+                        <button id="button" data-l10n-id="index.generateNewPad"></button>
                     <% } %>
                     <form action="#" id="go2Name">
-                        <input type="text" id="padname" maxlength="50" autofocus x-webkit-speech>
-                        <button type="submit">OK</button>
+                      <label id="label" for="padname" data-l10n-id="index.labelPad"></label>
+                      <input type="text" id="padname" maxlength="50" autofocus placeholder="Enter pad name...">
+                        <button type="submit" data-l10n-id="index.createOpenPad"></button>
                     </form>
-                    <div class="pad-datalist">
-                      <h3 data-l10n-id="index.recentPads"></h3>
-                        <ul id="recent-pads">
-                        </ul>
-                    </div>
                 <% } %>
             </div>
         <% e.end_block(); %>
+        </div>
+        <div class="pad-datalist">
+          <h3 data-l10n-id="index.recentPads"></h3>
+          <ul id="recent-pads">
+          </ul>
         </div>
         <script src="<%=entrypoint%>"></script>
 
