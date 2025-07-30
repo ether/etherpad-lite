@@ -167,16 +167,44 @@ body nav {
   max-width: 56rem;
 }
 
+.break-column {
+  flex-basis: 100%;
+  width: 0;
+}
+
 ul {
   list-style-type: none;
 }
 
+.recent-pad {
+  padding: 0.75rem 1.5rem;
+  display: flex;
+  position: relative;
+  flex-direction: column;
+}
+
+.recent-pad:hover a {
+  color: var(--ep-color);
+}
+
+.recent-pad-arrow {
+  position: absolute;
+  right: 1rem;
+}
+
+.recent-pad a {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 800;
+}
+
+a, a:visited, a:hover, a:active {
+  color: inherit;
+}
+
 .pad-datalist h2 {
   border-bottom: 1px solid var(--muted-border);
-  padding-left: 1.5rem;
-  padding-right: 1.5rem;
-  padding-top: 1rem;
-  padding-bottom: 1rem;
+  padding: 1rem 1.5rem;
   border-bottom-width: 1px;
   border-bottom-style: solid;
   border-bottom-color: #e5e7eb;

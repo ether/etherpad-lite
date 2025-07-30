@@ -16,7 +16,6 @@ class Scroll {
     this.outerWin = outerWin;
     this.doc = this.outerWin.contentDocument!;
     this.rootDocument = document;
-    console.log(this.rootDocument)
   }
 
   scrollWhenCaretIsInTheLastLineOfViewportWhenNecessary(rep: RepModel, isScrollableEvent: boolean, innerHeight: number) {

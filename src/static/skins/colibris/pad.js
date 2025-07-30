@@ -12,11 +12,22 @@ window.customStart = () => {
     localStorage.setItem('recentPads', JSON.stringify([]));
   }
   const recentPadsList = JSON.parse(localStorage.getItem('recentPads'));
-  if (!recentPadsList.includes(padName)) {
+  if (!recentPadsList.some((pad) => pad.name === padName)) {
     if (recentPadsList.length >= 10) {
       recentPadsList.shift(); // Remove the oldest pad if we have more than 10
     }
-    recentPadsList.push(padName);
+    recentPadsList.push({
+      name: padName,
+      timestamp: new Date().toISOString(), // Store the timestamp for sorting
+      members: 0,
+    });
+    localStorage.setItem('recentPads', JSON.stringify(recentPadsList));
+  } else {
+    // Update the timestamp if the pad already exists
+    const existingPad = recentPadsList.find((pad) => pad.name === padName);
+    if (existingPad) {
+      existingPad.timestamp = new Date().toISOString();
+    }
     localStorage.setItem('recentPads', JSON.stringify(recentPadsList));
   }
 };
