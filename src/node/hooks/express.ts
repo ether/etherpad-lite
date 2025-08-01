@@ -8,8 +8,7 @@ import _ from 'underscore';
 import cookieParser from 'cookie-parser';
 import events from 'events';
 import express from 'express';
-// @ts-ignore
-import expressSession from '@etherpad/express-session';
+import expressSession from 'express-session';
 import fs from 'fs';
 const hooks = require('../../static/js/pluginfw/hooks');
 import log4js from 'log4js';
