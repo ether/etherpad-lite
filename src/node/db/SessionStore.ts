@@ -1,13 +1,14 @@
 'use strict';
 
 const DB = require('./DB');
-const Store = require('@etherpad/express-session').Store;
+import expressSession from 'express-session'
+
 const log4js = require('log4js');
 const util = require('util');
 
 const logger = log4js.getLogger('SessionStore');
 
-class SessionStore extends Store {
+class SessionStore extends expressSession.Store {
   /**
    * @param {?number} [refresh] - How often (in milliseconds) `touch()` will update a session's
    *     database record with the cookie's latest expiration time. If the difference between the
