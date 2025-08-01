@@ -725,6 +725,7 @@ const pad = {
     }
   },
   asyncSendDiagnosticInfo: () => {
+    const currentUrl = window.location.href;
     fetch('../ep/pad/connection-diagnostic-info', {
       method: 'POST',
       headers: {

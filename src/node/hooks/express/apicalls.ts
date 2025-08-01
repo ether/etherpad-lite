@@ -9,11 +9,11 @@ const apiHandler = require('../../handler/APIHandler');
 const util = require('util');
 
 
-function objectAsString(obj) {
-  var output = '';
-  for (var property in obj) {
+function objectAsString(obj: any): string {
+  let output = '';
+  for (const property in obj) {
     if(obj.hasOwnProperty(property) && typeof obj[property] !== 'function') {
-      var value = obj[property];
+      let value = obj[property];
       if(typeof value === 'object' && !Array.isArray(value) && value !== null) {
         value = '{' + objectAsString(value) + '}';
       }
