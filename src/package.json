@@ -30,7 +30,7 @@
     }
   ],
   "dependencies": {
-    "@etherpad/express-session": "^1.18.4",
+    "express-session": "^1.18.2",
     "async": "^3.2.6",
     "axios": "^1.10.0",
     "cookie-parser": "^1.4.7",
