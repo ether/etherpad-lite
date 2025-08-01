@@ -355,8 +355,8 @@ importers:
         specifier: ^4.0.4
         version: 4.0.4(eslint@9.32.0)(typescript@5.8.3)
       etherpad-cli-client:
-        specifier: ^3.0.2
-        version: 3.0.2
+        specifier: ^3.0.4
+        version: 3.0.4
       mocha:
         specifier: ^11.7.1
         version: 11.7.1
@@ -2841,8 +2841,8 @@ packages:
     resolution: {integrity: sha512-aIL5Fx7mawVa300al2BnEE4iNvo1qETxLrPI/o05L7z6go7fCw1J6EQmbK4FmJ2AS7kgVF/KEZWufBfdClMcPg==}
     engines: {node: '>= 0.6'}
 
-  etherpad-cli-client@3.0.2:
-    resolution: {integrity: sha512-3uJxz8cx1WSVAPe7haqfwQj4N4wWDrei5BXBjH+e1BLPiEpqWtnMX29Qo9jWhqO9ctyPPHO0nZ1x/ZCNxMVCqA==}
+  etherpad-cli-client@3.0.4:
+    resolution: {integrity: sha512-0CgNY84Ox0fgRblOr0qlm03pRtr/qt6DCFNTh2m/EYOsu8KO8QWrGAUiCr53ny8/gtQJ4BhNxSiohaSH+Vhykw==}
     engines: {node: '>=18.0.0'}
     hasBin: true
 
@@ -2969,9 +2969,6 @@ packages:
   formdata-polyfill@4.0.10:
     resolution: {integrity: sha512-buewHzMvYL29jdeQTVILecSaZKnt/RJWjoZCF5OW60Z67/GmSLBkOFM7qh1PI3zFNtJbaZL5eQu1vLfazOwj4g==}
     engines: {node: '>=12.20.0'}
-
-  formidable@2.1.5:
-    resolution: {integrity: sha512-Oz5Hwvwak/DCaXVVUtPn4oLMLLy1CdclLKO1LFgU7XzDpVMUU5UjlSLpGMocyQNNk8F6IJW9M/YdooSn2MRI+Q==}
 
   formidable@3.5.4:
     resolution: {integrity: sha512-YikH+7CUTOtP44ZTnUhR7Ic2UASBPOqmaRkRKxRbywPTe5VxF7RRCck4af9wutiZ/QKM5nME9Bie2fFaPz5Gug==}
@@ -4478,11 +4475,6 @@ packages:
   superagent@10.2.3:
     resolution: {integrity: sha512-y/hkYGeXAj7wUMjxRbB21g/l6aAEituGXM9Rwl4o20+SX3e8YOSV6BxFXl+dL3Uk0mjSL3kCbNkwURm8/gEDig==}
     engines: {node: '>=14.18.0'}
-
-  superagent@8.1.2:
-    resolution: {integrity: sha512-6WTxW1EB6yCxV5VFOIPQruWGHqc3yI7hEmZK6h+pyk69Lk/Ut7rLUY6W/ONF2MjBuGjvmMiIpsrVJ2vjrHlslA==}
-    engines: {node: '>=6.4.0 <13 || >=14'}
-    deprecated: Please upgrade to superagent v10.2.2+, see release notes at https://github.com/forwardemail/superagent/releases/tag/v10.2.2 - maintenance is supported by Forward Email @ https://forwardemail.net
 
   superjson@2.2.2:
     resolution: {integrity: sha512-5JRxVqC8I8NuOUjzBbvVJAKNM8qoVuH0O77h4WInc/qC2q5IreqKxYwgkga3PfA22OayK2ikceb/B26dztPl+Q==}
@@ -7491,11 +7483,11 @@ snapshots:
 
   etag@1.8.1: {}
 
-  etherpad-cli-client@3.0.2:
+  etherpad-cli-client@3.0.4:
     dependencies:
       async: 3.2.6
       socket.io-client: 4.8.1
-      superagent: 8.1.2
+      superagent: 10.2.3
     transitivePeerDependencies:
       - bufferutil
       - supports-color
@@ -7668,13 +7660,6 @@ snapshots:
   formdata-polyfill@4.0.10:
     dependencies:
       fetch-blob: 3.2.0
-
-  formidable@2.1.5:
-    dependencies:
-      '@paralleldrive/cuid2': 2.2.2
-      dezalgo: 1.0.4
-      once: 1.4.0
-      qs: 6.14.0
 
   formidable@3.5.4:
     dependencies:
@@ -9384,21 +9369,6 @@ snapshots:
       methods: 1.1.2
       mime: 2.6.0
       qs: 6.14.0
-    transitivePeerDependencies:
-      - supports-color
-
-  superagent@8.1.2:
-    dependencies:
-      component-emitter: 1.3.1
-      cookiejar: 2.1.4
-      debug: 4.4.1(supports-color@8.1.1)
-      fast-safe-stringify: 2.1.1
-      form-data: 4.0.3
-      formidable: 2.1.5
-      methods: 1.1.2
-      mime: 2.6.0
-      qs: 6.14.0
-      semver: 7.7.2
     transitivePeerDependencies:
       - supports-color
 
