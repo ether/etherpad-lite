@@ -107,7 +107,7 @@
     "chokidar": "^4.0.3",
     "eslint": "^9.31.0",
     "eslint-config-etherpad": "^4.0.4",
-    "etherpad-cli-client": "^3.0.2",
+    "etherpad-cli-client": "^3.0.4",
     "mocha": "^11.7.1",
     "mocha-froth": "^0.2.10",
     "nodeify": "^1.0.1",
