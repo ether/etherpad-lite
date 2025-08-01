@@ -109,7 +109,7 @@
               width: 45px;
               height: 38px;
             }
-            nav {
+            nav, .mission-statement, .pad-datalist {
               display: none;
             }
 
@@ -143,11 +143,10 @@
         </nav>
 
 
+        <div class="body">
         <div class="mission-statement">
-          <h2>Create and share documents</h2>
-          <p>
-            Etherpad allows you to edit documents collaboratively in real-time, much like a live multi-player editor that runs in your browser.
-          </p>
+          <h2 data-l10n-id="index.createAndShareDocuments"></h2>
+          <p data-l10n-id="index.createAndShareDocumentsDescription"></p>
         </div>
 
         <div id="wrapper">
@@ -161,17 +160,19 @@
                     <% } %>
                     <form action="#" id="go2Name">
                       <label id="label" for="padname" data-l10n-id="index.labelPad"></label>
-                      <input type="text" id="padname" maxlength="50" autofocus placeholder="Enter pad name...">
+                      <input type="text" id="padname"  maxlength="50" autofocus placeholder="Enter pad name...">
                         <button type="submit" data-l10n-id="index.createOpenPad"></button>
                     </form>
                 <% } %>
             </div>
         <% e.end_block(); %>
         </div>
+        <div style="display: none" data-l10n-id="index.placeholderPadEnter"></div>
         <div class="pad-datalist">
           <h2 data-l10n-id="index.recentPads"></h2>
           <ul id="recent-pads">
           </ul>
+        </div>
         </div>
         <script src="<%=entrypoint%>"></script>
 
