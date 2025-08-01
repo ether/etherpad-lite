@@ -4,11 +4,10 @@ import {Socket} from "node:net";
 import type {MapArrayType} from "../types/MapType";
 
 import _ from 'underscore';
-// @ts-ignore
 import cookieParser from 'cookie-parser';
 import events from 'events';
 import express from 'express';
-import expressSession from 'express-session';
+import expressSession, {Store} from 'express-session';
 import fs from 'fs';
 const hooks = require('../../static/js/pluginfw/hooks');
 import log4js from 'log4js';
@@ -23,7 +22,7 @@ import SecretRotator from '../security/SecretRotator';
 let secretRotator: SecretRotator|null = null;
 const logger = log4js.getLogger('http');
 let serverName:string;
-let sessionStore: { shutdown: () => void; } | null;
+let sessionStore: Store | null;
 const sockets:Set<Socket> = new Set();
 const socketsEvents = new events.EventEmitter();
 const startTime = stats.settableGauge('httpStartTime');
@@ -58,6 +57,7 @@ const closeServer = async () => {
     startTime.setValue(0);
     logger.info('HTTP server closed');
   }
+  // @ts-ignore
   if (sessionStore) sessionStore.shutdown();
   sessionStore = null;
   if (secretRotator) secretRotator.stop();
@@ -197,10 +197,9 @@ exports.restartServer = async () => {
 
   sessionStore = new SessionStore(settings.cookie.sessionRefreshInterval);
   exports.sessionMiddleware = expressSession({
-    propagateTouch: true,
     rolling: true,
     secret,
-    store: sessionStore,
+    store: sessionStore ?? undefined,
     resave: false,
     saveUninitialized: false,
     // Set the cookie name to a javascript identifier compatible string. Makes code handling it
