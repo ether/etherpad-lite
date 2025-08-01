@@ -6,12 +6,19 @@
   --muted-border: oklch(87.2% 0.01 258.338);
   --muted-background: hsl(240 4.8% 95.9%);
   --ep-color: rgb(22 163 74);
+  --warm-green-olive: #7c9a3e;
+  --warm-green-moss: #8fae4a;
+  --warm-green-lime: #b7c96c;
+  --warm-green-avocado: #6e8b3d;
+  --warm-green-spring: #a3c85a;
 }
 
 
 body {
   border-top: 0;
   background: oklch(98.5% 0.002 247.839);
+  display: flex;
+  flex-direction: column;
 }
 
 h1 {
@@ -19,11 +26,16 @@ h1 {
   font-size: 26px;
 }
 
+.mission-statement, .pad-datalist {
+  display: block;
+}
+
 .mission-statement h2 {
   font-weight: 700;
   font-size: 2.25rem;
   text-align: center;
-  margin-top: 4rem;
+  margin: 0;
+  padding-top: 4rem;
 }
 
 .mission-statement p {
@@ -165,6 +177,7 @@ body nav {
 
 .pad-datalist {
   max-width: 56rem;
+  margin-bottom: 1rem;
 }
 
 .break-column {
@@ -181,6 +194,17 @@ ul {
   display: flex;
   position: relative;
   flex-direction: column;
+}
+
+.body {
+  flex-grow: 1;
+  background: linear-gradient(
+    to bottom right,
+    #d1fae5,   /* emerald-100 */
+    #f0fdfa,   /* teal-50 */
+    #dbeafe,   /* blue-100 */
+    #c7d2fe    /* indigo-200 */
+  );
 }
 
 .recent-pad:hover a {
@@ -208,9 +232,27 @@ a, a:visited, a:hover, a:active {
   border-bottom-width: 1px;
   border-bottom-style: solid;
   border-bottom-color: #e5e7eb;
-  width: 100%;
 }
 
 .card-content {
   padding: 1.5rem;
+}
+
+@media (max-width: 640px) {
+  #inner {
+    max-width: 100%;
+    padding: 0 1rem;
+  }
+
+  .mission-statement p {
+    max-width: 100%;
+  }
+
+  .pad-datalist {
+    max-width: 90%;
+  }
+
+  .mission-statement h2 {
+    font-size: 1.5rem;
+  }
 }

@@ -1,10 +1,32 @@
 'use strict';
 
+window.addEventListener('pageshow', (event) => {
+  if (event.persisted) {
+    if (document.readyState === 'complete' || document.readyState === 'interactive') {
+      window.customStart();
+    } else {
+      window.addEventListener('DOMContentLoaded', window.customStart, {once: true});
+    }
+  }
+});
 
 window.customStart = () => {
+  document.getElementById('recent-pads').replaceChildren()
   // define your javascript here
   // jquery is available - except index.js
   // you can load extra scripts with $.getScript http://api.jquery.com/jQuery.getScript/
+  const divHoldingPlaceHolderLabel = document
+    .querySelector('[data-l10n-id="index.placeholderPadEnter"]');
+
+  const observer = new MutationObserver(() => {
+    document.querySelector('#go2Name input')
+      .setAttribute('placeholder', divHoldingPlaceHolderLabel.textContent);
+  });
+
+  observer
+    .observe(divHoldingPlaceHolderLabel, {childList: true, subtree: true, characterData: true});
+
+
   const recentPadList = document.getElementById('recent-pads');
   const parentStyle = recentPadList.parentElement.style;
   const recentPadListHeading = document.querySelector('[data-l10n-id="index.recentPads"]');
@@ -13,6 +35,12 @@ window.customStart = () => {
   if (recentPadsFromLocalStorage != null) {
     recentPadListData = JSON.parse(recentPadsFromLocalStorage);
   }
+
+  // Remove duplicates based on pad name and sort by timestamp
+  recentPadListData = recentPadListData.filter(
+    (pad, index, self) =>
+      index === self.findIndex((p) => p.name === pad.name)
+  ).sort((a, b) => new Date(a.timestamp) > new Date(b.timestamp) ? -1 : 1);
 
   if (recentPadListData.length === 0) {
     recentPadListHeading.setAttribute('data-l10n-id', 'index.recentPadsEmpty');
