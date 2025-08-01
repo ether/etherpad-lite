@@ -1,4 +1,5 @@
-'use strict';
+// @ts-nocheck
+
 
 const DB = require('./DB');
 import expressSession from 'express-session'
@@ -20,7 +21,7 @@ class SessionStore extends expressSession.Store {
    *     Etherpad is restarted. Use `null` to prevent `touch()` from ever updating the record.
    *     Ignored if the cookie does not expire.
    */
-  constructor(refresh = null) {
+  constructor(refresh: number | null = null) {
     super();
     this._refresh = refresh;
     // Maps session ID to an object with the following properties:
