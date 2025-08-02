@@ -65,6 +65,13 @@ jobs:
         run: |
           git config --global user.name "Etherpad Release Bot"
           git config --global user.email "noreply@etherpad.org"
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 2.7
+
+      - uses: reitzig/actions-asciidoctor@v2.0.2
+        with:
+          version: 2.0.18
       - name: Prepare release
         working-directory: etherpad
         run: |
