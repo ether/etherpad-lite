@@ -61,6 +61,10 @@ jobs:
       - name: Install dependencies ether.github.com
         run: pnpm install --frozen-lockfile
         working-directory: ether.github.com
+      - name: Set git user
+        run: |
+          git config --global user.name "Etherpad Release Bot"
+          git config --global user.email "noreply@etherpad.org"
       - name: Prepare release
         working-directory: etherpad
         run: |
