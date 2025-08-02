@@ -990,6 +990,7 @@ const handleClientReady = async (socket:any, message: ClientReadyMessage) => {
       accountPrivs: {
         maxRevisions: 100,
       },
+      enableDarkMode: settings.enableDarkMode,
       automaticReconnectionTimeout: settings.automaticReconnectionTimeout,
       initialRevisionList: [],
       initialOptions: {},
