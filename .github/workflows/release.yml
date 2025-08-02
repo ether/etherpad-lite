@@ -1,0 +1,58 @@
+name: Release etherpad
+on:
+  workflow_call:
+    inputs:
+      release_type:
+        description: 'Choose the type of release to create'
+        required: true
+        default: 'patch'
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+
+jobs:
+  releases:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+            repository: ether/etherpad-lite
+            path: etherpad
+            token: '${{ secrets.ETHER_RELEASE_TOKEN }}'
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          repository: ether/ether.github.com
+          path: ether.github.com
+          token: '${{ secrets.ETHER_RELEASE_TOKEN }}'
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - uses: pnpm/action-setup@v4
+        name: Install pnpm
+        with:
+          version: 10
+          run_install: false
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+        working-directory: etherpad
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+        working-directory: ether.github.com
+      - name: Prepare release
+        working-directory:
+        run: |
+          cd bin
+          pnpm run release ${{ inputs.release_type }}
+      - name: Push after release
+        working-directory: etherpad
+        run: |
+          ./bin/push-after-release.sh
