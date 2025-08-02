@@ -41,14 +41,14 @@ jobs:
         shell: bash
         run: |
           echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
-      - name: Install dependencies
+      - name: Install dependencies etherpad
         run: pnpm install --frozen-lockfile
         working-directory: etherpad
-      - name: Install dependencies
+      - name: Install dependencies ether.github.com
         run: pnpm install --frozen-lockfile
         working-directory: ether.github.com
       - name: Prepare release
-        working-directory:
+        working-directory: etherpad
         run: |
           cd bin
           pnpm run release ${{ inputs.release_type }}
