@@ -617,6 +617,12 @@
    */
   "authenticationMethod": "${AUTHENTICATION_METHOD:sso}",
 
+    /**
+    * Allow setting dark mode for the enduser. This is so if the user has preferred dark mode in their browser, Etherpad will respect that.
+    * Of course this overrides all the skin variants and the skinName set by the administrator.
+    **/
+    "enableDarkMode": "${ENABLE_DARK_MODE:true}",
+
   /*
    * From Etherpad 1.8.5 onwards, when Etherpad is in production mode commits from individual users are rate limited
    *

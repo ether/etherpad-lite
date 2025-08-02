@@ -1,5 +1,6 @@
 // @ts-nocheck
 'use strict';
+const skinVariants = require('./skin_variants');
 
 /**
  * This code is mostly from the old Etherpad. Please help us to comment this code.
@@ -479,6 +480,9 @@ const pad = {
       setTimeout(() => { checkChatAndUsersVisibility(mobileMatch); }, 0); // check now after load
 
       $('#editorcontainer').addClass('initialized');
+      if (window.location.hash.toLowerCase() !== '#skinvariantsbuilder' && window.clientVars.enableDarkMode && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        skinVariants.updateSkinVariantsClasses(['super-dark-editor', 'dark-background', 'super-dark-toolbar']);
+      }
 
       hooks.aCallAll('postAceInit', {ace: padeditor.ace, clientVars, pad});
     };
