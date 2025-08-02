@@ -56,6 +56,8 @@ const readJson = (filename: string) => JSON.parse(fs.readFileSync(filename, {enc
 const assertWorkDirClean = (opts:{
     cwd?: string;
 } = {}) => {
+  // Stash any changes in the working directory so that we can check for modifications.
+  runc('git stash')
   opts.cwd = runc('git rev-parse --show-cdup', opts) || cwd;
   const m = runc('git diff-files --name-status', opts);
   console.log(">"+m.trim()+"<")
