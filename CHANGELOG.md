@@ -1,3 +1,13 @@
+# 2.4.0
+
+### Notable enhancements and fixes
+- Added home button to the pad panel. To show it in your current instance, please copy the updated "toolbar" settings from the `settings.json.template` file to your `settings.json` file.
+- Added more current design for the default collibri theme.
+- Added handling of recent visited pads in the collibri theme. You can now access the most recent three pads you visited in the pad panel.
+- Disable stats endpoints if enableMetrics is set to false. This allows you to disable the metrics endpoints if you don't want to use them.
+- Use Node LTS instead of always latest Node version.
+
+
 # 2.3.2
 
 ### Notable enhancements and fixes
