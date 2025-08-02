@@ -18,12 +18,24 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        working-directory: etherpad
         with:
             repository: ether/etherpad-lite
             path: etherpad
             token: '${{ secrets.ETHER_RELEASE_TOKEN }}'
             fetch-depth: '0'
             fetch-tags: 'true'
+      - name: Checkout master
+        run: |
+          git fetch origin master
+          git checkout master
+          git reset --hard origin/master
+      - name: Checkout develop
+        working-directory: etherpad
+        run: |
+          git fetch origin develop
+          git checkout develop
+          git reset --hard origin/develop
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
