@@ -1,3 +1,10 @@
+# 2.4.1
+
+### Notable enhancements and fixes
+
+- Added generating release through ci cd pipeline.
+- Readded temporarily disabled workflows after release generation works again
+
 # 2.4.0
 
 ### Notable enhancements and fixes
