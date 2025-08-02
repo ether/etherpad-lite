@@ -240,6 +240,7 @@ module.exports = {
         settings: defaultButtonAttributes('settings'),
         embed: defaultButtonAttributes('embed'),
         showusers: defaultButtonAttributes('showusers'),
+        home: defaultButtonAttributes('home'),
 
         timeslider_export: {
             command: 'import_export',

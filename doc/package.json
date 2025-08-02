@@ -1,10 +1,13 @@
 {
   "devDependencies": {
-    "vitepress": "^1.6.3"
+    "vitepress": "^2.0.0-alpha.9"
   },
   "scripts": {
     "docs:dev": "vitepress dev",
     "docs:build": "vitepress build",
     "docs:preview": "vitepress preview"
+  },
+  "peerDependencies": {
+    "search-insights": "^2.17.3"
   }
 }

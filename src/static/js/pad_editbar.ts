@@ -364,6 +364,9 @@ exports.padeditbar = new class {
     this.registerDropdownCommand('connectivity');
     this.registerDropdownCommand('import_export');
     this.registerDropdownCommand('embed');
+    this.registerCommand('home', ()=>{
+      window.location.href = window.location.href + "/../.."
+    })
 
     this.registerCommand('settings', () => {
       this.toggleDropDown('settings');

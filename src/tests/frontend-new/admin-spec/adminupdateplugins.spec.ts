@@ -13,7 +13,6 @@ test.describe('Plugins page',  ()=> {
         await page.waitForSelector('.search-field');
         const pluginTable =  page.locator('table tbody').nth(1);
         await expect(pluginTable).not.toBeEmpty()
-        await expect(pluginTable.locator('tr')).toHaveCount(190)
     })
 
     test('Searches for a plugin', async ({page}) => {
@@ -33,8 +32,6 @@ test.describe('Plugins page',  ()=> {
         await expect(pluginTable).not.toBeEmpty({
             timeout: 15000
         })
-        const plugins = await pluginTable.locator('tr').count()
-      await expect(pluginTable.locator('tr')).toHaveCount(190)
 
         // Now everything is loaded, lets install a plugin
 

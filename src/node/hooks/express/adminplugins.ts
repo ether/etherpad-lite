@@ -39,6 +39,11 @@ exports.socketio = (hookName:string, args:ArgsExpressType, cb:Function) => {
       })
     }
 
+    socket.on('getStats', ()=>{
+      console.log("Getting stats for admin plugins");
+      socket.emit('results:stats', require('../../stats').toJSON());
+    })
+
     socket.on('getInstalled', async (query: string) => {
       // send currently installed plugins
       const installed =
@@ -52,6 +57,7 @@ exports.socketio = (hookName:string, args:ArgsExpressType, cb:Function) => {
 
       socket.emit('results:installed', {installed});
     });
+
 
     socket.on('checkUpdates', async () => {
       // Check plugins for updates

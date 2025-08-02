@@ -1,13 +1,15 @@
-'use strict';
+// @ts-nocheck
+
 
 const DB = require('./DB');
-const Store = require('@etherpad/express-session').Store;
+import expressSession from 'express-session'
+
 const log4js = require('log4js');
 const util = require('util');
 
 const logger = log4js.getLogger('SessionStore');
 
-class SessionStore extends Store {
+class SessionStore extends expressSession.Store {
   /**
    * @param {?number} [refresh] - How often (in milliseconds) `touch()` will update a session's
    *     database record with the cookie's latest expiration time. If the difference between the
@@ -19,7 +21,7 @@ class SessionStore extends Store {
    *     Etherpad is restarted. Use `null` to prevent `touch()` from ever updating the record.
    *     Ignored if the cookie does not expire.
    */
-  constructor(refresh = null) {
+  constructor(refresh: number | null = null) {
     super();
     this._refresh = refresh;
     // Maps session ID to an object with the following properties:

@@ -20,7 +20,7 @@ exports.socketio = (hookName: string, {io}: any) => {
 }
 
 
-exports.expressPreSession = async (hookName:string, {app}:ArgsExpressType) => {
+exports.expressPreSession = async (hookName:string, {app, settings}:ArgsExpressType) => {
   // This endpoint is intended to conform to:
   // https://www.ietf.org/archive/id/draft-inadarei-api-health-check-06.html
   app.get('/health', (req:any, res:any) => {
@@ -31,9 +31,12 @@ exports.expressPreSession = async (hookName:string, {app}:ArgsExpressType) => {
     });
   });
 
-  app.get('/stats', (req:any, res:any) => {
-    res.json(require('../../stats').toJSON());
-  });
+  if (settings.enableMetrics) {
+    app.get('/stats', (req:any, res:any) => {
+      res.json(require('../../stats').toJSON());
+    });
+  }
+
 
   app.get('/javascript', (req:any, res:any) => {
     res.send(eejs.require('ep_etherpad-lite/templates/javascript.html', {req}));

@@ -38,7 +38,7 @@ test.describe('indentation button', function () {
         await page.locator('.buttonicon-indent').click()
 
         // type a bit, make a line break and type again
-        await padBody.locator('div').first().focus()
+        await padBody.focus()
         await page.keyboard.type('line 1')
         await page.keyboard.press('Enter');
         await page.keyboard.type('line 2')

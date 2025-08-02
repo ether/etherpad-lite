@@ -725,18 +725,18 @@ const pad = {
     }
   },
   asyncSendDiagnosticInfo: () => {
-    window.setTimeout(() => {
-      $.ajax(
-          {
-            type: 'post',
-            url: '../ep/pad/connection-diagnostic-info',
-            data: {
-              diagnosticInfo: JSON.stringify(pad.diagnosticInfo),
-            },
-            success: () => {},
-            error: () => {},
-          });
-    }, 0);
+    const currentUrl = window.location.href;
+    fetch('../ep/pad/connection-diagnostic-info', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        diagnosticInfo: pad.diagnosticInfo,
+      }),
+    }).catch((error) => {
+      console.error('Error sending diagnostic info:', error);
+    })
   },
   forceReconnect: () => {
     $('form#reconnectform input.padId').val(pad.getPadId());

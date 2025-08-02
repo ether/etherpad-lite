@@ -1,16 +1,39 @@
 'use strict';
 
+import express from "express";
+
 const log4js = require('log4js');
 const clientLogger = log4js.getLogger('client');
 const {Formidable} = require('formidable');
 const apiHandler = require('../../handler/APIHandler');
 const util = require('util');
 
+
+function objectAsString(obj: any): string {
+  let output = '';
+  for (const property in obj) {
+    if(obj.hasOwnProperty(property) && typeof obj[property] !== 'function') {
+      let value = obj[property];
+      if(typeof value === 'object' && !Array.isArray(value) && value !== null) {
+        value = '{' + objectAsString(value) + '}';
+      }
+      output += property + ': ' + value +'; ';
+    }
+  }
+  return output;
+}
+
 exports.expressPreSession = async (hookName:string, {app}:any) => {
+  app.use(express.json());
   // The Etherpad client side sends information about how a disconnect happened
   app.post('/ep/pad/connection-diagnostic-info', async (req:any, res:any) => {
-    const [fields, files] = await (new Formidable({})).parse(req);
-    clientLogger.info(`DIAGNOSTIC-INFO: ${fields.diagnosticInfo}`);
+    if (!req.body ||!req.body.diagnosticInfo || typeof req.body.diagnosticInfo !== 'object') {
+      clientLogger.warn('DIAGNOSTIC-INFO: No diagnostic info provided');
+      res.status(400).end('No diagnostic info provided');
+      return;
+    }
+
+    clientLogger.info(`DIAGNOSTIC-INFO: ${objectAsString(req.body.diagnosticInfo)}`);
     res.end('OK');
   });
 

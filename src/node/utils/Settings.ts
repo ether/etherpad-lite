@@ -205,6 +205,12 @@ exports.padOptions = {
     lang: null,
 };
 
+
+/**
+ * Wether to enable the /stats endpoint. The functionality in the admin menu is untouched for this.
+ */
+exports.enableMetrics = true
+
 /**
  * Whether certain shortcut keys are enabled for a user in the pad
  */
@@ -245,7 +251,7 @@ exports.toolbar = {
     ],
     right: [
         ['importexport', 'timeslider', 'savedrevision'],
-        ['settings', 'embed'],
+        ['settings', 'embed', 'home'],
         ['showusers'],
     ],
     timeslider: [

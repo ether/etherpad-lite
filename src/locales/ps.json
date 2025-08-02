@@ -1,11 +1,12 @@
 {
 	"@metadata": {
 		"authors": [
-			"Ahmed-Najib-Biabani-Ibrahimkhel"
+			"Ahmed-Najib-Biabani-Ibrahimkhel",
+			"شاه زمان پټان"
 		]
 	},
 	"index.newPad": "نوې ليکچه",
-	"index.createOpenPad": "يا په همدې نوم يوه نوې ليکچه جوړول/پرانيستل:",
+	"index.createOpenPad": "يا په همدې نوم يوه نوې ليکچه جوړول/پرانېستل:",
 	"pad.toolbar.bold.title": "زغرد (Ctrl-B)",
 	"pad.toolbar.italic.title": "رېوند (Ctrl-I)",
 	"pad.toolbar.underline.title": "لرکرښن (Ctrl+U)",
@@ -16,11 +17,12 @@
 	"pad.toolbar.redo.title": "بياکړل (Ctrl-Y)",
 	"pad.toolbar.clearAuthorship.title": "د ليکوالۍ رنگونه سپينول (Ctrl+Shift+C)",
 	"pad.toolbar.savedRevision.title": "مخکتنه خوندي کول",
-	"pad.toolbar.settings.title": "امستنې",
+	"pad.toolbar.settings.title": "اوڼنې",
+	"pad.toolbar.home.title": "بېرته کور ته",
 	"pad.colorpicker.save": "خوندي کول",
 	"pad.colorpicker.cancel": "ناگارل",
 	"pad.loading": "رابرسېرېږي...",
-	"pad.settings.padSettings": "د ليکچې امستنې",
+	"pad.settings.padSettings": "د ليکچې اوڼنې",
 	"pad.settings.myView": "زما کتنه",
 	"pad.settings.stickychat": "تل په پردې بانډار کول",
 	"pad.settings.chatandusers": "کارنان او بانډار ښکاره کول",

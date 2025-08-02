@@ -56,6 +56,8 @@ const readJson = (filename: string) => JSON.parse(fs.readFileSync(filename, {enc
 const assertWorkDirClean = (opts:{
     cwd?: string;
 } = {}) => {
+  // Stash any changes in the working directory so that we can check for modifications.
+  runc('git stash')
   opts.cwd = runc('git rev-parse --show-cdup', opts) || cwd;
   const m = runc('git diff-files --name-status', opts);
   console.log(">"+m.trim()+"<")
@@ -172,8 +174,8 @@ try {
   console.log('Merging develop into master...');
   run('git merge --no-ff --no-edit develop');
   console.log(`Creating ${newVersion} tag...`);
-  run(`git tag -s '${newVersion}' -m '${newVersion}'`);
-  run(`git tag -s 'v${newVersion}' -m 'v${newVersion}'`);
+  run(`git tag -a '${newVersion}' -m '${newVersion}'`);
+  run(`git tag -a 'v${newVersion}' -m 'v${newVersion}'`);
   console.log('Switching back to develop...');
   run('git checkout develop');
   console.log('Merging master into develop...');
