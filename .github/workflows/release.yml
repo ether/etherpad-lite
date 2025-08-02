@@ -18,7 +18,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        working-directory: etherpad
         with:
             repository: ether/etherpad-lite
             path: etherpad
@@ -26,6 +25,7 @@ jobs:
             fetch-depth: '0'
             fetch-tags: 'true'
       - name: Checkout master
+        working-directory: etherpad
         run: |
           git fetch origin master
           git checkout master
