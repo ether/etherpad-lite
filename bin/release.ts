@@ -174,8 +174,8 @@ try {
   console.log('Merging develop into master...');
   run('git merge --no-ff --no-edit develop');
   console.log(`Creating ${newVersion} tag...`);
-  run(`git tag -s '${newVersion}' -m '${newVersion}'`);
-  run(`git tag -s 'v${newVersion}' -m 'v${newVersion}'`);
+  run(`git tag -a '${newVersion}' -m '${newVersion}'`);
+  run(`git tag -a 'v${newVersion}' -m 'v${newVersion}'`);
   console.log('Switching back to develop...');
   run('git checkout develop');
   console.log('Merging master into develop...');
