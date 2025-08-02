@@ -24,10 +24,10 @@ jobs:
             token: '${{ secrets.ETHER_RELEASE_TOKEN }}'
       - name: Checkout master branch
         working-directory: etherpad
-        run: git checkout master
+        run: git checkout origin/master
       - name: Switch back to develop
         working-directory: etherpad
-        run: git switch develop
+        run: git checkout origin/develop
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
