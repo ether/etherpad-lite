@@ -1,6 +1,6 @@
 name: Release etherpad
 on:
-  workflow_call:
+  workflow_dispatch:
     inputs:
       release_type:
         description: 'Choose the type of release to create'
