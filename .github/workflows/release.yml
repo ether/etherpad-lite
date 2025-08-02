@@ -22,12 +22,8 @@ jobs:
             repository: ether/etherpad-lite
             path: etherpad
             token: '${{ secrets.ETHER_RELEASE_TOKEN }}'
-      - name: Checkout master branch
-        working-directory: etherpad
-        run: git checkout origin/master
-      - name: Switch back to develop
-        working-directory: etherpad
-        run: git checkout origin/develop
+            fetch-depth: '0'
+            fetch-tags: 'true'
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
