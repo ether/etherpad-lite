@@ -1,3 +1,8 @@
+# 2.4.2
+
+### Notable enhancements and fixes
+- Fixed a german translation in the english translation file.
+
 # 2.4.1
 
 ### Notable enhancements and fixes

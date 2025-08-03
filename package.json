@@ -50,6 +50,6 @@
     "type": "git",
     "url": "https://github.com/ether/etherpad-lite.git"
   },
-  "version": "2.4.1",
+  "version": "2.4.2",
   "license": "Apache-2.0"
 }

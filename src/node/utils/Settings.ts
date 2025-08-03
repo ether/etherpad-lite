@@ -109,6 +109,7 @@ exports.ttl = {
 
 exports.updateServer = "https://static.etherpad.org"
 
+exports.enableDarkMode = true;
 
 /*
  * Skin name.
