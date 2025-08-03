@@ -107,7 +107,8 @@ RUN  \
         curl \
         git \
         ${INSTALL_ABIWORD:+abiword abiword-plugin-command} \
-        ${INSTALL_SOFFICE:+libreoffice openjdk8-jre libreoffice-common}
+        ${INSTALL_SOFFICE:+libreoffice openjdk8-jre libreoffice-common} && \
+    rm -rf /var/cache/apk/*
 
 USER etherpad
 
@@ -172,7 +173,8 @@ RUN bash -c ./bin/installLocalPlugins.sh
 RUN bin/installDeps.sh && \
   if [ ! -z "${ETHERPAD_PLUGINS}" ] || [ ! -z "${ETHERPAD_GITHUB_PLUGINS}" ]; then \
       pnpm run plugins i ${ETHERPAD_PLUGINS} ${ETHERPAD_GITHUB_PLUGINS:+--github ${ETHERPAD_GITHUB_PLUGINS}}; \
-  fi
+  fi && \
+    pnpm store prune
 
 # Copy the configuration file.
 COPY --chown=etherpad:etherpad ${SETTINGS} "${EP_DIR}"/settings.json
