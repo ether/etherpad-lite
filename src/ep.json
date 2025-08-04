@@ -97,12 +97,6 @@
       }
     },
     {
-      "name": "tests",
-      "hooks": {
-        "expressPreSession": "ep_etherpad-lite/node/hooks/express/tests"
-      }
-    },
-    {
       "name": "admin",
       "hooks": {
         "expressCreateServer": "ep_etherpad-lite/node/hooks/express/admin"

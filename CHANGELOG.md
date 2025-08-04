@@ -1,3 +1,8 @@
+# 2.5.0
+
+### Notable enhancements and fixes
+- Updated to express 5.0.0. This is a major update to express that brings a lot of improvements and fixes.
+
 # 2.4.2
 
 ### Notable enhancements and fixes
