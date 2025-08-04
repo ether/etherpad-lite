@@ -29,7 +29,7 @@ import AttributePool from '../../static/js/AttributePool';
 const AttributeManager = require('../../static/js/AttributeManager');
 const authorManager = require('../db/AuthorManager');
 import padutils from '../../static/js/pad_utils';
-const readOnlyManager = require('../db/ReadOnlyManager');
+import readOnlyManager from '../db/ReadOnlyManager';
 const settings = require('../utils/Settings');
 const securityManager = require('../db/SecurityManager');
 const plugins = require('../../static/js/pluginfw/plugin_defs');
