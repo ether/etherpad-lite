@@ -8,7 +8,7 @@ import {minify} from '../../utils/Minify';
 import path from 'node:path';
 import {ArgsExpressType} from "../../types/ArgsExpressType";
 const plugins = require('../../../static/js/pluginfw/plugin_defs');
-const settings = require('../../utils/Settings');
+import settings from '../../utils/Settings';
 
 // Rewrite tar to include modules with no extensions and proper rooted paths.
 const getTar = async () => {

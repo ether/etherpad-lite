@@ -7,7 +7,7 @@ import log4js from 'log4js';
 const fsp = require('fs').promises;
 const hooks = require('../../../static/js/pluginfw/hooks');
 const plugins = require('../../../static/js/pluginfw/plugins');
-const settings = require('../../utils/Settings');
+import settings, {getEpVersion, getGitCommit, reloadSettings} from '../../utils/Settings';
 import {getLatestVersion} from '../../utils/UpdateCheck';
 const padManager = require('../../db/PadManager');
 const api = require('../../db/API');
@@ -73,8 +73,8 @@ exports.socketio = (hookName: string, {io}: any) => {
 
 
         socket.on('help', () => {
-            const gitCommit = settings.getGitCommit();
-            const epVersion = settings.getEpVersion();
+            const gitCommit = getGitCommit();
+            const epVersion = getEpVersion();
 
             const hooks: Map<string, Map<string, string>> = plugins.getHooks('hooks', false);
             const clientHooks: Map<string, Map<string, string>> = plugins.getHooks('client_hooks', false);
@@ -287,7 +287,7 @@ exports.socketio = (hookName: string, {io}: any) => {
 
         socket.on('restartServer', async () => {
             logger.info('Admin request to restart server through a socket on /admin/settings');
-            settings.reloadSettings();
+            reloadSettings();
             await plugins.update();
             await hooks.aCallAll('loadSettings', {settings});
             await hooks.aCallAll('restartServer');

@@ -24,9 +24,9 @@ const cloneDeep = require('lodash.clonedeep');
 const createHTTPError = require('http-errors');
 
 const apiHandler = require('../../handler/APIHandler');
-const settings = require('../../utils/Settings');
+import settings from '../../utils/Settings';
 
-const log4js = require('log4js');
+import log4js from 'log4js';
 const logger = log4js.getLogger('API');
 
 // https://github.com/OAI/OpenAPI-Specification/tree/master/schemas/v3.0

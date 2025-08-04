@@ -7,7 +7,7 @@ import {SettingsUser} from "../../../node/types/SettingsUser";
 const assert = require('assert').strict;
 const common = require('../common');
 const plugins = require('../../../static/js/pluginfw/plugin_defs');
-const settings = require('../../../node/utils/Settings');
+import settings from '../../../node/utils/Settings';
 
 describe(__filename, function () {
   this.timeout(30000);
@@ -32,6 +32,7 @@ describe(__filename, function () {
     }
     backups.settings = {};
     for (const setting of ['requireAuthentication', 'requireAuthorization', 'users']) {
+      // @ts-ignore
       backups.settings[setting] = settings[setting];
     }
     settings.requireAuthentication = false;

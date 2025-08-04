@@ -6,7 +6,7 @@ import fs from 'node:fs';
 const fsp = fs.promises;
 const toolbar = require('../../utils/toolbar');
 const hooks = require('../../../static/js/pluginfw/hooks');
-const settings = require('../../utils/Settings');
+import settings, {getEpVersion} from '../../utils/Settings';
 import util from 'node:util';
 const webaccess = require('./webaccess');
 const plugins = require('../../../static/js/pluginfw/plugin_defs');
@@ -20,14 +20,14 @@ exports.socketio = (hookName: string, {io}: any) => {
 }
 
 
-exports.expressPreSession = async (hookName:string, {app, settings}:ArgsExpressType) => {
+exports.expressPreSession = async (hookName:string, {app}:ArgsExpressType) => {
   // This endpoint is intended to conform to:
   // https://www.ietf.org/archive/id/draft-inadarei-api-health-check-06.html
   app.get('/health', (req:any, res:any) => {
     res.set('Content-Type', 'application/health+json');
     res.json({
       status: 'pass',
-      releaseId: settings.getEpVersion(),
+      releaseId: getEpVersion(),
     });
   });
 
@@ -43,6 +43,10 @@ exports.expressPreSession = async (hookName:string, {app, settings}:ArgsExpressT
   });
 
   app.get('/robots.txt', (req:any, res:any) => {
+    if (!settings.skinName) {
+      // if no skin is set, send the default robots.txt
+      return res.sendFile(path.join(settings.root, 'src', 'static', 'robots.txt'));
+    }
     let filePath =
       path.join(settings.root, 'src', 'static', 'skins', settings.skinName, 'robots.txt');
     res.sendFile(filePath, (err:any) => {
@@ -66,11 +70,13 @@ exports.expressPreSession = async (hookName:string, {app, settings}:ArgsExpressT
       }
 
 
+      console.log("Favicon is", settings.favicon)
       const fns = [
         ...(settings.favicon ? [path.resolve(settings.root, settings.favicon)] : []),
-        path.join(settings.root, 'src', 'static', 'skins', settings.skinName, 'favicon.ico'),
+        settings.skinName && path.join(settings.root, 'src', 'static', 'skins', settings.skinName, 'favicon.ico'),
         path.join(settings.root, 'src', 'static', 'favicon.ico'),
-      ];
+      ].filter(f=>f != null);
+      console.log('FNS are',  fns)
       for (const fn of fns) {
         try {
           await fsp.access(fn, fs.constants.R_OK);
@@ -178,7 +184,8 @@ const handleLiveReload = async (args: ArgsExpressType, padString: string, timeSl
           req,
           toolbar,
           isReadOnly,
-          entrypoint: '/watch/pad?hash=' + hash
+          entrypoint: '/watch/pad?hash=' + hash,
+          settings: settings.getPublicSettings()
         })
         res.send(content);
       })
@@ -207,7 +214,8 @@ const handleLiveReload = async (args: ArgsExpressType, padString: string, timeSl
           req,
           toolbar,
           isReadOnly,
-          entrypoint: '/watch/timeslider?hash=' + hash
+          entrypoint: '/watch/timeslider?hash=' + hash,
+          settings: settings.getPublicSettings()
         })
         res.send(content);
       })
@@ -334,7 +342,8 @@ exports.expressCreateServer = async (_hookName: string, args: ArgsExpressType, c
         req,
         toolbar,
         isReadOnly,
-        entrypoint: "../"+fileNamePad
+        entrypoint: "../"+fileNamePad,
+        settings: settings.getPublicSettings()
       })
       res.send(content);
     });
@@ -348,7 +357,8 @@ exports.expressCreateServer = async (_hookName: string, args: ArgsExpressType, c
       res.send(eejs.require('ep_etherpad-lite/templates/timeslider.html', {
         req,
         toolbar,
-        entrypoint: "../../"+fileNameTimeSlider
+        entrypoint: "../../"+fileNameTimeSlider,
+        settings: settings.getPublicSettings()
       }));
     });
   } else {

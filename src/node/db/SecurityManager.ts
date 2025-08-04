@@ -26,7 +26,7 @@ const hooks = require('../../static/js/pluginfw/hooks');
 const padManager = require('./PadManager');
 import readOnlyManager from './ReadOnlyManager';
 const sessionManager = require('./SessionManager');
-const settings = require('../utils/Settings');
+import settings from '../utils/Settings';
 const webaccess = require('../hooks/express/webaccess');
 const log4js = require('log4js');
 const authLogger = log4js.getLogger('auth');

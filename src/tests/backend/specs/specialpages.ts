@@ -3,7 +3,7 @@
 import {MapArrayType} from "../../../node/types/MapType";
 
 const common = require('../common');
-const settings = require('../../../node/utils/Settings');
+import settings from '../../../node/utils/Settings';
 
 
 
@@ -15,6 +15,7 @@ describe(__filename, function () {
   beforeEach(async function () {
     backups.settings = {};
     for (const setting of ['requireAuthentication', 'requireAuthorization']) {
+      // @ts-ignore
       backups.settings[setting] = settings[setting];
     }
     settings.requireAuthentication = false;

@@ -11,7 +11,7 @@ import TestAgent from "supertest/lib/agent";
 const assert = require('assert').strict;
 const common = require('../../common');
 const fs = require('fs');
-const settings = require('../../../../node/utils/Settings');
+import settings from '../../../../node/utils/Settings';
 const superagent = require('superagent');
 const padManager = require('../../../../node/db/PadManager');
 const plugins = require('../../../../static/js/pluginfw/plugin_defs');

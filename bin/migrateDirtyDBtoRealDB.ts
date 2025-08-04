@@ -1,10 +1,9 @@
 'use strict';
 
 import process from 'node:process';
-import {Database} from "ueberdb2";
+import {Database, DatabaseType} from "ueberdb2";
 import log4js from 'log4js';
-import util from 'util';
-const settings = require('ep_etherpad-lite/node/utils/Settings');
+import settings from 'ep_etherpad-lite/node/utils/Settings';
 
 // As of v14, Node.js does not exit when there is an unhandled Promise rejection. Convert an
 // unhandled rejection into an uncaught exception, which does cause Node.js to exit.
@@ -24,7 +23,7 @@ process.on('unhandledRejection', (err) => { throw err; });
     writeInterval: 0, // Write directly to the database, don't buffer
   };
   const db = new Database( // eslint-disable-line new-cap
-      settings.dbType,
+      settings.dbType as DatabaseType,
       settings.dbSettings,
       dbWrapperSettings,
       log4js.getLogger('ueberDB'));

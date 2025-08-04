@@ -13,10 +13,13 @@ import {promises as fs} from "fs";
 const plugins = require('./plugins');
 const hooks = require('./hooks');
 const runCmd = require('../../../node/utils/run_cmd');
-const settings = require('../../../node/utils/Settings');
+import  settings, {
+  getEpVersion,
+  reloadSettings
+} from '../../../node/utils/Settings';
 import {LinkInstaller} from "./LinkInstaller";
 
-const {findEtherpadRoot} = require('../../../node/utils/AbsolutePaths');
+import {findEtherpadRoot} from '../../../node/utils/AbsolutePaths';
 const logger = log4js.getLogger('plugins');
 
 export const pluginInstallPath = path.join(settings.root, 'src','plugin_packages');
@@ -27,13 +30,13 @@ export const installedPluginsPath = path.join(settings.root, 'var/installed_plug
 const onAllTasksFinished = async () => {
   await plugins.update();
   await persistInstalledPlugins();
-  settings.reloadSettings();
+  reloadSettings();
   await hooks.aCallAll('loadSettings', {settings});
   await hooks.aCallAll('restartServer');
 };
 
 const headers = {
-  'User-Agent': `Etherpad/${settings.getEpVersion()}`,
+  'User-Agent': `Etherpad/${getEpVersion()}`,
 };
 
 let tasks = 0;
