@@ -3,13 +3,13 @@
 // As of v14, Node.js does not exit when there is an unhandled Promise rejection. Convert an
 // unhandled rejection into an uncaught exception, which does cause Node.js to exit.
 import util from "node:util";
-const fs = require('fs');
+import fs from 'node:fs';
 import log4js from 'log4js';
 import readline from 'readline';
-import {Database} from "ueberdb2";
+import {Database, DatabaseType} from "ueberdb2";
 import process from "node:process";
 
-const settings = require('ep_etherpad-lite/node/utils/Settings');
+import settings from 'ep_etherpad-lite/node/utils/Settings';
 process.on('unhandledRejection', (err) => { throw err; });
 const startTime = Date.now();
 
@@ -58,7 +58,7 @@ const unescape = (val: string) => {
     json: false, // data is already json encoded
   };
   const db = new Database( // eslint-disable-line new-cap
-      settings.dbType,
+      settings.dbType as DatabaseType,
       settings.dbSettings,
       dbWrapperSettings,
       log4js.getLogger('ueberDB'));

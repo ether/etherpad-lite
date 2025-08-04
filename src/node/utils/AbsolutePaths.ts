@@ -18,9 +18,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-const log4js = require('log4js');
-const path = require('path');
-const _ = require('underscore');
+import log4js from 'log4js';
+import path from 'path';
+import _ from 'underscore';
 
 const absPathLogger = log4js.getLogger('AbsolutePaths');
 
@@ -74,7 +74,7 @@ const popIfEndsWith = (stringArray: string[], lastDesiredElements: string[]): st
  * @return {string} The identified absolute base path. If such path cannot be
  *                  identified, prints a log and exits the application.
  */
-exports.findEtherpadRoot = () => {
+export const findEtherpadRoot = () => {
   if (etherpadRoot != null) {
     return etherpadRoot;
   }
@@ -130,12 +130,12 @@ exports.findEtherpadRoot = () => {
  *                  it is returned unchanged. Otherwise it is interpreted
  *                  relative to exports.root.
  */
-exports.makeAbsolute = (somePath: string) => {
+export const makeAbsolute = (somePath: string) => {
   if (path.isAbsolute(somePath)) {
     return somePath;
   }
 
-  const rewrittenPath = path.join(exports.findEtherpadRoot(), somePath);
+  const rewrittenPath = path.join(findEtherpadRoot(), somePath);
 
   absPathLogger.debug(`Relative path "${somePath}" can be rewritten to "${rewrittenPath}"`);
   return rewrittenPath;
@@ -149,7 +149,7 @@ exports.makeAbsolute = (somePath: string) => {
  *                                 a subdirectory of the base one
  * @return {boolean}
  */
-exports.isSubdir = (parent: string, arbitraryDir: string): boolean => {
+export const isSubdir = (parent: string, arbitraryDir: string): boolean => {
   // modified from: https://stackoverflow.com/questions/37521893/determine-if-a-path-is-subdirectory-of-another-in-node-js#45242825
   const relative = path.relative(parent, arbitraryDir);
   return !!relative && !relative.startsWith('..') && !path.isAbsolute(relative);

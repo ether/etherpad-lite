@@ -10,7 +10,7 @@ import padutils from '../../static/js/pad_utils';
 const process = require('process');
 const server = require('../../node/server');
 const setCookieParser = require('set-cookie-parser');
-const settings = require('../../node/utils/Settings');
+import settings from '../../node/utils/Settings';
 import supertest from 'supertest';
 import TestAgent from "supertest/lib/agent";
 import {Http2Server} from "node:http2";

@@ -8,7 +8,7 @@ const apiHandler = require('./APIHandler')
 import {serve, setup} from 'swagger-ui-express'
 import express from "express";
 
-const settings = require('../utils/Settings')
+import settings from '../utils/Settings';
 
 
 type RestAPIMapping = {

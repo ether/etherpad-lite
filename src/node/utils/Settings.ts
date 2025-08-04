@@ -28,20 +28,19 @@
  */
 
 import {MapArrayType} from "../types/MapType";
-import {SettingsNode, SettingsTree} from "./SettingsTree";
-import {coerce} from "semver";
+import {SettingsNode} from "./SettingsTree";
 
-const absolutePaths = require('./AbsolutePaths');
+import * as absolutePaths from './AbsolutePaths';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-const argv = require('./Cli').argv;
+import {argv} from './Cli'
 import jsonminify from 'jsonminify';
 import log4js from 'log4js';
 import randomString from './randomstring';
 const suppressDisableMsg = ' -- To suppress these warning messages change ' +
     'suppressErrorsInPadText to true in your settings.json\n';
-const _ = require('underscore');
+import _ from 'underscore';
 
 const logger = log4js.getLogger('settings');
 
@@ -63,7 +62,7 @@ const defaultLogLevel = 'INFO';
 const defaultLogLayoutType = 'colored';
 
 const initLogging = (config: any) => {
-    // log4js.configure() modifies exports.logconfig so check for equality first.
+    // log4js.configure() modifies settings.logconfig so check for equality first.
     log4js.configure(config);
     log4js.getLogger('console');
 
@@ -78,75 +77,250 @@ const initLogging = (config: any) => {
 // with the user's chosen log level and logger config after the settings have been loaded.
 initLogging(defaultLogConfig(defaultLogLevel, defaultLogLayoutType));
 
-/* Root path of the installation */
-exports.root = absolutePaths.findEtherpadRoot();
-logger.info('All relative paths will be interpreted relative to the identified ' +
-    `Etherpad base dir: ${exports.root}`);
-exports.settingsFilename = absolutePaths.makeAbsolute(argv.settings || 'settings.json');
-exports.credentialsFilename = absolutePaths.makeAbsolute(argv.credentials || 'credentials.json');
+// Parse func
+
+
 
 /**
- * The app title, visible e.g. in the browser window
+ * - reads the JSON configuration file settingsFilename from disk
+ * - strips the comments
+ * - replaces environment variables calling lookupEnvironmentVariables()
+ * - returns a parsed Javascript object
+ *
+ * The isSettings variable only controls the error logging.
  */
-exports.title = 'Etherpad';
+const parseSettings = (settingsFilename: string, isSettings: boolean) => {
+  let settingsStr = '';
 
-/**
- * Pathname of the favicon you want to use. If null, the skin's favicon is
- * used if one is provided by the skin, otherwise the default Etherpad favicon
- * is used. If this is a relative path it is interpreted as relative to the
- * Etherpad root directory.
- */
-exports.favicon = null;
+  let settingsType, notFoundMessage, notFoundFunction;
 
-exports.ttl = {
+  if (isSettings) {
+    settingsType = 'settings';
+    notFoundMessage = 'Continuing using defaults!';
+    notFoundFunction = logger.warn.bind(logger);
+  } else {
+    settingsType = 'credentials';
+    notFoundMessage = 'Ignoring.';
+    notFoundFunction = logger.info.bind(logger);
+  }
+
+  try {
+    // read the settings file
+    settingsStr = fs.readFileSync(settingsFilename).toString();
+  } catch (e) {
+    notFoundFunction(`No ${settingsType} file found in ${settingsFilename}. ${notFoundMessage}`);
+
+    // or maybe undefined!
+    return null;
+  }
+
+  try {
+    settingsStr = jsonminify(settingsStr).replace(',]', ']').replace(',}', '}');
+
+    const settings = JSON.parse(settingsStr);
+
+    logger.info(`${settingsType} loaded from: ${settingsFilename}`);
+
+    return lookupEnvironmentVariables(settings);
+  } catch (e: any) {
+    logger.error(`There was an error processing your ${settingsType} ` +
+      `file from ${settingsFilename}: ${e.message}`);
+
+    process.exit(1);
+  }
+};
+
+type SettingsType = {
+  root: string,
+  settingsFilename: string,
+  credentialsFilename: string,
+  title: string,
+  favicon: string | null,
+  ttl: {
+    AccessToken: number,
+    AuthorizationCode: number,
+    ClientCredentials: number,
+    IdToken: number,
+    RefreshToken: number,
+  },
+  updateServer: string,
+  enableDarkMode: boolean,
+  skinName: string | null,
+  skinVariants: string,
+  ip: string,
+  port: number | string,
+  suppressErrorsInPadText: boolean,
+  ssl: false |  {
+    key: string,
+    cert: string,
+    ca: string | null,
+  },
+  socketTransportProtocols:  any[],
+  socketIo: {
+    maxHttpBufferSize: number,
+  },
+  authenticationMethod: string,
+  dbType: string,
+  dbSettings: any,
+  defaultPadText: string,
+  padOptions: {
+    noColors: boolean,
+    showControls: boolean,
+    showChat: boolean,
+    showLineNumbers: boolean,
+    useMonospaceFont: boolean,
+    userName: string | null,
+    userColor: string | null,
+    rtl: boolean,
+    alwaysShowChat: boolean,
+    chatAndUsers: boolean,
+    lang: string | null,
+  },
+  enableMetrics: boolean,
+  padShortcutEnabled: {
+    altF9: boolean,
+    altC: boolean,
+    delete: boolean,
+    cmdShift2: boolean,
+    return: boolean,
+    esc: boolean,
+    cmdS: boolean,
+    tab: boolean,
+    cmdZ: boolean,
+    cmdY: boolean,
+    cmdB: boolean,
+    cmdI: boolean,
+    cmdU: boolean,
+    cmd5: boolean,
+    cmdShiftL: boolean,
+    cmdShiftN: boolean,
+    cmdShift1: boolean,
+    cmdShiftC: boolean,
+    cmdH: boolean,
+    ctrlHome: boolean,
+    pageUp: boolean,
+    pageDown: boolean,
+  },
+  toolbar: {
+    left: string[][],
+    right: string[][],
+    timeslider: string[][],
+  },
+  requireSession: boolean,
+  editOnly: boolean,
+  maxAge: number,
+  minify: boolean,
+  abiword: string | null,
+  soffice: string | null,
+  allowUnknownFileEnds: boolean,
+  loglevel: string,
+  logLayoutType: string,
+  disableIPlogging: boolean,
+  automaticReconnectionTimeout: number,
+  loadTest: boolean,
+  dumpOnUncleanExit: boolean,
+  indentationOnNewLine: boolean,
+  logconfig: any | null,
+  sessionKey: string | null,
+  trustProxy: boolean,
+  cookie: {
+    keyRotationInterval: number,
+    sameSite: boolean | "lax" | "strict" | "none" | undefined,
+    sessionLifetime: number,
+    sessionRefreshInterval: number,
+  },
+  requireAuthentication: boolean,
+  requireAuthorization: boolean,
+  users: Record<string, any>,
+  sso: {
+    issuer: string,
+    clients?: {client_id: string}[]
+  },
+  showSettingsInAdminPage: boolean,
+  cleanup: {
+    enabled: boolean,
+    keepRevisions: number,
+  },
+  scrollWhenFocusLineIsOutOfViewport: {
+    percentage: {
+      editionAboveViewport: number,
+      editionBelowViewport: number,
+    },
+    duration: number,
+    percentageToScrollWhenUserPressesArrowUp: number,
+    scrollWhenCaretIsInTheLastLineOfViewport: boolean,
+  },
+  exposeVersion: boolean,
+  customLocaleStrings: Record<string, string>,
+  importExportRateLimiting: {
+    windowMs?: number,
+    max: number,
+  },
+  commitRateLimiting: {
+    duration: number,
+    points: number,
+  },
+  importMaxFileSize: number,
+  enableAdminUITests: boolean,
+  lowerCasePadIds: boolean,
+  randomVersionString: string
+}
+
+const settings: SettingsType = {
+  /* Root path of the installation */
+  root: absolutePaths.findEtherpadRoot(),
+  settingsFilename: absolutePaths.makeAbsolute(argv.settings || 'settings.json'),
+  credentialsFilename: absolutePaths.makeAbsolute(argv.credentials || 'credentials.json'),
+  /**
+   * The app title, visible e.g. in the browser window
+   */
+  title: 'Etherpad',
+  /**
+   * Pathname of the favicon you want to use. If null, the skin's favicon is
+   * used if one is provided by the skin, otherwise the default Etherpad favicon
+   * is used. If this is a relative path it is interpreted as relative to the
+   * Etherpad root directory.
+   */
+  favicon: null,
+  ttl: {
     AccessToken: 1 * 60 * 60, // 1 hour in seconds
     AuthorizationCode: 10 * 60, // 10 minutes in seconds
     ClientCredentials: 1 * 60 * 60, // 1 hour in seconds
     IdToken: 1 * 60 * 60, // 1 hour in seconds
     RefreshToken: 1 * 24 * 60 * 60, // 1 day in seconds
-}
-
-exports.updateServer = "https://static.etherpad.org"
-
-exports.enableDarkMode = true;
-
-/*
+  },
+  updateServer: "https://static.etherpad.org",
+  enableDarkMode: true,
+  /*
  * Skin name.
  *
  * Initialized to null, so we can spot an old configuration file and invite the
  * user to update it before falling back to the default.
  */
-exports.skinName = null;
-
-exports.skinVariants = 'super-light-toolbar super-light-editor light-background';
-
-/**
- * The IP ep-lite should listen to
- */
-exports.ip = '0.0.0.0';
-
-/**
- * The Port ep-lite should listen to
- */
-exports.port = process.env.PORT || 9001;
-
-/**
- * Should we suppress Error messages from being in Pad Contents
- */
-exports.suppressErrorsInPadText = false;
-
-/**
- * The SSL signed server key and the Certificate Authority's own certificate
- * default case: ep-lite does *not* use SSL. A signed server key is not required in this case.
- */
-exports.ssl = false;
-
-/**
- * socket.io transport methods
- **/
-exports.socketTransportProtocols = ['websocket', 'polling'];
-
-exports.socketIo = {
+  skinName: null,
+  skinVariants: 'super-light-toolbar super-light-editor light-background',
+  /**
+   * The IP ep-lite should listen to
+   */
+  ip: '0.0.0.0',
+  /**
+   * The Port ep-lite should listen to
+   */
+  port: process.env.PORT || 9001,
+  /**
+   * Should we suppress Error messages from being in Pad Contents
+   */
+  suppressErrorsInPadText: false,
+  /**
+   * The SSL signed server key and the Certificate Authority's own certificate
+   * default case: ep-lite does *not* use SSL. A signed server key is not required in this case.
+   */
+  ssl: false,
+  /**
+   * socket.io transport methods
+   **/
+  socketTransportProtocols: ['websocket', 'polling'],
+  socketIo: {
     /**
      * Maximum permitted client message size (in bytes).
      *
@@ -156,42 +330,36 @@ exports.socketIo = {
      * (malicious clients can exhaust memory).
      */
     maxHttpBufferSize: 50000,
-};
-
-
-/*
+  },
+  /*
   The authentication method used by the server.
   The default value is sso
   If you want to use the old authentication system, change this to apikey
  */
-exports.authenticationMethod = 'sso'
-
-
-/*
+  authenticationMethod: 'sso',
+  /*
  * The Type of the database
  */
-exports.dbType = 'rustydb';
-/**
- * This setting is passed with dbType to ueberDB to set up the database
- */
-exports.dbSettings = {filename: path.join(exports.root, 'var/rusty.db')};
-
-/**
- * The default Text of a new pad
- */
-exports.defaultPadText = [
+  dbType: 'rustydb',
+  /**
+   * This setting is passed with dbType to ueberDB to set up the database
+   */
+  dbSettings: null,
+  /**
+   * The default Text of a new pad
+   */
+  defaultPadText: [
     'Welcome to Etherpad!',
     '',
     'This pad text is synchronized as you type, so that everyone viewing this page sees the same ' +
     'text. This allows you to collaborate seamlessly on documents!',
     '',
     'Etherpad on Github: https://github.com/ether/etherpad-lite',
-].join('\n');
-
-/**
- * The default Pad Settings for a user (Can be overridden by changing the setting
- */
-exports.padOptions = {
+  ].join('\n'),
+  /**
+   * The default Pad Settings for a user (Can be overridden by changing the setting
+   */
+  padOptions: {
     noColors: false,
     showControls: true,
     showChat: true,
@@ -203,18 +371,15 @@ exports.padOptions = {
     alwaysShowChat: false,
     chatAndUsers: false,
     lang: null,
-};
-
-
-/**
- * Wether to enable the /stats endpoint. The functionality in the admin menu is untouched for this.
- */
-exports.enableMetrics = true
-
-/**
- * Whether certain shortcut keys are enabled for a user in the pad
- */
-exports.padShortcutEnabled = {
+  },
+  /**
+   * Wether to enable the /stats endpoint. The functionality in the admin menu is untouched for this.
+   */
+  enableMetrics: true,
+  /**
+   * Whether certain shortcut keys are enabled for a user in the pad
+   */
+  padShortcutEnabled: {
     altF9: true,
     altC: true,
     delete: true,
@@ -237,208 +402,167 @@ exports.padShortcutEnabled = {
     ctrlHome: true,
     pageUp: true,
     pageDown: true,
-};
-
-/**
- * The toolbar buttons and order.
- */
-exports.toolbar = {
+  },
+  /**
+   * The toolbar buttons and order.
+   */
+  toolbar: {
     left: [
-        ['bold', 'italic', 'underline', 'strikethrough'],
-        ['orderedlist', 'unorderedlist', 'indent', 'outdent'],
-        ['undo', 'redo'],
-        ['clearauthorship'],
+      ['bold', 'italic', 'underline', 'strikethrough'],
+      ['orderedlist', 'unorderedlist', 'indent', 'outdent'],
+      ['undo', 'redo'],
+      ['clearauthorship'],
     ],
     right: [
-        ['importexport', 'timeslider', 'savedrevision'],
-        ['settings', 'embed', 'home'],
-        ['showusers'],
+      ['importexport', 'timeslider', 'savedrevision'],
+      ['settings', 'embed', 'home'],
+      ['showusers'],
     ],
     timeslider: [
-        ['timeslider_export', 'timeslider_settings', 'timeslider_returnToPad'],
+      ['timeslider_export', 'timeslider_settings', 'timeslider_returnToPad'],
     ],
-};
-
-/**
- * A flag that requires any user to have a valid session (via the api) before accessing a pad
- */
-exports.requireSession = false;
-
-/**
- * A flag that prevents users from creating new pads
- */
-exports.editOnly = false;
-
-/**
- * Max age that responses will have (affects caching layer).
- */
-exports.maxAge = 1000 * 60 * 60 * 6; // 6 hours
-
-/**
- * A flag that shows if minification is enabled or not
- */
-exports.minify = true;
-
-/**
- * The path of the abiword executable
- */
-exports.abiword = null;
-
-/**
- * The path of the libreoffice executable
- */
-exports.soffice = null;
-
-/**
- * Should we support none natively supported file types on import?
- */
-exports.allowUnknownFileEnds = true;
-
-/**
- * The log level of log4js
- */
-exports.loglevel = defaultLogLevel;
-
-/**
- * The log layout type of log4js
- */
-exports.logLayoutType = defaultLogLayoutType;
-
-/**
- * Disable IP logging
- */
-exports.disableIPlogging = false;
-
-/**
- * Number of seconds to automatically reconnect pad
- */
-exports.automaticReconnectionTimeout = 0;
-
-/**
- * Disable Load Testing
- */
-exports.loadTest = false;
-
-/**
- * Disable dump of objects preventing a clean exit
- */
-exports.dumpOnUncleanExit = false;
-
-/**
- * Enable indentation on new lines
- */
-exports.indentationOnNewLine = true;
-
-/*
+  },
+  /**
+   * A flag that requires any user to have a valid session (via the api) before accessing a pad
+   */
+  requireSession: false,
+  /**
+   * A flag that prevents users from creating new pads
+   */
+  editOnly: false,
+  /**
+   * Max age that responses will have (affects caching layer).
+   */
+  maxAge: 1000 * 60 * 60 * 6, // 6 hours
+  /**
+   * A flag that shows if minification is enabled or not
+   */
+  minify: true,
+  /**
+   * The path of the abiword executable
+   */
+  abiword: null,
+  /**
+   * The path of the libreoffice executable
+   */
+  soffice: null,
+  /**
+   * Should we support none natively supported file types on import?
+   */
+  allowUnknownFileEnds: true,
+  /**
+   * The log level of log4js
+   */
+  loglevel: defaultLogLevel,
+  /**
+   * The log layout type of log4js
+   */
+  logLayoutType: defaultLogLayoutType,
+  /**
+   * Disable IP logging
+   */
+  disableIPlogging: false,
+  /**
+   * Number of seconds to automatically reconnect pad
+   */
+  automaticReconnectionTimeout: 0,
+  /**
+   * Disable Load Testing
+   */
+  loadTest: false,
+  /**
+   * Disable dump of objects preventing a clean exit
+   */
+  dumpOnUncleanExit: false,
+  /**
+   * Enable indentation on new lines
+   */
+  indentationOnNewLine: true,
+  /*
  * log4js appender configuration
  */
-exports.logconfig = null;
-
-/*
+  logconfig: null,
+  /*
  * Deprecated cookie signing key.
  */
-exports.sessionKey = null;
-
-/*
+  sessionKey: null,
+  /*
  * Trust Proxy, whether or not trust the x-forwarded-for header.
  */
-exports.trustProxy = false;
-
-/*
+  trustProxy: false,
+  /*
  * Settings controlling the session cookie issued by Etherpad.
  */
-exports.cookie = {
+  cookie: {
     keyRotationInterval: 1 * 24 * 60 * 60 * 1000,
-    /*
-     * Value of the SameSite cookie property. "Lax" is recommended unless
-     * Etherpad will be embedded in an iframe from another site, in which case
-     * this must be set to "None". Note: "None" will not work (the browser will
-     * not send the cookie to Etherpad) unless https is used to access Etherpad
-     * (either directly or via a reverse proxy with "trustProxy" set to true).
-     *
-     * "Strict" is not recommended because it has few security benefits but
-     * significant usability drawbacks vs. "Lax". See
-     * https://stackoverflow.com/q/41841880 for discussion.
-     */
-    sameSite: 'Lax',
+    sameSite: 'lax',
     sessionLifetime: 10 * 24 * 60 * 60 * 1000,
     sessionRefreshInterval: 1 * 24 * 60 * 60 * 1000,
-};
-
-/*
+  },
+  /*
  * This setting is used if you need authentication and/or
  * authorization. Note: /admin always requires authentication, and
  * either authorization by a module, or a user with is_admin set
  */
-exports.requireAuthentication = false;
-exports.requireAuthorization = false;
-exports.users = {};
-
-/*
+  requireAuthentication: false,
+  requireAuthorization: false,
+  users: {},
+  /*
  * This setting is used for configuring sso
  */
-exports.sso = {
+  sso: {
     issuer: "http://localhost:9001"
-}
-
-/*
+  },
+  /*
  * Show settings in admin page, by default it is true
  */
-exports.showSettingsInAdminPage = true;
-
-/*
+  showSettingsInAdminPage: true,
+  /*
  * Settings for cleanup of pads
  */
-exports.cleanup = {
-  enabled: false,
-  keepRevisions: 100,
-}
-
-/*
+  cleanup: {
+    enabled: false,
+    keepRevisions: 100,
+  },
+  /*
  * By default, when caret is moved out of viewport, it scrolls the minimum
  * height needed to make this line visible.
  */
-exports.scrollWhenFocusLineIsOutOfViewport = {
+  scrollWhenFocusLineIsOutOfViewport: {
     /*
-     * Percentage of viewport height to be additionally scrolled.
-     */
+    * Percentage of viewport height to be additionally scrolled.
+    */
     percentage: {
-        editionAboveViewport: 0,
-        editionBelowViewport: 0,
+      editionAboveViewport: 0,
+      editionBelowViewport: 0,
     },
-
     /*
-     * Time (in milliseconds) used to animate the scroll transition. Set to 0 to
-     * disable animation
-     */
+   * Time (in milliseconds) used to animate the scroll transition. Set to 0 to
+   * disable animation
+   */
     duration: 0,
-
     /*
      * Percentage of viewport height to be additionally scrolled when user presses arrow up
      * in the line of the top of the viewport.
      */
     percentageToScrollWhenUserPressesArrowUp: 0,
-
     /*
-     * Flag to control if it should scroll when user places the caret in the last
-     * line of the viewport
-     */
+    * Flag to control if it should scroll when user places the caret in the last
+    * line of the viewport
+    */
     scrollWhenCaretIsInTheLastLineOfViewport: false,
-};
-
-/*
+  },
+  /*
  * Expose Etherpad version in the web interface and in the Server http header.
  *
  * Do not enable on production machines.
  */
-exports.exposeVersion = false;
-
-/*
+  exposeVersion: false,
+  /*
  * Override any strings found in locale directories
  */
-exports.customLocaleStrings = {};
-
-/*
+  customLocaleStrings: {},
+  /*
  * From Etherpad 1.8.3 onwards, import and export of pads is always rate
  * limited.
  *
@@ -447,15 +571,13 @@ exports.customLocaleStrings = {};
  *
  * See https://github.com/nfriedly/express-rate-limit for more options
  */
-exports.importExportRateLimiting = {
+  importExportRateLimiting: {
     // duration of the rate limit window (milliseconds)
     windowMs: 90000,
-
     // maximum number of requests per IP to allow during the rate limit window
     max: 10,
-};
-
-/*
+  },
+  /*
  * From Etherpad 1.9.0 onwards, commits from individual users are rate limited
  *
  * The default is to allow at most 10 changes per IP in a 1 second window.
@@ -463,53 +585,59 @@ exports.importExportRateLimiting = {
  *
  * See https://github.com/animir/node-rate-limiter-flexible/wiki/Overall-example#websocket-single-connection-prevent-flooding for more options
  */
-exports.commitRateLimiting = {
+  commitRateLimiting: {
     // duration of the rate limit window (seconds)
     duration: 1,
-
-    // maximum number of chanes per IP to allow during the rate limit window
+    // maximum number of changes per IP to allow during the rate limit window
     points: 10,
-};
-
-/*
+  },
+  /*
  * From Etherpad 1.8.3 onwards, the maximum allowed size for a single imported
  * file is always bounded.
  *
  * File size is specified in bytes. Default is 50 MB.
  */
-exports.importMaxFileSize = 50 * 1024 * 1024;
-
-/*
+  importMaxFileSize: 50 * 1024 * 1024,
+  /*
  * Disable Admin UI tests
  */
-exports.enableAdminUITests = false;
-
-/*
+  enableAdminUITests: false,
+  /*
  * Enable auto conversion of pad Ids to lowercase.
  * e.g. /p/EtHeRpAd to /p/etherpad
  */
-exports.lowerCasePadIds = false;
+  lowerCasePadIds: false,
+  randomVersionString: '2123'
+}
+
+export default settings;
+
+/**
+ * This setting is passed with dbType to ueberDB to set up the database
+ */
+settings.dbSettings =  {filename: path.join(settings.root, 'var/rusty.db')};
+// END OF SETTINGS
 
 // checks if abiword is avaiable
-exports.abiwordAvailable = () => {
-    if (exports.abiword != null) {
+export const abiwordAvailable = () => {
+    if (settings.abiword != null) {
         return os.type().indexOf('Windows') !== -1 ? 'withoutPDF' : 'yes';
     } else {
         return 'no';
     }
 };
 
-exports.sofficeAvailable = () => {
-    if (exports.soffice != null) {
+export const sofficeAvailable = () => {
+    if (settings.soffice != null) {
         return os.type().indexOf('Windows') !== -1 ? 'withoutPDF' : 'yes';
     } else {
         return 'no';
     }
 };
 
-exports.exportAvailable = () => {
-    const abiword = exports.abiwordAvailable();
-    const soffice = exports.sofficeAvailable();
+export const exportAvailable = () => {
+    const abiword = abiwordAvailable();
+    const soffice = sofficeAvailable();
 
     if (abiword === 'no' && soffice === 'no') {
         return 'no';
@@ -522,13 +650,13 @@ exports.exportAvailable = () => {
 };
 
 // Provide git version if available
-exports.getGitCommit = () => {
+export const getGitCommit = () => {
     let version = '';
     try {
-        let rootPath = exports.root;
+        let rootPath = settings.root;
         if (fs.lstatSync(`${rootPath}/.git`).isFile()) {
             rootPath = fs.readFileSync(`${rootPath}/.git`, 'utf8');
-            rootPath = rootPath.split(' ').pop().trim();
+            rootPath = rootPath.split(' ').pop()?.trim() ?? '';
         } else {
             rootPath += '/.git';
         }
@@ -547,7 +675,7 @@ exports.getGitCommit = () => {
 };
 
 // Return etherpad version from package.json
-exports.getEpVersion = () => require('../../package.json').version;
+export const getEpVersion = () => require('../../package.json').version;
 
 
 
@@ -572,11 +700,14 @@ const storeSettings = (settingsObj: any) => {
 
         // we know this setting, so we overwrite it
         // or it's a settings hash, specific to a plugin
-        if (exports[i] !== undefined || i.indexOf('ep_') === 0) {
+        // @ts-ignore
+      if (settings[i] !== undefined || i.indexOf('ep_') === 0) {
             if (_.isObject(settingsObj[i]) && !Array.isArray(settingsObj[i])) {
-                exports[i] = _.defaults(settingsObj[i], exports[i]);
+              // @ts-ignore
+              settings[i] = _.defaults(settingsObj[i], settings[i]);
             } else {
-                exports[i] = settingsObj[i];
+              // @ts-ignore
+              settings[i] = settingsObj[i];
             }
         } else {
             // this setting is unknown, output a warning and throw it away
@@ -782,158 +913,108 @@ const lookupEnvironmentVariables = (obj: MapArrayType<any>) => {
 };
 
 
-/**
- * - reads the JSON configuration file settingsFilename from disk
- * - strips the comments
- * - replaces environment variables calling lookupEnvironmentVariables()
- * - returns a parsed Javascript object
- *
- * The isSettings variable only controls the error logging.
- */
-const parseSettings = (settingsFilename: string, isSettings: boolean) => {
-    let settingsStr = '';
 
-    let settingsType, notFoundMessage, notFoundFunction;
-
-    if (isSettings) {
-        settingsType = 'settings';
-        notFoundMessage = 'Continuing using defaults!';
-        notFoundFunction = logger.warn.bind(logger);
-    } else {
-        settingsType = 'credentials';
-        notFoundMessage = 'Ignoring.';
-        notFoundFunction = logger.info.bind(logger);
-    }
-
-    try {
-        // read the settings file
-        settingsStr = fs.readFileSync(settingsFilename).toString();
-    } catch (e) {
-        notFoundFunction(`No ${settingsType} file found in ${settingsFilename}. ${notFoundMessage}`);
-
-        // or maybe undefined!
-        return null;
-    }
-
-    try {
-        settingsStr = jsonminify(settingsStr).replace(',]', ']').replace(',}', '}');
-
-        const settings = JSON.parse(settingsStr);
-
-        logger.info(`${settingsType} loaded from: ${settingsFilename}`);
-
-        return lookupEnvironmentVariables(settings);
-    } catch (e: any) {
-        logger.error(`There was an error processing your ${settingsType} ` +
-            `file from ${settingsFilename}: ${e.message}`);
-
-        process.exit(1);
-    }
-};
-
-exports.reloadSettings = () => {
-    const settings = parseSettings(exports.settingsFilename, true);
-    const credentials = parseSettings(exports.credentialsFilename, false);
-    storeSettings(settings);
+export const reloadSettings = () => {
+    const settingsParsed = parseSettings(settings?.settingsFilename, true);
+    const credentials = parseSettings(settings.credentialsFilename, false);
+    storeSettings(settingsParsed);
     storeSettings(credentials);
 
     // Init logging config
-    exports.logconfig = defaultLogConfig(
-        exports.loglevel ? exports.loglevel : defaultLogLevel,
-        exports.logLayoutType ? exports.logLayoutType : defaultLogLayoutType
+    settings.logconfig = defaultLogConfig(
+      settings.loglevel ? settings.loglevel : defaultLogLevel,
+      settings.logLayoutType ? settings.logLayoutType : defaultLogLayoutType
     );
-    logger.warn("loglevel: " + exports.loglevel);
-    logger.warn("logLayoutType: " + exports.logLayoutType);
-    initLogging(exports.logconfig);
+    logger.warn("loglevel: " + settings.loglevel);
+    logger.warn("logLayoutType: " + settings.logLayoutType);
+    initLogging(settings.logconfig);
 
-    if (!exports.skinName) {
+    if (!settings.skinName) {
         logger.warn('No "skinName" parameter found. Please check out settings.json.template and ' +
             'update your settings.json. Falling back to the default "colibris".');
-        exports.skinName = 'colibris';
+      settings.skinName = 'colibris';
     }
 
-    if (!exports.socketTransportProtocols.includes("websocket") || !exports.socketTransportProtocols.includes("polling")) {
+    if (!settings.socketTransportProtocols.includes("websocket") || !settings.socketTransportProtocols.includes("polling")) {
         logger.warn("Invalid socketTransportProtocols setting. Please check out settings.json.template and update your settings.json. Falling back to the default ['websocket', 'polling'].");
-        exports.socketTransportProtocols = ['websocket', 'polling'];
+      settings.socketTransportProtocols = ['websocket', 'polling'];
     }
 
     // checks if skinName has an acceptable value, otherwise falls back to "colibris"
-    if (exports.skinName) {
-        const skinBasePath = path.join(exports.root, 'src', 'static', 'skins');
-        const countPieces = exports.skinName.split(path.sep).length;
+    if (settings.skinName) {
+        const skinBasePath = path.join(settings.root, 'src', 'static', 'skins');
+        const countPieces = settings.skinName.split(path.sep).length;
 
         if (countPieces !== 1) {
             logger.error(`skinName must be the name of a directory under "${skinBasePath}". This is ` +
-                `not valid: "${exports.skinName}". Falling back to the default "colibris".`);
+                `not valid: "${settings.skinName}". Falling back to the default "colibris".`);
 
-            exports.skinName = 'colibris';
+          settings.skinName = 'colibris';
         }
 
         // informative variable, just for the log messages
-        let skinPath = path.join(skinBasePath, exports.skinName);
+        let skinPath = path.join(skinBasePath, settings.skinName);
 
         // what if someone sets skinName == ".." or "."? We catch him!
-        if (absolutePaths.isSubdir(skinBasePath, skinPath) === false) {
+        if (!absolutePaths.isSubdir(skinBasePath, skinPath)) {
             logger.error(`Skin path ${skinPath} must be a subdirectory of ${skinBasePath}. ` +
                 'Falling back to the default "colibris".');
 
-            exports.skinName = 'colibris';
-            skinPath = path.join(skinBasePath, exports.skinName);
+          settings.skinName = 'colibris';
+            skinPath = path.join(skinBasePath, settings.skinName);
         }
 
-        if (fs.existsSync(skinPath) === false) {
+        if (!fs.existsSync(skinPath)) {
             logger.error(`Skin path ${skinPath} does not exist. Falling back to the default "colibris".`);
-            exports.skinName = 'colibris';
-            skinPath = path.join(skinBasePath, exports.skinName);
+          settings.skinName = 'colibris';
+            skinPath = path.join(skinBasePath, settings.skinName);
         }
 
-        logger.info(`Using skin "${exports.skinName}" in dir: ${skinPath}`);
+        logger.info(`Using skin "${settings.skinName}" in dir: ${skinPath}`);
     }
 
-    if (exports.abiword) {
+    if (settings.abiword) {
         // Check abiword actually exists
-        if (exports.abiword != null) {
-            fs.exists(exports.abiword, (exists: boolean) => {
-                if (!exists) {
-                    const abiwordError = 'Abiword does not exist at this path, check your settings file.';
-                    if (!exports.suppressErrorsInPadText) {
-                        exports.defaultPadText += `\nError: ${abiwordError}${suppressDisableMsg}`;
-                    }
-                    logger.error(`${abiwordError} File location: ${exports.abiword}`);
-                    exports.abiword = null;
-                }
-            });
+      fs.exists(settings.abiword, (exists: boolean) => {
+        if (!exists) {
+          const abiwordError = 'Abiword does not exist at this path, check your settings file.';
+          if (!settings.suppressErrorsInPadText) {
+            settings.defaultPadText += `\nError: ${abiwordError}${suppressDisableMsg}`;
+          }
+          logger.error(`${abiwordError} File location: ${settings.abiword}`);
+          settings.abiword = null;
         }
+      });
     }
 
-    if (exports.soffice) {
-        fs.exists(exports.soffice, (exists: boolean) => {
+    if (settings.soffice) {
+        fs.exists(settings.soffice, (exists: boolean) => {
             if (!exists) {
                 const sofficeError =
                     'soffice (libreoffice) does not exist at this path, check your settings file.';
 
-                if (!exports.suppressErrorsInPadText) {
-                    exports.defaultPadText += `\nError: ${sofficeError}${suppressDisableMsg}`;
+                if (!settings.suppressErrorsInPadText) {
+                  settings.defaultPadText += `\nError: ${sofficeError}${suppressDisableMsg}`;
                 }
-                logger.error(`${sofficeError} File location: ${exports.soffice}`);
-                exports.soffice = null;
+                logger.error(`${sofficeError} File location: ${settings.soffice}`);
+              settings.soffice = null;
             }
         });
     }
 
     const sessionkeyFilename = absolutePaths.makeAbsolute(argv.sessionkey || './SESSIONKEY.txt');
-    if (!exports.sessionKey) {
+    if (!settings.sessionKey) {
         try {
-            exports.sessionKey = fs.readFileSync(sessionkeyFilename, 'utf8');
+          settings.sessionKey = fs.readFileSync(sessionkeyFilename, 'utf8');
             logger.info(`Session key loaded from: ${sessionkeyFilename}`);
         } catch (err) { /* ignored */
         }
-        const keyRotationEnabled = exports.cookie.keyRotationInterval && exports.cookie.sessionLifetime;
-        if (!exports.sessionKey && !keyRotationEnabled) {
+        const keyRotationEnabled = settings.cookie.keyRotationInterval && settings.cookie.sessionLifetime;
+        if (!settings.sessionKey && !keyRotationEnabled) {
             logger.info(
                 `Session key file "${sessionkeyFilename}" not found. Creating with random contents.`);
-            exports.sessionKey = randomString(32);
-            fs.writeFileSync(sessionkeyFilename, exports.sessionKey, 'utf8');
+          settings.sessionKey = randomString(32);
+            fs.writeFileSync(sessionkeyFilename, settings.sessionKey, 'utf8');
         }
     } else {
         logger.warn('Declaring the sessionKey in the settings.json is deprecated. ' +
@@ -941,28 +1022,28 @@ exports.reloadSettings = () => {
             'If you are seeing this error after restarting using the Admin User ' +
             'Interface then you can ignore this message.');
     }
-    if (exports.sessionKey) {
+    if (settings.sessionKey) {
         logger.warn(`The sessionKey setting and ${sessionkeyFilename} file are deprecated; ` +
             'use automatic key rotation instead (see the cookie.keyRotationInterval setting).');
     }
 
-    if (exports.dbType === 'dirty') {
+    if (settings.dbType === 'dirty') {
         const dirtyWarning = 'DirtyDB is used. This is not recommended for production.';
-        if (!exports.suppressErrorsInPadText) {
-            exports.defaultPadText += `\nWarning: ${dirtyWarning}${suppressDisableMsg}`;
+        if (!settings.suppressErrorsInPadText) {
+          settings.defaultPadText += `\nWarning: ${dirtyWarning}${suppressDisableMsg}`;
         }
 
-        exports.dbSettings.filename = absolutePaths.makeAbsolute(exports.dbSettings.filename);
-        logger.warn(`${dirtyWarning} File location: ${exports.dbSettings.filename}`);
+      settings.dbSettings.filename = absolutePaths.makeAbsolute(settings.dbSettings.filename);
+        logger.warn(`${dirtyWarning} File location: ${settings.dbSettings.filename}`);
     }
 
-    if (exports.dbType === 'rustydb' || exports.dbType === "sqlite") {
-      exports.dbSettings.filename = absolutePaths.makeAbsolute(exports.dbSettings.filename);
-      logger.warn(`File location: ${exports.dbSettings.filename}`);
+    if (settings.dbType === 'rustydb' || settings.dbType === "sqlite") {
+      settings.dbSettings.filename = absolutePaths.makeAbsolute(settings.dbSettings.filename);
+      logger.warn(`File location: ${settings.dbSettings.filename}`);
     }
 
 
-    if (exports.ip === '') {
+    if (settings.ip === '') {
         // using Unix socket for connectivity
         logger.warn('The settings file contains an empty string ("") for the "ip" parameter. The ' +
             '"port" parameter will be interpreted as the path to a Unix socket to bind at.');
@@ -979,13 +1060,13 @@ exports.reloadSettings = () => {
      * ACHTUNG: this may prevent caching HTTP proxies to work
      * TODO: remove the "?v=randomstring" parameter, and replace with hashed filenames instead
      */
-    exports.randomVersionString = randomString(4);
-    logger.info(`Random string used for versioning assets: ${exports.randomVersionString}`);
+    settings.randomVersionString = randomString(4);
+    logger.info(`Random string used for versioning assets: ${settings.randomVersionString}`);
 };
 
-exports.exportedForTestingOnly = {
+export const exportedForTestingOnly = {
     parseSettings,
 };
 
 // initially load settings
-exports.reloadSettings();
+reloadSettings();

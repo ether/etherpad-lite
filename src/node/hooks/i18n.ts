@@ -4,12 +4,12 @@ import type {MapArrayType} from "../types/MapType";
 import {I18nPluginDefs} from "../types/I18nPluginDefs";
 
 const languages = require('languages4translatewiki');
-const fs = require('fs');
-const path = require('path');
-const _ = require('underscore');
+import fs from 'fs';
+import path from 'path';
+import _ from 'underscore';
 const pluginDefs = require('../../static/js/pluginfw/plugin_defs');
 import existsSync from '../utils/path_exists';
-const settings = require('../utils/Settings');
+import settings from '../utils/Settings';
 
 // returns all existing messages merged together and grouped by langcode
 // {es: {"foo": "string"}, en:...}
@@ -73,7 +73,7 @@ const getAllLocales = () => {
     'for Customization for Administrators, under Localization.');
   if (settings.customLocaleStrings) {
     if (typeof settings.customLocaleStrings !== 'object') throw wrongFormatErr;
-    _.each(settings.customLocaleStrings, (overrides:MapArrayType<string> , langcode:string) => {
+    _.each(settings.customLocaleStrings, (overrides , langcode) => {
       if (typeof overrides !== 'object') throw wrongFormatErr;
       _.each(overrides, (localeString:string|object, key:string) => {
         if (typeof localeString !== 'string') throw wrongFormatErr;

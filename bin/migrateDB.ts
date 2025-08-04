@@ -2,7 +2,7 @@
 import {readFileSync} from 'node:fs'
 import {Database, DatabaseType} from "ueberdb2";
 import path from "node:path";
-const settings = require('ep_etherpad-lite/node/utils/Settings');
+import settings from 'ep_etherpad-lite/node/utils/Settings';
 
 
 // file1 = source, file2 = target

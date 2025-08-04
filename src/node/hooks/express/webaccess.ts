@@ -6,7 +6,7 @@ import {SocketClientRequest} from "../../types/SocketClientRequest";
 import {WebAccessTypes} from "../../types/WebAccessTypes";
 import {SettingsUser} from "../../types/SettingsUser";
 const httpLogger = log4js.getLogger('http');
-const settings = require('../../utils/Settings');
+import settings from '../../utils/Settings';
 const hooks = require('../../../static/js/pluginfw/hooks');
 import readOnlyManager from '../../db/ReadOnlyManager';
 

@@ -9,7 +9,7 @@ const authorManager = require('../../../node/db/AuthorManager');
 const common = require('../common');
 const padManager = require('../../../node/db/PadManager');
 const plugins = require('../../../static/js/pluginfw/plugin_defs');
-const settings = require('../../../node/utils/Settings');
+import settings from '../../../node/utils/Settings';
 
 describe(__filename, function () {
   const backups:MapArrayType<any> = {};

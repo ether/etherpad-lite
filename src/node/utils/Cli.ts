@@ -21,32 +21,33 @@
  */
 
 // An object containing the parsed command-line options
-exports.argv = {};
 
-const argv = process.argv.slice(2);
+export const argv: Record<string, string> = {};
+
+const argvInternal = process.argv.slice(2);
 let arg, prevArg;
 
 // Loop through args
-for (let i = 0; i < argv.length; i++) {
-  arg = argv[i];
+for (let i = 0; i < argvInternal.length; i++) {
+  arg = argvInternal[i];
 
   // Override location of settings.json file
-  if (prevArg === '--settings' || prevArg === '-s') {
-    exports.argv.settings = arg;
+  if (prevArg && prevArg === '--settings' || prevArg === '-s') {
+    argv.settings = arg;
   }
 
   // Override location of credentials.json file
-  if (prevArg === '--credentials') {
+  if (prevArg && prevArg === '--credentials') {
     exports.argv.credentials = arg;
   }
 
   // Override location of settings.json file
-  if (prevArg === '--sessionkey') {
+  if (prevArg && prevArg === '--sessionkey') {
     exports.argv.sessionkey = arg;
   }
 
   // Override location of APIKEY.txt file
-  if (prevArg === '--apikey') {
+  if (prevArg && prevArg === '--apikey') {
     exports.argv.apikey = arg;
   }
 

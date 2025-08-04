@@ -4,7 +4,9 @@ import {MapArrayType} from "../../../node/types/MapType";
 
 const assert = require('assert').strict;
 const common = require('../common');
-const settings = require('../../../node/utils/Settings');
+import settings, {
+  getEpVersion
+} from '../../../node/utils/Settings';
 const superagent = require('superagent');
 
 describe(__filename, function () {
@@ -25,6 +27,7 @@ describe(__filename, function () {
   beforeEach(async function () {
     backup.settings = {};
     for (const setting of ['requireAuthentication', 'requireAuthorization']) {
+      // @ts-ignore
       backup.settings[setting] = settings[setting];
     }
   });
@@ -36,7 +39,7 @@ describe(__filename, function () {
   it('/health works', async function () {
     const res = await getHealth();
     assert.equal(res.body.status, 'pass');
-    assert.equal(res.body.releaseId, settings.getEpVersion());
+    assert.equal(res.body.releaseId, getEpVersion());
   });
 
   it('auth is not required', async function () {

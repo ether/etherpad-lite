@@ -25,7 +25,7 @@ import {PadType} from "../types/PadType";
 const CustomError = require('../utils/customError');
 const Pad = require('../db/Pad');
 const db = require('./DB');
-const settings = require('../utils/Settings');
+import settings from '../utils/Settings';
 
 /**
  * A cache of all loaded Pads.

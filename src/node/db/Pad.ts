@@ -14,7 +14,7 @@ import AttributePool from '../../static/js/AttributePool';
 const Stream = require('../utils/Stream');
 const assert = require('assert').strict;
 const db = require('./DB');
-const settings = require('../utils/Settings');
+import settings from '../utils/Settings';
 const authorManager = require('./AuthorManager');
 const padManager = require('./PadManager');
 const padMessageHandler = require('../handler/PadMessageHandler');

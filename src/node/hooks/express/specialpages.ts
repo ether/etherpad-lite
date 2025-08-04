@@ -6,7 +6,7 @@ import fs from 'node:fs';
 const fsp = fs.promises;
 const toolbar = require('../../utils/toolbar');
 const hooks = require('../../../static/js/pluginfw/hooks');
-const settings = require('../../utils/Settings');
+import settings from '../../utils/Settings';
 import util from 'node:util';
 const webaccess = require('./webaccess');
 const plugins = require('../../../static/js/pluginfw/plugin_defs');
