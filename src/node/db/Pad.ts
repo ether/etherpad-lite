@@ -25,7 +25,6 @@ const randomString = require('../utils/randomstring');
 const hooks = require('../../static/js/pluginfw/hooks');
 import pad_utils from "../../static/js/pad_utils";
 import {SmartOpAssembler} from "../../static/js/SmartOpAssembler";
-import {} from '../utils/promises';
 import {timesLimit} from "async";
 
 /**
