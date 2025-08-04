@@ -156,7 +156,7 @@ export const getGitCommit = () => {
   return version;
 };
 
-type SettingsType = {
+export type SettingsType = {
   root: string,
   settingsFilename: string,
   credentialsFilename: string,
