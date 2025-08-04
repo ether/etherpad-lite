@@ -22,7 +22,7 @@
 
 const CustomError = require('../utils/customError');
 import {firstSatisfies} from '../utils/promises';
-const randomString = require('../utils/randomstring');
+import randomString from '../utils/randomstring';
 const db = require('./DB');
 const groupManager = require('./GroupManager');
 const authorManager = require('./AuthorManager');

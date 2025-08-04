@@ -1,5 +1,3 @@
-import {MapArrayType} from "../../../node/types/MapType";
-
 import {timesLimit} from '../../../node/utils/promises';
 import {describe, it, expect} from "vitest";
 

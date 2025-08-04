@@ -21,7 +21,7 @@
 
 
 const db = require('./DB');
-const randomString = require('../utils/randomstring');
+import randomString from '../utils/randomstring';
 
 
 /**
@@ -29,14 +29,14 @@ const randomString = require('../utils/randomstring');
  * @param {String} id the pad's id
  * @return {Boolean} true if the id is readonly
  */
-exports.isReadOnlyId = (id:string) => id.startsWith('r.');
+const isReadOnlyId = (id:string) => id.startsWith('r.');
 
 /**
  * returns a read only id for a pad
  * @param {String} padId the id of the pad
  * @return {String} the read only id
  */
-exports.getReadOnlyId = async (padId:string) => {
+const getReadOnlyId = async (padId:string) => {
   // check if there is a pad2readonly entry
   let readOnlyId = await db.get(`pad2readonly:${padId}`);
 
@@ -57,19 +57,29 @@ exports.getReadOnlyId = async (padId:string) => {
  * @param {String} readOnlyId read only id
  * @return {String} the padId
  */
-exports.getPadId = async (readOnlyId:string) => await db.get(`readonly2pad:${readOnlyId}`);
+const getPadId = async (readOnlyId:string) => await db.get(`readonly2pad:${readOnlyId}`);
 
 /**
  * returns the padId and readonlyPadId in an object for any id
  * @param {String} id read only id or real pad id
  * @return {Object} an object with the padId and readonlyPadId
  */
-exports.getIds = async (id:string) => {
-  const readonly = exports.isReadOnlyId(id);
+const getIds = async (id:string) => {
+  const readonly = isReadOnlyId(id);
 
   // Might be null, if this is an unknown read-only id
-  const readOnlyPadId = readonly ? id : await exports.getReadOnlyId(id);
-  const padId = readonly ? await exports.getPadId(id) : id;
+  const readOnlyPadId = readonly ? id : await getReadOnlyId(id);
+  const padId = readonly ? await getPadId(id) : id;
 
   return {readOnlyPadId, padId, readonly};
 };
+
+export default {
+  isReadOnlyId,
+  getReadOnlyId,
+  getPadId,
+  getIds,
+  // Export for testing purposes
+  __getReadOnlyId: getReadOnlyId, // eslint-disable-line no-underscore-dangle
+  __getPadId: getPadId, // eslint-disable-line no-underscore-dangle
+}

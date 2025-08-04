@@ -24,7 +24,7 @@ import {UserSettingsObject} from "../types/UserSettingsObject";
 const authorManager = require('./AuthorManager');
 const hooks = require('../../static/js/pluginfw/hooks');
 const padManager = require('./PadManager');
-const readOnlyManager = require('./ReadOnlyManager');
+import readOnlyManager from './ReadOnlyManager';
 const sessionManager = require('./SessionManager');
 const settings = require('../utils/Settings');
 const webaccess = require('../hooks/express/webaccess');

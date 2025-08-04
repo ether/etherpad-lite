@@ -5,7 +5,7 @@ const common = require('../common');
 const exportEtherpad = require('../../../node/utils/ExportEtherpad');
 const padManager = require('../../../node/db/PadManager');
 const plugins = require('../../../static/js/pluginfw/plugin_defs');
-const readOnlyManager = require('../../../node/db/ReadOnlyManager');
+import readOnlyManager from '../../../node/db/ReadOnlyManager';
 
 describe(__filename, function () {
   let padId:string;

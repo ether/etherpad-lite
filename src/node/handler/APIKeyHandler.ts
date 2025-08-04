@@ -1,7 +1,7 @@
 const absolutePaths = require('../utils/AbsolutePaths');
 import fs from 'fs';
 import log4js from 'log4js';
-const randomString = require('../utils/randomstring');
+import randomString from '../utils/randomstring';
 const argv = require('../utils/Cli').argv;
 const settings = require('../utils/Settings');
 

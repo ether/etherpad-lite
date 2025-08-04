@@ -68,11 +68,11 @@ if (process.env['https_proxy']) {
  * early check for version compatibility before calling
  * any modules that require newer versions of NodeJS
  */
-const NodeVersion = require('./utils/NodeVersion');
-NodeVersion.enforceMinNodeVersion(pkg.engines.node.replace(">=", ""));
-NodeVersion.checkDeprecationStatus(pkg.engines.node.replace(">=", ""), '2.1.0');
+import {enforceMinNodeVersion, checkDeprecationStatus} from './utils/NodeVersion';
+enforceMinNodeVersion(pkg.engines.node.replace(">=", ""));
+checkDeprecationStatus(pkg.engines.node.replace(">=", ""), '2.1.0');
 
-const UpdateCheck = require('./utils/UpdateCheck');
+import {check} from './utils/UpdateCheck';
 const db = require('./db/DB');
 const express = require('./hooks/express');
 const hooks = require('../static/js/pluginfw/hooks');
@@ -128,8 +128,8 @@ exports.start = async () => {
   startDoneGate = new Gate();
   state = State.STARTING;
   try {
-    // Check if Etherpad version is up-to-date
-    UpdateCheck.check();
+    // Check if the Etherpad version is up to date
+    check();
 
     // @ts-ignore
     stats.gauge('memoryUsage', () => process.memoryUsage().rss);

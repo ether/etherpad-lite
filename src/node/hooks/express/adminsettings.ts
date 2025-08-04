@@ -2,18 +2,16 @@
 
 
 import {PadQueryResult, PadSearchQuery} from "../../types/PadSearchQuery";
-import {PadType} from "../../types/PadType";
 import log4js from 'log4js';
 
-const eejs = require('../../eejs');
 const fsp = require('fs').promises;
 const hooks = require('../../../static/js/pluginfw/hooks');
 const plugins = require('../../../static/js/pluginfw/plugins');
 const settings = require('../../utils/Settings');
-const UpdateCheck = require('../../utils/UpdateCheck');
+import {getLatestVersion} from '../../utils/UpdateCheck';
 const padManager = require('../../db/PadManager');
 const api = require('../../db/API');
-const cleanup = require('../../utils/Cleanup');
+import {deleteRevisions} from '../../utils/Cleanup';
 
 
 const queryPadLimit = 12;
@@ -100,7 +98,7 @@ exports.socketio = (hookName: string, {io}: any) => {
                 installedParts: plugins.getParts(),
                 installedServerHooks: mapToObject(hooks),
                 installedClientHooks: mapToObject(clientHooks),
-                latestVersion: UpdateCheck.getLatestVersion(),
+                latestVersion: getLatestVersion(),
             })
         });
 
@@ -265,7 +263,7 @@ exports.socketio = (hookName: string, {io}: any) => {
           if (padExists) {
             logger.info(`Cleanup pad revisions: ${padId}`);
             try {
-              const result = await cleanup.deleteRevisions(padId, settings.cleanup.keepRevisions)
+              const result = await deleteRevisions(padId, settings.cleanup.keepRevisions)
               if (result) {
                 socket.emit('results:cleanupPadRevisions', {
                   padId: padId,
