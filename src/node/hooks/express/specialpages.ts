@@ -178,7 +178,8 @@ const handleLiveReload = async (args: ArgsExpressType, padString: string, timeSl
           req,
           toolbar,
           isReadOnly,
-          entrypoint: '/watch/pad?hash=' + hash
+          entrypoint: '/watch/pad?hash=' + hash,
+          settings: settings.getPublicSettings()
         })
         res.send(content);
       })
@@ -207,7 +208,8 @@ const handleLiveReload = async (args: ArgsExpressType, padString: string, timeSl
           req,
           toolbar,
           isReadOnly,
-          entrypoint: '/watch/timeslider?hash=' + hash
+          entrypoint: '/watch/timeslider?hash=' + hash,
+          settings: settings.getPublicSettings()
         })
         res.send(content);
       })
@@ -348,7 +350,8 @@ exports.expressCreateServer = async (_hookName: string, args: ArgsExpressType, c
       res.send(eejs.require('ep_etherpad-lite/templates/timeslider.html', {
         req,
         toolbar,
-        entrypoint: "../../"+fileNameTimeSlider
+        entrypoint: "../../"+fileNameTimeSlider,
+        settings: settings.getPublicSettings()
       }));
     });
   } else {

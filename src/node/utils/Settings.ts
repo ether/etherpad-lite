@@ -130,6 +130,32 @@ const parseSettings = (settingsFilename: string, isSettings: boolean) => {
   }
 };
 
+
+// Provide git version if available
+export const getGitCommit = () => {
+  let version = '';
+  try {
+    let rootPath = settings.root;
+    if (fs.lstatSync(`${rootPath}/.git`).isFile()) {
+      rootPath = fs.readFileSync(`${rootPath}/.git`, 'utf8');
+      rootPath = rootPath.split(' ').pop()?.trim() ?? '';
+    } else {
+      rootPath += '/.git';
+    }
+    const ref = fs.readFileSync(`${rootPath}/HEAD`, 'utf-8');
+    if (ref.startsWith('ref: ')) {
+      const refPath = `${rootPath}/${ref.substring(5, ref.indexOf('\n'))}`;
+      version = fs.readFileSync(refPath, 'utf-8');
+    } else {
+      version = ref;
+    }
+    version = version.substring(0, 7);
+  } catch (e: any) {
+    logger.warn(`Can't get git version for server header\n${e.message}`);
+  }
+  return version;
+};
+
 type SettingsType = {
   root: string,
   settingsFilename: string,
@@ -263,7 +289,9 @@ type SettingsType = {
   importMaxFileSize: number,
   enableAdminUITests: boolean,
   lowerCasePadIds: boolean,
-  randomVersionString: string
+  randomVersionString: string,
+  gitVersion: string
+  getPublicSettings: () => Pick<SettingsType, "title" | "skinVariants"|"randomVersionString"|"skinName"|"toolbar"| "exposeVersion"| "gitVersion">,
 }
 
 const settings: SettingsType = {
@@ -607,7 +635,19 @@ const settings: SettingsType = {
  * e.g. /p/EtHeRpAd to /p/etherpad
  */
   lowerCasePadIds: false,
-  randomVersionString: '2123'
+  randomVersionString: '2123',
+  getPublicSettings: () => {
+    return {
+      gitVersion: settings.gitVersion,
+      toolbar: settings.toolbar,
+      exposeVersion: settings.exposeVersion,
+      randomVersionString: settings.randomVersionString,
+      title: settings.title,
+      skinName: settings.skinName,
+      skinVariants: settings.skinVariants,
+    }
+  },
+  gitVersion: getGitCommit(),
 }
 
 export default settings;
@@ -649,30 +689,6 @@ export const exportAvailable = () => {
     }
 };
 
-// Provide git version if available
-export const getGitCommit = () => {
-    let version = '';
-    try {
-        let rootPath = settings.root;
-        if (fs.lstatSync(`${rootPath}/.git`).isFile()) {
-            rootPath = fs.readFileSync(`${rootPath}/.git`, 'utf8');
-            rootPath = rootPath.split(' ').pop()?.trim() ?? '';
-        } else {
-            rootPath += '/.git';
-        }
-        const ref = fs.readFileSync(`${rootPath}/HEAD`, 'utf-8');
-        if (ref.startsWith('ref: ')) {
-            const refPath = `${rootPath}/${ref.substring(5, ref.indexOf('\n'))}`;
-            version = fs.readFileSync(refPath, 'utf-8');
-        } else {
-            version = ref;
-        }
-        version = version.substring(0, 7);
-    } catch (e: any) {
-        logger.warn(`Can't get git version for server header\n${e.message}`);
-    }
-    return version;
-};
 
 // Return etherpad version from package.json
 export const getEpVersion = () => require('../../package.json').version;
