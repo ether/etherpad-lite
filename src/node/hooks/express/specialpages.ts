@@ -336,7 +336,8 @@ exports.expressCreateServer = async (_hookName: string, args: ArgsExpressType, c
         req,
         toolbar,
         isReadOnly,
-        entrypoint: "../"+fileNamePad
+        entrypoint: "../"+fileNamePad,
+        settings: settings.getPublicSettings()
       })
       res.send(content);
     });
