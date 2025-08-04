@@ -84,8 +84,10 @@
 	"pad.settings.fontType": "نوع قلم:",
 	"pad.settings.fontType.normal": "ساده",
 	"pad.settings.language": "زبان:",
+	"pad.settings.deletePad": "حذف پد",
+	"pad.delete.confirm": "آیا واقعاً می‌خواهید این پد را حذف کنید؟",
 	"pad.settings.about": "درباره",
-	"pad.settings.poweredBy": "قدرست‌گرفته از",
+	"pad.settings.poweredBy": "قدرت‌گرفته از",
 	"pad.importExport.import_export": "درون‌ریزی/برون‌بری",
 	"pad.importExport.import": "بارگذاری پروندهٔ متنی یا سند",
 	"pad.importExport.importSuccessful": "موفقیت آمیز بود!",
@@ -121,6 +123,9 @@
 	"pad.modals.deleted": "پاک شد.",
 	"pad.modals.deleted.explanation": "این دفترچه یادداشت پاک شده است.",
 	"pad.modals.rateLimited": "نرخ محدود شده است.",
+	"pad.modals.rateLimited.explanation": "پیام‌های زیادی به این پد فرستادید، بنابراین اتصال شما قطع شد.",
+	"pad.modals.rejected.explanation": "سرور پیامی را که مرورگرتان فرستاده بود، رد کرد.",
+	"pad.modals.rejected.cause": "ممکن است سرور هنگام مشاهدهٔ پد به‌روزرسانی شده باشد یا شاید باگی در اترپد وجود داشته باشد. صفحه را دوباره بارگذاری کنید.",
 	"pad.modals.disconnected": "اتصال شما قطع شده است.",
 	"pad.modals.disconnected.explanation": "اتصال به سرور قطع شده است.",
 	"pad.modals.disconnected.cause": "ممکن است سرور در دسترس نباشد. اگر این مشکل باز هم رخ داد مدیر حدمت را آگاه کنید.",
@@ -133,6 +138,7 @@
 	"pad.chat.loadmessages": "بارگیری پیام‌های بیشتر",
 	"pad.chat.stick.title": "چسباندن چت به صفحه",
 	"pad.chat.writeMessage.placeholder": "پیام خود را این‌جا بنویسید",
+	"timeslider.followContents": "پیگیری به‌روزرسانی‌های محتوای پد",
 	"timeslider.pageTitle": "لغزندهٔ زمان {{appTitle}}",
 	"timeslider.toolbar.returnbutton": "بازگشت به دفترچه یادداشت",
 	"timeslider.toolbar.authors": "نویسندگان:",
@@ -171,5 +177,6 @@
 	"pad.impexp.uploadFailed": "آپلود انجام نشد، دوباره تلاش کنید",
 	"pad.impexp.importfailed": "درون‌ریزی انجام نشد",
 	"pad.impexp.copypaste": "کپی پیست کنید",
-	"pad.impexp.exportdisabled": "برون‌ریزی با قالب {{type}} از کار افتاده است. برای جزئیات بیشتر با مدیر سامانه خودتان تماس بگیرید."
+	"pad.impexp.exportdisabled": "برون‌ریزی با قالب {{type}} از کار افتاده است. برای جزئیات بیشتر با مدیر سامانه خودتان تماس بگیرید.",
+	"pad.impexp.maxFileSize": "پرونده خیلی بزرگ است. با مدیر سایت تماس بگیرید تا اندازهٔ مجاز برای وارد کردن پرونده را افزایش دهد."
 }
