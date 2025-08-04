@@ -22,9 +22,7 @@ exports.expressCreateServer = (hookName: string, args: ArgsExpressType, cb: Func
     console.error('admin template not found, skipping admin interface. You need to rebuild it in /admin with pnpm run build-copy')
     return cb();
   }
-  args.app.get('/admin/*filename', (req: any, res: any) => {
-    // parse URL
-    const parsedUrl = url.parse(req.url);
+  args.app.get('/admin/{*filename}', (req: any, res: any) => {
     // extract URL path
     let pathname = path.join(ADMIN_PATH, req.url);
     pathname = path.normalize(pathname)
