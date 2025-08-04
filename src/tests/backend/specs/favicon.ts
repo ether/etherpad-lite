@@ -29,6 +29,7 @@ describe(__filename, function () {
     backupSettings = {...settings};
     skinDir = await fsp.mkdtemp(path.join(settings.root, 'src', 'static', 'skins', 'test-'));
     settings.skinName = path.basename(skinDir);
+
   });
 
   afterEach(async function () {

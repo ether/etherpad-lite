@@ -20,7 +20,7 @@ exports.socketio = (hookName: string, {io}: any) => {
 }
 
 
-exports.expressPreSession = async (hookName:string, {app, settings}:ArgsExpressType) => {
+exports.expressPreSession = async (hookName:string, {app}:ArgsExpressType) => {
   // This endpoint is intended to conform to:
   // https://www.ietf.org/archive/id/draft-inadarei-api-health-check-06.html
   app.get('/health', (req:any, res:any) => {
@@ -70,11 +70,13 @@ exports.expressPreSession = async (hookName:string, {app, settings}:ArgsExpressT
       }
 
 
+      console.log("Favicon is", settings.favicon)
       const fns = [
         ...(settings.favicon ? [path.resolve(settings.root, settings.favicon)] : []),
-        settings.skinName ? path.join(settings.root, 'src', 'static', 'skins', settings.skinName, 'favicon.ico'):
+        settings.skinName && path.join(settings.root, 'src', 'static', 'skins', settings.skinName, 'favicon.ico'),
         path.join(settings.root, 'src', 'static', 'favicon.ico'),
-      ];
+      ].filter(f=>f != null);
+      console.log('FNS are',  fns)
       for (const fn of fns) {
         try {
           await fsp.access(fn, fs.constants.R_OK);
