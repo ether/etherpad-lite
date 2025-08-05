@@ -19,13 +19,13 @@ import log4js from 'log4js';
 import {deserializeOps} from '../../static/js/Changeset';
 const contentcollector = require('../../static/js/contentcollector');
 import jsdom from 'jsdom';
-import {PadType} from "../types/PadType";
 import {Builder} from "../../static/js/Builder";
+import Pad from "../db/Pad";
 
 const apiLogger = log4js.getLogger('ImportHtml');
 let processor:any;
 
-exports.setPadHTML = async (pad: PadType, html:string, authorId = '') => {
+export const setPadHTML = async (pad: Pad, html:string, authorId = '') => {
   if (processor == null) {
     const [{rehype}, {default: minifyWhitespace}] =
         await Promise.all([import('rehype'), import('rehype-minify-whitespace')]);
@@ -93,3 +93,7 @@ exports.setPadHTML = async (pad: PadType, html:string, authorId = '') => {
   await pad.setText('\n', authorId);
   await pad.appendRevision(theChangeset, authorId);
 };
+
+export default {
+  setPadHTML,
+}

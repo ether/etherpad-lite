@@ -21,17 +21,18 @@ import {MapArrayType} from "../types/MapType";
 import {deserializeOps, splitAttributionLines, subattribution} from '../../static/js/Changeset';
 const attributes = require('../../static/js/attributes');
 const padManager = require('../db/PadManager');
-const _ = require('underscore');
+import _ from 'underscore';
 const Security = require('../../static/js/security');
 const hooks = require('../../static/js/pluginfw/hooks');
-const eejs = require('../eejs');
+import eejs from '../eejs';
 const _analyzeLine = require('./ExportHelper')._analyzeLine;
 const _encodeWhitespace = require('./ExportHelper')._encodeWhitespace;
 import padutils from "../../static/js/pad_utils";
 import {StringIterator} from "../../static/js/StringIterator";
 import {StringAssembler} from "../../static/js/StringAssembler";
+import Pad from "../db/Pad";
 
-const getPadHTML = async (pad: PadType, revNum: string) => {
+export const getPadHTML = async (pad: Pad, revNum: number) => {
   let atext = pad.atext;
 
   // fetch revision atext
@@ -43,7 +44,7 @@ const getPadHTML = async (pad: PadType, revNum: string) => {
   return await getHTMLFromAtext(pad, atext);
 };
 
-const getHTMLFromAtext = async (pad:PadType, atext: AText, authorColors?: string[]) => {
+export const getHTMLFromAtext = async (pad: Pad, atext: AText, authorColors?: MapArrayType<string>) => {
   const apool = pad.apool();
   const textLines = atext.text.slice(0, -1).split('\n');
   const attribLines = splitAttributionLines(atext.attribs, atext.text);
@@ -476,7 +477,7 @@ const getHTMLFromAtext = async (pad:PadType, atext: AText, authorColors?: string
   return pieces.join('');
 };
 
-exports.getPadHTMLDocument = async (padId: string, revNum: string, readOnlyId: number) => {
+export const getPadHTMLDocument = async (padId: string, revNum: number, readOnlyId: number) => {
   const pad = await padManager.getPad(padId);
 
   // Include some Styles into the Head for Export
@@ -548,5 +549,11 @@ const _processSpaces = (s: string) => {
   return parts.join('');
 };
 
-exports.getPadHTML = getPadHTML;
-exports.getHTMLFromAtext = getHTMLFromAtext;
+export default {
+  getPadHTML,
+  getHTMLFromAtext,
+  getPadHTMLDocument,
+  _processSpaces,
+  _analyzeLine,
+  _encodeWhitespace,
+}

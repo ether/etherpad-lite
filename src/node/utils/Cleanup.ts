@@ -4,10 +4,10 @@ import {AChangeSet} from "../types/PadType";
 import {Revision} from "../types/Revision";
 
 import {timesLimit, firstSatisfies} from './promises';
-const padManager = require('ep_etherpad-lite/node/db/PadManager');
-const db = require('ep_etherpad-lite/node/db/DB');
-const Changeset = require('ep_etherpad-lite/static/js/Changeset');
-const padMessageHandler = require('ep_etherpad-lite/node/handler/PadMessageHandler');
+import padManager from 'ep_etherpad-lite/node/db/PadManager';
+import db from 'ep_etherpad-lite/node/db/DB';
+import {applyToAText, makeAText} from 'ep_etherpad-lite/static/js/Changeset';
+import padMessageHandler from 'ep_etherpad-lite/node/handler/PadMessageHandler';
 import log4js from 'log4js';
 const logger = log4js.getLogger('cleanup');
 
@@ -88,10 +88,10 @@ export const deleteRevisions = async (padId: string, keepRevisions: number): Pro
   }
   await db.set(`pad:${padId}`, padContent);
 
-  let newAText = Changeset.makeAText('\n');
+  let newAText = makeAText('\n');
   let pool = pad.apool()
 
-  newAText = Changeset.applyToAText(changeset, newAText, pool);
+  newAText = applyToAText(changeset as string, newAText, pool);
 
   const revision = await createRevision(
     changeset,
@@ -110,7 +110,7 @@ export const deleteRevisions = async (padId: string, keepRevisions: number): Pro
     const rev = i + cleanupUntilRevision + 1
     const newRev = rev - cleanupUntilRevision;
 
-    newAText = Changeset.applyToAText(revisions[rev].changeset, newAText, pool);
+    newAText = applyToAText(revisions[rev].changeset as string, newAText, pool);
 
     const revision = await createRevision(
       revisions[rev].changeset,
@@ -152,7 +152,7 @@ export const checkTodos = async () => {
 
     const revisionDate = await pad.getRevisionDate(pad.getHeadRevisionNumber())
 
-    if (pad.head < settings.minHead || padMessageHandler.padUsersCount(padId) > 0 || Date.now() < revisionDate + settings.minAge) {
+    if (pad.head < settings.minHead || padMessageHandler.padUsersCount(padId).padUsersCount > 0 || Date.now() < revisionDate + settings.minAge) {
       return
     }
 

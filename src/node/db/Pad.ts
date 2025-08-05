@@ -11,15 +11,15 @@ import AttributeMap from '../../static/js/AttributeMap';
 import {applyToAText, checkRep, copyAText, deserializeOps, makeAText, makeSplice, opsFromAText, pack, unpack} from '../../static/js/Changeset';
 import ChatMessage from '../../static/js/ChatMessage';
 import AttributePool from '../../static/js/AttributePool';
-const Stream = require('../utils/Stream');
-const assert = require('assert').strict;
-const db = require('./DB');
+import Stream from '../utils/Stream';
+import {strict as assert} from 'node:assert'
+import db, {DBFunctionsPromisified} from './DB';
 import settings from '../utils/Settings';
-const authorManager = require('./AuthorManager');
-const padManager = require('./PadManager');
-const padMessageHandler = require('../handler/PadMessageHandler');
-const groupManager = require('./GroupManager');
-const CustomError = require('../utils/customError');
+import authorManager from "./AuthorManager";
+import padManager from './PadManager'
+import padMessageHandler from '../handler/PadMessageHandler';
+import groupManager from './GroupManager';
+import CustomError from '../utils/customError';
 import readOnlyManager from './ReadOnlyManager';
 import randomString from '../utils/randomstring';
 const hooks = require('../../static/js/pluginfw/hooks');
@@ -33,19 +33,19 @@ import {timesLimit} from "async";
  * @param {String} txt The text to clean
  * @returns {String} The cleaned text
  */
-exports.cleanText = (txt:string): string => txt.replace(/\r\n/g, '\n')
+export const cleanText = (txt:string): string => txt.replace(/\r\n/g, '\n')
     .replace(/\r/g, '\n')
     .replace(/\t/g, '        ')
     .replace(/\xa0/g, ' ');
 
 class Pad {
-  private db: Database;
-  private atext: AText;
-  private pool: AttributePool;
-  private head: number;
-    private chatHead: number;
+  private db: DBFunctionsPromisified;
+  atext: AText;
+  pool: AttributePool;
+  head: number;
+    chatHead: number;
     private publicStatus: boolean;
-    private id: string;
+    id: string;
     private savedRevisions: any[];
   /**
    * @param id
@@ -230,9 +230,9 @@ class Pad {
     const colorPalette = authorManager.getColorPalette();
 
     await Promise.all(
-        authorIds.map((authorId) => authorManager.getAuthorColorId(authorId).then((colorId:string) => {
+        authorIds.map((authorId) => authorManager.getAuthorColorId(authorId).then((colorId:number) => {
           // colorId might be a hex color or an number out of the palette
-          returnTable[authorId] = colorPalette[colorId] || colorId;
+          returnTable[authorId] = colorPalette[colorId] || colorId.toString();
         })));
 
     return returnTable;
@@ -287,7 +287,7 @@ class Pad {
     const orig = this.text();
     assert(orig.endsWith('\n'));
     if (start + ndel > orig.length) throw new RangeError('start/delete past the end of the text');
-    ins = exports.cleanText(ins);
+    ins = cleanText(ins);
     const willEndWithNewline =
         start + ndel < orig.length || // Keeping last char (which is guaranteed to be a newline).
         ins.endsWith('\n') ||
@@ -352,6 +352,9 @@ class Pad {
     const entry = await this.db.get(`pad:${this.id}:chat:${entryNum}`);
     if (entry == null) return null;
     const message = ChatMessage.fromObject(entry);
+    if (message.authorId == null) {
+      return null
+    }
     message.displayName = await authorManager.getAuthorName(message.authorId);
     return message;
   }
@@ -363,7 +366,7 @@ class Pad {
    *     (inclusive), in order. Note: `start` and `end` form a closed interval, not a half-open
    *     interval as is typical in code.
    */
-  async getChatMessages(start: string, end: number) {
+  async getChatMessages(start: number, end: number) {
     const entries =
         await Promise.all(Stream.range(start, end + 1).map(this.getChatMessage.bind(this)));
 
@@ -392,7 +395,7 @@ class Pad {
         const context = {pad: this, authorId, type: 'text', content: settings.defaultPadText};
         await hooks.aCallAll('padDefaultContent', context);
         if (context.type !== 'text') throw new Error(`unsupported content type: ${context.type}`);
-        text = exports.cleanText(context.content);
+        text = cleanText(context.content);
       }
       const firstChangeset = makeSplice('\n', 0, 0, text);
       await this.appendRevision(firstChangeset, authorId);
@@ -620,7 +623,7 @@ class Pad {
     await this.saveToDatabase();
   }
 
-  async addSavedRevision(revNum: string, savedById: string, label: string) {
+  async addSavedRevision(revNum: number, savedById: string, label?: string) {
     // if this revision is already saved, return silently
     for (const i in this.savedRevisions) {
       if (this.savedRevisions[i] && this.savedRevisions[i].revNum === revNum) {
@@ -765,4 +768,4 @@ class Pad {
     await hooks.aCallAll('padCheck', {pad: this});
   }
 }
-exports.Pad = Pad;
+export default Pad

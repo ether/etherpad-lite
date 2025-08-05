@@ -11,17 +11,18 @@ import {numToString} from "../../static/js/ChangesetUtils";
 import Op from "../../static/js/Op";
 import {StringAssembler} from "../../static/js/StringAssembler";
 const attributes = require('../../static/js/attributes');
-const exportHtml = require('./ExportHtml');
+import exportHtml from './ExportHtml';
+import Pad from "../db/Pad";
 
 
 class PadDiff {
-  private readonly _pad: PadType;
+  private readonly _pad: Pad;
     private readonly _fromRev: string;
     private readonly _toRev: string;
     private _html: any;
     public _authors: any[];
     private self: PadDiff | undefined
-  constructor(pad: PadType, fromRev:string, toRev:string) {
+  constructor(pad: Pad, fromRev:number, toRev:number) {
     // check parameters
     if (!pad || !pad.id || !pad.atext || !pad.pool) {
       throw new Error('Invalid pad');
@@ -466,4 +467,4 @@ PadDiff.prototype._createDeletionChangeset = function (cs, startAText, apool) {
 };
 
 // export the constructor
-module.exports = PadDiff;
+export default PadDiff

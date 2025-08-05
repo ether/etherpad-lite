@@ -19,12 +19,12 @@
  * limitations under the License.
  */
 
-const db = require('./DB');
-const CustomError = require('../utils/customError');
+import db from './DB';
+import CustomError from '../utils/customError';
 const hooks = require('../../static/js/pluginfw/hooks');
-import padutils, {randomString} from "../../static/js/pad_utils";
+import  {randomString} from "../../static/js/pad_utils";
 
-exports.getColorPalette = () => [
+const getColorPalette = () => [
   '#ffc7c7',
   '#fff1c7',
   '#e3ffc7',
@@ -95,7 +95,7 @@ exports.getColorPalette = () => [
  * Checks if the author exists
  * @param {String} authorID The id of the author
  */
-exports.doesAuthorExist = async (authorID: string) => {
+const doesAuthorExist = async (authorID: string) => {
   const author = await db.get(`globalAuthor:${authorID}`);
 
   return author != null;
@@ -105,7 +105,7 @@ exports.doesAuthorExist = async (authorID: string) => {
  exported for backwards compatibility
  @param {String} authorID The id of the author
   */
-exports.doesAuthorExists = exports.doesAuthorExist;
+const doesAuthorExists = doesAuthorExist;
 
 
 /**
@@ -120,7 +120,7 @@ const mapAuthorWithDBKey = async (mapperkey: string, mapper:string) => {
 
   if (author == null) {
     // there is no author with this mapper, so create one
-    const author = await exports.createAuthor(null);
+    const author = await createAuthor(null);
 
     // create the token2author relation
     await db.set(`${mapperkey}:${mapper}`, author.authorID);
@@ -155,7 +155,7 @@ const getAuthor4Token = async (token: string) => {
  * @param {Object} user
  * @return {Promise<*>}
  */
-exports.getAuthorId = async (token: string, user: object) => {
+const getAuthorId = async (token: string, user: object | undefined) => {
   const context = {dbKey: token, token, user};
   let [authorId] = await hooks.aCallFirst('getAuthorId', context);
   if (!authorId) authorId = await getAuthor4Token(context.dbKey);
@@ -163,28 +163,16 @@ exports.getAuthorId = async (token: string, user: object) => {
 };
 
 /**
- * Returns the AuthorID for a token.
- *
- * @deprecated Use `getAuthorId` instead.
- * @param {String} token The token
- */
-exports.getAuthor4Token = async (token: string) => {
-  padutils.warnDeprecated(
-      'AuthorManager.getAuthor4Token() is deprecated; use AuthorManager.getAuthorId() instead');
-  return await getAuthor4Token(token);
-};
-
-/**
  * Returns the AuthorID for a mapper.
  * @param {String} authorMapper The mapper
  * @param {String} name The name of the author (optional)
  */
-exports.createAuthorIfNotExistsFor = async (authorMapper: string, name: string) => {
+const createAuthorIfNotExistsFor = async (authorMapper: string, name: string) => {
   const author = await mapAuthorWithDBKey('mapper2author', authorMapper);
 
   if (name) {
     // set the name of this author
-    await exports.setAuthorName(author.authorID, name);
+    await setAuthorName(author.authorID, name);
   }
 
   return author;
@@ -195,13 +183,13 @@ exports.createAuthorIfNotExistsFor = async (authorMapper: string, name: string) 
  * Internal function that creates the database entry for an author
  * @param {String} name The name of the author
  */
-exports.createAuthor = async (name: string) => {
+const createAuthor = async (name: string| null) => {
   // create the new author name
   const author = `a.${randomString(16)}`;
 
   // create the globalAuthors db entry
   const authorObj = {
-    colorId: Math.floor(Math.random() * (exports.getColorPalette().length)),
+    colorId: Math.floor(Math.random() * (getColorPalette().length)),
     name,
     timestamp: Date.now(),
   };
@@ -216,41 +204,41 @@ exports.createAuthor = async (name: string) => {
  * Returns the Author Obj of the author
  * @param {String} author The id of the author
  */
-exports.getAuthor = async (author: string) => await db.get(`globalAuthor:${author}`);
+const getAuthor = async (author: string) => await db.get(`globalAuthor:${author}`);
 
 /**
  * Returns the color Id of the author
  * @param {String} author The id of the author
  */
-exports.getAuthorColorId = async (author: string) => await db.getSub(`globalAuthor:${author}`, ['colorId']);
+const getAuthorColorId = async (author: string) => await db.getSub(`globalAuthor:${author}`, ['colorId']);
 
 /**
  * Sets the color Id of the author
  * @param {String} author The id of the author
  * @param {String} colorId The color id of the author
  */
-exports.setAuthorColorId = async (author: string, colorId: string) => await db.setSub(
+const setAuthorColorId = async (author: string, colorId: string) => await db.setSub(
     `globalAuthor:${author}`, ['colorId'], colorId);
 
 /**
  * Returns the name of the author
  * @param {String} author The id of the author
  */
-exports.getAuthorName = async (author: string) => await db.getSub(`globalAuthor:${author}`, ['name']);
+const getAuthorName = async (author: string) => await db.getSub(`globalAuthor:${author}`, ['name']);
 
 /**
  * Sets the name of the author
  * @param {String} author The id of the author
  * @param {String} name The name of the author
  */
-exports.setAuthorName = async (author: string, name: string) => await db.setSub(
+const setAuthorName = async (author: string, name: string|null) => await db.setSub(
     `globalAuthor:${author}`, ['name'], name);
 
 /**
  * Returns an array of all pads this author contributed to
  * @param {String} authorID The id of the author
  */
-exports.listPadsOfAuthor = async (authorID: string) => {
+const listPadsOfAuthor = async (authorID: string) => {
   /* There are two other places where this array is manipulated:
    * (1) When the author is added to a pad, the author object is also updated
    * (2) When a pad is deleted, each author of that pad is also updated
@@ -275,7 +263,7 @@ exports.listPadsOfAuthor = async (authorID: string) => {
  * @param {String} authorID The id of the author
  * @param {String} padID The id of the pad the author contributes to
  */
-exports.addPad = async (authorID: string, padID: string) => {
+const addPad = async (authorID: string, padID: string) => {
   // get the entry
   const author = await db.get(`globalAuthor:${authorID}`);
 
@@ -302,7 +290,7 @@ exports.addPad = async (authorID: string, padID: string) => {
  * @param {String} authorID The id of the author
  * @param {String} padID The id of the pad the author contributes to
  */
-exports.removePad = async (authorID: string, padID: string) => {
+const removePad = async (authorID: string, padID: string) => {
   const author = await db.get(`globalAuthor:${authorID}`);
 
   if (author == null) return;
@@ -313,3 +301,21 @@ exports.removePad = async (authorID: string, padID: string) => {
     await db.set(`globalAuthor:${authorID}`, author);
   }
 };
+
+export default {
+  doesAuthorExist,
+  doesAuthorExists,
+  getAuthor4Token,
+  getAuthorId,
+  createAuthorIfNotExistsFor,
+  createAuthor,
+  getAuthor,
+  getAuthorColorId,
+  setAuthorColorId,
+  getAuthorName,
+  setAuthorName,
+  listPadsOfAuthor,
+  addPad,
+  removePad,
+  getColorPalette,
+}

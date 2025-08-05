@@ -24,37 +24,56 @@
 import {Database, DatabaseType} from 'ueberdb2';
 import settings from '../utils/Settings';
 import log4js from 'log4js';
-const stats = require('../stats')
-
+import stats from '../stats'
 const logger = log4js.getLogger('ueberDB');
 
 /**
  * The UeberDB Object that provides the database functions
  */
-exports.db = null;
+export let db: Database | null = null;
+
+
+export type DBFunctionsPromisified = {
+  get: (key: string, cb?: Function) => Promise<any>,
+  set: (key:string, value:object|string, callback?:Function) => Promise<void>,
+  findKeys: (key:string, notKey:string|null, callback?:Function) => Promise<string[]>,
+  getSub: (key: string, sub: string[]) => Promise<any>,
+  setSub: (key: string, sub: string[], value: any) => Promise<void>,
+  remove: (key:string, cb?: Function| null) => Promise<void>,
+}
+
+export const asyncFunctions: DBFunctionsPromisified = {
+
+} as DBFunctionsPromisified
+
+export default asyncFunctions
 
 /**
  * Initializes the database with the settings provided by the settings module
  */
-exports.init = async () => {
-  exports.db = new Database(settings.dbType as DatabaseType, settings.dbSettings, null, logger);
-  await exports.db.init();
-  if (exports.db.metrics != null) {
-    for (const [metric, value] of Object.entries(exports.db.metrics)) {
+export const init = async () => {
+  db = new Database(settings.dbType as DatabaseType, settings.dbSettings, null, logger);
+  await db.init();
+  if (db.metrics != null) {
+    for (const [metric, value] of Object.entries(db.metrics)) {
       if (typeof value !== 'number') continue;
-      stats.gauge(`ueberdb_${metric}`, () => exports.db.metrics[metric]);
+      stats.gauge(`ueberdb_${metric}`, () => db!.metrics[metric]);
     }
   }
   for (const fn of ['get', 'set', 'findKeys', 'getSub', 'setSub', 'remove']) {
-    const f = exports.db[fn];
-    exports[fn] = async (...args:string[]) => await f.call(exports.db, ...args);
-    Object.setPrototypeOf(exports[fn], Object.getPrototypeOf(f));
-    Object.defineProperties(exports[fn], Object.getOwnPropertyDescriptors(f));
+    // @ts-ignore
+    const f = db[fn];
+    // @ts-ignore
+    asyncFunctions[fn] = async (...args:string[]) => await f.call(db, ...args);
+    // @ts-ignore
+    Object.setPrototypeOf(asyncFunctions[fn], Object.getPrototypeOf(f));
+    // @ts-ignore
+    Object.defineProperties(asyncFunctions[fn], Object.getOwnPropertyDescriptors(f));
   }
 };
 
-exports.shutdown = async (hookName: string, context:any) => {
-  if (exports.db != null) await exports.db.close();
-  exports.db = null;
+export const shutdown = async (hookName: string, context:any) => {
+  if (db != null) await db.close();
+  db = null;
   logger.log('Database closed');
 };

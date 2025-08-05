@@ -1,4 +1,3 @@
-'use strict';
 /*
  * Copyright (c) 2011 RedHog (Egil Möller) <egil.moller@freecode.no>
  *
@@ -31,44 +30,41 @@ import {pluginInstallPath} from '../../static/js/pluginfw/installer'
 
 const templateCache = new Map();
 
-exports.info = {
+export const info: any = {
   __output_stack: [],
   block_stack: [],
   file_stack: [],
   args: [],
 };
 
-const getCurrentFile = () => exports.info.file_stack[exports.info.file_stack.length - 1];
+const getCurrentFile = () => info.file_stack[info.file_stack.length - 1];
 
-exports._init = (b: any, recursive: boolean) => {
-  exports.info.__output_stack.push(exports.info.__output);
-  exports.info.__output = b;
+export const _init = (b: any, recursive: boolean) => {
+  info.__output_stack.push(info.__output);
+  info.__output = b;
 };
 
-exports._exit = (b:any, recursive:boolean) => {
-  exports.info.__output = exports.info.__output_stack.pop();
+export const _exit = (b:any, recursive:boolean) => {
+  info.__output = info.__output_stack.pop();
 };
 
-exports.begin_block = (name:string) => {
-  exports.info.block_stack.push(name);
-  exports.info.__output_stack.push(exports.info.__output.get());
-  exports.info.__output.set('');
+export const begin_block = (name:string) => {
+  info.block_stack.push(name);
+  info.__output_stack.push(info.__output.get());
+  info.__output.set('');
 };
 
-exports.end_block = () => {
-  const name = exports.info.block_stack.pop();
-  const renderContext = exports.info.args[exports.info.args.length - 1];
-  const content = exports.info.__output.get();
-  exports.info.__output.set(exports.info.__output_stack.pop());
+export const end_block = () => {
+  const name = info.block_stack.pop();
+  const renderContext = info.args[info.args.length - 1];
+  const content = info.__output.get();
+  info.__output.set(info.__output_stack.pop());
   const args = {content, renderContext};
   hooks.callAll(`eejsBlock_${name}`, args);
-  exports.info.__output.set(exports.info.__output.get().concat(args.content));
+  info.__output.set(info.__output.get().concat(args.content));
 };
 
-exports.require = (name:string, args:{
-  e?: Function,
-    require?: Function,
-}, mod:{
+export const require2 = (name:string, args: any, mod?:{
   filename:string,
     paths:string[],
 }) => {
@@ -77,7 +73,7 @@ exports.require = (name:string, args:{
   let basedir = __dirname;
   let paths:string[] = [];
 
-  if (exports.info.file_stack.length) {
+  if (info.file_stack.length) {
     basedir = path.dirname(getCurrentFile().path);
   }
   if (mod) {
@@ -94,7 +90,14 @@ exports.require = (name:string, args:{
 
   const ejspath = resolve.sync(name, {paths, basedir, extensions: ['.html', '.ejs']});
 
-  args.e = exports;
+  args.e = {
+    _init: (b:any, recursive:boolean) => _init(b, recursive),
+    _exit: (b:any, recursive:boolean) => _exit(b, recursive),
+    begin_block: (name:string) => begin_block(name),
+    end_block: () => end_block(),
+    info,
+    getCurrentFile,
+  };
   args.require = require;
 
   const cache = settings.maxAge !== 0;
@@ -104,11 +107,25 @@ exports.require = (name:string, args:{
       {filename: ejspath});
   if (cache) templateCache.set(ejspath, template);
 
-  exports.info.args.push(args);
-  exports.info.file_stack.push({path: ejspath});
+  info.args.push(args);
+  info.file_stack.push({path: ejspath});
   const res = template(args);
-  exports.info.file_stack.pop();
-  exports.info.args.pop();
+  info.file_stack.pop();
+  info.args.pop();
 
   return res;
 };
+
+export default {
+  require: require2,
+  _init,
+  _exit,
+  begin_block,
+  end_block,
+  info,
+  getCurrentFile,
+  templateCache,
+  infoStack: info.__output_stack,
+  blockStack: info.block_stack,
+  fileStack: info.file_stack,
+}

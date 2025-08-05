@@ -28,7 +28,7 @@ import settings from '../utils/Settings';
 import os from 'os';
 const hooks = require('../../static/js/pluginfw/hooks');
 import util from 'util';
-const { checkValidRev } = require('../utils/checkValidRev');
+import {checkValidRev} from '../utils/checkValidRev';
 
 const fsp_writeFile = util.promisify(fs.writeFile);
 const fsp_unlink = util.promisify(fs.unlink);

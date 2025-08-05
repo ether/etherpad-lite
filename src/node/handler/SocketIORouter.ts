@@ -24,7 +24,7 @@ import {MapArrayType} from "../types/MapType";
 import {SocketModule} from "../types/SocketModule";
 import log4js from 'log4js';
 import settings from '../utils/Settings';
-const stats = require('../../node/stats')
+import stats from '../../node/stats';
 
 const logger = log4js.getLogger('socket.io');
 

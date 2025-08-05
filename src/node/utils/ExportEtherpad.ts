@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-const Stream = require('./Stream');
+import Stream from './Stream';
 const assert = require('assert').strict;
 const authorManager = require('../db/AuthorManager');
 const hooks = require('../../static/js/pluginfw/hooks');

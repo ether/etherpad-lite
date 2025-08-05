@@ -20,7 +20,7 @@ import {APool} from "../types/PadType";
 
 import AttributePool from '../../static/js/AttributePool';
 const {Pad} = require('../db/Pad');
-const Stream = require('./Stream');
+import Stream from './Stream';
 const authorManager = require('../db/AuthorManager');
 const db = require('../db/DB');
 const hooks = require('../../static/js/pluginfw/hooks');
