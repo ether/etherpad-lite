@@ -39,7 +39,7 @@ export const cleanText = (txt:string): string => txt.replace(/\r\n/g, '\n')
     .replace(/\xa0/g, ' ');
 
 class Pad {
-  private db: DBFunctionsPromisified;
+  db: DBFunctionsPromisified;
   atext: AText;
   pool: AttributePool;
   head: number;

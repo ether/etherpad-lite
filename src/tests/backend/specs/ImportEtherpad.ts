@@ -3,10 +3,10 @@
 import {MapArrayType} from "../../../node/types/MapType";
 
 const assert = require('assert').strict;
-const authorManager = require('../../../node/db/AuthorManager');
-const db = require('../../../node/db/DB');
+import authorManager from '../../../node/db/AuthorManager';
+import db from '../../../node/db/DB';
 const importEtherpad = require('../../../node/utils/ImportEtherpad');
-const padManager = require('../../../node/db/PadManager');
+import padManager from '../../../node/db/PadManager';
 const plugins = require('../../../static/js/pluginfw/plugin_defs');
 import {randomString} from '../../../static/js/pad_utils';
 
