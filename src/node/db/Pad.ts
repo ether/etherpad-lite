@@ -39,7 +39,7 @@ export const cleanText = (txt:string): string => txt.replace(/\r\n/g, '\n')
     .replace(/\xa0/g, ' ');
 
 class Pad {
-  db: DBFunctionsPromisified;
+  db: DBFunctionsPromisified|Database;
   atext: AText;
   pool: AttributePool;
   head: number;
@@ -55,7 +55,7 @@ class Pad {
    *     can be used to shard pad storage across multiple database backends, to put each pad in its
    *     own database table, or to validate imported pad data before it is written to the database.
    */
-  constructor(id:string, database = db) {
+  constructor(id:string, database: DBFunctionsPromisified|Database = db) {
     this.db = database;
     this.atext = makeAText('\n');
     this.pool = new AttributePool();
@@ -382,7 +382,7 @@ class Pad {
     });
   }
 
-  async init(text:string, authorId = '') {
+  async init(text:string | null, authorId = '') {
     // try to load the pad
     const value = await this.db.get(`pad:${this.id}`);
 

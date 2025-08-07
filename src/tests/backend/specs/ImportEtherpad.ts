@@ -2,7 +2,7 @@
 
 import {MapArrayType} from "../../../node/types/MapType";
 
-const assert = require('assert').strict;
+import {strict as assert} from 'node:assert';
 import authorManager from '../../../node/db/AuthorManager';
 import db from '../../../node/db/DB';
 const importEtherpad = require('../../../node/utils/ImportEtherpad');
@@ -70,7 +70,7 @@ describe(__filename, function () {
     const data:MapArrayType<any> = makeExport(authorId);
     data['pad:differentPadId:revs:0'] = data['pad:testing:revs:0'];
     delete data['pad:testing:revs:0'];
-    assert.rejects(importEtherpad.setPadRaw(padId, JSON.stringify(data)), /unexpected pad ID/);
+    await assert.rejects(importEtherpad.setPadRaw(padId, JSON.stringify(data)), /unexpected pad ID/);
     assert(!await authorManager.doesAuthorExist(authorId));
     assert(!await padManager.doesPadExist(padId));
   });
