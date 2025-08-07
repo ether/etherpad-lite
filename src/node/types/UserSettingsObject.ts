@@ -1,5 +1,5 @@
 export type UserSettingsObject = {
-    canCreate: boolean,
+    canCreate?: boolean,
     readOnly: boolean,
     padAuthorizations: any
 }

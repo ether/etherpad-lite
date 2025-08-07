@@ -79,7 +79,7 @@ const hooks = require('../static/js/pluginfw/hooks');
 const pluginDefs = require('../static/js/pluginfw/plugin_defs');
 const plugins = require('../static/js/pluginfw/plugins');
 import {Gate} from './utils/promises';
-const stats = require('./stats')
+import stats from './stats'
 
 const logger = log4js.getLogger('server');
 

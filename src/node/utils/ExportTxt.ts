@@ -20,17 +20,18 @@
  */
 
 import {AText, PadType} from "../types/PadType";
-import {MapType} from "../types/MapType";
+import {MapArrayType, MapType} from "../types/MapType";
 
 import {deserializeOps, splitAttributionLines, subattribution} from '../../static/js/Changeset';
 import {StringIterator} from "../../static/js/StringIterator";
 import {StringAssembler} from "../../static/js/StringAssembler";
 const attributes = require('../../static/js/attributes');
-const padManager = require('../db/PadManager');
-const _analyzeLine = require('./ExportHelper')._analyzeLine;
+import padManager from '../db/PadManager';
+import {_analyzeLine} from "./ExportHelper";
+import Pad from "../db/Pad";
 
 // This is slightly different than the HTML method as it passes the output to getTXTFromAText
-const getPadTXT = async (pad: PadType, revNum: string) => {
+const getPadTXT = async (pad: Pad, revNum: number) => {
   let atext = pad.atext;
 
   if (revNum !== undefined) {
@@ -44,7 +45,7 @@ const getPadTXT = async (pad: PadType, revNum: string) => {
 
 // This is different than the functionality provided in ExportHtml as it provides formatting
 // functionality that is designed specifically for TXT exports
-const getTXTFromAtext = (pad: PadType, atext: AText, authorColors?:string) => {
+const getTXTFromAtext = (pad: Pad, atext: AText, authorColors?:string) => {
   const apool = pad.apool();
   const textLines = atext.text.slice(0, -1).split('\n');
   const attribLines = splitAttributionLines(atext.attribs, atext.text);
@@ -195,12 +196,12 @@ const getTXTFromAtext = (pad: PadType, atext: AText, authorColors?:string) => {
   // want to deal gracefully with blank lines.
   // => keeps track of the parents level of indentation
 
-  const listNumbers:MapType = {};
+  const listNumbers:MapArrayType<number> = {};
   let prevListLevel;
 
   for (let i = 0; i < textLines.length; i++) {
     const line = _analyzeLine(textLines[i], attribLines[i], apool);
-    let lineContent = getLineTXT(line.text, line.aline);
+    let lineContent = getLineTXT(line.text!, line.aline);
 
     if (line.listTypeName === 'bullet') {
       lineContent = `* ${lineContent}`; // add a bullet
@@ -213,7 +214,7 @@ const getTXTFromAtext = (pad: PadType, atext: AText, authorColors?:string) => {
       }
     }
 
-    if (line.listLevel > 0) {
+    if (line.listLevel && line.listLevel > 0) {
       for (let j = line.listLevel - 1; j >= 0; j--) {
         pieces.push('\t'); // tab indent list numbers..
         if (!listNumbers[line.listLevel]) {
@@ -235,12 +236,11 @@ const getTXTFromAtext = (pad: PadType, atext: AText, authorColors?:string) => {
         * To handle going back to 2.1 when prevListLevel is lower number
         * than current line.listLevel then reset the object value
         */
-        if (line.listLevel < prevListLevel) {
+        if (prevListLevel && line.listLevel < prevListLevel) {
           delete listNumbers[prevListLevel];
         }
 
-        // @ts-ignore
-        listNumbers[line.listLevel]++;
+        listNumbers[line.listLevel.toString()]++;
         if (line.listLevel > 1) {
           let x = 1;
           while (x <= line.listLevel - 1) {
@@ -263,9 +263,13 @@ const getTXTFromAtext = (pad: PadType, atext: AText, authorColors?:string) => {
   return pieces.join('');
 };
 
-exports.getTXTFromAtext = getTXTFromAtext;
-
-exports.getPadTXTDocument = async (padId:string, revNum:string) => {
+export const getPadTXTDocument = async (padId:string, revNum: number) => {
   const pad = await padManager.getPad(padId);
   return getPadTXT(pad, revNum);
 };
+
+export default {
+  getPadTXT,
+  getTXTFromAtext,
+  getPadTXTDocument,
+}

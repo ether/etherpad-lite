@@ -113,4 +113,4 @@ for (const m of ['get', 'set', 'destroy', 'touch']) {
   SessionStore.prototype[m] = util.callbackify(SessionStore.prototype[`_${m}`]);
 }
 
-module.exports = SessionStore;
+export default SessionStore
