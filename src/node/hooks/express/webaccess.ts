@@ -237,5 +237,6 @@ const checkAccess = (req:any, res:any, next:Function) => {
 export default {
   checkAccess,
   normalizeAuthzLevel,
-  userCanModify
+  userCanModify,
+  authnFailureDelayMs
 }

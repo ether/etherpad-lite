@@ -16,12 +16,12 @@
  */
 
 import Stream from './Stream';
-const assert = require('assert').strict;
-const authorManager = require('../db/AuthorManager');
-const hooks = require('../../static/js/pluginfw/hooks');
-const padManager = require('../db/PadManager');
+import {strict as assert} from 'node:assert';
+import authorManager from '../db/AuthorManager';
+import hooks from '../../static/js/pluginfw/hooks';
+import padManager from '../db/PadManager';
 
-exports.getPadRaw = async (padId:string, readOnlyId:string) => {
+export const getPadRaw = async (padId:string, readOnlyId:string) => {
   const dstPfx = `pad:${readOnlyId || padId}`;
   const [pad, customPrefixes] = await Promise.all([
     padManager.getPad(padId),
@@ -31,6 +31,7 @@ exports.getPadRaw = async (padId:string, readOnlyId:string) => {
     const srcPfx = `${customPrefix}:${padId}`;
     const dstPfx = `${customPrefix}:${readOnlyId || padId}`;
     assert(!srcPfx.includes('*'));
+    // @ts-ignore
     const srcKeys = await pad.db.findKeys(`${srcPfx}:*`, null);
     return (function* () {
       yield [dstPfx, pad.db.get(srcPfx)];
@@ -62,3 +63,7 @@ exports.getPadRaw = async (padId:string, readOnlyId:string) => {
   });
   return data;
 };
+
+export default {
+  getPadRaw
+}

@@ -22,7 +22,7 @@
 import {UserSettingsObject} from "../types/UserSettingsObject";
 
 import authorManager from "./AuthorManager";
-const hooks = require('../../static/js/pluginfw/hooks');
+import hooks from '../../static/js/pluginfw/hooks';
 import padManager from './PadManager'
 import readOnlyManager from './ReadOnlyManager';
 import sessionManager from './SessionManager';
@@ -98,6 +98,7 @@ export const checkAccess = async (padID:string, sessionCookie:string, token:stri
 
   // allow plugins to deny access
   const isFalse = (x:boolean) => x === false;
+  // @ts-ignore
   if (hooks.callAll('onAccessCheck', {padID, token, sessionCookie}).some(isFalse)) {
     authLogger.debug('access denied: an onAccessCheck hook function returned false');
     return DENY;

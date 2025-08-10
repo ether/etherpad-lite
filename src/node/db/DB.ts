@@ -34,6 +34,7 @@ export let db: Database | null = null;
 
 
 export type DBFunctionsPromisified = {
+  init: () => Promise<void>,
   get: (key: string, cb?: Function) => Promise<any>,
   set: (key:string, value:object|string, callback?:Function) => Promise<void>,
   findKeys: (key:string, notKey:string|null, callback?:Function) => Promise<string[]>,
@@ -43,7 +44,9 @@ export type DBFunctionsPromisified = {
 }
 
 export const asyncFunctions: DBFunctionsPromisified = {
-
+  init: ()=>{
+    db?.init()
+  }
 } as DBFunctionsPromisified
 
 export default asyncFunctions

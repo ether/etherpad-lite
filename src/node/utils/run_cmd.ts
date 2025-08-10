@@ -74,7 +74,7 @@ const logLines = (readable: undefined | Readable | null, logLineFn: (arg0: (stri
  *   - `stderr`: Similar to `stdout` but for stderr.
  *   - `child`: The ChildProcess object.
  */
-module.exports = exports = (args: string[], opts:RunCMDOptions = {}) => {
+const run_cmd =  (args: string[], opts:RunCMDOptions = {}) => {
   logger.debug(`Executing command: ${args.join(' ')}`);
 
   opts = {cwd: settings.root, ...opts};
@@ -161,3 +161,7 @@ module.exports = exports = (args: string[], opts:RunCMDOptions = {}) => {
   });
   return p;
 };
+
+export default {
+  run_cmd
+}

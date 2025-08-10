@@ -5,7 +5,7 @@ import {Func} from "mocha";
 import {SettingsUser} from "../../../node/types/SettingsUser";
 
 const assert = require('assert').strict;
-const common = require('../common');
+import common from '../common';
 const plugins = require('../../../static/js/pluginfw/plugin_defs');
 import settings from '../../../node/utils/Settings';
 

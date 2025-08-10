@@ -10,9 +10,9 @@ import path from "path";
 
 import {promises as fs} from "fs";
 
-const plugins = require('./plugins');
-const hooks = require('./hooks');
-const runCmd = require('../../../node/utils/run_cmd');
+import plugins from './plugins';
+import hooks from './hooks';
+import runCmd from '../../../node/utils/run_cmd';
 import  settings, {
   getEpVersion,
   reloadSettings
@@ -61,8 +61,8 @@ const migratePluginsFromNodeModules = async () => {
   //     unset or set to `development`) because otherwise `npm ls` will not mention any packages
   //     that are not included in `package.json` (which is expected to not exist).
   const cmd = ['pnpm', 'ls', '--long', '--json', '--depth=0', '--no-production'];
-  const [{dependencies = {}}] = JSON.parse(await runCmd(cmd,
-      {stdio: [null, 'string']}));
+  const [{dependencies = {}}] = JSON.parse(await runCmd.run_cmd(cmd,
+      {stdio: [null as any, 'string']}));
 
   await Promise.all(Object.entries(dependencies)
       .filter(([pkg, info]) => pkg.startsWith(plugins.prefix) && pkg !== 'ep_etherpad-lite')

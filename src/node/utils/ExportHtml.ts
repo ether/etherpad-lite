@@ -20,10 +20,10 @@ import {MapArrayType} from "../types/MapType";
 
 import {deserializeOps, splitAttributionLines, subattribution} from '../../static/js/Changeset';
 const attributes = require('../../static/js/attributes');
-const padManager = require('../db/PadManager');
+import padManager from '../db/PadManager';
 import _ from 'underscore';
 const Security = require('../../static/js/security');
-const hooks = require('../../static/js/pluginfw/hooks');
+import hooks from '../../static/js/pluginfw/hooks';
 import eejs from '../eejs';
 const _analyzeLine = require('./ExportHelper')._analyzeLine;
 const _encodeWhitespace = require('./ExportHelper')._encodeWhitespace;
@@ -477,7 +477,7 @@ export const getHTMLFromAtext = async (pad: Pad, atext: AText, authorColors?: Ma
   return pieces.join('');
 };
 
-export const getPadHTMLDocument = async (padId: string, revNum: number, readOnlyId: number) => {
+export const getPadHTMLDocument = async (padId: string, revNum: number, readOnlyId: string) => {
   const pad = await padManager.getPad(padId);
 
   // Include some Styles into the Head for Export

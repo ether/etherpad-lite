@@ -73,11 +73,11 @@ enforceMinNodeVersion(pkg.engines.node.replace(">=", ""));
 checkDeprecationStatus(pkg.engines.node.replace(">=", ""), '2.1.0');
 
 import {check} from './utils/UpdateCheck';
-const db = require('./db/DB');
-const express = require('./hooks/express');
-const hooks = require('../static/js/pluginfw/hooks');
-const pluginDefs = require('../static/js/pluginfw/plugin_defs');
-const plugins = require('../static/js/pluginfw/plugins');
+import db from './db/DB';
+import express from './hooks/express';
+import hooks from '../static/js/pluginfw/hooks';
+import pluginDefs from '../static/js/pluginfw/plugin_defs';
+import plugins from '../static/js/pluginfw/plugins';
 import {Gate} from './utils/promises';
 import stats from './stats'
 
@@ -173,7 +173,7 @@ exports.start = async () => {
     await db.init();
     await checkForMigration();
     await plugins.update();
-    const installedPlugins = (Object.values(pluginDefs.plugins) as PluginType[])
+    const installedPlugins = (Object.values(pluginDefs.plugins))
         .filter((plugin) => plugin.package.name !== 'ep_etherpad-lite')
         .map((plugin) => `${plugin.package.name}@${plugin.package.version}`)
         .join(', ');

@@ -22,7 +22,7 @@ import groupManager from './GroupManager';
 import CustomError from '../utils/customError';
 import readOnlyManager from './ReadOnlyManager';
 import randomString from '../utils/randomstring';
-const hooks = require('../../static/js/pluginfw/hooks');
+import hooks from '../../static/js/pluginfw/hooks';
 import pad_utils from "../../static/js/pad_utils";
 import {SmartOpAssembler} from "../../static/js/SmartOpAssembler";
 import {timesLimit} from "async";
@@ -128,10 +128,12 @@ class Pad {
         authorId,
         get author() {
           pad_utils.warnDeprecated(`${hook} hook author context is deprecated; use authorId instead`);
+          // @ts-ignore
           return this.authorId;
         },
         set author(authorId) {
           pad_utils.warnDeprecated(`${hook} hook author context is deprecated; use authorId instead`);
+          // @ts-ignore
           this.authorId = authorId;
         },
         ...this.head === 0 ? {} : {
@@ -382,7 +384,7 @@ class Pad {
     });
   }
 
-  async init(text:string | null, authorId = '') {
+  async init(text?:string | null, authorId = '') {
     // try to load the pad
     const value = await this.db.get(`pad:${this.id}`);
 
@@ -442,11 +444,13 @@ class Pad {
     await hooks.aCallAll('padCopy', {
       get originalPad() {
         pad_utils.warnDeprecated('padCopy originalPad context property is deprecated; use srcPad instead');
+        // @ts-ignore
         return this.srcPad;
       },
       get destinationID() {
         pad_utils.warnDeprecated(
             'padCopy destinationID context property is deprecated; use dstPad.id instead');
+        // @ts-ignore
         return this.dstPad.id;
       },
       srcPad: this,
@@ -543,11 +547,13 @@ class Pad {
     await hooks.aCallAll('padCopy', {
       get originalPad() {
         pad_utils.warnDeprecated('padCopy originalPad context property is deprecated; use srcPad instead');
+        // @ts-ignore
         return this.srcPad;
       },
       get destinationID() {
         pad_utils.warnDeprecated(
             'padCopy destinationID context property is deprecated; use dstPad.id instead');
+        // @ts-ignore
         return this.dstPad.id;
       },
       srcPad: this,
@@ -610,6 +616,7 @@ class Pad {
     p.push(hooks.aCallAll('padRemove', {
       get padID() {
         pad_utils.warnDeprecated('padRemove padID context property is deprecated; use pad.id instead');
+        // @ts-ignore
         return this.pad.id;
       },
       pad: this,

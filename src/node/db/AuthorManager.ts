@@ -21,7 +21,7 @@
 
 import db from './DB';
 import CustomError from '../utils/customError';
-const hooks = require('../../static/js/pluginfw/hooks');
+import hooks from '../../static/js/pluginfw/hooks';
 import  {randomString} from "../../static/js/pad_utils";
 
 const getColorPalette = () => [

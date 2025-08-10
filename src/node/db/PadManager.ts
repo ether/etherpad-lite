@@ -38,16 +38,19 @@ import settings from '../utils/Settings';
  * If this is needed in other places, it would be wise to make this a prototype
  * that's defined somewhere more sensible.
  */
-const globalPads:MapArrayType<any> = {
-  get(name: string)
+const globalPads = {
+  get(name: string): Pad
   {
-    return this[`:${name}`];
+    // @ts-ignore
+    return this[`:${name}`] as Pad;
     },
   set(name: string, value: any)
   {
-    this[`:${name}`] = value;
+    // @ts-ignore
+    this[`:${name}`] = value as Pad;
   },
   remove(name: string) {
+    // @ts-ignore
     delete this[`:${name}`];
   },
 };
@@ -136,7 +139,7 @@ export const getPad = async (id: string, text?: string|null, authorId:string|nul
   pad = new Pad(id);
 
   // initialize the pad
-  await pad.init(text, authorId);
+  await pad.init(text, authorId ?? undefined);
   globalPads.set(id, pad);
   padList.addPad(id);
 

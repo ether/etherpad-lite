@@ -26,7 +26,7 @@ import padManager from '../db/PadManager';
 import {checkRep, cloneAText, compose, deserializeOps, follow, identity, inverse, makeAText, makeSplice, moveOpsToNewPool, mutateAttributionLines, mutateTextLines, oldLen, prepareForWire, splitAttributionLines, splitTextLines, unpack} from '../../static/js/Changeset';
 import ChatMessage from '../../static/js/ChatMessage';
 import AttributePool from '../../static/js/AttributePool';
-const AttributeManager = require('../../static/js/AttributeManager');
+import AttributeManager from '../../static/js/AttributeManager';
 import authorManager from '../db/AuthorManager';
 import padutils from '../../static/js/pad_utils';
 import readOnlyManager from '../db/ReadOnlyManager';
@@ -36,16 +36,16 @@ import settings, {
   sofficeAvailable
 } from '../utils/Settings';
 import securityManager from '../db/SecurityManager';
-const plugins = require('../../static/js/pluginfw/plugin_defs');
+import plugins from '../../static/js/pluginfw/plugin_defs';
 import log4js from 'log4js';
 const messageLogger = log4js.getLogger('message');
 const accessLogger = log4js.getLogger('access');
-const hooks = require('../../static/js/pluginfw/hooks');
+import hooks from '../../static/js/pluginfw/hooks';
 import stats from '../stats';
-const assert = require('assert').strict;
+import {strict as assert} from 'node:assert'
 import {RateLimiterMemory} from 'rate-limiter-flexible';
-import {ChangesetRequest, PadUserInfo, SocketClientRequest} from "../types/SocketClientRequest";
-import {APool, AText, PadAuthor, PadType} from "../types/PadType";
+import {ChangesetRequest, SocketClientRequest} from "../types/SocketClientRequest";
+import {AText, PadAuthor} from "../types/PadType";
 import {ChangeSet} from "../types/ChangeSet";
 import {ChatMessageMessage, ClientReadyMessage, ClientSaveRevisionMessage, ClientSuggestUserName, ClientUserChangesMessage, ClientVarMessage, CustomMessage, PadDeleteMessage, UserNewInfoMessage} from "../../static/js/types/SocketIOMessage";
 import {Builder} from "../../static/js/Builder";
@@ -356,6 +356,7 @@ export const handleMessage = async (socket:any, message: ClientVarMessage) => {
   };
   for (const res of await hooks.aCallAll('handleMessageSecurity', context)) {
     switch (res) {
+      // @ts-ignore
       case true:
         padutils.warnDeprecated(
             'returning `true` from a `handleMessageSecurity` hook function is deprecated; ' +

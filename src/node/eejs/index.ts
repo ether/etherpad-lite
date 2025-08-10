@@ -21,7 +21,7 @@
 
 import ejs from 'ejs';
 import fs from 'fs';
-const hooks = require('../../static/js/pluginfw/hooks');
+import hooks from '../../static/js/pluginfw/hooks';
 import path from 'node:path';
 // @ts-ignore
 import resolve from 'resolve';

@@ -19,7 +19,7 @@ import Pad from '../db/Pad';
 import Stream from './Stream';
 import authorManager from '../db/AuthorManager';
 import db from '../db/DB';
-const hooks = require('../../static/js/pluginfw/hooks');
+import hooks from '../../static/js/pluginfw/hooks';
 import log4js from 'log4js';
 const supportedElems = require('../../static/js/contentcollector').supportedElems;
 import {Database} from 'ueberdb2';
