@@ -28,7 +28,7 @@ jobs:
           printf %s\\n '::set-output name=tunnel_id::${{ github.run_id }}-${{ github.run_number }}-${{ github.job }}-node${{ matrix.node }}'
       -
         name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       -
         uses: actions/setup-node@v4
         with:

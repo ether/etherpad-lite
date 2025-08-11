@@ -22,7 +22,7 @@ jobs:
           printf %s\\n '::set-output name=tunnel_id::${{ github.run_id }}-${{ github.run_number }}-${{ github.job }}'
       -
         name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       -
         uses: actions/setup-node@v4
         with:
@@ -96,7 +96,7 @@ jobs:
           printf %s\\n '::set-output name=name::${{ github.workflow }} - ${{ github.job }}'
           printf %s\\n '::set-output name=tunnel_id::${{ github.run_id }}-${{ github.run_number }}-${{ github.job }}'
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -169,7 +169,7 @@ jobs:
           printf %s\\n '::set-output name=tunnel_id::${{ github.run_id }}-${{ github.run_number }}-${{ github.job }}'
       -
         name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       -
         uses: actions/setup-node@v4
         with:

@@ -21,7 +21,7 @@ jobs:
     steps:
       -
         name: Check out
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           path: etherpad
 
@@ -123,7 +123,7 @@ jobs:
           enable-url-completion: true
       - name: Check out
         if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           path: ether-charts
           repository: ether/ether-charts
