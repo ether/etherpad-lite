@@ -6,7 +6,7 @@
 		]
 	},
 	"index.newPad": "نوې ليکچه",
-	"index.createOpenPad": "يا په همدې نوم يوه نوې ليکچه جوړول/پرانېستل:",
+	"index.createOpenPad": "ليکچه د نوم له مخې پرانېستل",
 	"pad.toolbar.bold.title": "زغرد (Ctrl-B)",
 	"pad.toolbar.italic.title": "رېوند (Ctrl-I)",
 	"pad.toolbar.underline.title": "لرکرښن (Ctrl+U)",
