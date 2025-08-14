@@ -1,29 +1,22 @@
-'use strict';
+import { expect, describe, beforeAll, beforeEach, afterEach, it } from '@rstest/core';
 
-const SessionStore = require('../../../node/db/SessionStore');
 import {strict as assert} from 'assert';
-const common = require('../common');
-const db = require('../../../node/db/DB');
-import util from 'util';
+import SessionStore from "../../node/db/SessionStore";
+import db from "../../node/db/DB";
+import common from './common';
 
-type Session = {
-  set: (sid: string|null,sess:any, sess2:any) => void;
-  get: (sid:string|null) => any;
-  destroy: (sid:string|null) => void;
-  touch: (sid:string|null, sess:any, sess2:any) => void;
-  shutdown: () => void;
-}
+
 
 describe(__filename, function () {
-  let ss: Session|null;
-  let sid: string|null;
+  let ss: SessionStore|null;
+  let sid = '';
 
-  const set = async (sess: string|null) => await util.promisify(ss!.set).call(ss, sid, sess);
-  const get = async () => await util.promisify(ss!.get).call(ss, sid);
-  const destroy = async () => await util.promisify(ss!.destroy).call(ss, sid);
-  const touch = async (sess: Session) => await util.promisify(ss!.touch).call(ss, sid, sess);
+  const set =  (sess: string|null) => ss?.set(sid, sess);
+  const get =  () => ss?.get(sid);
+  const destroy = () => ss?.destroy(sid);
+  const touch = (sess: ()=>void) => ss!.touch(sid, sess);
 
-  before(async function () {
+  beforeAll(async function () {
     await common.init();
   });
 
@@ -37,72 +30,72 @@ describe(__filename, function () {
       if (sid != null) await destroy();
       ss.shutdown();
     }
-    sid = null;
+    sid = '';
     ss = null;
   });
 
   describe('set', function () {
     it('set of null is a no-op', async function () {
-      await set(null);
-      assert(await db.get(`sessionstorage:${sid}`) == null);
+      set(null);
+      expect(await db.get(`sessionstorage:${sid}`) == null);
     });
 
     it('set of non-expiring session', async function () {
       const sess:any = {foo: 'bar', baz: {asdf: 'jkl;'}};
-      await set(sess);
-      assert.equal(JSON.stringify(await db.get(`sessionstorage:${sid}`)), JSON.stringify(sess));
+      set(sess);
+      expect(JSON.stringify(await db.get(`sessionstorage:${sid}`))).toBe(JSON.stringify(sess));
     });
 
     it('set of session that expires', async function () {
       const sess:any  = {foo: 'bar', cookie: {expires: new Date(Date.now() + 100)}};
-      await set(sess);
+      set(sess);
       assert.equal(JSON.stringify(await db.get(`sessionstorage:${sid}`)), JSON.stringify(sess));
       await new Promise((resolve) => setTimeout(resolve, 110));
       // Writing should start a timeout.
-      assert(await db.get(`sessionstorage:${sid}`) == null);
+      expect(await db.get(`sessionstorage:${sid}`)).toBeNull();
     });
 
     it('set of already expired session', async function () {
       const sess:any  = {foo: 'bar', cookie: {expires: new Date(1)}};
       await set(sess);
       // No record should have been created.
-      assert(await db.get(`sessionstorage:${sid}`) == null);
+      expect(await db.get(`sessionstorage:${sid}`)).toBeNull();
     });
 
     it('switch from non-expiring to expiring', async function () {
       const sess:any  = {foo: 'bar'};
-      await set(sess);
+      set(sess);
       const sess2:any  = {foo: 'bar', cookie: {expires: new Date(Date.now() + 100)}};
-      await set(sess2);
+      set(sess2);
       await new Promise((resolve) => setTimeout(resolve, 110));
-      assert(await db.get(`sessionstorage:${sid}`) == null);
+      expect(await db.get(`sessionstorage:${sid}`)).toBeNull();
     });
 
     it('switch from expiring to non-expiring', async function () {
       const sess:any  = {foo: 'bar', cookie: {expires: new Date(Date.now() + 100)}};
-      await set(sess);
+      set(sess);
       const sess2:any  = {foo: 'bar'};
-      await set(sess2);
+      set(sess2);
       await new Promise((resolve) => setTimeout(resolve, 110));
-      assert.equal(JSON.stringify(await db.get(`sessionstorage:${sid}`)), JSON.stringify(sess2));
+      expect(JSON.stringify(await db.get(`sessionstorage:${sid}`))).toBe(JSON.stringify(sess2));
     });
   });
 
   describe('get', function () {
     it('get of non-existent entry', async function () {
-      assert(await get() == null);
+      expect(await get()).toBeNull();
     });
 
     it('set+get round trip', async function () {
       const sess:any  = {foo: 'bar', baz: {asdf: 'jkl;'}};
       await set(sess);
-      assert.equal(JSON.stringify(await get()), JSON.stringify(sess));
+      expect(JSON.stringify(await get())).toContainEqual(JSON.stringify(sess));
     });
 
     it('get of record from previous run (no expiration)', async function () {
       const sess = {foo: 'bar', baz: {asdf: 'jkl;'}};
       await db.set(`sessionstorage:${sid}`, sess);
-      assert.equal(JSON.stringify(await get()), JSON.stringify(sess));
+      expect(JSON.stringify(await get())).toContainEqual(JSON.stringify(sess));
     });
 
     it('get of record from previous run (not yet expired)', async function () {
@@ -111,26 +104,26 @@ describe(__filename, function () {
       assert.equal(JSON.stringify(await get()), JSON.stringify(sess));
       await new Promise((resolve) => setTimeout(resolve, 110));
       // Reading should start a timeout.
-      assert(await db.get(`sessionstorage:${sid}`) == null);
+      expect(await db.get(`sessionstorage:${sid}`)).toBeNull();
     });
 
     it('get of record from previous run (already expired)', async function () {
       const sess = {foo: 'bar', cookie: {expires: new Date(1)}};
       await db.set(`sessionstorage:${sid}`, sess);
-      assert(await get() == null);
-      assert(await db.get(`sessionstorage:${sid}`) == null);
+      expect(await get()).toBeNull();
+      expect(await db.get(`sessionstorage:${sid}`)).toBeNull();
     });
 
     it('external expiration update is picked up', async function () {
       const sess:any  = {foo: 'bar', cookie: {expires: new Date(Date.now() + 100)}};
       await set(sess);
-      assert.equal(JSON.stringify(await get()), JSON.stringify(sess));
+      expect(JSON.stringify(await get())).toBe(sess);
       const sess2 = {...sess, cookie: {expires: new Date(Date.now() + 200)}};
       await db.set(`sessionstorage:${sid}`, sess2);
-      assert.equal(JSON.stringify(await get()), JSON.stringify(sess2));
+      expect(JSON.stringify(await get())).toBe(sess2);
       await new Promise((resolve) => setTimeout(resolve, 110));
       // The original timeout should not have fired.
-      assert.equal(JSON.stringify(await get()), JSON.stringify(sess2));
+      expect(JSON.stringify(await get())).toBe(JSON.stringify(sess2));
     });
   });
 
@@ -138,11 +131,11 @@ describe(__filename, function () {
     it('shutdown cancels timeouts', async function () {
       const sess:any  = {foo: 'bar', cookie: {expires: new Date(Date.now() + 100)}};
       await set(sess);
-      assert.equal(JSON.stringify(await get()), JSON.stringify(sess));
+      expect(JSON.stringify(await get())).toBe(JSON.stringify(sess));
       ss!.shutdown();
       await new Promise((resolve) => setTimeout(resolve, 110));
       // The record should not have been automatically purged.
-      assert.equal(JSON.stringify(await db.get(`sessionstorage:${sid}`)), JSON.stringify(sess));
+      expect(JSON.stringify(await db.get(`sessionstorage:${sid}`))).toBe(JSON.stringify(sess));
     });
   });
 
@@ -151,7 +144,7 @@ describe(__filename, function () {
       const sess:any  = {cookie: {expires: new Date(Date.now() + 100)}};
       await set(sess);
       await destroy();
-      assert(await db.get(`sessionstorage:${sid}`) == null);
+      expect(await db.get(`sessionstorage:${sid}`)).toBeNull();
     });
 
     it('destroy cancels the timeout', async function () {
@@ -160,7 +153,7 @@ describe(__filename, function () {
       await destroy();
       await db.set(`sessionstorage:${sid}`, sess);
       await new Promise((resolve) => setTimeout(resolve, 110));
-      assert.equal(JSON.stringify(await db.get(`sessionstorage:${sid}`)), JSON.stringify(sess));
+      expect(JSON.stringify(await db.get(`sessionstorage:${sid}`))).toBe(sess);
     });
 
     it('destroy session that does not exist', async function () {
@@ -172,7 +165,7 @@ describe(__filename, function () {
     it('touch before set is equivalent to set if session expires', async function () {
       const sess:any  = {cookie: {expires: new Date(Date.now() + 1000)}};
       await touch(sess);
-      assert.equal(JSON.stringify(await get()), JSON.stringify(sess));
+      expect(JSON.stringify(await get())).toBe(JSON.stringify(sess));
     });
 
     it('touch updates observed expiration but not database', async function () {
@@ -181,8 +174,8 @@ describe(__filename, function () {
       await set(sess);
       const sess2:any  = {cookie: {expires: new Date(start + 12000)}};
       await touch(sess2);
-      assert.equal(JSON.stringify(await db.get(`sessionstorage:${sid}`)), JSON.stringify(sess));
-      assert.equal(JSON.stringify(await get()), JSON.stringify(sess2));
+      expect(JSON.stringify(await db.get(`sessionstorage:${sid}`))).toBe(JSON.stringify(sess));
+      expect(JSON.stringify(await get())).toBe(JSON.stringify(sess2));
     });
   });
 
@@ -194,7 +187,7 @@ describe(__filename, function () {
     it('touch before set is equivalent to set if session expires', async function () {
       const sess:any  = {cookie: {expires: new Date(Date.now() + 1000)}};
       await touch(sess);
-      assert.equal(JSON.stringify(await get()), JSON.stringify(sess));
+      expect(JSON.stringify(await get())).toBe(JSON.stringify(sess));
     });
 
     it('touch before eligible for refresh updates expiration but not DB', async function () {
@@ -203,8 +196,8 @@ describe(__filename, function () {
       await set(sess);
       const sess2:any  = {foo: 'bar', cookie: {expires: new Date(now + 1001)}};
       await touch(sess2);
-      assert.equal(JSON.stringify(await db.get(`sessionstorage:${sid}`)), JSON.stringify(sess));
-      assert.equal(JSON.stringify(await get()), JSON.stringify(sess2));
+      expect(JSON.stringify(await db.get(`sessionstorage:${sid}`))).toBe(JSON.stringify(sess));
+      expect(JSON.stringify(await get())).toBe(JSON.stringify(sess2));
     });
 
     it('touch before eligible for refresh updates timeout', async function () {
@@ -215,8 +208,8 @@ describe(__filename, function () {
       const sess2:any  = {foo: 'bar', cookie: {expires: new Date(start + 399)}};
       await touch(sess2);
       await new Promise((resolve) => setTimeout(resolve, 110));
-      assert.equal(JSON.stringify(await db.get(`sessionstorage:${sid}`)), JSON.stringify(sess));
-      assert.equal(JSON.stringify(await get()), JSON.stringify(sess2));
+      expect(JSON.stringify(await db.get(`sessionstorage:${sid}`))).toBe(JSON.stringify(sess));
+      expect(JSON.stringify(await get())).toBe(JSON.stringify(sess2));
     });
 
     it('touch after eligible for refresh updates db', async function () {
@@ -227,8 +220,8 @@ describe(__filename, function () {
       const sess2:any  = {foo: 'bar', cookie: {expires: new Date(start + 400)}};
       await touch(sess2);
       await new Promise((resolve) => setTimeout(resolve, 110));
-      assert.equal(JSON.stringify(await db.get(`sessionstorage:${sid}`)), JSON.stringify(sess2));
-      assert.equal(JSON.stringify(await get()), JSON.stringify(sess2));
+      expect(JSON.stringify(await db.get(`sessionstorage:${sid}`))).toBe(JSON.stringify(sess2));
+      expect(JSON.stringify(await get())).toBe(JSON.stringify(sess2));
     });
 
     it('refresh=0 updates db every time', async function () {
@@ -237,10 +230,10 @@ describe(__filename, function () {
       await set(sess);
       await db.remove(`sessionstorage:${sid}`);
       await touch(sess); // No change in expiration time.
-      assert.equal(JSON.stringify(await db.get(`sessionstorage:${sid}`)), JSON.stringify(sess));
+      expect(JSON.stringify(await db.get(`sessionstorage:${sid}`))).toBe(JSON.stringify(sess));
       await db.remove(`sessionstorage:${sid}`);
       await touch(sess); // No change in expiration time.
-      assert.equal(JSON.stringify(await db.get(`sessionstorage:${sid}`)), JSON.stringify(sess));
+      expect(JSON.stringify(await db.get(`sessionstorage:${sid}`))).toBe(JSON.stringify(sess));
     });
   });
 });

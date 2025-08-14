@@ -9,12 +9,13 @@ import {PackageData, PackageInfo} from "../../types/PackageInfo";
 import semver from 'semver';
 import log4js from 'log4js';
 import {MapArrayType} from "../../types/MapType";
+import stats from '../../stats'
 
-const pluginDefs = require('../../../static/js/pluginfw/plugin_defs');
+import pluginDefs from '../../../static/js/pluginfw/plugin_defs';
 const logger = log4js.getLogger('adminPlugins');
 
 
-exports.socketio = (hookName:string, args:ArgsExpressType, cb:Function) => {
+export const socketio = (hookName:string, args:ArgsExpressType, cb:Function) => {
   const io = args.io.of('/pluginfw/installer');
   io.on('connection', (socket:any) => {
     // @ts-ignore
@@ -41,7 +42,7 @@ exports.socketio = (hookName:string, args:ArgsExpressType, cb:Function) => {
 
     socket.on('getStats', ()=>{
       console.log("Getting stats for admin plugins");
-      socket.emit('results:stats', require('../../stats').toJSON());
+      socket.emit('results:stats', stats.toJSON());
     })
 
     socket.on('getInstalled', async (query: string) => {
@@ -144,3 +145,8 @@ const sortPluginList = (plugins:PackageData[], property:string, /* ASC?*/dir:str
   // a must be equal to b
   return 0;
 });
+
+export default {
+  socketio,
+  sortPluginList,
+}

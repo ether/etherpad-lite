@@ -1,4 +1,3 @@
-'use strict';
 /**
  * The ReadOnlyManager manages the database and rendering releated to read only pads
  */
@@ -20,7 +19,7 @@
  */
 
 
-const db = require('./DB');
+import db from './DB'
 import randomString from '../utils/randomstring';
 
 

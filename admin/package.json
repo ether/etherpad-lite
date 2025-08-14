@@ -5,9 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "tsgo && vite build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "build-copy": "tsc && vite build --outDir ../src/templates/admin --emptyOutDir",
+    "build-copy": "tsgo && vite build --outDir ../src/templates/admin --emptyOutDir",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -33,7 +33,7 @@
     "react-i18next": "^15.6.0",
     "react-router-dom": "^7.6.3",
     "socket.io-client": "^4.8.1",
-    "typescript": "^5.8.2",
+    "@typescript/native-preview": "^7.0.0-dev.20250811.1",
     "vite": "^7.0.4",
     "vite-plugin-static-copy": "^3.1.1",
     "vite-plugin-svgr": "^4.3.0",

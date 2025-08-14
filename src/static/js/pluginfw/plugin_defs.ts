@@ -1,5 +1,3 @@
-'use strict';
-
 // This module contains processed plugin definitions. The data structures in this file are set by
 // plugins.js (server) or client_plugins.js (client).
 
@@ -8,13 +6,16 @@
 //   * hook_fn: Plugin-supplied hook function.
 //   * hook_fn_name: Name of the hook function, with the form <filename>:<functionName>.
 //   * part: The ep.json part object that declared the hook. See exports.plugins.
-exports.hooks = {};
+import {Part} from "../types/SocketIOMessage";
+import {MapArrayType} from "../../../node/types/MapType";
+
+export const hooks = {};
 
 // Whether the plugins have been loaded.
-exports.loaded = false;
+export let loaded = false;
 
 // Topologically sorted list of parts from exports.plugins.
-exports.parts = [];
+export const parts: Part[] = [];
 
 // Maps the name of a plugin to the plugin's definition provided in ep.json. The ep.json object is
 // augmented with additional metadata:
@@ -25,4 +26,37 @@ exports.parts = [];
 //       - version
 //       - path
 //       - realPath
-exports.plugins = {};
+
+type PluginDefinition = {
+  package: {
+    name: string,
+    version: string,
+    realPath: string,
+    path: string,
+    updatable?: boolean
+  }
+}
+
+export const plugins: Record<string, PluginDefinition> = {};
+
+export const setLoaded = (value: boolean) => {
+  loaded = value;
+}
+
+export const setParts = (value: any) => {
+  parts.push(value);
+}
+
+export const setPlugins = (value: any) => {
+
+}
+
+export default {
+  hooks,
+  loaded,
+  parts,
+  plugins,
+  setLoaded,
+  setParts,
+  setPlugins,
+}

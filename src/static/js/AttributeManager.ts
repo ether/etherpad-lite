@@ -379,4 +379,4 @@ AttributeManager.prototype = underscore.default(AttributeManager.prototype).exte
   },
 });
 
-module.exports = AttributeManager;
+export default AttributeManager

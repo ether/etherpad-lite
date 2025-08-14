@@ -1,6 +1,6 @@
 'use strict';
 
-import {Socket} from "node:net";
+import {Server, Socket} from "node:net";
 import type {MapArrayType} from "../types/MapType";
 
 import _ from 'underscore';
@@ -9,39 +9,48 @@ import events from 'events';
 import express from 'express';
 import expressSession, {Store} from 'express-session';
 import fs from 'fs';
-const hooks = require('../../static/js/pluginfw/hooks');
+import hooks from '../../static/js/pluginfw/hooks';
 import log4js from 'log4js';
-const SessionStore = require('../db/SessionStore');
+import SessionStore from '../db/SessionStore';
 import settings, {getEpVersion, getGitCommit} from '../utils/Settings';
-const stats = require('../stats')
+import stats from '../stats';
 import util from 'util';
-const webaccess = require('./express/webaccess');
+import webaccess from './express/webaccess';
 
 import SecretRotator from '../security/SecretRotator';
+import {DefaultEventsMap, Socket as SocketIOSocket} from "socket.io";
+import {createServer as createServerHttp} from "http";
+import {createServer as createServerHttps} from "https";
+
+type SocketIO = SocketIOSocket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>
 
 let secretRotator: SecretRotator|null = null;
 const logger = log4js.getLogger('http');
 let serverName:string;
 let sessionStore: Store | null;
-const sockets:Set<Socket> = new Set();
+const sockets:Set<SocketIO> = new Set();
 const socketsEvents = new events.EventEmitter();
 const startTime = stats.settableGauge('httpStartTime');
 
-exports.server = null;
+export let expressServer: Server|null = null;
+
+
+let sessionMiddleware:  express.RequestHandler| null = null
+
 
 const closeServer = async () => {
-  if (exports.server != null) {
+  if (expressServer != null) {
     logger.info('Closing HTTP server...');
-    // Call exports.server.close() to reject new connections but don't await just yet because the
+    // Call expressServer.close() to reject new connections but don't await just yet because the
     // Promise won't resolve until all preexisting connections are closed.
-    const p = util.promisify(exports.server.close.bind(exports.server))();
+    const p = util.promisify(expressServer.close.bind(expressServer))();
     await hooks.aCallAll('expressCloseServer');
     // Give existing connections some time to close on their own before forcibly terminating. The
     // time should be long enough to avoid interrupting most preexisting transmissions but short
     // enough to avoid a noticeable outage.
     const timeout = setTimeout(async () => {
       logger.info(`Forcibly terminating remaining ${sockets.size} HTTP connections...`);
-      for (const socket of sockets) socket.destroy(new Error('HTTP server is closing'));
+      for (const socket of sockets) socket.disconnect(true);
     }, 5000);
     let lastLogged = 0;
     while (sockets.size > 0  && !settings.enableAdminUITests) {
@@ -53,7 +62,7 @@ const closeServer = async () => {
     }
     await p;
     clearTimeout(timeout);
-    exports.server = null;
+    expressServer = null;
     startTime.setValue(0);
     logger.info('HTTP server closed');
   }
@@ -64,14 +73,14 @@ const closeServer = async () => {
   secretRotator = null;
 };
 
-exports.createServer = async () => {
+export const createServer = async () => {
   console.log('Report bugs at https://github.com/ether/etherpad-lite/issues');
 
   serverName = `Etherpad ${getGitCommit()} (https://etherpad.org)`;
 
   console.log(`Your Etherpad version is ${getEpVersion()} (${getGitCommit()})`);
 
-  await exports.restartServer();
+  await restartServer();
 
   if (settings.ip === '') {
     // using Unix socket for connectivity
@@ -96,7 +105,7 @@ exports.createServer = async () => {
   }
 };
 
-exports.restartServer = async () => {
+export const restartServer = async () => {
   await closeServer();
 
   const app = express(); // New syntax for express v3
@@ -119,11 +128,9 @@ exports.restartServer = async () => {
       }
     }
 
-    const https = require('https');
-    exports.server = https.createServer(options, app);
+    expressServer = createServerHttps();
   } else {
-    const http = require('http');
-    exports.server = http.createServer(app);
+    expressServer = createServerHttp()
   }
 
   app.use((req, res, next) => {
@@ -201,7 +208,7 @@ exports.restartServer = async () => {
   app.use(cookieParser(secret, {}));
 
   sessionStore = new SessionStore(settings.cookie.sessionRefreshInterval);
-  exports.sessionMiddleware = expressSession({
+  sessionMiddleware = expressSession({
     rolling: true,
     secret,
     store: sessionStore ?? undefined,
@@ -238,15 +245,21 @@ exports.restartServer = async () => {
   // middleware. This allows plugins to avoid creating an express-session record in the database
   // when it is not needed (e.g., public static content).
   await hooks.aCallAll('expressPreSession', {app, settings});
-  app.use(exports.sessionMiddleware);
+  app.use(sessionMiddleware);
 
   app.use(webaccess.checkAccess);
 
   await Promise.all([
     hooks.aCallAll('expressConfigure', {app}),
-    hooks.aCallAll('expressCreateServer', {app, server: exports.server}),
+    hooks.aCallAll('expressCreateServer', {app, server: expressServer}),
   ]);
-  exports.server.on('connection', (socket:Socket) => {
+
+  if (expressServer != null) {
+    throw new Error('expressServer is null after expressCreateServer hook');
+  }
+
+  // @ts-ignore
+  expressServer!.on('connection', (socket) => {
     sockets.add(socket);
     socketsEvents.emit('updated');
     socket.on('close', () => {
@@ -254,11 +267,22 @@ exports.restartServer = async () => {
       socketsEvents.emit('updated');
     });
   });
-  await util.promisify(exports.server.listen).bind(exports.server)(settings.port, settings.ip);
+
+  // @ts-ignore
+  await util.promisify(expressServer!.listen).bind(expressServer)(Number(settings.port), settings.ip);
   startTime.setValue(Date.now());
   logger.info('HTTP server listening for connections');
 };
 
-exports.shutdown = async (hookName:string, context: any) => {
+export const shutdown = async (hookName:string, context: any) => {
   await closeServer();
 };
+
+
+export default {
+  createServer,
+  restartServer,
+  closeServer,
+  shutdown,
+  server: expressServer
+}

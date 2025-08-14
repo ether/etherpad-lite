@@ -62,7 +62,7 @@ export class LinkInstaller {
         }
     }
 
-    public async listPlugins() {
+    public async listPlugins(): Promise<IPluginInfo[]> {
         const plugins = this.livePluginManager.list()
         if (plugins && plugins.length > 0 && this.loadedPlugins.length == 0) {
             this.loadedPlugins = plugins

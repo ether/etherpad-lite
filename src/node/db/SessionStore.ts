@@ -1,15 +1,18 @@
-// @ts-nocheck
-
-
-const DB = require('./DB');
+import DB from './DB';
 import expressSession from 'express-session'
 
-const log4js = require('log4js');
-const util = require('util');
+import log4js from 'log4js';
 
 const logger = log4js.getLogger('SessionStore');
 
 class SessionStore extends expressSession.Store {
+  private readonly _refresh: number | null;
+  private _expirations: Map<string, {
+    db?: number; // Session expiration as recorded in the database (ms since epoch, not a Date).
+    real?: number; // Actual session expiration (ms since epoch, not a Date). Always >= db.
+    timeout?: NodeJS.Timeout; // Timeout ID for a timeout that will clean up the database record.
+  }>;
+
   /**
    * @param {?number} [refresh] - How often (in milliseconds) `touch()` will update a session's
    *     database record with the cookie's latest expiration time. If the difference between the
@@ -36,7 +39,7 @@ class SessionStore extends expressSession.Store {
     for (const {timeout} of this._expirations.values()) clearTimeout(timeout);
   }
 
-  async _updateExpirations(sid: string, sess: any, updateDbExp = true) {
+  async updateExpirations(sid: string, sess: any, updateDbExp = true) {
     const exp = this._expirations.get(sid) || {};
     clearTimeout(exp.timeout);
     // @ts-ignore
@@ -46,7 +49,7 @@ class SessionStore extends expressSession.Store {
       if (updateDbExp) exp.db = sessExp;
       exp.real = Math.max(exp.real || 0, exp.db || 0, sessExp);
       const now = Date.now();
-      if (exp.real <= now) return await this._destroy(sid);
+      if (exp.real <= now) return await this.destroy(sid);
       // If reading from the database, update the expiration with the latest value from touch() so
       // that touch() appears to write to the database every time even though it doesn't.
       if (typeof expires === 'string') sess.cookie.expires = new Date(exp.real).toJSON();
@@ -58,7 +61,7 @@ class SessionStore extends expressSession.Store {
       // instance. (Important caveat: Client-side database caching, which ueberdb does by default,
       // could still cause the record to be prematurely deleted because this instance might get a
       // stale expiration time from cache.)
-      exp.timeout = setTimeout(() => this._get(sid), exp.real - now);
+      exp.timeout = setTimeout(() => this.get(sid), exp.real - now);
       this._expirations.set(sid, exp);
     } else {
       this._expirations.delete(sid);
@@ -66,51 +69,45 @@ class SessionStore extends expressSession.Store {
     return sess;
   }
 
-  async _write(sid: string, sess: any) {
+  async write(sid: string, sess: any) {
     await DB.set(`sessionstorage:${sid}`, sess);
   }
 
-  async _get(sid: string) {
+  async get(sid: string) {
     logger.debug(`GET ${sid}`);
     const s = await DB.get(`sessionstorage:${sid}`);
-    return await this._updateExpirations(sid, s);
+    return await this.updateExpirations(sid, s);
   }
 
-  async _set(sid: string, sess:any) {
+  async set(sid: string, sess:any) {
     logger.debug(`SET ${sid}`);
-    sess = await this._updateExpirations(sid, sess);
-    if (sess != null) await this._write(sid, sess);
+    sess = this.updateExpirations(sid, sess);
+    if (sess != null) await this.write(sid, sess);
   }
 
-  async _destroy(sid:string) {
+  async destroy(sid?:string) {
     logger.debug(`DESTROY ${sid}`);
-    clearTimeout((this._expirations.get(sid) || {}).timeout);
-    this._expirations.delete(sid);
+    sid && clearTimeout((this._expirations.get(sid) || {}).timeout);
+    sid && this._expirations.delete(sid);
     await DB.remove(`sessionstorage:${sid}`);
   }
 
   // Note: express-session might call touch() before it calls set() for the first time. Ideally this
   // would behave like set() in that case but it's OK if it doesn't -- express-session will call
   // set() soon enough.
-  async _touch(sid: string, sess:any) {
+  async touch(sid: string, sess:any) {
     logger.debug(`TOUCH ${sid}`);
-    sess = await this._updateExpirations(sid, sess, false);
+    sess = await this.updateExpirations(sid, sess, false);
     if (sess == null) return; // Already expired.
     const exp = this._expirations.get(sid);
     // If the session doesn't expire, don't do anything. Ideally we would write the session to the
     // database if it didn't already exist, but we have no way of knowing that without querying the
     // database. The query overhead is not worth it because set() should be called soon anyway.
     if (exp == null) return;
-    if (exp.db != null && (this._refresh == null || exp.real < exp.db + this._refresh)) return;
-    await this._write(sid, sess);
+    if (exp.db != null && (this._refresh == null || (exp.real ?? 0) < exp.db + this._refresh)) return;
+    await this.write(sid, sess);
     exp.db = new Date(sess.cookie.expires).getTime();
   }
 }
 
-// express-session doesn't support Promise-based methods. This is where the callbackified versions
-// used by express-session are defined.
-for (const m of ['get', 'set', 'destroy', 'touch']) {
-  SessionStore.prototype[m] = util.callbackify(SessionStore.prototype[`_${m}`]);
-}
-
-module.exports = SessionStore;
+export default SessionStore

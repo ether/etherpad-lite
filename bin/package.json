@@ -17,7 +17,7 @@
   "devDependencies": {
     "@types/node": "^24.0.14",
     "@types/semver": "^7.7.0",
-    "typescript": "^5.8.2"
+    "@typescript/native-preview": "^7.0.0-dev.20250811.1"
   },
   "scripts": {
     "makeDocs": "node --import tsx make_docs.ts",

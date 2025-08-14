@@ -22,13 +22,12 @@
 import AttributeMap from '../../static/js/AttributeMap';
 import AttributePool from "../../static/js/AttributePool";
 import {deserializeOps, splitAttributionLines, subattribution} from '../../static/js/Changeset';
-const { checkValidRev } = require('./checkValidRev');
+import {checkValidRev} from './checkValidRev';
 
 /*
  * This method seems unused in core and no plugins depend on it
  */
-exports.getPadPlainText = (pad: { getInternalRevisionAText: (arg0: any) => any; atext: any; pool: any; }, revNum: undefined) => {
-  const _analyzeLine = exports._analyzeLine;
+export const getPadPlainText = (pad: { getInternalRevisionAText: (arg0: any) => any; atext: any; pool: any; }, revNum: undefined) => {
   const atext = ((revNum !== undefined) ? pad.getInternalRevisionAText(checkValidRev(revNum)) : pad.atext);
   const textLines = atext.text.slice(0, -1).split('\n');
   const attribLines = splitAttributionLines(atext.attribs, atext.text);
@@ -38,7 +37,7 @@ exports.getPadPlainText = (pad: { getInternalRevisionAText: (arg0: any) => any; 
   for (let i = 0; i < textLines.length; i++) {
     const line = _analyzeLine(textLines[i], attribLines[i], apool);
     if (line.listLevel) {
-      const numSpaces = line.listLevel * 2 - 1;
+      const numSpaces = (line.listLevel as number) * 2 - 1;
       const bullet = '*';
       pieces.push(new Array(numSpaces + 1).join(' '), bullet, ' ', line.text, '\n');
     } else {
@@ -49,10 +48,14 @@ exports.getPadPlainText = (pad: { getInternalRevisionAText: (arg0: any) => any; 
   return pieces.join('');
 };
 type LineModel = {
-  [id:string]:string|number|LineModel
+  listLevel?: number;
+  text?: string
+  listTypeName?: string;
+  start?: string;
+  aline?: string;
 }
 
-exports._analyzeLine = (text:string, aline: string, apool: AttributePool) => {
+export const _analyzeLine = (text:string, aline: string, apool: AttributePool) => {
   const line: LineModel = {};
 
   // identify list
@@ -88,5 +91,5 @@ exports._analyzeLine = (text:string, aline: string, apool: AttributePool) => {
 };
 
 
-exports._encodeWhitespace =
+export const _encodeWhitespace =
   (s:string) => s.replace(/[^\x21-\x7E\s\t\n\r]/gu, (c) => `&#${c.codePointAt(0)};`);

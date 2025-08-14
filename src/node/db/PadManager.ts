@@ -22,9 +22,9 @@
 import {MapArrayType} from "../types/MapType";
 import {PadType} from "../types/PadType";
 
-const CustomError = require('../utils/customError');
-const Pad = require('../db/Pad');
-const db = require('./DB');
+import CustomError from '../utils/customError';
+import Pad from '../db/Pad';
+import db from './DB';
 import settings from '../utils/Settings';
 
 /**
@@ -38,16 +38,19 @@ import settings from '../utils/Settings';
  * If this is needed in other places, it would be wise to make this a prototype
  * that's defined somewhere more sensible.
  */
-const globalPads:MapArrayType<any> = {
-  get(name: string)
+const globalPads = {
+  get(name: string): Pad
   {
-    return this[`:${name}`];
+    // @ts-ignore
+    return this[`:${name}`] as Pad;
     },
   set(name: string, value: any)
   {
-    this[`:${name}`] = value;
+    // @ts-ignore
+    this[`:${name}`] = value as Pad;
   },
   remove(name: string) {
+    // @ts-ignore
     delete this[`:${name}`];
   },
 };
@@ -97,7 +100,7 @@ const padList = new class {
   }
 }();
 
-// initialises the all-knowing data structure
+// initializes the all-knowing data structure
 
 /**
  * Returns a Pad Object with the callback
@@ -106,9 +109,9 @@ const padList = new class {
  * @param {string} [authorId] - Optional author ID of the user that initiated the pad creation (if
  *     applicable).
  */
-exports.getPad = async (id: string, text?: string|null, authorId:string|null = ''):Promise<PadType> => {
+export const getPad = async (id: string, text?: string|null, authorId:string|null = ''):Promise<Pad> => {
   // check if this is a valid padId
-  if (!exports.isValidPadId(id)) {
+  if (!isValidPadId(id)) {
     throw new CustomError(`${id} is not a valid padId`, 'apierror');
   }
 
@@ -133,17 +136,17 @@ exports.getPad = async (id: string, text?: string|null, authorId:string|null = '
   }
 
   // try to load pad
-  pad = new Pad.Pad(id);
+  pad = new Pad(id);
 
   // initialize the pad
-  await pad.init(text, authorId);
+  await pad.init(text, authorId ?? undefined);
   globalPads.set(id, pad);
   padList.addPad(id);
 
   return pad;
 };
 
-exports.listAllPads = async () => {
+export const listAllPads = async () => {
   const padIDs = await padList.getPads();
 
   return {padIDs};
@@ -153,14 +156,14 @@ exports.listAllPads = async () => {
 
 
 // checks if a pad exists
-exports.doesPadExist = async (padId: string) => {
+export const doesPadExist = async (padId: string) => {
   const value = await db.get(`pad:${padId}`);
 
   return (value != null && value.atext);
 };
 
 // alias for backwards compatibility
-exports.doesPadExists = exports.doesPadExist;
+export const doesPadExists = doesPadExist;
 
 /**
  * An array of padId transformations. These represent changes in pad name policy over
@@ -172,9 +175,9 @@ const padIdTransforms = [
 ];
 
 // returns a sanitized padId, respecting legacy pad id formats
-exports.sanitizePadId = async (padId: string) => {
+export const sanitizePadId = async (padId: string) => {
   for (let i = 0, n = padIdTransforms.length; i < n; ++i) {
-    const exists = await exports.doesPadExist(padId);
+    const exists = await doesPadExist(padId);
 
     if (exists) {
       return padId;
@@ -192,19 +195,33 @@ exports.sanitizePadId = async (padId: string) => {
   return padId;
 };
 
-exports.isValidPadId = (padId: string) => /^(g.[a-zA-Z0-9]{16}\$)?[^$]{1,50}$/.test(padId);
+export const isValidPadId = (padId: string) => /^(g.[a-zA-Z0-9]{16}\$)?[^$]{1,50}$/.test(padId);
 
 /**
  * Removes the pad from database and unloads it.
  */
-exports.removePad = async (padId: string) => {
+export const removePad = async (padId: string) => {
   const p = db.remove(`pad:${padId}`);
-  exports.unloadPad(padId);
+  unloadPad(padId);
   padList.removePad(padId);
   await p;
 };
 
 // removes a pad from the cache
-exports.unloadPad = (padId: string) => {
+export const unloadPad = (padId: string) => {
   globalPads.remove(padId);
 };
+
+export default {
+  getPad,
+  listAllPads,
+  doesPadExist,
+  doesPadExists: doesPadExist, // alias for backwards compatibility
+  sanitizePadId,
+  isValidPadId,
+  removePad,
+  unloadPad,
+  globalPads,
+  padList,
+  padIdTransforms,
+}

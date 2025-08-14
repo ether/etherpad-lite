@@ -29,7 +29,7 @@ import {compressCSS, compressJS} from './MinifyWorker'
 import settings from './Settings';
 import {promises as fs} from 'fs';
 import path from 'node:path';
-const plugins = require('../../static/js/pluginfw/plugin_defs');
+import plugins from '../../static/js/pluginfw/plugin_defs';
 import sanitizePathname from './sanitizePathname';
 const logger = log4js.getLogger('Minify');
 
@@ -172,7 +172,7 @@ const _minify = async (req:any, res:any) => {
   */
   const match = filename.match(/^plugins\/([^/]+)(\/(?:(static\/.*)|.*))?$/);
   if (match) {
-    const library = match[1];
+    const library: string = match[1];
     const libraryPath = match[2] || '';
 
     if (plugins.plugins[library] && match[3]) {

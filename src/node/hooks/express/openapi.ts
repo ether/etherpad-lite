@@ -20,10 +20,10 @@ import {ErrorCaused} from "../../types/ErrorCaused";
 
 const OpenAPIBackend = require('openapi-backend').default;
 const IncomingForm = require('formidable').IncomingForm;
-const cloneDeep = require('lodash.clonedeep');
-const createHTTPError = require('http-errors');
+import cloneDeep from 'lodash.clonedeep';
+import createHTTPError from 'http-errors';
 
-const apiHandler = require('../../handler/APIHandler');
+import apiHandler from '../../handler/APIHandler';
 import settings from '../../utils/Settings';
 
 import log4js from 'log4js';
@@ -377,7 +377,7 @@ const defaultResponses = {
   },
 };
 
-const defaultResponseRefs:OpenAPISuccessResponse = {
+const defaultResponseRefs:OpenAPIOperations = {
   200: {
     $ref: '#/components/responses/Success',
   },
@@ -399,7 +399,7 @@ for (const [resource, actions] of Object.entries(resources)) {
     const {operationId,responseSchema, ...operation} = spec;
 
     // add response objects
-    const responses:OpenAPISuccessResponse = {...defaultResponseRefs};
+    const responses:OpenAPIOperations = {...defaultResponseRefs};
     if (responseSchema) {
       responses[200] = cloneDeep(defaultResponses.Success);
       responses[200].content!['application/json'].schema.properties.data = {
@@ -630,7 +630,7 @@ exports.expressPreSession = async (hookName:string, {app}:any) => {
           // pass to api handler
           let data;
           try {
-            data = await apiHandler.handle(version, funcName, fields, req, res);
+            data = await apiHandler.handle(version, funcName, fields, req);
           } catch (err) {
             const errCaused = err as ErrorCaused
             // convert all errors to http errors
@@ -645,7 +645,7 @@ exports.expressPreSession = async (hookName:string, {app}:any) => {
               // an unknown error happened
               // log it and throw internal error
               logger.error(errCaused.stack || errCaused.toString());
-              throw new createHTTPError.InternalError('internal error');
+              throw new createHTTPError.InternalServerError('internal error');
             }
           }
 

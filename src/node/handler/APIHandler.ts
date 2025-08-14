@@ -21,8 +21,8 @@
 
 import {MapArrayType} from "../types/MapType";
 import { jwtDecode } from "jwt-decode";
-const api = require('../db/API');
-const padManager = require('../db/PadManager');
+import api from '../db/API';
+import padManager from '../db/PadManager';
 import settings from '../utils/Settings';
 import createHTTPError from 'http-errors';
 import {Http2ServerRequest} from "node:http2";
@@ -144,10 +144,10 @@ version['1.3.0'] = {
 
 
 // set the latest available API version here
-exports.latestApiVersion = '1.3.0';
+export const latestApiVersion = '1.3.0';
 
 // exports the versions so it can be used by the new Swagger endpoint
-exports.version = version;
+export const ethVersion = version;
 
 
 
@@ -157,9 +157,10 @@ exports.version = version;
  * @param {String} functionName the name of the called function
  * @param fields the params of the called function
  * @param req express request object
+ * @param res
  */
-exports.handle = async function (apiVersion: string, functionName: string, fields: APIFields,
-                                 req: Http2ServerRequest) {
+export const handle = async function (apiVersion: string, functionName: string, fields: APIFields,
+                                 req?: Http2ServerRequest) {
   // say goodbye if this is an unknown API version
   if (!(apiVersion in version)) {
     throw new createHTTPError.NotFound('no such api version');
@@ -179,7 +180,7 @@ exports.handle = async function (apiVersion: string, functionName: string, field
       throw new createHTTPError.Unauthorized('no or wrong API Key');
     }
   } else {
-    if(!req.headers.authorization) {
+    if(!req || !req.headers.authorization) {
       throw new createHTTPError.Unauthorized('no or wrong API Key');
     }
     try {
@@ -212,8 +213,17 @@ exports.handle = async function (apiVersion: string, functionName: string, field
 
   // put the function parameters in an array
   // @ts-ignore
-  const functionParams = version[apiVersion][functionName].map((field) => fields[field]);
+  const functionParams = version[apiVersion][functionName].map((field: string) => fields[field]);
 
   // call the api function
+  // @ts-ignore
   return api[functionName].apply(this, functionParams);
 };
+
+export default {
+  handle,
+  latestApiVersion,
+  ethVersion,
+  apikey,
+  version
+}

@@ -21,17 +21,17 @@
  * limitations under the License.
  */
 
-const padManager = require('../db/PadManager');
-const padMessageHandler = require('./PadMessageHandler');
+import padManager from '../db/PadManager';
+import padMessageHandler from './PadMessageHandler';
 import {promises as fs} from 'fs';
 import path from 'path';
 import settings from '../utils/Settings';
-const {Formidable} = require('formidable');
+import {Formidable,errors} from 'formidable';
 import os from 'os';
-const importHtml = require('../utils/ImportHtml');
-const importEtherpad = require('../utils/ImportEtherpad');
+import importHtml from '../utils/ImportHtml';
+import importEtherpad from '../utils/ImportEtherpad';
 import log4js from 'log4js';
-const hooks = require('../../static/js/pluginfw/hooks');
+import hooks from '../../static/js/pluginfw/hooks';
 
 const logger = log4js.getLogger('ImportHandler');
 
@@ -58,15 +58,17 @@ const rm = async (path: string) => {
 
 let converter:any = null;
 let exportExtension = 'htm';
+import abiword from '../utils/Abiword'
+import libreoffice from '../utils/LibreOffice'
 
 // load abiword only if it is enabled and if soffice is disabled
 if (settings.abiword != null && settings.soffice == null) {
-  converter = require('../utils/Abiword');
+  converter = abiword;
 }
 
 // load soffice only if it is enabled
 if (settings.soffice != null) {
-  converter = require('../utils/LibreOffice');
+  converter = libreoffice;
   exportExtension = 'html';
 }
 
@@ -101,7 +103,7 @@ const doImport = async (req:any, res:any, padId:string, authorId:string) => {
     [fields, files] = await form.parse(req);
   } catch (err:any) {
     logger.warn(`Import failed due to form error: ${err.stack || err}`);
-    if (err.code === Formidable.formidableErrors.biggerThanMaxFileSize) {
+    if (err.code === errors.biggerThanMaxFileSize) {
       throw new ImportError('maxFileSize');
     }
     throw new ImportError('uploadFailed');
@@ -115,7 +117,11 @@ const doImport = async (req:any, res:any, padId:string, authorId:string) => {
 
   // ensure this is a file ending we know, else we change the file ending to .txt
   // this allows us to accept source code files like .c or .java
-  const fileEnding = path.extname(files.file[0].originalFilename).toLowerCase();
+  let fileEnding = ''
+  if (files.file[0].originalFilename) {
+    // if the originalFilename is set, we use it to determine the file ending
+    fileEnding = path.extname(files.file[0].originalFilename).toLowerCase();
+  }
   const knownFileEndings =
     ['.txt', '.doc', '.docx', '.pdf', '.odt', '.html', '.htm', '.etherpad', '.rtf'];
   const fileEndingUnknown = (knownFileEndings.indexOf(fileEnding) < 0);
@@ -123,7 +129,7 @@ const doImport = async (req:any, res:any, padId:string, authorId:string) => {
   if (fileEndingUnknown) {
     // the file ending is not known
 
-    if (settings.allowUnknownFileEnds === true) {
+    if (settings.allowUnknownFileEnds) {
       // we need to rename this file with a .txt ending
       const oldSrcFile = srcFile;
 
@@ -210,12 +216,12 @@ const doImport = async (req:any, res:any, padId:string, authorId:string) => {
   if (!directDatabaseAccess) {
     if (importHandledByPlugin || useConverter || fileIsHTML) {
       try {
-        await importHtml.setPadHTML(pad, text, authorId);
+        await importHtml.setPadHTML(pad, text!, authorId);
       } catch (err:any) {
         logger.warn(`Error importing, possibly caused by malformed HTML: ${err.stack || err}`);
       }
     } else {
-      await pad.setText(text, authorId);
+      await pad.setText(text!, authorId);
     }
   }
 
