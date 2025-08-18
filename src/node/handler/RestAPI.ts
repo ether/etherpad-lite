@@ -4,7 +4,7 @@ import {IncomingForm} from "formidable";
 import {ErrorCaused} from "../types/ErrorCaused";
 import createHTTPError from "http-errors";
 
-const apiHandler = require('./APIHandler')
+import apiHandler from './APIHandler';
 import {serve, setup} from 'swagger-ui-express'
 import express from "express";
 
@@ -1462,7 +1462,7 @@ export const expressCreateServer = async (hookName: string, {app}: ArgsExpressTy
       let response;
       try {
         try {
-          let data = await apiHandler.handle(apiVersion, functionName, fields, req, res);
+          let data = await apiHandler.handle(apiVersion, functionName, fields, req as any);
 
           // return in common format
           response = {code: 0, message: 'ok', data: data || null};

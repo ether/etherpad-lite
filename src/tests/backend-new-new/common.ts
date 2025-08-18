@@ -1,22 +1,21 @@
-'use strict';
-
 import {MapArrayType} from "../../node/types/MapType";
 
 import AttributePool from '../../static/js/AttributePool';
 const assert = require('assert').strict;
-const io = require('socket.io-client');
-const log4js = require('log4js');
+import io from 'socket.io-client';
 import padutils from '../../static/js/pad_utils';
-const process = require('process');
+import process from 'node:process';
 const server = require('../../node/server');
-const setCookieParser = require('set-cookie-parser');
+import setCookieParser from 'set-cookie-parser';
 import settings from '../../node/utils/Settings';
 import supertest from 'supertest';
 import TestAgent from "supertest/lib/agent";
 import {Http2Server} from "node:http2";
 import {SignJWT} from "jose";
 import {privateKeyExported} from "../../node/security/OAuth2Provider";
-const webaccess = require('../../node/hooks/express/webaccess');
+import log4js from "log4js";
+import { beforeAll, afterAll } from '@rstest/core';
+import webaccess from "../../node/hooks/express/webaccess";
 
 const backups:MapArrayType<any> = {};
 let agentPromise:Promise<any>|null = null;
@@ -32,8 +31,7 @@ const logLevel = logger.level;
 // https://github.com/mochajs/mocha/issues/2640
 process.on('unhandledRejection', (reason: string) => { throw reason; });
 
-before(async function () {
-  this.timeout(60000);
+beforeAll(async function (ctx) {
   await init();
 });
 
@@ -69,11 +67,6 @@ export const init = async function () {
   let agentResolve;
   agentPromise = new Promise((resolve) => { agentResolve = resolve; });
 
-  if (!logLevel.isLessThanOrEqualTo(log4js.levels.DEBUG)) {
-    logger.warn('Disabling non-test logging for the duration of the test. ' +
-                'To enable non-test logging, change the loglevel setting to DEBUG.');
-  }
-
   // Note: This is only a shallow backup.
   backups.settings = Object.assign({}, settings);
   // Start the Etherpad server on a random unused port.
@@ -87,12 +80,12 @@ export const init = async function () {
   logger.debug(`HTTP server at ${baseUrl}`);
   // Create a supertest user agent for the HTTP server.
   agent = supertest(baseUrl)
-      //.set('Authorization', `Bearer ${await generateJWTToken()}`);
+  //.set('Authorization', `Bearer ${await generateJWTToken()}`);
   // Speed up authn tests.
   backups.authnFailureDelayMs = webaccess.authnFailureDelayMs;
   webaccess.authnFailureDelayMs = 0;
 
-  after(async function () {
+  afterAll(async function () {
     webaccess.authnFailureDelayMs = backups.authnFailureDelayMs;
     // Note: This does not unset settings that were added.
     Object.assign(settings, backups.settings);
@@ -170,8 +163,8 @@ export const connect = async (res:any = null) => {
   // Convert the `set-cookie` header(s) into a `cookie` header.
   const resCookies = (res == null) ? {} : setCookieParser.parse(res, {map: true});
   const reqCookieHdr = Object.entries(resCookies).map(
-      // @ts-ignore
-      ([name, cookie]) => `${name}=${encodeURIComponent(cookie.value)}`).join('; ');
+    // @ts-ignore
+    ([name, cookie]) => `${name}=${encodeURIComponent(cookie.value)}`).join('; ');
 
   logger.debug('socket.io connecting...');
   let padId = null;

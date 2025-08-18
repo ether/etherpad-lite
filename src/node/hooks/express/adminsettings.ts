@@ -4,13 +4,13 @@
 import {PadQueryResult, PadSearchQuery} from "../../types/PadSearchQuery";
 import log4js from 'log4js';
 
-const fsp = require('fs').promises;
-const hooks = require('../../../static/js/pluginfw/hooks');
-const plugins = require('../../../static/js/pluginfw/plugins');
+import {promises as fsp} from 'node:fs'
+import hooks from '../../../static/js/pluginfw/hooks';
+import plugins from '../../../static/js/pluginfw/plugins';
 import settings, {getEpVersion, getGitCommit, reloadSettings} from '../../utils/Settings';
 import {getLatestVersion} from '../../utils/UpdateCheck';
-const padManager = require('../../db/PadManager');
-const api = require('../../db/API');
+import padManager from '../../db/PadManager';
+import api from '../../db/API';
 import {deleteRevisions} from '../../utils/Cleanup';
 
 
@@ -76,8 +76,8 @@ exports.socketio = (hookName: string, {io}: any) => {
             const gitCommit = getGitCommit();
             const epVersion = getEpVersion();
 
-            const hooks: Map<string, Map<string, string>> = plugins.getHooks('hooks', false);
-            const clientHooks: Map<string, Map<string, string>> = plugins.getHooks('client_hooks', false);
+            const hooks: Map<string, Map<string, string>> = plugins.getHooks('hooks');
+            const clientHooks: Map<string, Map<string, string>> = plugins.getHooks('client_hooks');
 
             function mapToObject(map: Map<string, any>) {
                 let obj = Object.create(null);
@@ -182,7 +182,7 @@ exports.socketio = (hookName: string, {io}: any) => {
                 currentWinners.push({
                   padName: padRetrieval.padId,
                   lastEdited: await pad.getLastEdit(),
-                  userCount: api.padUsersCount(pad.padName).padUsersCount,
+                  userCount: api.padUsersCount(padRetrieval.padId).padUsersCount,
                   revisionNumber: padRetrieval.revisionNumber
                 })
               }
@@ -230,7 +230,7 @@ exports.socketio = (hookName: string, {io}: any) => {
                 currentWinners.push({
                   padName: padRetrieval.padId,
                   lastEdited: padRetrieval.lastEdited,
-                  userCount: api.padUsersCount(pad.padName).padUsersCount,
+                  userCount: api.padUsersCount(padRetrieval.padId).padUsersCount,
                   revisionNumber: pad.getHeadRevisionNumber()
                 })
               }

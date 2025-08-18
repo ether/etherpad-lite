@@ -20,15 +20,15 @@
  * limitations under the License.
  */
 
-const exporthtml = require('../utils/ExportHtml');
-const exporttxt = require('../utils/ExportTxt');
-const exportEtherpad = require('../utils/ExportEtherpad');
+import exporthtml from '../utils/ExportHtml';
+import exporttxt from '../utils/ExportTxt';
+import exportEtherpad from '../utils/ExportEtherpad';
 import fs from 'fs';
 import settings from '../utils/Settings';
 import os from 'os';
-const hooks = require('../../static/js/pluginfw/hooks');
+import hooks from '../../static/js/pluginfw/hooks';
 import util from 'util';
-const { checkValidRev } = require('../utils/checkValidRev');
+import {checkValidRev} from '../utils/checkValidRev';
 
 const fsp_writeFile = util.promisify(fs.writeFile);
 const fsp_unlink = util.promisify(fs.unlink);

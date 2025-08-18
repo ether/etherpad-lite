@@ -21,14 +21,14 @@
 
 import {UserSettingsObject} from "../types/UserSettingsObject";
 
-const authorManager = require('./AuthorManager');
-const hooks = require('../../static/js/pluginfw/hooks');
-const padManager = require('./PadManager');
+import authorManager from "./AuthorManager";
+import hooks from '../../static/js/pluginfw/hooks';
+import padManager from './PadManager'
 import readOnlyManager from './ReadOnlyManager';
-const sessionManager = require('./SessionManager');
+import sessionManager from './SessionManager';
 import settings from '../utils/Settings';
-const webaccess = require('../hooks/express/webaccess');
-const log4js = require('log4js');
+import webaccess from '../hooks/express/webaccess';
+import log4js from 'log4js';
 const authLogger = log4js.getLogger('auth');
 import padutils from '../../static/js/pad_utils'
 
@@ -57,7 +57,7 @@ const DENY = Object.freeze({accessStatus: 'deny'});
  * @param {Object} userSettings
  * @return {DENY|{accessStatus: String, authorID: String}}
  */
-exports.checkAccess = async (padID:string, sessionCookie:string, token:string, userSettings:UserSettingsObject) => {
+export const checkAccess = async (padID:string, sessionCookie:string, token:string, userSettings:UserSettingsObject | undefined) => {
   if (!padID) {
     authLogger.debug('access denied: missing padID');
     return DENY;
@@ -98,6 +98,7 @@ exports.checkAccess = async (padID:string, sessionCookie:string, token:string, u
 
   // allow plugins to deny access
   const isFalse = (x:boolean) => x === false;
+  // @ts-ignore
   if (hooks.callAll('onAccessCheck', {padID, token, sessionCookie}).some(isFalse)) {
     authLogger.debug('access denied: an onAccessCheck hook function returned false');
     return DENY;
@@ -148,3 +149,7 @@ exports.checkAccess = async (padID:string, sessionCookie:string, token:string, u
 
   return grant;
 };
+
+export default {
+  checkAccess
+}

@@ -1,7 +1,3 @@
-'use strict';
-
-import {APool} from "../types/PadType";
-
 /**
  * 2014 John McLear (Etherpad Foundation / McLear Ltd)
  *
@@ -19,18 +15,18 @@ import {APool} from "../types/PadType";
  */
 
 import AttributePool from '../../static/js/AttributePool';
-const {Pad} = require('../db/Pad');
-const Stream = require('./Stream');
-const authorManager = require('../db/AuthorManager');
-const db = require('../db/DB');
-const hooks = require('../../static/js/pluginfw/hooks');
+import Pad from '../db/Pad';
+import Stream from './Stream';
+import authorManager from '../db/AuthorManager';
+import db from '../db/DB';
+import hooks from '../../static/js/pluginfw/hooks';
 import log4js from 'log4js';
 const supportedElems = require('../../static/js/contentcollector').supportedElems;
 import {Database} from 'ueberdb2';
 
 const logger = log4js.getLogger('ImportEtherpad');
 
-exports.setPadRaw = async (padId: string, r: string, authorId = '') => {
+export const setPadRaw = async (padId: string, r: string, authorId = '') => {
   const records = JSON.parse(r);
 
   // get supported block Elements from plugins, we will use this later.
@@ -55,7 +51,7 @@ exports.setPadRaw = async (padId: string, r: string, authorId = '') => {
   // there is a problem with the data.
 
   const data = new Map();
-  const existingAuthors = new Set();
+  const existingAuthors: Set<string> = new Set();
   const padDb = new Database('memory', {data});
   await padDb.init();
   try {
@@ -126,3 +122,7 @@ exports.setPadRaw = async (padId: string, r: string, authorId = '') => {
   })();
   for (const op of new Stream(writeOps).batch(100).buffer(99)) await op;
 };
+
+export default {
+  setPadRaw
+}

@@ -2,11 +2,11 @@
 
 import express from "express";
 
-const log4js = require('log4js');
+import log4js from 'log4js';
 const clientLogger = log4js.getLogger('client');
-const {Formidable} = require('formidable');
-const apiHandler = require('../../handler/APIHandler');
-const util = require('util');
+import {Formidable} from 'formidable';
+import apiHandler from '../../handler/APIHandler';
+import util from 'node:util';
 
 
 function objectAsString(obj: any): string {
@@ -41,14 +41,14 @@ exports.expressPreSession = async (hookName:string, {app}:any) => {
     const form = new Formidable({
       maxFileSize: 1, // Files are not expected. Not sure if 0 means unlimited, so 1 is used.
     });
-    const [fields, files] = await form.parse(req);
-    return fields.errorInfo;
+    const [fields] = await form.parse(req);
+    return fields.errorInfo && fields.errorInfo[0] ? fields.errorInfo[0] : null;
   };
 
-  // The Etherpad client side sends information about client side javscript errors
+  // The Etherpad client side sends information about client side javascript errors
   app.post('/jserror', (req:any, res:any, next:Function) => {
     (async () => {
-      const data = JSON.parse(await parseJserrorForm(req));
+      const data = JSON.parse(await parseJserrorForm(req) ||'{}');
       clientLogger.warn(`${data.msg} --`, {
         [util.inspect.custom]: (depth: number, options:any) => {
           // Depth is forced to infinity to ensure that all of the provided data is logged.

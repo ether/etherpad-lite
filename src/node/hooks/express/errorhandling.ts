@@ -3,10 +3,12 @@
 import {ArgsExpressType} from "../../types/ArgsExpressType";
 import {ErrorCaused} from "../../types/ErrorCaused";
 
-const stats = require('../../stats')
+import stats from '../../stats';
 
-exports.expressCreateServer = (hook_name:string, args: ArgsExpressType, cb:Function) => {
-  exports.app = args.app;
+let app: ArgsExpressType['app']| null = null
+
+export const expressCreateServer = (hook_name:string, args: ArgsExpressType, cb:Function) => {
+  app = args.app;
 
   // Handle errors
   args.app.use((err:ErrorCaused, req:any, res:any, next:Function) => {
@@ -20,3 +22,10 @@ exports.expressCreateServer = (hook_name:string, args: ArgsExpressType, cb:Funct
 
   return cb();
 };
+
+export default {
+  expressCreateServer,
+  get app() {
+    return app;
+  }
+}

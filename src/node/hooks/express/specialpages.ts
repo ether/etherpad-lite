@@ -1,14 +1,14 @@
 'use strict';
 
 import path from 'node:path';
-const eejs = require('../../eejs')
+import eejs from '../../eejs';
 import fs from 'node:fs';
 const fsp = fs.promises;
 const toolbar = require('../../utils/toolbar');
 const hooks = require('../../../static/js/pluginfw/hooks');
 import settings, {getEpVersion} from '../../utils/Settings';
 import util from 'node:util';
-const webaccess = require('./webaccess');
+import webaccess from './webaccess';
 const plugins = require('../../../static/js/pluginfw/plugin_defs');
 
 import {build, buildSync} from 'esbuild'

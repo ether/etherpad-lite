@@ -22,20 +22,27 @@
 import {ChildProcess} from "node:child_process";
 import {AsyncQueueTask} from "../types/AsyncQueueTask";
 
-const spawn = require('child_process').spawn;
-const async = require('async');
+import {spawn} from 'node:child_process'
+import async from 'async';
 import settings from './Settings';
-const os = require('os');
+import os from 'node:os';
+
+let convertFile: (srcFile: string, destFile: string, type: string) => Promise<void> = ()=>{
+  return Promise.reject(new Error('Abiword is not available on this platform'));
+}
 
 // on windows we have to spawn a process for each convertion,
 // cause the plugin abicommand doesn't exist on this platform
 if (os.type().indexOf('Windows') > -1) {
-  exports.convertFile = async (srcFile: string, destFile: string, type: string) => {
-    const abiword = spawn(settings.abiword, [`--to=${destFile}`, srcFile]);
+  convertFile = async (srcFile: string, destFile: string, type: string) => {
+    const abiword = spawn(settings.abiword!, [`--to=${destFile}`, srcFile]);
     let stdoutBuffer = '';
+    // @ts-ignore
     abiword.stdout.on('data', (data: string) => { stdoutBuffer += data.toString(); });
+    // @ts-ignore
     abiword.stderr.on('data', (data: string) => { stdoutBuffer += data.toString(); });
     await new Promise<void>((resolve, reject) => {
+      // @ts-ignore
       abiword.on('exit', (code: number) => {
         if (code !== 0) return reject(new Error(`Abiword died with exit code ${code}`));
         if (stdoutBuffer !== '') {
@@ -52,7 +59,7 @@ if (os.type().indexOf('Windows') > -1) {
   let abiword: ChildProcess;
   let stdoutCallback: Function|null = null;
   const spawnAbiword = () => {
-    abiword = spawn(settings.abiword, ['--plugin', 'AbiCommand']);
+    abiword = spawn(settings.abiword!, ['--plugin', 'AbiCommand']);
     let stdoutBuffer = '';
     let firstPrompt = true;
     abiword.stderr!.on('data', (data) => { stdoutBuffer += data.toString(); });
@@ -87,7 +94,11 @@ if (os.type().indexOf('Windows') > -1) {
     };
   }, 1);
 
-  exports.convertFile = async (srcFile: string, destFile: string, type: string) => {
+  convertFile = async (srcFile: string, destFile: string, type: string) => {
     await queue.pushAsync({srcFile, destFile, type});
   };
+}
+
+export default {
+  convertFile
 }
