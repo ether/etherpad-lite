@@ -9,6 +9,7 @@
 			"Revi",
 			"SeoJeongHo",
 			"Suleiman the Magnificent Television",
+			"YeBoy371",
 			"Ykhwong",
 			"그냥기여자",
 			"아라"
@@ -71,7 +72,7 @@
 	"pad.colorpicker.save": "저장",
 	"pad.colorpicker.cancel": "취소",
 	"pad.loading": "불러오는 중...",
-	"pad.noCookie": "쿠키를 찾지 못했습니다. 브라우저에서 쿠키를 허용해 주십시오! 세션과 설정은 방문 간 저장되지 않습니다. 일부 브라우저의 iFrame에 이더패드가 포함된 것이 그 이유일 수 있습니다. 이더패드가 부모 iFrame과 동일한 서브도메인/도메인에 위치하는지 확인해 주십시오",
+	"pad.noCookie": "쿠키를 찾지 못했습니다. 브라우저에서 쿠키를 허용해 주십시오! 세션과 설정은 방문 간 저장되지 않습니다. 일부 브라우저의 iFrame에 이더패드가 포함된 것이 그 이유일 수 있습니다. 이더패드가 상위 iFrame과 동일한 서브도메인/도메인에 위치하는지 확인해 주십시오",
 	"pad.permissionDenied": "이 패드에 접근할 권한이 없습니다",
 	"pad.settings.padSettings": "패드 설정",
 	"pad.settings.myView": "내 보기",
