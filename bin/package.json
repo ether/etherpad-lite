@@ -15,9 +15,9 @@
     "ueberdb2": "^5.0.14"
   },
   "devDependencies": {
-    "@types/node": "^24.0.14",
+    "@types/node": "^24.3.0",
     "@types/semver": "^7.7.0",
-    "typescript": "^5.8.2"
+    "typescript": "^5.9.2"
   },
   "scripts": {
     "makeDocs": "node --import tsx make_docs.ts",
