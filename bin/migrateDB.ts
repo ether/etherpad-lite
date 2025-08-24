@@ -6,11 +6,11 @@ import settings from 'ep_etherpad-lite/node/utils/Settings';
 
 
 // file1 = source, file2 = target
-// pnpm run migrateDB --file1 <db1.json> --file2 <db2.json>
+// pnpm run --filter bin migrateDB --file1 <db1.json> --file2 <db2.json>
 const arg = process.argv.slice(2);
 
 if (arg.length != 4) {
-  console.error('Wrong number of arguments!. Call with pnpm run migrateDB --file1 source.json target.json')
+  console.error('Wrong number of arguments!. Call with pnpm run --filter bin migrateDB --file1 source.json target.json')
   process.exit(1)
 }
 

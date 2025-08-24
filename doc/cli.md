@@ -26,4 +26,4 @@ In this example we migrate from the old dirty db to the new rustydb engine. So w
 
 
 After that we need to move the data from dirty to rustydb.
-Therefore, we call `pnpm run migrateDB --file1 test1.json --file2 test2.json` with these two files in our root directories. After some time the data should be copied over to the new database.
+Therefore, we call `pnpm run --filter bin migrateDB --file1 test1.json --file2 test2.json` with these two files in our root directories. After some time the data should be copied over to the new database.
