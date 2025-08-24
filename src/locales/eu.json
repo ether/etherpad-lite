@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"Alexgabi",
 			"An13sa",
 			"HairyFotr",
 			"Izendegi",
@@ -46,6 +47,12 @@
 	"index.newPad": "Pad berria",
 	"index.createOpenPad": "edo sortu/ireki Pad bat honako izenarekin:",
 	"index.openPad": "ireki existitzen den eta hurrengo izena duen Pad-a:",
+	"index.recentPadsEmpty": "Ez da aurkitu duela gutxiko pad-ik",
+	"index.generateNewPad": "Sortu pad izen aleatorioa",
+	"index.labelPad": "Pad izena (aukerakoa)",
+	"index.placeholderPadEnter": "Mesedez sartu pad izen bat...",
+	"index.createAndShareDocuments": "Sortu eta partekatu dokumentuak denbora errealean",
+	"index.createAndShareDocumentsDescription": "Etherpadek aukera ematen dizu dokumentuak elkarlanean editatzeko zure nabigatzailean exekutatzen den idazle anitzeko editore bat bezala.",
 	"pad.toolbar.bold.title": "Lodia (Ctrl+B)",
 	"pad.toolbar.italic.title": "Etzana (Ctrl+I)",
 	"pad.toolbar.underline.title": "Azpimarratua (Ctrl+U)",
@@ -62,6 +69,7 @@
 	"pad.toolbar.savedRevision.title": "Gorde berrikuspena",
 	"pad.toolbar.settings.title": "Ezarpenak",
 	"pad.toolbar.embed.title": "Partekatu eta Txertatu pad hau",
+	"pad.toolbar.home.title": "Atzera hasierara",
 	"pad.toolbar.showusers.title": "Erakutsi pad honetako erabiltzaileak",
 	"pad.colorpicker.save": "Gorde",
 	"pad.colorpicker.cancel": "Utzi",
@@ -78,6 +86,8 @@
 	"pad.settings.fontType": "Letra-mota:",
 	"pad.settings.fontType.normal": "Arrunta",
 	"pad.settings.language": "Hizkuntza:",
+	"pad.settings.deletePad": "Ezabatu pad-a",
+	"pad.delete.confirm": "Benetan pad hau ezabatu nahi duzu?",
 	"pad.settings.about": "Honi buruz",
 	"pad.settings.poweredBy": "Honek garatua:",
 	"pad.importExport.import_export": "Inportatu/Esportatu",

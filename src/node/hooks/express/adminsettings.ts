@@ -2,18 +2,16 @@
 
 
 import {PadQueryResult, PadSearchQuery} from "../../types/PadSearchQuery";
-import {PadType} from "../../types/PadType";
 import log4js from 'log4js';
 
-const eejs = require('../../eejs');
 const fsp = require('fs').promises;
 const hooks = require('../../../static/js/pluginfw/hooks');
 const plugins = require('../../../static/js/pluginfw/plugins');
-const settings = require('../../utils/Settings');
-const UpdateCheck = require('../../utils/UpdateCheck');
+import settings, {getEpVersion, getGitCommit, reloadSettings} from '../../utils/Settings';
+import {getLatestVersion} from '../../utils/UpdateCheck';
 const padManager = require('../../db/PadManager');
 const api = require('../../db/API');
-const cleanup = require('../../utils/Cleanup');
+import {deleteRevisions} from '../../utils/Cleanup';
 
 
 const queryPadLimit = 12;
@@ -75,8 +73,8 @@ exports.socketio = (hookName: string, {io}: any) => {
 
 
         socket.on('help', () => {
-            const gitCommit = settings.getGitCommit();
-            const epVersion = settings.getEpVersion();
+            const gitCommit = getGitCommit();
+            const epVersion = getEpVersion();
 
             const hooks: Map<string, Map<string, string>> = plugins.getHooks('hooks', false);
             const clientHooks: Map<string, Map<string, string>> = plugins.getHooks('client_hooks', false);
@@ -100,7 +98,7 @@ exports.socketio = (hookName: string, {io}: any) => {
                 installedParts: plugins.getParts(),
                 installedServerHooks: mapToObject(hooks),
                 installedClientHooks: mapToObject(clientHooks),
-                latestVersion: UpdateCheck.getLatestVersion(),
+                latestVersion: getLatestVersion(),
             })
         });
 
@@ -265,7 +263,7 @@ exports.socketio = (hookName: string, {io}: any) => {
           if (padExists) {
             logger.info(`Cleanup pad revisions: ${padId}`);
             try {
-              const result = await cleanup.deleteRevisions(padId, settings.cleanup.keepRevisions)
+              const result = await deleteRevisions(padId, settings.cleanup.keepRevisions)
               if (result) {
                 socket.emit('results:cleanupPadRevisions', {
                   padId: padId,
@@ -289,7 +287,7 @@ exports.socketio = (hookName: string, {io}: any) => {
 
         socket.on('restartServer', async () => {
             logger.info('Admin request to restart server through a socket on /admin/settings');
-            settings.reloadSettings();
+            reloadSettings();
             await plugins.update();
             await hooks.aCallAll('loadSettings', {settings});
             await hooks.aCallAll('restartServer');

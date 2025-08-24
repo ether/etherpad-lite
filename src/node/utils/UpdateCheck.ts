@@ -1,9 +1,9 @@
 'use strict';
-const semver = require('semver');
-const settings = require('./Settings');
+import semver from 'semver';
+import settings, {getEpVersion} from './Settings';
 import axios from 'axios';
 const headers = {
-  'User-Agent': 'Etherpad/' + settings.getEpVersion(),
+  'User-Agent': 'Etherpad/' + getEpVersion(),
 }
 
 type Infos = {
@@ -37,15 +37,15 @@ const loadEtherpadInformations = () => {
 }
 
 
-exports.getLatestVersion = () => {
-  exports.needsUpdate().catch();
+export const getLatestVersion = () => {
+  needsUpdate().catch();
   return infos?.latestVersion;
 };
 
-exports.needsUpdate = async (cb?: Function) => {
+const needsUpdate = async (cb?: Function) => {
   try {
     const info = await loadEtherpadInformations()
-    if (semver.gt(info!.latestVersion, settings.getEpVersion())) {
+    if (semver.gt(info!.latestVersion, getEpVersion())) {
       if (cb) return cb(true);
     }
   } catch (err) {
@@ -54,10 +54,10 @@ exports.needsUpdate = async (cb?: Function) => {
   }
 };
 
-exports.check = () => {
-  exports.needsUpdate((needsUpdate: boolean) => {
+export const check = () => {
+  needsUpdate((needsUpdate: boolean) => {
     if (needsUpdate) {
       console.warn(`Update available: Download the actual version ${infos.latestVersion}`);
     }
-  });
+  }).then(()=>{});
 };

@@ -3,11 +3,11 @@
 import {ArgsExpressType} from "../../types/ArgsExpressType";
 
 const hasPadAccess = require('../../padaccess');
-const settings = require('../../utils/Settings');
+import settings, {exportAvailable} from '../../utils/Settings';
 const exportHandler = require('../../handler/ExportHandler');
 const importHandler = require('../../handler/ImportHandler');
 const padManager = require('../../db/PadManager');
-const readOnlyManager = require('../../db/ReadOnlyManager');
+import readOnlyManager from '../../db/ReadOnlyManager';
 const rateLimit = require('express-rate-limit');
 const securityManager = require('../../db/SecurityManager');
 const webaccess = require('./webaccess');
@@ -25,8 +25,8 @@ exports.expressCreateServer = (hookName:string, args:ArgsExpressType, cb:Functio
   });
 
   // handle export requests
-  args.app.use('/p/:pad/:rev?/export/:type', limiter);
-  args.app.get('/p/:pad/:rev?/export/:type', (req:any, res:any, next:Function) => {
+  args.app.use('/p/:pad{/:rev}/export/:type', limiter);
+  args.app.get('/p/:pad{/:rev}/export/:type', (req:any, res:any, next:Function) => {
     (async () => {
       const types = ['pdf', 'doc', 'txt', 'html', 'odt', 'etherpad'];
       // send a 404 if we don't support this filetype
@@ -35,7 +35,7 @@ exports.expressCreateServer = (hookName:string, args:ArgsExpressType, cb:Functio
       }
 
       // if abiword is disabled, and this is a format we only support with abiword, output a message
-      if (settings.exportAvailable() === 'no' &&
+      if (exportAvailable() === 'no' &&
           ['odt', 'pdf', 'doc'].indexOf(req.params.type) !== -1) {
         console.error(`Impossible to export pad "${req.params.pad}" in ${req.params.type} format.` +
                       ' There is no converter configured');

@@ -4,7 +4,8 @@
 			"Besnik b",
 			"Eraldkerciku",
 			"Kosovastar",
-			"Liridon"
+			"Liridon",
+			"Xhulianoo"
 		]
 	},
 	"admin.page-title": "Pult Përgjegjësi - Etherpad",
@@ -78,7 +79,7 @@
 	"pad.settings.about": "Mbi",
 	"pad.settings.poweredBy": "Bazuar në",
 	"pad.importExport.import_export": "Import/Eksport",
-	"pad.importExport.import": "Ngarkoni cilëndo kartelë tekst ose dokument",
+	"pad.importExport.import": "Ngarko çdo skedar teksti ose dokument",
 	"pad.importExport.importSuccessful": "Me sukses!",
 	"pad.importExport.export": "Eksportojeni bllokun e tanishëm si:",
 	"pad.importExport.exportetherpad": "Etherpad",

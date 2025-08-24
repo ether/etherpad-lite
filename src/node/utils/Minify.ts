@@ -26,7 +26,7 @@ import mime from 'mime-types';
 import log4js from 'log4js';
 import {compressCSS, compressJS} from './MinifyWorker'
 
-const settings = require('./Settings');
+import settings from './Settings';
 import {promises as fs} from 'fs';
 import path from 'node:path';
 const plugins = require('../../static/js/pluginfw/plugin_defs');
@@ -146,7 +146,7 @@ const compatPaths = {
  * @param res the Express response
  */
 const _minify = async (req:any, res:any) => {
-  let filename = req.params.filename;
+  let filename = req.params.filename.join('/');
   try {
     filename = sanitizePathname(filename);
   } catch (err) {

@@ -328,7 +328,7 @@ export const checkRep = (cs: string) => {
  *       - `op2` is the current operation from `in2`, to apply to `op1`. Has the same consumption
  *         and advancement semantics as `op1`.
  *       - `opOut` is the result of applying `op2` (before consumption) to `op1` (before
- *         consumption). If there is no result (perhaps `op1` and `op2` cancelled each other out),
+ *         consumption). If there is no result (perhaps `op1` and `op2` canceled each other out),
  *         either `opOut` must be nullish or `opOut.opcode` must be the empty string.
  * @returns {string} the integrated changeset
  */

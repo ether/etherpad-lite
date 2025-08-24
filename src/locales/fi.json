@@ -55,7 +55,7 @@
 	"admin_settings.current_save.value": "Tallenna asetukset",
 	"admin_settings.page-title": "asetukset - Etherpad",
 	"index.newPad": "Uusi muistio",
-	"index.createOpenPad": "tai luo tai avaa muistio nimellä:",
+	"index.createOpenPad": "Avaa muistio nimellä",
 	"index.openPad": "avaa olemassa oleva muistio nimellä:",
 	"pad.toolbar.bold.title": "Lihavointi (Ctrl-B)",
 	"pad.toolbar.italic.title": "Kursivointi (Ctrl-I)",

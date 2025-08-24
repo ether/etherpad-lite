@@ -24,11 +24,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node: [20, 22, 23]
+        node: [20, 22, 24]
     steps:
       -
         name: Check out latest release
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           ref: develop #FIXME change to master when doing release
       -
@@ -43,7 +43,7 @@ jobs:
       - name: Only install direct dependencies
         run: pnpm config set auto-install-peers false
       - name: Install libreoffice
-        uses: awalsh128/cache-apt-pkgs-action@v1.5.1
+        uses: awalsh128/cache-apt-pkgs-action@v1.5.3
         with:
           packages: libreoffice libreoffice-pdfimport
           version: 1.0
@@ -62,7 +62,7 @@ jobs:
         run: pnpm config set auto-install-peers false
       -
         name: Install libreoffice
-        uses: awalsh128/cache-apt-pkgs-action@v1.5.1
+        uses: awalsh128/cache-apt-pkgs-action@v1.5.3
         with:
           packages: libreoffice libreoffice-pdfimport
           version: 1.0
@@ -97,7 +97,7 @@ jobs:
       -
         name: Install all dependencies and symlink for ep_etherpad-lite
         run: ./bin/installDeps.sh
-      # Because actions/checkout@v4 is called with "ref: master" and without
+      # Because actions/checkout@v5 is called with "ref: master" and without
       # "fetch-depth: 0", the local clone does not have the ${GITHUB_SHA}
       # commit. Fetch ${GITHUB_REF} to get the ${GITHUB_SHA} commit. Note that a
       # plain "git fetch" only fetches "normal" references (refs/heads/* and

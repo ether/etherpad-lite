@@ -2,10 +2,9 @@
 import {ArgsExpressType} from "../../types/ArgsExpressType";
 import path from "path";
 import fs from "fs";
-import * as url from "node:url";
 import {MapArrayType} from "../../types/MapType";
 
-const settings = require('ep_etherpad-lite/node/utils/Settings');
+import settings from 'ep_etherpad-lite/node/utils/Settings';
 
 const ADMIN_PATH = path.join(settings.root, 'src', 'templates');
 const PROXY_HEADER = "x-proxy-path"
@@ -22,7 +21,7 @@ exports.expressCreateServer = (hookName: string, args: ArgsExpressType, cb: Func
     console.error('admin template not found, skipping admin interface. You need to rebuild it in /admin with pnpm run build-copy')
     return cb();
   }
-  args.app.get('/admin/*', (req: any, res: any) => {
+  args.app.get('/admin/{*filename}', (req: any, res: any) => {
     // extract URL path
     let pathname = path.join(ADMIN_PATH, req.url);
     pathname = path.normalize(pathname)

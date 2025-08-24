@@ -7,7 +7,7 @@ const common = require('../common');
 const fs = require('fs');
 const fsp = fs.promises;
 const path = require('path');
-const settings = require('../../../node/utils/Settings');
+import settings from '../../../node/utils/Settings';
 const superagent = require('superagent');
 
 describe(__filename, function () {
@@ -29,10 +29,13 @@ describe(__filename, function () {
     backupSettings = {...settings};
     skinDir = await fsp.mkdtemp(path.join(settings.root, 'src', 'static', 'skins', 'test-'));
     settings.skinName = path.basename(skinDir);
+
   });
 
   afterEach(async function () {
+    // @ts-ignore
     delete settings.favicon;
+    // @ts-ignore
     delete settings.skinName;
     Object.assign(settings, backupSettings);
     try {

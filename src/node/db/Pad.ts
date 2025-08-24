@@ -14,18 +14,17 @@ import AttributePool from '../../static/js/AttributePool';
 const Stream = require('../utils/Stream');
 const assert = require('assert').strict;
 const db = require('./DB');
-const settings = require('../utils/Settings');
+import settings from '../utils/Settings';
 const authorManager = require('./AuthorManager');
 const padManager = require('./PadManager');
 const padMessageHandler = require('../handler/PadMessageHandler');
 const groupManager = require('./GroupManager');
 const CustomError = require('../utils/customError');
-const readOnlyManager = require('./ReadOnlyManager');
-const randomString = require('../utils/randomstring');
+import readOnlyManager from './ReadOnlyManager';
+import randomString from '../utils/randomstring';
 const hooks = require('../../static/js/pluginfw/hooks');
 import pad_utils from "../../static/js/pad_utils";
 import {SmartOpAssembler} from "../../static/js/SmartOpAssembler";
-import {} from '../utils/promises';
 import {timesLimit} from "async";
 
 /**

@@ -1,14 +1,13 @@
 import {ArgsExpressType} from "../types/ArgsExpressType";
 import Provider, {Account, Configuration} from 'oidc-provider';
-import {generateKeyPair, exportJWK, KeyLike} from 'jose'
+import {generateKeyPair, exportJWK, CryptoKey} from 'jose'
 import MemoryAdapter from "./OIDCAdapter";
 import path from "path";
-const settings = require('../utils/Settings');
+import settings from '../utils/Settings';
 import {IncomingForm} from 'formidable'
-import express, {Request, Response} from 'express';
+import express from 'express';
 import {format} from 'url'
 import {ParsedUrlQuery} from "node:querystring";
-import {Http2ServerRequest, Http2ServerResponse} from "node:http2";
 import {MapArrayType} from "../types/MapType";
 
 const configuration: Configuration = {
@@ -64,14 +63,16 @@ const configuration: Configuration = {
 };
 
 
-export let publicKeyExported: KeyLike|null
-export let privateKeyExported: KeyLike|null
+export let publicKeyExported: CryptoKey|null
+export let privateKeyExported: CryptoKey|null
 
 /*
 This function is used to initialize the OAuth2 provider
  */
 export const expressCreateServer = async (hookName: string, args: ArgsExpressType, cb: Function) => {
-    const {privateKey, publicKey} = await generateKeyPair('RS256');
+    const {privateKey, publicKey} = await generateKeyPair('RS256', {
+      extractable: true
+    });
     const privateKeyJWK = await exportJWK(privateKey);
     publicKeyExported = publicKey
     privateKeyExported = privateKey
@@ -137,7 +138,7 @@ export const expressCreateServer = async (hookName: string, args: ArgsExpressTyp
             } else if (token.kind === "ClientCredentials") {
                 let extraParams: MapArrayType<string> = {}
 
-                settings.sso.clients
+                settings.sso.clients && settings.sso.clients
                     .filter((client:any) => client.client_id === token.clientId)
                     .forEach((client:any) => {
                     if(client.extraParams !== undefined) {

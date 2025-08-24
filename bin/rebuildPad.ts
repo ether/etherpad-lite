@@ -1,5 +1,3 @@
-'use strict';
-
 /*
   This is a repair tool. It rebuilds an old pad at a new pad location up to a
   known "good" revision.

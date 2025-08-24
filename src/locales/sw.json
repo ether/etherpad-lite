@@ -3,7 +3,8 @@
 		"authors": [
 			"Andibecker",
 			"Edwingudfriend",
-			"Muddyb"
+			"Muddyb",
+			"Samuel Kiongo"
 		]
 	},
 	"admin.page-title": "Dashibodi ya Usimamizi - Etherpad",
@@ -42,6 +43,7 @@
 	"index.newPad": "Pad Mpya",
 	"index.createOpenPad": "au tunga/fungua Pad yenye jina:",
 	"index.openPad": "fungua Pad iliyopo na jina:",
+	"index.placeholderPadEnter": "Tafadhali weka jina la mtumiaji.",
 	"pad.toolbar.bold.title": "Koozesha (Ctrl+B)",
 	"pad.toolbar.italic.title": "Mlalo (Ctrl+I)",
 	"pad.toolbar.underline.title": "Pigia mstari (Ctrl+U)",

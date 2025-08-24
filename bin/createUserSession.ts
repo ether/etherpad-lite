@@ -18,7 +18,7 @@ import process from "node:process";
 
 
 process.on('unhandledRejection', (err) => { throw err; });
-const settings = require('ep_etherpad-lite/node/utils/Settings');
+import settings from 'ep_etherpad-lite/node/utils/Settings';
 (async () => {
   axios.defaults.baseURL = `http://${settings.ip}:${settings.port}`;
   const api = axios;

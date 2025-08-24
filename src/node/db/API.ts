@@ -26,7 +26,7 @@ import {Attribute} from "../../static/js/types/Attribute";
 const CustomError = require('../utils/customError');
 const padManager = require('./PadManager');
 const padMessageHandler = require('../handler/PadMessageHandler');
-const readOnlyManager = require('./ReadOnlyManager');
+import readOnlyManager from './ReadOnlyManager';
 const groupManager = require('./GroupManager');
 const authorManager = require('./AuthorManager');
 const sessionManager = require('./SessionManager');

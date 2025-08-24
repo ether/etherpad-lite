@@ -24,11 +24,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node: [20, 22, 23]
+        node: [20, 22, 24]
     steps:
       -
         name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       -
         uses: actions/setup-node@v4
         with:
@@ -53,7 +53,7 @@ jobs:
         run: pnpm config set auto-install-peers false
       -
         name: Install libreoffice
-        uses: awalsh128/cache-apt-pkgs-action@v1.5.1
+        uses: awalsh128/cache-apt-pkgs-action@v1.5.3
         with:
           packages: libreoffice libreoffice-pdfimport
           version: 1.0
@@ -84,11 +84,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node: [20, 22, 23]
+        node: [20, 22, 24]
     steps:
       -
         name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       -
         uses: actions/setup-node@v4
         with:
@@ -113,7 +113,7 @@ jobs:
         run: pnpm config set auto-install-peers false
       -
         name: Install libreoffice
-        uses: awalsh128/cache-apt-pkgs-action@v1.5.1
+        uses: awalsh128/cache-apt-pkgs-action@v1.5.3
         with:
           packages: libreoffice libreoffice-pdfimport
           version: 1.0
@@ -160,7 +160,7 @@ jobs:
     steps:
       -
         name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       -
         uses: actions/setup-node@v4
         with:
@@ -217,7 +217,7 @@ jobs:
     steps:
       -
         name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       -
         uses: actions/setup-node@v4
         with:

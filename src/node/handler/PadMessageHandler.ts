@@ -29,8 +29,12 @@ import AttributePool from '../../static/js/AttributePool';
 const AttributeManager = require('../../static/js/AttributeManager');
 const authorManager = require('../db/AuthorManager');
 import padutils from '../../static/js/pad_utils';
-const readOnlyManager = require('../db/ReadOnlyManager');
-const settings = require('../utils/Settings');
+import readOnlyManager from '../db/ReadOnlyManager';
+import settings, {
+  exportAvailable,
+  abiwordAvailable,
+  sofficeAvailable
+} from '../utils/Settings';
 const securityManager = require('../db/SecurityManager');
 const plugins = require('../../static/js/pluginfw/plugin_defs');
 import log4js from 'log4js';
@@ -1021,9 +1025,9 @@ const handleClientReady = async (socket:any, message: ClientReadyMessage) => {
       serverTimestamp: Date.now(),
       sessionRefreshInterval: settings.cookie.sessionRefreshInterval,
       userId: sessionInfo.author,
-      abiwordAvailable: settings.abiwordAvailable(),
-      sofficeAvailable: settings.sofficeAvailable(),
-      exportAvailable: settings.exportAvailable(),
+      abiwordAvailable: abiwordAvailable(),
+      sofficeAvailable: sofficeAvailable(),
+      exportAvailable: exportAvailable(),
       plugins: {
         plugins: plugins.plugins,
         parts: plugins.parts,

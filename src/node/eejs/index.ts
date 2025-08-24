@@ -20,12 +20,13 @@
  * require("./index").require("./path/to/template.ejs")
  */
 
-const ejs = require('ejs');
-const fs = require('fs');
+import ejs from 'ejs';
+import fs from 'fs';
 const hooks = require('../../static/js/pluginfw/hooks');
-const path = require('path');
-const resolve = require('resolve');
-const settings = require('../utils/Settings');
+import path from 'node:path';
+// @ts-ignore
+import resolve from 'resolve';
+import settings from '../utils/Settings';
 import {pluginInstallPath} from '../../static/js/pluginfw/installer'
 
 const templateCache = new Map();

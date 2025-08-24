@@ -1,6 +1,6 @@
 {
   "name": "bin",
-  "version": "2.4.2",
+  "version": "2.5.0",
   "description": "",
   "main": "checkAllPads.js",
   "directories": {
@@ -11,13 +11,13 @@
     "ep_etherpad-lite": "workspace:../src",
     "log4js": "^6.9.1",
     "semver": "^7.7.2",
-    "tsx": "^4.20.3",
-    "ueberdb2": "^5.0.14"
+    "tsx": "^4.20.5",
+    "ueberdb2": "^5.0.15"
   },
   "devDependencies": {
-    "@types/node": "^24.0.14",
+    "@types/node": "^24.3.0",
     "@types/semver": "^7.7.0",
-    "typescript": "^5.8.2"
+    "typescript": "^5.9.2"
   },
   "scripts": {
     "makeDocs": "node --import tsx make_docs.ts",

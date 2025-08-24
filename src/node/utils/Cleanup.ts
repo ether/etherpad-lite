@@ -3,15 +3,16 @@
 import {AChangeSet} from "../types/PadType";
 import {Revision} from "../types/Revision";
 
-const promises = require('./promises');
+import {timesLimit, firstSatisfies} from './promises';
 const padManager = require('ep_etherpad-lite/node/db/PadManager');
 const db = require('ep_etherpad-lite/node/db/DB');
 const Changeset = require('ep_etherpad-lite/static/js/Changeset');
 const padMessageHandler = require('ep_etherpad-lite/node/handler/PadMessageHandler');
-const log4js = require('log4js');
+import log4js from 'log4js';
 const logger = log4js.getLogger('cleanup');
 
-exports.deleteAllRevisions = async (padID: string): Promise<void> => {
+
+export const deleteAllRevisions = async (padID: string): Promise<void> => {
 
   const randomPadId = padID + 'aertdfdf' + Math.random().toString(10)
 
@@ -39,7 +40,7 @@ const createRevision = async (aChangeset: AChangeSet, timestamp: number, isKeyRe
   };
 }
 
-exports.deleteRevisions = async (padId: string, keepRevisions: number): Promise<boolean> => {
+export const deleteRevisions = async (padId: string, keepRevisions: number): Promise<boolean> => {
 
   logger.debug('Start cleanup revisions', padId)
 
@@ -61,14 +62,14 @@ exports.deleteRevisions = async (padId: string, keepRevisions: number): Promise<
 
   const revisions: Revision[] = [];
 
-  await promises.timesLimit(keepRevisions + 1, 500, async (i: number) => {
+  await timesLimit(keepRevisions + 1, 500, async (i: number) => {
     const rev = i + cleanupUntilRevision
     revisions[rev] = await pad.getRevision(rev)
   });
 
   logger.debug('Loaded revisions: ', revisions.length)
 
-  await promises.timesLimit(pad.head + 1, 500, async (i: string) => {
+  await timesLimit(pad.head + 1, 500, async (i: string) => {
     await db.remove(`pad:${padId}:revs:${i}`, null);
   });
 
@@ -105,7 +106,7 @@ exports.deleteRevisions = async (padId: string, keepRevisions: number): Promise<
 
   p.push(db.set(`pad:${padId}:revs:0`, revision))
 
-  p.push(promises.timesLimit(keepRevisions, 500, async (i: number) => {
+  p.push(timesLimit(keepRevisions, 500, async (i: number) => {
     const rev = i + cleanupUntilRevision + 1
     const newRev = rev - cleanupUntilRevision;
 
@@ -135,7 +136,7 @@ exports.deleteRevisions = async (padId: string, keepRevisions: number): Promise<
   return true
 }
 
-exports.checkTodos = async () => {
+export const checkTodos = async () => {
   await new Promise(resolve => setTimeout(resolve, 5000));
 
   // TODO: Move to settings
@@ -156,7 +157,7 @@ exports.checkTodos = async () => {
     }
 
     try {
-      const result = await exports.deleteRevisions(padId, settings.keepRevisions)
+      const result = await deleteRevisions(padId, settings.keepRevisions)
       if (result) {
         logger.info('successful cleaned up pad: ', padId)
       }

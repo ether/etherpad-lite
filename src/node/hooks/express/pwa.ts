@@ -1,5 +1,5 @@
 import {ArgsExpressType} from "../../types/ArgsExpressType";
-const settings = require('../../utils/Settings');
+import settings from '../../utils/Settings';
 
 const pwa = {
   name: settings.title || "Etherpad",

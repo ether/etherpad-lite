@@ -23,7 +23,7 @@ import {MapArrayType} from "../types/MapType";
 import { jwtDecode } from "jwt-decode";
 const api = require('../db/API');
 const padManager = require('../db/PadManager');
-const settings = require('../utils/Settings');
+import settings from '../utils/Settings';
 import createHTTPError from 'http-errors';
 import {Http2ServerRequest} from "node:http2";
 import {publicKeyExported} from "../security/OAuth2Provider";
@@ -183,7 +183,7 @@ exports.handle = async function (apiVersion: string, functionName: string, field
       throw new createHTTPError.Unauthorized('no or wrong API Key');
     }
     try {
-      const clientIds: string[] = settings.sso.clients?.map((client: {client_id: string}) => client.client_id);
+      const clientIds: string[] = settings.sso.clients?.map((client: {client_id: string}) => client.client_id) ?? [];
       const jwtToCheck = req.headers.authorization.replace("Bearer ", "")
       const payload = jwtDecode(jwtToCheck)
       // client_credentials

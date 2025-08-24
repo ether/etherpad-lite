@@ -1,9 +1,9 @@
-const absolutePaths = require('../utils/AbsolutePaths');
+import * as absolutePaths from '../utils/AbsolutePaths';
 import fs from 'fs';
 import log4js from 'log4js';
-const randomString = require('../utils/randomstring');
-const argv = require('../utils/Cli').argv;
-const settings = require('../utils/Settings');
+import randomString from '../utils/randomstring';
+import {argv} from '../utils/Cli'
+import settings from '../utils/Settings';
 
 const apiHandlerLogger = log4js.getLogger('APIHandler');
 

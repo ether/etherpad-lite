@@ -6,8 +6,8 @@ const assert = require('assert').strict;
 const common = require('../common');
 const padManager = require('../../../node/db/PadManager');
 const plugins = require('../../../static/js/pluginfw/plugin_defs');
-const readOnlyManager = require('../../../node/db/ReadOnlyManager');
-const settings = require('../../../node/utils/Settings');
+import readOnlyManager from '../../../node/db/ReadOnlyManager';
+import settings from '../../../node/utils/Settings';
 const socketIoRouter = require('../../../node/handler/SocketIORouter');
 
 describe(__filename, function () {
@@ -35,6 +35,7 @@ describe(__filename, function () {
     }
     backups.settings = {};
     for (const setting of ['editOnly', 'requireAuthentication', 'requireAuthorization', 'users']) {
+      // @ts-ignore
       backups.settings[setting] = settings[setting];
     }
     settings.editOnly = false;

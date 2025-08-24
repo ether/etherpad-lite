@@ -1,3 +1,11 @@
+# 2.5.0
+
+### Notable enhancements and fixes
+
+- Updated to express 5.0.0. This is a major update to express that brings a lot of improvements and fixes. Please update all your plugins to the latest version to ensure compatibility. A lot changed in the route matching, and thus old plugins will throw errors and crash Etherpad.
+- Fixed an issue with the no-skin theme with cookie recentPadList feature
+- Fixed layout issues with the no-skin theme
+
 # 2.4.2
 
 ### Notable enhancements and fixes
