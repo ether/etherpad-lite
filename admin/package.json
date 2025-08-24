@@ -11,7 +11,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@radix-ui/react-switch": "^1.2.5"
+    "@radix-ui/react-switch": "^1.2.6"
   },
   "devDependencies": {
     "@radix-ui/react-dialog": "^1.1.15",
