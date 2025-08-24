@@ -72,7 +72,7 @@
     "swagger-ui-express": "^5.0.1",
     "tinycon": "0.6.8",
     "tsx": "4.20.5",
-    "ueberdb2": "^5.0.14",
+    "ueberdb2": "^5.0.15",
     "underscore": "1.13.7",
     "unorm": "1.6.0",
     "wtfnode": "^0.10.0"
