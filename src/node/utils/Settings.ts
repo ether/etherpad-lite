@@ -135,7 +135,7 @@ const parseSettings = (settingsFilename: string, isSettings: boolean) => {
 export const getGitCommit = () => {
   let version = '';
   try {
-    let rootPath = settings.root;
+    let rootPath = absolutePaths.findEtherpadRoot();
     if (fs.lstatSync(`${rootPath}/.git`).isFile()) {
       rootPath = fs.readFileSync(`${rootPath}/.git`, 'utf8');
       rootPath = rootPath.split(' ').pop()?.trim() ?? '';
