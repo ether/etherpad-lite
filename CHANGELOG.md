@@ -1,3 +1,10 @@
+# 2.5.1
+
+### Notable enhancements and fixes
+
+- Added endpoint for prometheus scraping. You can now scrape the metrics endpoint with prometheus. It is available at /stats/prometheus if you have enableMetrics set to true in your settings.json
+
+
 # 2.5.0
 
 ### Notable enhancements and fixes
