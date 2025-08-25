@@ -30,6 +30,7 @@
 	"admin_plugins.page-title": "Gestore dei plugin - Etherpad",
 	"admin_plugins.version": "Versione",
 	"admin_plugins_info": "Informazioni sulla risoluzione dei problemi",
+	"admin_plugins_info.hooks": "Hook installati",
 	"admin_plugins_info.hooks_client": "Hook lato client",
 	"admin_plugins_info.hooks_server": "Hook lato server",
 	"admin_plugins_info.parts": "Parti installate",
