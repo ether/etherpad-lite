@@ -13,7 +13,10 @@ const plugins = require('../../../static/js/pluginfw/plugin_defs');
 
 import {build, buildSync} from 'esbuild'
 import {ArgsExpressType} from "../../types/ArgsExpressType";
+import prometheus from "../../prometheus";
+
 let ioI: { sockets: { sockets: any[]; }; } | null = null
+
 
 exports.socketio = (hookName: string, {io}: any) => {
   ioI = io
@@ -35,6 +38,12 @@ exports.expressPreSession = async (hookName:string, {app}:ArgsExpressType) => {
     app.get('/stats', (req:any, res:any) => {
       res.json(require('../../stats').toJSON());
     });
+
+    app.get('/stats/prometheus', async (req, res) => {
+      const metrics = await prometheus()
+      res.setHeader('Content-Type', metrics.contentType)
+      res.send(await metrics.metrics())
+    })
   }
 
 
