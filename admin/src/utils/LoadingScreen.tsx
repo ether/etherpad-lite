@@ -1,6 +1,7 @@
 import {useStore} from "../store/store.ts";
 import * as Dialog from '@radix-ui/react-dialog';
-import ReactComponent from './brand.svg?react';
+import brand from './brand.svg'
+
 export const LoadingScreen = ()=>{
     const showLoading = useStore(state => state.showLoading)
 
@@ -10,7 +11,7 @@ export const LoadingScreen = ()=>{
             <div className="flex flex-col items-center">
                 <div className="animate-spin w-16 h-16 border-t-2 border-b-2 border-[--fg-color] rounded-full"></div>
                 <div className="mt-4 text-[--fg-color]">
-                    <ReactComponent/>
+                    <img src={brand}/>
                 </div>
             </div>
         </Dialog.Content>
