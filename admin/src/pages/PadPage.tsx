@@ -6,8 +6,13 @@ import {useDebounce} from "../utils/useDebounce.ts";
 import {determineSorting} from "../utils/sorting.ts";
 import * as Dialog from "@radix-ui/react-dialog";
 import {IconButton} from "../components/IconButton.tsx";
-import {ChevronLeft, ChevronRight, Eye, Trash2, FileStack} from "lucide-react";
+import {ChevronLeft, ChevronRight, Eye, Trash2, FileStack, PlusIcon} from "lucide-react";
 import {SearchField} from "../components/SearchField.tsx";
+import {useForm} from "react-hook-form";
+
+type PadCreateProps = {
+    padName: string
+}
 
 export const PadPage = ()=>{
     const settingsSocket = useStore(state=>state.settingsSocket)
@@ -25,6 +30,8 @@ export const PadPage = ()=>{
     const [deleteDialog, setDeleteDialog] = useState<boolean>(false)
     const [errorText, setErrorText] = useState<string|null>(null)
     const [padToDelete, setPadToDelete] = useState<string>('')
+    const [createPadDialogOpen, setCreatePadDialogOpen] = useState<boolean>(false)
+    const {register, handleSubmit} = useForm<PadCreateProps>()
     const pages = useMemo(()=>{
         if(!pads){
             return 0;
@@ -70,8 +77,33 @@ export const PadPage = ()=>{
             })
         })
 
+      type SettingsSocketCreateReponse = {
+          error: string
+      } | {
+        success: string
+      }
+
+      settingsSocket.on('results:createPad', (rep: SettingsSocketCreateReponse)=>{
+        if ('error' in rep) {
+          useStore.getState().setToastState({
+            open: true,
+            title: rep.error,
+            success: false
+          })
+        } else {
+          useStore.getState().setToastState({
+            open: true,
+            title: rep.success,
+            success: true
+          })
+          setCreatePadDialogOpen(false)
+          // reload pads
+          settingsSocket.emit('padLoad', searchParams)
+        }
+      })
+
         settingsSocket.on('results:cleanupPadRevisions', (data)=>{
-          let newPads = useStore.getState().pads?.results ?? []
+          const newPads = useStore.getState().pads?.results ?? []
 
           if (data.error) {
             setErrorText(data.error)
@@ -97,6 +129,12 @@ export const PadPage = ()=>{
 
     const cleanupPad = (padID: string)=>{
         settingsSocket?.emit('cleanupPadRevisions', padID)
+    }
+
+    const onPadCreate = (data: PadCreateProps)=>{
+      settingsSocket?.emit('createPad', {
+        padName: data.padName
+      })
     }
 
 
@@ -139,7 +177,32 @@ export const PadPage = ()=>{
             </Dialog.Content>
           </Dialog.Portal>
         </Dialog.Root>
-        <h1><Trans i18nKey="ep_admin_pads:ep_adminpads2_manage-pads"/></h1>
+      <Dialog.Root open={createPadDialogOpen}>
+        <Dialog.Portal>
+        <Dialog.Overlay className="dialog-confirm-overlay" />
+        <Dialog.Content  className="dialog-confirm-content">
+          <Dialog.Title className="dialog-confirm-title"><Trans i18nKey="index.newPad"/></Dialog.Title>
+          <form  onSubmit={handleSubmit(onPadCreate)}>
+            <button className="dialog-close-button" onClick={()=>{
+              setCreatePadDialogOpen(false);
+            }}>x</button>
+              <div style={{display: 'grid', gap: '10px', gridTemplateColumns: 'auto auto', marginBottom: '1rem'}}>
+                <label><Trans i18nKey="ep_admin_pads:ep_adminpads2_padname"/></label>
+                <input {...register('padName', {
+                  required: true
+                })}/>
+              </div>
+            <input type="submit" value={t('admin_settings.createPad')} className="login-button" />
+          </form>
+        </Dialog.Content>
+      </Dialog.Portal>
+      </Dialog.Root>
+      <span className="manage-pads-header">
+                <h1><Trans i18nKey="ep_admin_pads:ep_adminpads2_manage-pads"/></h1>
+        <span style={{width: '29px', marginBottom: 'auto', marginTop: 'auto', flexGrow: 1}}><IconButton style={{float: 'right'}} icon={<PlusIcon/>} title={<Trans i18nKey="index.newPad"/>} onClick={()=>{
+          setCreatePadDialogOpen(true)
+        }}/></span>
+      </span>
         <SearchField value={searchTerm} onChange={v=>setSearchTerm(v.target.value)} placeholder={t('ep_admin_pads:ep_adminpads2_search-heading')}/>
         <table>
             <thead>
