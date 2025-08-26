@@ -42,6 +42,9 @@ div.menu {
   position: fixed;
 }
 
+[role="dialog"] h2 {
+  color: var(--etherpad-color);
+}
 
 .icon-button {
   display: flex;
@@ -52,6 +55,26 @@ div.menu {
   padding: 10px 20px;
   border-radius: 5px;
   cursor: pointer;
+}
+
+.icon-button:hover {
+  background-color: #13a37c;
+}
+
+
+.dialog-close-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--etherpad-color);
+}
+
+.icon-button:active {
+  background-color: #13a37c;
+  transform: scale(0.98);
 }
 
 .icon-button svg {
@@ -867,4 +890,8 @@ input, button, select, optgroup, textarea {
 .search-pads-body tr td:last-child {
   display: flex;
   justify-content: center;
+}
+
+.manage-pads-header {
+  display: flex;
 }

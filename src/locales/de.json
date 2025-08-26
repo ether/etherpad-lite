@@ -52,6 +52,7 @@
 	"admin_settings.current_save.value": "Einstellungen speichern",
 	"admin_settings.page-title": "Einstellungen - Etherpad",
 	"index.newPad": "Neues Pad",
+  "admin_settings.createPad": "Erstellen",
 	"index.createOpenPad": "Pad öffnen",
 	"index.openPad": "Öffne ein vorhandenes Pad mit folgendem Namen:",
 	"index.recentPads": "Zuletzt bearbeitete Pads",

@@ -251,6 +251,25 @@ exports.socketio = (hookName: string, {io}: any) => {
             }
         })
 
+      type PadCreationOptions = {
+          padName: string,
+      }
+
+      socket.on('createPad', async ({padName}: PadCreationOptions)=>{
+        const padExists = await padManager.doesPadExists(padName);
+        if (padExists) {
+          socket.emit('results:createPad', {
+            error: 'Pad already exists',
+          });
+          return;
+        }
+        padManager.getPad(padName);
+          socket.emit('results:createPad', {
+            success: `Pad created ${padName}`,
+          });
+          return;
+      })
+
         socket.on('cleanupPadRevisions', async (padId: string) => {
           if (!settings.cleanup.enabled) {
             socket.emit('results:cleanupPadRevisions', {
