@@ -1,4 +1,4 @@
-'use strict';
+
 /**
  * The MessageHandler handles all Messages that comes from Socket.IO and controls the sessions
  */
@@ -19,7 +19,7 @@
  * limitations under the License.
  */
 
-import {MapArrayType} from "../types/MapType";
+import type {MapArrayType} from "../types/MapType";
 
 import AttributeMap from '../../static/js/AttributeMap';
 const padManager = require('../db/PadManager');
@@ -44,10 +44,10 @@ const hooks = require('../../static/js/pluginfw/hooks');
 const stats = require('../stats')
 const assert = require('assert').strict;
 import {RateLimiterMemory} from 'rate-limiter-flexible';
-import {ChangesetRequest, PadUserInfo, SocketClientRequest} from "../types/SocketClientRequest";
-import {APool, AText, PadAuthor, PadType} from "../types/PadType";
-import {ChangeSet} from "../types/ChangeSet";
-import {ChatMessageMessage, ClientReadyMessage, ClientSaveRevisionMessage, ClientSuggestUserName, ClientUserChangesMessage, ClientVarMessage, CustomMessage, PadDeleteMessage, UserNewInfoMessage} from "../../static/js/types/SocketIOMessage";
+import {type ChangesetRequest, PadUserInfo, type SocketClientRequest} from "../types/SocketClientRequest";
+import {APool, type AText, type PadAuthor, type PadType} from "../types/PadType";
+import type {ChangeSet} from "../types/ChangeSet";
+import type {ChatMessageMessage, ClientReadyMessage, ClientSaveRevisionMessage, ClientSuggestUserName, ClientUserChangesMessage, ClientVarMessage, CustomMessage, PadDeleteMessage, UserNewInfoMessage} from "../../static/js/types/SocketIOMessage";
 import {Builder} from "../../static/js/Builder";
 const webaccess = require('../hooks/express/webaccess');
 const { checkValidRev } = require('../utils/checkValidRev');

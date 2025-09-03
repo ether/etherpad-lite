@@ -1,9 +1,9 @@
-'use strict';
 
-import {ErrorExtended, RunCMDOptions, RunCMDPromise} from "../types/RunCMDOptions";
-import {ChildProcess} from "node:child_process";
-import {PromiseWithStd} from "../types/PromiseWithStd";
-import {Readable} from "node:stream";
+
+import {type ErrorExtended, type RunCMDOptions, RunCMDPromise} from "../types/RunCMDOptions";
+import type {ChildProcess} from "node:child_process";
+import type {PromiseWithStd} from "../types/PromiseWithStd";
+import type {Readable} from "node:stream";
 
 import spawn from 'cross-spawn';
 import log4js from 'log4js';

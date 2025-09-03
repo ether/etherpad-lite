@@ -1,7 +1,7 @@
-'use strict';
-import {Database} from "ueberdb2";
-import {AChangeSet, APool, AText} from "../types/PadType";
-import {MapArrayType} from "../types/MapType";
+
+import type {Database} from "ueberdb2";
+import {AChangeSet, APool, type AText} from "../types/PadType";
+import type {MapArrayType} from "../types/MapType";
 
 /**
  * The pad object, defined with joose

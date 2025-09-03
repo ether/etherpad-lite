@@ -1,10 +1,10 @@
-'use strict';
+
 
 import {strict as assert} from "assert";
 import log4js from 'log4js';
-import {SocketClientRequest} from "../../types/SocketClientRequest";
-import {WebAccessTypes} from "../../types/WebAccessTypes";
-import {SettingsUser} from "../../types/SettingsUser";
+import type {SocketClientRequest} from "../../types/SocketClientRequest";
+import type {WebAccessTypes} from "../../types/WebAccessTypes";
+import type {SettingsUser} from "../../types/SettingsUser";
 const httpLogger = log4js.getLogger('http');
 import settings from '../../utils/Settings';
 const hooks = require('../../../static/js/pluginfw/hooks');

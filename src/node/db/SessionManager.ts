@@ -1,4 +1,4 @@
-'use strict';
+
 /**
  * The Session Manager provides functions to manage session in the database,
  * it only provides session management for sessions created by the API

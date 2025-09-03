@@ -1,8 +1,8 @@
-'use strict';
-import {ArgsExpressType} from "../../types/ArgsExpressType";
+
+import type {ArgsExpressType} from "../../types/ArgsExpressType";
 import path from "path";
 import fs from "fs";
-import {MapArrayType} from "../../types/MapType";
+import type {MapArrayType} from "../../types/MapType";
 
 import settings from 'ep_etherpad-lite/node/utils/Settings';
 
@@ -48,7 +48,7 @@ exports.expressCreateServer = (hookName: string, args: ArgsExpressType, cb: Func
       '.doc': 'application/msword'
     };
 
-    fs.exists(pathname, function (exist) {
+    fs.exists(pathname, (exist) => {
       if (!exist) {
         // if the file is not found, return 404
         res.statusCode = 200;
@@ -63,7 +63,7 @@ exports.expressCreateServer = (hookName: string, args: ArgsExpressType, cb: Func
       }
 
       // read file from file system
-      fs.readFile(pathname, function (err, data) {
+      fs.readFile(pathname, (err, data) => {
         if (err) {
           res.statusCode = 500;
           res.end(`Error getting the file: ${err}.`);
@@ -73,7 +73,7 @@ exports.expressCreateServer = (hookName: string, args: ArgsExpressType, cb: Func
           res.setHeader('Content-type', map[ext] || 'text/plain');
           if (ext === ".html" || ext === ".js" || ext === ".css") {
             if (req.header(PROXY_HEADER)) {
-              let string = data.toString()
+              const string = data.toString()
               dataToSend = string.replaceAll("/admin", req.header(PROXY_HEADER) + "/admin")
               dataToSend = dataToSend.replaceAll("/socket.io", req.header(PROXY_HEADER) + "/socket.io")
             }

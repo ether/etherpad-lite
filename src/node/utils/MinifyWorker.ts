@@ -1,4 +1,4 @@
-'use strict';
+
 /**
  * Worker thread to minify JS & CSS files out of the main NodeJS thread
  */

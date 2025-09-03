@@ -1,4 +1,4 @@
-'use strict';
+
 /**
  * The Settings module reads the settings out of settings.json and provides
  * this information to the other modules
@@ -27,7 +27,7 @@
  * limitations under the License.
  */
 
-import {MapArrayType} from "../types/MapType";
+import type {MapArrayType} from "../types/MapType";
 import {SettingsNode} from "./SettingsTree";
 
 import * as absolutePaths from './AbsolutePaths';
@@ -807,7 +807,7 @@ const coerceValue = (stringValue: string) => {
  */
 const lookupEnvironmentVariables = (obj: MapArrayType<any>) => {
     const replaceEnvs = (obj: MapArrayType<any>) => {
-        for (let [key, value] of Object.entries(obj)) {
+        for (const [key, value] of Object.entries(obj)) {
             /*
             * the first invocation of replacer() is with an empty key. Just go on, or
             * we would zap the entire object.
@@ -907,16 +907,16 @@ const lookupEnvironmentVariables = (obj: MapArrayType<any>) => {
      * If the key contains a double underscore, it's a plugin variable
      * E.g.
      */
-    let treeEntries = new Map<string, string | undefined>
+    const treeEntries = new Map<string, string | undefined>
     const root = new SettingsNode("EP")
 
-    for (let [env, envVal] of Object.entries(process.env)) {
+    for (const [env, envVal] of Object.entries(process.env)) {
         if (!env.startsWith("EP")) continue
         treeEntries.set(env, envVal)
     }
     treeEntries.forEach((value, key) => {
-        let pathToKey = key.split("__")
-        let currentNode = root
+        const pathToKey = key.split("__")
+        const currentNode = root
         let depth = 0
         depth++
         currentNode.addChild(pathToKey, value!)

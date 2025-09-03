@@ -1,14 +1,14 @@
-'use strict';
 
-import {ArgsExpressType} from "../../types/ArgsExpressType";
-import {ErrorCaused} from "../../types/ErrorCaused";
-import {QueryType} from "../../types/QueryType";
+
+import type {ArgsExpressType} from "../../types/ArgsExpressType";
+import type {ErrorCaused} from "../../types/ErrorCaused";
+import type {QueryType} from "../../types/QueryType";
 
 import {getAvailablePlugins, install, search, uninstall} from "../../../static/js/pluginfw/installer";
-import {PackageData, PackageInfo} from "../../types/PackageInfo";
+import type {PackageData, PackageInfo} from "../../types/PackageInfo";
 import semver from 'semver';
 import log4js from 'log4js';
-import {MapArrayType} from "../../types/MapType";
+import type {MapArrayType} from "../../types/MapType";
 
 const pluginDefs = require('../../../static/js/pluginfw/plugin_defs');
 const logger = log4js.getLogger('adminPlugins');

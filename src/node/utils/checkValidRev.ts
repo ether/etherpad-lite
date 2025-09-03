@@ -1,4 +1,4 @@
-'use strict';
+
 
 const CustomError = require('../utils/customError');
 

@@ -1,7 +1,7 @@
-'use strict';
 
-import {PadAuthor, PadType} from "../types/PadType";
-import {MapArrayType} from "../types/MapType";
+
+import type {PadAuthor, PadType} from "../types/PadType";
+import type {MapArrayType} from "../types/MapType";
 
 import AttributeMap from '../../static/js/AttributeMap';
 import {applyToAText, checkRep, compose, deserializeOps, pack, splitAttributionLines, splitTextLines, unpack} from '../../static/js/Changeset';
@@ -461,7 +461,7 @@ class PadDiff {
 // this method is 80% like Changeset.inverse. I just changed so instead of reverting,
 // it adds deletions and attribute changes to the atext.
 // @ts-ignore
-PadDiff.prototype._createDeletionChangeset = function (cs, startAText, apool) {
+PadDiff.prototype._createDeletionChangeset = (cs, startAText, apool) => {
 
 };
 

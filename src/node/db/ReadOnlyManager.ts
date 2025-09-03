@@ -1,4 +1,4 @@
-'use strict';
+
 /**
  * The ReadOnlyManager manages the database and rendering releated to read only pads
  */

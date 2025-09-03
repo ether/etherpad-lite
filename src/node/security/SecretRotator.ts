@@ -1,7 +1,7 @@
 
 
-import {DeriveModel} from "../types/DeriveModel";
-import {LegacyParams} from "../types/LegacyParams";
+import type {DeriveModel} from "../types/DeriveModel";
+import type {LegacyParams} from "../types/LegacyParams";
 
 const {Buffer} = require('buffer');
 const crypto = require('./crypto');

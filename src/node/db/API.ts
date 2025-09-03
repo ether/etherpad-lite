@@ -1,4 +1,4 @@
-'use strict';
+
 /**
  * This module provides all API functions
  */
@@ -22,7 +22,7 @@
 import {deserializeOps} from '../../static/js/Changeset';
 import ChatMessage from '../../static/js/ChatMessage';
 import {Builder} from "../../static/js/Builder";
-import {Attribute} from "../../static/js/types/Attribute";
+import type {Attribute} from "../../static/js/types/Attribute";
 const CustomError = require('../utils/customError');
 const padManager = require('./PadManager');
 const padMessageHandler = require('../handler/PadMessageHandler');

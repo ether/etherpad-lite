@@ -1,7 +1,7 @@
-import {ArgsExpressType} from "../types/ArgsExpressType";
-import {MapArrayType} from "../types/MapType";
+import type {ArgsExpressType} from "../types/ArgsExpressType";
+import type {MapArrayType} from "../types/MapType";
 import {IncomingForm} from "formidable";
-import {ErrorCaused} from "../types/ErrorCaused";
+import type {ErrorCaused} from "../types/ErrorCaused";
 import createHTTPError from "http-errors";
 
 const apiHandler = require('./APIHandler')
@@ -1462,7 +1462,7 @@ export const expressCreateServer = async (hookName: string, {app}: ArgsExpressTy
       let response;
       try {
         try {
-          let data = await apiHandler.handle(apiVersion, functionName, fields, req, res);
+          const data = await apiHandler.handle(apiVersion, functionName, fields, req, res);
 
           // return in common format
           response = {code: 0, message: 'ok', data: data || null};

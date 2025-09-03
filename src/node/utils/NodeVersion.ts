@@ -1,4 +1,4 @@
-'use strict';
+
 /**
  * Checks related to Node runtime version
  */

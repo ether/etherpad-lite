@@ -1,12 +1,12 @@
-'use strict';
 
-import {MapArrayType} from "../../types/MapType";
-import {PartType} from "../../types/PartType";
+
+import type {MapArrayType} from "../../types/MapType";
+import type {PartType} from "../../types/PartType";
 
 const fs = require('fs').promises;
 import {minify} from '../../utils/Minify';
 import path from 'node:path';
-import {ArgsExpressType} from "../../types/ArgsExpressType";
+import type {ArgsExpressType} from "../../types/ArgsExpressType";
 const plugins = require('../../../static/js/pluginfw/plugin_defs');
 import settings from '../../utils/Settings';
 

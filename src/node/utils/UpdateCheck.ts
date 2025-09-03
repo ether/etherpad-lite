@@ -1,4 +1,4 @@
-'use strict';
+
 import semver from 'semver';
 import settings, {getEpVersion} from './Settings';
 import axios from 'axios';

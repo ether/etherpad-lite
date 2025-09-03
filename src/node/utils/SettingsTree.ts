@@ -1,4 +1,4 @@
-import {MapArrayType} from "../types/MapType";
+import type {MapArrayType} from "../types/MapType";
 
 export class SettingsTree {
     private children: Map<string, SettingsNode>;
@@ -61,7 +61,7 @@ export class SettingsNode {
 
 
     public collectFromLeafsUpwards() {
-        let collected:MapArrayType<any> = {};
+        const collected:MapArrayType<any> = {};
         for (const key in this.children) {
             const child = this.children[key];
             if (child.hasChildren()) {

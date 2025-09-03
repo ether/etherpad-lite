@@ -1,4 +1,4 @@
-import {AChangeSet} from "./PadType";
+import type {AChangeSet} from "./PadType";
 
 export type Revision = {
   changeset: AChangeSet,

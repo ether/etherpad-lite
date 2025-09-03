@@ -1,4 +1,4 @@
-'use strict';
+
 /**
  * TXT export
  */
@@ -19,8 +19,8 @@
  * limitations under the License.
  */
 
-import {AText, PadType} from "../types/PadType";
-import {MapType} from "../types/MapType";
+import type {AText, PadType} from "../types/PadType";
+import type {MapType} from "../types/MapType";
 
 import {deserializeOps, splitAttributionLines, subattribution} from '../../static/js/Changeset';
 import {StringIterator} from "../../static/js/StringIterator";

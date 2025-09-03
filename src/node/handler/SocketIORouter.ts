@@ -1,4 +1,4 @@
-'use strict';
+
 /**
  * This is the Socket.IO Router. It routes the Messages between the
  * components of the Server. The components are at the moment: pad and timeslider
@@ -20,8 +20,8 @@
  * limitations under the License.
  */
 
-import {MapArrayType} from "../types/MapType";
-import {SocketModule} from "../types/SocketModule";
+import type {MapArrayType} from "../types/MapType";
+import type {SocketModule} from "../types/SocketModule";
 import log4js from 'log4js';
 import settings from '../utils/Settings';
 const stats = require('../../node/stats')

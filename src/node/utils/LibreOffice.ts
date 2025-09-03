@@ -1,4 +1,4 @@
-'use strict';
+
 /**
  * Controls the communication with LibreOffice
  */

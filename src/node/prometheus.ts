@@ -1,7 +1,7 @@
 import client from 'prom-client'
 const db = require('./db/DB').db
 
-const monitor = function () {
+const monitor = () => {
   const collectDefaultMetrics = client.collectDefaultMetrics;
   const Registry = client.Registry;
   const register = new Registry();

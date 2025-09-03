@@ -22,8 +22,8 @@
  * limitations under the License.
  */
 
-import {PluginType} from "./types/Plugin";
-import {ErrorCaused} from "./types/ErrorCaused";
+import type {PluginType} from "./types/Plugin";
+import type {ErrorCaused} from "./types/ErrorCaused";
 import log4js from 'log4js';
 import pkg from '../package.json';
 import {checkForMigration} from "../static/js/pluginfw/installer";

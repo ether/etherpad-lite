@@ -1,5 +1,5 @@
-import {MapArrayType} from "./MapType";
-import AttributePool from "../../static/js/AttributePool";
+import type {MapArrayType} from "./MapType";
+import type AttributePool from "../../static/js/AttributePool";
 
 export type PadType = {
     id: string,

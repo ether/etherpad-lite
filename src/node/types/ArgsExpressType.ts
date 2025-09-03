@@ -1,6 +1,6 @@
-import {Express} from "express";
+import type {Express} from "express";
 import {MapArrayType} from "./MapType";
-import {SettingsType} from "../utils/Settings";
+import type {SettingsType} from "../utils/Settings";
 
 export type ArgsExpressType = {
     app:Express,

@@ -1,4 +1,4 @@
-'use strict';
+
 
 import {APool} from "../types/PadType";
 

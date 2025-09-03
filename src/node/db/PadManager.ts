@@ -1,4 +1,4 @@
-'use strict';
+
 /**
  * The Pad Manager is a Factory for pad Objects
  */
@@ -19,8 +19,8 @@
  * limitations under the License.
  */
 
-import {MapArrayType} from "../types/MapType";
-import {PadType} from "../types/PadType";
+import type {MapArrayType} from "../types/MapType";
+import type {PadType} from "../types/PadType";
 
 const CustomError = require('../utils/customError');
 const Pad = require('../db/Pad');

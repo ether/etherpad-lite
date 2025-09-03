@@ -1,4 +1,4 @@
-'use strict';
+
 
 /**
  * Wrapper around any iterable that adds convenience methods that standard JavaScript iterable

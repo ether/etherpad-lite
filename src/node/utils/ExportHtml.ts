@@ -1,6 +1,6 @@
-'use strict';
-import {AText, PadType} from "../types/PadType";
-import {MapArrayType} from "../types/MapType";
+
+import type {AText, PadType} from "../types/PadType";
+import type {MapArrayType} from "../types/MapType";
 
 /**
  * Copyright 2009 Google Inc.

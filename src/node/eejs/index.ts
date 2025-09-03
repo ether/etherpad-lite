@@ -1,4 +1,4 @@
-'use strict';
+
 /*
  * Copyright (c) 2011 RedHog (Egil Möller) <egil.moller@freecode.no>
  *

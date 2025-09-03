@@ -1,7 +1,7 @@
-'use strict';
+
 
 import type {MapArrayType} from "../types/MapType";
-import {I18nPluginDefs} from "../types/I18nPluginDefs";
+import type {I18nPluginDefs} from "../types/I18nPluginDefs";
 
 const languages = require('languages4translatewiki');
 import fs from 'fs';
@@ -132,7 +132,7 @@ exports.expressPreSession = async (hookName:string, {app}:any) => {
   app.get('/locales/:locale', (req:any, res:any) => {
     // works with /locale/en and /locale/en.json requests
     const locale = req.params.locale.split('.')[0];
-    if (Object.prototype.hasOwnProperty.call(exports.availableLangs, locale)) {
+    if (Object.hasOwn(exports.availableLangs, locale)) {
       res.setHeader('Cache-Control', `public, max-age=${settings.maxAge}`);
       res.setHeader('Content-Type', 'application/json; charset=utf-8');
       res.send(`{"${locale}":${JSON.stringify(locales[locale])}}`);

@@ -1,4 +1,4 @@
-'use strict';
+
 /**
  * Handles the export requests
  */

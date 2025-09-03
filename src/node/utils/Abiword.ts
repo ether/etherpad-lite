@@ -1,4 +1,4 @@
-'use strict';
+
 /**
  * Controls the communication with the Abiword application
  */
@@ -19,8 +19,8 @@
  * limitations under the License.
  */
 
-import {ChildProcess} from "node:child_process";
-import {AsyncQueueTask} from "../types/AsyncQueueTask";
+import type {ChildProcess} from "node:child_process";
+import type {AsyncQueueTask} from "../types/AsyncQueueTask";
 
 const spawn = require('child_process').spawn;
 const async = require('async');

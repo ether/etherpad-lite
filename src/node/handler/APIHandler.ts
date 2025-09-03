@@ -1,4 +1,4 @@
-'use strict';
+
 /**
  * The API Handler handles all API http requests
  */
@@ -19,16 +19,16 @@
  * limitations under the License.
  */
 
-import {MapArrayType} from "../types/MapType";
+import type {MapArrayType} from "../types/MapType";
 import { jwtDecode } from "jwt-decode";
 const api = require('../db/API');
 const padManager = require('../db/PadManager');
 import settings from '../utils/Settings';
 import createHTTPError from 'http-errors';
-import {Http2ServerRequest} from "node:http2";
+import type {Http2ServerRequest} from "node:http2";
 import {publicKeyExported} from "../security/OAuth2Provider";
 import {jwtVerify} from "jose";
-import {APIFields, apikey} from './APIKeyHandler'
+import {type APIFields, apikey} from './APIKeyHandler'
 // a list of all functions
 const version:MapArrayType<any> = {};
 

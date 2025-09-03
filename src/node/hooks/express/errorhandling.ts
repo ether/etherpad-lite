@@ -1,7 +1,7 @@
-'use strict';
 
-import {ArgsExpressType} from "../../types/ArgsExpressType";
-import {ErrorCaused} from "../../types/ErrorCaused";
+
+import type {ArgsExpressType} from "../../types/ArgsExpressType";
+import type {ErrorCaused} from "../../types/ErrorCaused";
 
 const stats = require('../../stats')
 

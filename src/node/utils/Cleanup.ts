@@ -1,7 +1,7 @@
-'use strict'
 
-import {AChangeSet} from "../types/PadType";
-import {Revision} from "../types/Revision";
+
+import type {AChangeSet} from "../types/PadType";
+import type {Revision} from "../types/Revision";
 
 import {timesLimit, firstSatisfies} from './promises';
 const padManager = require('ep_etherpad-lite/node/db/PadManager');
@@ -44,7 +44,7 @@ export const deleteRevisions = async (padId: string, keepRevisions: number): Pro
 
   logger.debug('Start cleanup revisions', padId)
 
-  let pad = await padManager.getPad(padId);
+  const pad = await padManager.getPad(padId);
   await pad.check()
 
   logger.debug('Initial pad is valid')
@@ -73,10 +73,10 @@ export const deleteRevisions = async (padId: string, keepRevisions: number): Pro
     await db.remove(`pad:${padId}:revs:${i}`, null);
   });
 
-  let padContent = await db.get(`pad:${padId}`)
+  const padContent = await db.get(`pad:${padId}`)
   padContent.head = keepRevisions
   if (padContent.savedRevisions) {
-    let newSavedRevisions = []
+    const newSavedRevisions = []
 
     for (let i = 0; i < padContent.savedRevisions.length; i++) {
       if (padContent.savedRevisions[i].revNum > cleanupUntilRevision) {
@@ -89,7 +89,7 @@ export const deleteRevisions = async (padId: string, keepRevisions: number): Pro
   await db.set(`pad:${padId}`, padContent);
 
   let newAText = Changeset.makeAText('\n');
-  let pool = pad.apool()
+  const pool = pad.apool()
 
   newAText = Changeset.applyToAText(changeset, newAText, pool);
 
@@ -130,7 +130,7 @@ export const deleteRevisions = async (padId: string, keepRevisions: number): Pro
 
   padManager.unloadPad(padId);
 
-  let newPad = await padManager.getPad(padId);
+  const newPad = await padManager.getPad(padId);
   await newPad.check();
 
   return true

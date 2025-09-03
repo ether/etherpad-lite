@@ -1,4 +1,4 @@
-import {ArgsExpressType} from "../../types/ArgsExpressType";
+import type {ArgsExpressType} from "../../types/ArgsExpressType";
 import settings from '../../utils/Settings';
 
 const pwa = {

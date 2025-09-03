@@ -1,4 +1,4 @@
-'use strict';
+
 /**
  * The Toolbar Module creates and renders the toolbars and buttons
  */
@@ -56,7 +56,7 @@ class ButtonGroup {
         this.buttons = []
     }
 
-    public static fromArray = function (array: string[]) {
+    public static fromArray = (array: string[]) => {
         const btnGroup = new ButtonGroup();
         each(array, (btnName: string) => {
             const button = Button.load(btnName) as Button

@@ -1,4 +1,4 @@
-'use strict';
+
 /**
  * Library for deterministic relative filename expansion for Etherpad.
  */

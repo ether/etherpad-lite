@@ -1,4 +1,4 @@
-'use strict';
+
 /**
  * Helpers for export requests
  */
@@ -20,7 +20,7 @@
  */
 
 import AttributeMap from '../../static/js/AttributeMap';
-import AttributePool from "../../static/js/AttributePool";
+import type AttributePool from "../../static/js/AttributePool";
 import {deserializeOps, splitAttributionLines, subattribution} from '../../static/js/Changeset';
 const { checkValidRev } = require('./checkValidRev');
 

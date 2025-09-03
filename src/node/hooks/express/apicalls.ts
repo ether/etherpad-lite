@@ -1,4 +1,4 @@
-'use strict';
+
 
 import express from "express";
 
@@ -12,7 +12,7 @@ const util = require('util');
 function objectAsString(obj: any): string {
   let output = '';
   for (const property in obj) {
-    if(obj.hasOwnProperty(property) && typeof obj[property] !== 'function') {
+    if(Object.hasOwn(obj, property) && typeof obj[property] !== 'function') {
       let value = obj[property];
       if(typeof value === 'object' && !Array.isArray(value) && value !== null) {
         value = '{' + objectAsString(value) + '}';

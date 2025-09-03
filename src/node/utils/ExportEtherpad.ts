@@ -1,4 +1,4 @@
-'use strict';
+
 /**
  * 2014 John McLear (Etherpad Foundation / McLear Ltd)
  *

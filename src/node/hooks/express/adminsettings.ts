@@ -1,7 +1,7 @@
-'use strict';
 
 
-import {PadQueryResult, PadSearchQuery} from "../../types/PadSearchQuery";
+
+import type {PadQueryResult, PadSearchQuery} from "../../types/PadSearchQuery";
 import log4js from 'log4js';
 
 const fsp = require('fs').promises;
@@ -80,8 +80,8 @@ exports.socketio = (hookName: string, {io}: any) => {
             const clientHooks: Map<string, Map<string, string>> = plugins.getHooks('client_hooks', false);
 
             function mapToObject(map: Map<string, any>) {
-                let obj = Object.create(null);
-                for (let [k, v] of map) {
+                const obj = Object.create(null);
+                for (const [k, v] of map) {
                     if (v instanceof Map) {
                         obj[k] = mapToObject(v);
                     } else {
@@ -166,7 +166,7 @@ exports.socketio = (hookName: string, {io}: any) => {
             } else if (query.sortBy === "revisionNumber") {
                 const currentWinners: PadQueryResult[] = []
                 const padMapping = [] as {padId: string, revisionNumber: number}[]
-                for (let res of result) {
+                for (const res of result) {
                     const pad = await padManager.getPad(res);
                     const revisionNumber = pad.getHeadRevisionNumber()
                     padMapping.push({padId: res, revisionNumber})
@@ -178,7 +178,7 @@ exports.socketio = (hookName: string, {io}: any) => {
                 })
 
               for (const padRetrieval of padMapping.slice(query.offset, query.offset + query.limit)) {
-                let pad = await padManager.getPad(padRetrieval.padId);
+                const pad = await padManager.getPad(padRetrieval.padId);
                 currentWinners.push({
                   padName: padRetrieval.padId,
                   lastEdited: await pad.getLastEdit(),
@@ -191,7 +191,7 @@ exports.socketio = (hookName: string, {io}: any) => {
             } else if (query.sortBy === "userCount") {
               const currentWinners: PadQueryResult[] = []
               const padMapping = [] as {padId: string, userCount: number}[]
-              for (let res of result) {
+              for (const res of result) {
                 const userCount = api.padUsersCount(res).padUsersCount
                 padMapping.push({padId: res, userCount})
               }
@@ -202,7 +202,7 @@ exports.socketio = (hookName: string, {io}: any) => {
               })
 
               for (const padRetrieval of padMapping.slice(query.offset, query.offset + query.limit)) {
-                let pad = await padManager.getPad(padRetrieval.padId);
+                const pad = await padManager.getPad(padRetrieval.padId);
                 currentWinners.push({
                   padName: padRetrieval.padId,
                   lastEdited: await pad.getLastEdit(),
@@ -214,7 +214,7 @@ exports.socketio = (hookName: string, {io}: any) => {
             } else if (query.sortBy === "lastEdited") {
               const currentWinners: PadQueryResult[] = []
               const padMapping = [] as {padId: string, lastEdited: string}[]
-              for (let res of result) {
+              for (const res of result) {
                 const pad = await padManager.getPad(res);
                 const lastEdited = await pad.getLastEdit();
                 padMapping.push({padId: res, lastEdited})
@@ -226,7 +226,7 @@ exports.socketio = (hookName: string, {io}: any) => {
               })
 
               for (const padRetrieval of padMapping.slice(query.offset, query.offset + query.limit)) {
-                let pad = await padManager.getPad(padRetrieval.padId);
+                const pad = await padManager.getPad(padRetrieval.padId);
                 currentWinners.push({
                   padName: padRetrieval.padId,
                   lastEdited: padRetrieval.lastEdited,

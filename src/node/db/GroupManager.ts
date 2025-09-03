@@ -1,4 +1,4 @@
-'use strict';
+
 /**
  * The Group Manager provides functions to manage groups in the database
  */

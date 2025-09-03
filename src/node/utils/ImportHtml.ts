@@ -1,4 +1,4 @@
-'use strict';
+
 /**
  * Copyright Yaco Sistemas S.L. 2011.
  *
@@ -19,7 +19,7 @@ import log4js from 'log4js';
 import {deserializeOps} from '../../static/js/Changeset';
 const contentcollector = require('../../static/js/contentcollector');
 import jsdom from 'jsdom';
-import {PadType} from "../types/PadType";
+import type {PadType} from "../types/PadType";
 import {Builder} from "../../static/js/Builder";
 
 const apiLogger = log4js.getLogger('ImportHtml');

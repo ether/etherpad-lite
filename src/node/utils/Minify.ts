@@ -1,4 +1,4 @@
-'use strict';
+
 
 /**
  * This Module manages all /minified/* requests. It controls the
@@ -21,7 +21,7 @@
  * limitations under the License.
  */
 
-import {TransformResult} from "esbuild";
+import type {TransformResult} from "esbuild";
 import mime from 'mime-types';
 import log4js from 'log4js';
 import {compressCSS, compressJS} from './MinifyWorker'
@@ -64,7 +64,7 @@ const requestURI = async (url: string | URL, method: any, headers: { [x: string]
       writeHead: (_status: number, _headers: { [x: string]: any; }) => {
         status = _status;
         for (const header in _headers) {
-          if (Object.prototype.hasOwnProperty.call(_headers, header)) {
+          if (Object.hasOwn(_headers, header)) {
             headers[header] = _headers[header];
           }
         }

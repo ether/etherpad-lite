@@ -1,4 +1,4 @@
-'use strict';
+
 
 import path from 'node:path';
 const eejs = require('../../eejs')
@@ -12,7 +12,7 @@ const webaccess = require('./webaccess');
 const plugins = require('../../../static/js/pluginfw/plugin_defs');
 
 import {build, buildSync} from 'esbuild'
-import {ArgsExpressType} from "../../types/ArgsExpressType";
+import type {ArgsExpressType} from "../../types/ArgsExpressType";
 import prometheus from "../../prometheus";
 
 let ioI: { sockets: { sockets: any[]; }; } | null = null
@@ -131,7 +131,7 @@ const convertTypescript = (content: string) => {
 const handleLiveReload = async (args: ArgsExpressType, padString: string, timeSliderString: string, indexString: any) => {
   const chokidar = await import('chokidar')
   const watcher = chokidar.watch(path.join(settings.root, 'src', 'static', 'js'), {});
-  let routeHandlers: { [key: string]: Function } = {};
+  const routeHandlers: { [key: string]: Function } = {};
 
   const setRouteHandler = (path: string, newHandler: Function) => {
     routeHandlers[path] = newHandler;

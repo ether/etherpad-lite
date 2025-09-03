@@ -1,4 +1,4 @@
-'use strict';
+
 /**
  * The CLI module handles command line parameters
  */

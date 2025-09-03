@@ -1,4 +1,4 @@
-'use strict';
+
 
 /**
  * The DB Module provides a database initialized with the settings
@@ -21,7 +21,7 @@
  * limitations under the License.
  */
 
-import {Database, DatabaseType} from 'ueberdb2';
+import {Database, type DatabaseType} from 'ueberdb2';
 import settings from '../utils/Settings';
 import log4js from 'log4js';
 const stats = require('../stats')

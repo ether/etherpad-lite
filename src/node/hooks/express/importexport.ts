@@ -1,6 +1,6 @@
-'use strict';
 
-import {ArgsExpressType} from "../../types/ArgsExpressType";
+
+import type {ArgsExpressType} from "../../types/ArgsExpressType";
 
 const hasPadAccess = require('../../padaccess');
 import settings, {exportAvailable} from '../../utils/Settings';

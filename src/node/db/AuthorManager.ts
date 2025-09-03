@@ -1,4 +1,4 @@
-'use strict';
+
 /**
  * The AuthorManager controlls all information about the Pad authors
  */

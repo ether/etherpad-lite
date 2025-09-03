@@ -1,14 +1,14 @@
-import {ArgsExpressType} from "../types/ArgsExpressType";
-import Provider, {Account, Configuration} from 'oidc-provider';
-import {generateKeyPair, exportJWK, CryptoKey} from 'jose'
+import type {ArgsExpressType} from "../types/ArgsExpressType";
+import Provider, {type Account, type Configuration} from 'oidc-provider';
+import {generateKeyPair, exportJWK, type CryptoKey} from 'jose'
 import MemoryAdapter from "./OIDCAdapter";
 import path from "path";
 import settings from '../utils/Settings';
 import {IncomingForm} from 'formidable'
 import express from 'express';
 import {format} from 'url'
-import {ParsedUrlQuery} from "node:querystring";
-import {MapArrayType} from "../types/MapType";
+import type {ParsedUrlQuery} from "node:querystring";
+import type {MapArrayType} from "../types/MapType";
 
 const configuration: Configuration = {
     scopes: ['openid', 'profile', 'email'],
@@ -136,7 +136,7 @@ export const expressCreateServer = async (hookName: string, args: ArgsExpressTyp
                     admin: account?.is_admin
                 };
             } else if (token.kind === "ClientCredentials") {
-                let extraParams: MapArrayType<string> = {}
+                const extraParams: MapArrayType<string> = {}
 
                 settings.sso.clients && settings.sso.clients
                     .filter((client:any) => client.client_id === token.clientId)

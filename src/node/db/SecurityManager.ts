@@ -1,4 +1,4 @@
-'use strict';
+
 /**
  * Controls the security of pad access
  */
@@ -19,7 +19,7 @@
  * limitations under the License.
  */
 
-import {UserSettingsObject} from "../types/UserSettingsObject";
+import type {UserSettingsObject} from "../types/UserSettingsObject";
 
 const authorManager = require('./AuthorManager');
 const hooks = require('../../static/js/pluginfw/hooks');

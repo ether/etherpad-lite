@@ -1,4 +1,4 @@
-import {SettingsUser} from "./SettingsUser";
+import type {SettingsUser} from "./SettingsUser";
 
 export type WebAccessTypes = {
     username?: string|null;

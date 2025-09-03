@@ -1,13 +1,13 @@
-'use strict';
 
-import {Socket} from "node:net";
+
+import type {Socket} from "node:net";
 import type {MapArrayType} from "../types/MapType";
 
 import _ from 'underscore';
 import cookieParser from 'cookie-parser';
 import events from 'events';
 import express from 'express';
-import expressSession, {Store} from 'express-session';
+import expressSession, {type Store} from 'express-session';
 import fs from 'fs';
 const hooks = require('../../static/js/pluginfw/hooks');
 import log4js from 'log4js';

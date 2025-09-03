@@ -1,13 +1,13 @@
-'use strict';
 
-import {ArgsExpressType} from "../../types/ArgsExpressType";
+
+import type {ArgsExpressType} from "../../types/ArgsExpressType";
 
 import events from 'events';
 const express = require('../express');
 import log4js from 'log4js';
 const proxyaddr = require('proxy-addr');
 import settings from '../../utils/Settings';
-import {Server, Socket} from 'socket.io'
+import {Server, type Socket} from 'socket.io'
 const socketIORouter = require('../../handler/SocketIORouter');
 const hooks = require('../../../static/js/pluginfw/hooks');
 const padMessageHandler = require('../../handler/PadMessageHandler');
