@@ -45,7 +45,7 @@ jobs:
           path: ether.github.com
           token: '${{ secrets.ETHER_RELEASE_TOKEN }}'
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: '20'
       - uses: pnpm/action-setup@v4

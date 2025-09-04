@@ -24,7 +24,7 @@ jobs:
         name: Checkout repository
         uses: actions/checkout@v5
       -
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: 22
       - uses: pnpm/action-setup@v4
@@ -97,7 +97,7 @@ jobs:
           printf %s\\n '::set-output name=tunnel_id::${{ github.run_id }}-${{ github.run_number }}-${{ github.job }}'
       - name: Checkout repository
         uses: actions/checkout@v5
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: 22
       - uses: pnpm/action-setup@v4
@@ -171,7 +171,7 @@ jobs:
         name: Checkout repository
         uses: actions/checkout@v5
       -
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: 22
       - name: Cache playwright binaries

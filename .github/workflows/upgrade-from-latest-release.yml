@@ -32,7 +32,7 @@ jobs:
         with:
           ref: develop #FIXME change to master when doing release
       -
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: ${{ matrix.node }}
       - uses: pnpm/action-setup@v4
