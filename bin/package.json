@@ -15,8 +15,8 @@
     "ueberdb2": "^5.0.15"
   },
   "devDependencies": {
-    "@types/node": "^24.3.0",
-    "@types/semver": "^7.7.0",
+    "@types/node": "^24.3.1",
+    "@types/semver": "^7.7.1",
     "typescript": "^5.9.2"
   },
   "scripts": {
