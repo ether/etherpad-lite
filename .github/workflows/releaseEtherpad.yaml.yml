@@ -39,4 +39,4 @@ jobs:
           run: pnpm publish --no-git-checks
           working-directory: ./src
           env:
-            NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+            NODE_AUTH_TOKEN: ${{ secrets.NPM_PRIVATE_TOKEN }}
