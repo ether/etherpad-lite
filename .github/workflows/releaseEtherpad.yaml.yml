@@ -32,6 +32,9 @@ jobs:
           run: pnpm config set auto-install-peers false
         - name: Install dependencies
           run: pnpm install --frozen-lockfile
+        - name: Rename etherpad
+          working-directory: ./src
+          run: sed -i 's/ep_etherpad-lite/ep_etherpad/g' src/package.json
         - name: Release to npm
           run: pnpm publish --no-git-checks
           working-directory: ./src
