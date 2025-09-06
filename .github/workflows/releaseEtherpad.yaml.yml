@@ -34,7 +34,7 @@ jobs:
           run: pnpm install --frozen-lockfile
         - name: Rename etherpad
           working-directory: ./src
-          run: sed -i 's/ep_etherpad-lite/ep_etherpad/g' src/package.json
+          run: sed -i 's/ep_etherpad-lite/ep_etherpad/g' package.json
         - name: Release to npm
           run: pnpm publish --no-git-checks
           working-directory: ./src
