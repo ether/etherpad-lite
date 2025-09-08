@@ -159,8 +159,8 @@ importers:
         specifier: ^5.1.0
         version: 5.1.0
       express-rate-limit:
-        specifier: ^8.0.1
-        version: 8.0.1(express@5.1.0)
+        specifier: ^8.1.0
+        version: 8.1.0(express@5.1.0)
       express-session:
         specifier: ^1.18.2
         version: 1.18.2
@@ -2556,8 +2556,8 @@ packages:
     resolution: {integrity: sha512-/kP8CAwxzLVEeFrMm4kMmy4CCDlpipyA7MYLVrdJIkV0fYF0UaigQHRsxHiuY/GEea+bh4KSv3TIlgr+2UL6bw==}
     engines: {node: '>=12.0.0'}
 
-  express-rate-limit@8.0.1:
-    resolution: {integrity: sha512-aZVCnybn7TVmxO4BtlmnvX+nuz8qHW124KKJ8dumsBsmv5ZLxE0pYu7S2nwyRBGHHCAzdmnGyrc5U/rksSPO7Q==}
+  express-rate-limit@8.1.0:
+    resolution: {integrity: sha512-4nLnATuKupnmwqiJc27b4dCFmB/T60ExgmtDD7waf4LdrbJ8CPZzZRHYErDYNhoz+ql8fUdYwM/opf90PoPAQA==}
     engines: {node: '>= 16'}
     peerDependencies:
       express: '>= 4.11'
@@ -6920,7 +6920,7 @@ snapshots:
 
   expect-type@1.2.1: {}
 
-  express-rate-limit@8.0.1(express@5.1.0):
+  express-rate-limit@8.1.0(express@5.1.0):
     dependencies:
       express: 5.1.0
       ip-address: 10.0.1
