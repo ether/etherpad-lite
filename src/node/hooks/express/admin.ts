@@ -57,7 +57,7 @@ exports.expressCreateServer = (hookName: string, args: ArgsExpressType, cb: Func
       }
 
       // if is a directory search for index file matching the extension
-      if (fs.statSync(pathname).isDirectory()) {
+      if (exist && fs.statSync(pathname).isDirectory()) {
         pathname = pathname + '/index.html';
         ext = path.parse(pathname).ext;
       }
