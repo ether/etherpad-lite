@@ -95,5 +95,6 @@
 	"pad.userlist.unnamed": "بې نومه",
 	"pad.impexp.importbutton": "اوس واردول",
 	"pad.impexp.importing": "په واردولو کې دی...",
+	"pad.impexp.uploadFailed": "راپورته‌کول نابرياله شول، مهرباني وکړئ بيا هڅه وکړئ.",
 	"pad.impexp.copypaste": "لطفاً لمېسل لېښل ترسره کړئ"
 }
