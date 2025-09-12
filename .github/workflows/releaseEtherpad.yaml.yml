@@ -1,4 +1,6 @@
 name: releaseEtherpad.yaml
+permissions:
+  contents: read
 on:
   workflow_dispatch:
 
