@@ -1,6 +1,6 @@
 == Changeset Library
 
-The https://github.com/ether/etherpad-lite/blob/develop/src/static/js/Changeset.js[changeset
+The https://github.com/ether/etherpad-lite/blob/develop/src/static/js/Changeset.ts[changeset
 library]
 provides tools to create, read, and apply changesets.
 
@@ -31,7 +31,7 @@ const AttributePool = require('ep_etherpad-lite/static/js/AttributePool');
 ----
 
 Changesets do not include any attribute key–value pairs. Instead, they use
-numeric identifiers that reference attributes kept in an https://github.com/ether/etherpad-lite/blob/develop/src/static/js/AttributePool.js[attribute pool].
+numeric identifiers that reference attributes kept in an https://github.com/ether/etherpad-lite/blob/develop/src/static/js/AttributePool.ts[attribute pool].
 This attribute interning reduces the transmission overhead of attributes that
 are used many times.
 
