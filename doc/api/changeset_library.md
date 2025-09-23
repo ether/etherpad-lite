@@ -29,7 +29,7 @@ const AttributePool = require('ep_etherpad-lite/static/js/AttributePool');
 
 Changesets do not include any attribute key–value pairs. Instead, they use
 numeric identifiers that reference attributes kept in an [attribute
-pool](https://github.com/ether/etherpad-lite/blob/develop/src/static/js/AttributePool.js).
+pool](https://github.com/ether/etherpad-lite/blob/develop/src/static/js/AttributePool.ts).
 This attribute interning reduces the transmission overhead of attributes that
 are used many times.
 
