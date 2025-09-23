@@ -23,6 +23,24 @@ const updateSkinVariantsClasses = (newClasses) => {
   domsToUpdate.forEach((el) => { el.addClass(newClasses.join(' ')); });
 };
 
+
+const isDarkMode = ()=>{
+  return $('html').hasClass('super-dark-editor')
+}
+
+
+const setDarkModeInLocalStorage = (isDark)=>{
+  localStorage.setItem('ep_darkMode', isDark?'true':'false');
+}
+
+const isDarkModeEnabledInLocalStorage = ()=>{
+  return localStorage.getItem('ep_darkMode')==='true';
+}
+
+const isWhiteModeEnabledInLocalStorage = ()=>{
+  return localStorage.getItem('ep_darkMode')==='false';
+}
+
 // Specific hash to display the skin variants builder popup
 if (window.location.hash.toLowerCase() === '#skinvariantsbuilder') {
   $('#skin-variants').addClass('popup-show');
@@ -60,4 +78,8 @@ if (window.location.hash.toLowerCase() === '#skinvariantsbuilder') {
   updateSkinVariantsClasses(getNewClasses());
 }
 
+exports.isDarkMode = isDarkMode;
+exports.setDarkModeInLocalStorage = setDarkModeInLocalStorage
+exports.isWhiteModeEnabledInLocalStorage = isWhiteModeEnabledInLocalStorage
+exports.isDarkModeEnabledInLocalStorage = isDarkModeEnabledInLocalStorage
 exports.updateSkinVariantsClasses = updateSkinVariantsClasses;

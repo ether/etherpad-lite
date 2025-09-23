@@ -480,7 +480,12 @@ const pad = {
       setTimeout(() => { checkChatAndUsersVisibility(mobileMatch); }, 0); // check now after load
 
       $('#editorcontainer').addClass('initialized');
-      if (window.location.hash.toLowerCase() !== '#skinvariantsbuilder' && window.clientVars.enableDarkMode && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+
+      if (window.clientVars.enableDarkMode) {
+        $('#theme-switcher').attr('style', 'display: flex;');
+      }
+
+      if (window.location.hash.toLowerCase() !== '#skinvariantsbuilder' && window.clientVars.enableDarkMode && (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) && !skinVariants.isWhiteModeEnabledInLocalStorage()) {
         skinVariants.updateSkinVariantsClasses(['super-dark-editor', 'dark-background', 'super-dark-toolbar']);
       }
 
