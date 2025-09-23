@@ -26,6 +26,7 @@ import padutils,{Cookies} from "./pad_utils";
 const padcookie = require('./pad_cookie').padcookie;
 const Ace2Editor = require('./ace').Ace2Editor;
 import html10n from '../js/vendors/html10n'
+const skinVariants = require('./skin_variants');
 
 const padeditor = (() => {
   let pad = undefined;
@@ -86,9 +87,20 @@ const padeditor = (() => {
       $('#delete-pad').on('click', () => {
         if (window.confirm(html10n.get('pad.delete.confirm'))) {
           pad.collabClient.sendMessage({type: 'PAD_DELETE', data:{padId: pad.getPadId()}});
-          // redirect to home page after deletion  
+          // redirect to home page after deletion
           window.location.href = '/';
         }
+      })
+
+      // theme switch
+      $('#theme-switcher').on('click',()=>{
+          if (skinVariants.isDarkMode()) {
+            skinVariants.setDarkModeInLocalStorage(false);
+            skinVariants.updateSkinVariantsClasses(['super-light-toolbar super-light-editor light-background']);
+          } else {
+            skinVariants.setDarkModeInLocalStorage(true);
+            skinVariants.updateSkinVariantsClasses(['super-dark-editor', 'dark-background', 'super-dark-toolbar']);
+          }
       })
 
       // Language
