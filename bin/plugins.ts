@@ -109,6 +109,9 @@ switch (action) {
   case "rm":
     remove(args.slice(1));
     break;
+  case "remove":
+    remove(args.slice(1));
+    break;
   default:
     console.error('Expected at least one argument!');
     process.exit(1);
