@@ -49,7 +49,7 @@
 	"admin_settings.current_save.value": "Ayarları Kaydet",
 	"admin_settings.page-title": "Ayarlar - Etherpad",
 	"index.newPad": "Yeni Bloknot",
-	"index.createOpenPad": "veya şu adla bir Bloknot oluşturun/açın:",
+	"index.createOpenPad": "İsme göre açık bloknot",
 	"index.openPad": "şu adla varolan bir Bloknot'u açın:",
 	"pad.toolbar.bold.title": "Kalın (Ctrl+B)",
 	"pad.toolbar.italic.title": "Eğik (Ctrl+I)",
