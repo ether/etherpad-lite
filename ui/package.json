@@ -11,7 +11,7 @@
   },
   "devDependencies": {
     "ep_etherpad-lite": "workspace:../src",
-    "typescript": "^5.9.2",
+    "typescript": "^5.9.3",
     "vite": "npm:rolldown-vite@latest"
   },
   "overrides": {
