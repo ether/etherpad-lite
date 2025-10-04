@@ -31,7 +31,7 @@ jobs:
         uses: actions/checkout@v5
       - name: Replace node version
         run: |
-            jq '.engines.node = ">=${{ matrix.node }}"' package.json > tmp.json && mv tmp.json package.json
+            jq '.engines.node = "${{ matrix.node }}"' package.json > tmp.json && mv tmp.json package.json
       - name: Get pnpm store directory
         shell: bash
         run: |
@@ -92,7 +92,7 @@ jobs:
         uses: actions/checkout@v5
       - name: Replace node version
         run: |
-          jq '.engines.node = ">=${{ matrix.node }}"' package.json > tmp.json && mv tmp.json package.json
+          jq '.engines.node = "${{ matrix.node }}"' package.json > tmp.json && mv tmp.json package.json
       - uses: actions/cache@v4
         name: Setup pnpm cache
         if: always()
@@ -165,7 +165,7 @@ jobs:
         uses: actions/checkout@v5
       - name: Replace node version
         run: |
-          jq '.engines.node = ">=${{ matrix.node }}"' package.json > tmp.json && mv tmp.json package.json
+          jq '.engines.node = "${{ matrix.node }}"' package.json > tmp.json && mv tmp.json package.json
       - name: Get pnpm store directory
         shell: bash
         run: |
@@ -224,7 +224,7 @@ jobs:
         uses: actions/checkout@v5
       - name: Replace node version
         run: |
-          jq '.engines.node = ">=${{ matrix.node }}"' package.json > tmp.json && mv tmp.json package.json
+          jq '.engines.node = "${{ matrix.node }}"' package.json > tmp.json && mv tmp.json package.json
       - name: Get pnpm store directory
         shell: bash
         run: |
