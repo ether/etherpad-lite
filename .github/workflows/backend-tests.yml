@@ -29,9 +29,6 @@ jobs:
       -
         name: Checkout repository
         uses: actions/checkout@v5
-      - name: Replace node version
-        run: |
-            jq '.engines.node = "${{ matrix.node }}"' package.json > package.json
       - name: Get pnpm store directory
         shell: bash
         run: |
@@ -51,7 +48,7 @@ jobs:
       - name: Setup gnpm
         uses: SamTV12345/gnpm-setup@main
         with:
-          version: 0.0.7
+          version: 0.0.8
       -
         name: Install libreoffice
         uses: awalsh128/cache-apt-pkgs-action@v1.5.3
@@ -60,19 +57,19 @@ jobs:
           version: 1.0
       -
         name: Install all dependencies and symlink for ep_etherpad-lite
-        run: gnpm i --frozen-lockfile
+        run: gnpm i --frozen-lockfile --runtimeVersion="${{ matrix.node }}"
       - name: Install admin ui
         working-directory: admin
-        run: gnpm install
+        run: gnpm install  --runtimeVersion="${{ matrix.node }}"
       - name: Build admin ui
         working-directory: admin
-        run: gnpm build
+        run: gnpm build  --runtimeVersion="${{ matrix.node }}"
       -
         name: Run the backend tests
-        run: gnpm test
+        run: gnpm test  --runtimeVersion="${{ matrix.node }}"
       - name: Run the new vitest tests
         working-directory: src
-        run: gnpm run test:vitest
+        run: gnpm run test:vitest  --runtimeVersion="${{ matrix.node }}"
 
   withpluginsLinux:
     # run on pushes to any branch
