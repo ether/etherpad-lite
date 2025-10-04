@@ -16,7 +16,7 @@ permissions:
 jobs:
   withoutpluginsLinux:
     env:
-      PNPM_HOME: ${{ env.HOME }}/.pnpm-store
+      PNPM_HOME: ~/.pnpm-store
     # run on pushes to any branch
     # run on PRs from external forks
     if: |
@@ -72,7 +72,7 @@ jobs:
 
   withpluginsLinux:
     env:
-      PNPM_HOME: ${{ env.HOME }}/.pnpm-store
+      PNPM_HOME: ~/.pnpm-store
     # run on pushes to any branch
     # run on PRs from external forks
     if: |
@@ -141,7 +141,7 @@ jobs:
 
   withoutpluginsWindows:
     env:
-      PNPM_HOME: ${{ env.HOME }}\\.pnpm-store
+      PNPM_HOME: ~\\.pnpm-store
     # run on pushes to any branch
     # run on PRs from external forks
     if: |
@@ -193,7 +193,7 @@ jobs:
 
   withpluginsWindows:
     env:
-      PNPM_HOME: ${{ env.HOME }}\\.pnpm-store
+      PNPM_HOME: ~\\.pnpm-store
     # run on pushes to any branch
     # run on PRs from external forks
     if: |
