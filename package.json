@@ -42,14 +42,14 @@
     "ui": "workspace:./ui"
   },
   "engines": {
-    "node": ">=18.18.2",
-    "npm": ">=6.14.0",
-    "pnpm": ">=8.3.0"
+    "node": ">=20.0.0"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/ether/etherpad-lite.git"
   },
+  "packageManager": "^pnpm@10.18.0",
+  "engineStrict": true,
   "version": "2.5.0",
   "license": "Apache-2.0"
 }

@@ -24,33 +24,34 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node: [20, 22, 24]
+        node: [">=20.0.0 <21.0.0", ">=22.0.0 <23.0.0", ">=24.0.0 <25.0.0"]
     steps:
       -
         name: Checkout repository
         uses: actions/checkout@v5
-      -
-        uses: actions/setup-node@v5
-        with:
-          node-version: ${{ matrix.node }}
-      - uses: pnpm/action-setup@v4
-        name: Install pnpm
-        with:
-            version: 10
-            run_install: false
+      - name: Replace node version
+        run: |
+            jq '.engines.node = ">=${{ matrix.node }}"' package.json > tmp.json && mv tmp.json package.json
       - name: Get pnpm store directory
         shell: bash
         run: |
             echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
       - uses: actions/cache@v4
         name: Setup pnpm cache
+        if: always()
         with:
-          path: ${{ env.STORE_PATH }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          path: |
+             ${{ env.STORE_PATH }}
+             ~/.local/share/gnpm
+             /usr/local/bin/gnpm
+             /usr/local/bin/gnpm-0.0.6
+          key: ${{ runner.os }}-gnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
-            ${{ runner.os }}-pnpm-store-
-      - name: Only install direct dependencies
-        run: pnpm config set auto-install-peers false
+                  ${{ runner.os }}-gnpm-store-
+      - name: Setup gnpm
+        uses: SamTV12345/gnpm-setup@main
+        with:
+          version: 0.0.6
       -
         name: Install libreoffice
         uses: awalsh128/cache-apt-pkgs-action@v1.5.3
