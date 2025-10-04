@@ -22,14 +22,14 @@ jobs:
               ${{ env.STORE_PATH }}
               ~/.local/share/gnpm
               /usr/local/bin/gnpm
-              /usr/local/bin/gnpm-0.0.6
+              /usr/local/bin/gnpm-0.0.7
             key: ${{ runner.os }}-gnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
             restore-keys: |
               ${{ runner.os }}-gnpm-store-
         - name: Setup gnpm
           uses: SamTV12345/gnpm-setup@main
           with:
-            version: 0.0.6
+            version: 0.0.7
         - name: Only install direct dependencies
           run: gnpm config set auto-install-peers false
         - name: Install dependencies
