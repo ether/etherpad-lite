@@ -12,7 +12,7 @@ permissions:
 jobs:
   withplugins:
     env:
-      PNPM_HOME: ${{ env.HOME }}/.pnpm-store
+      PNPM_HOME: ~/.pnpm-store
     name: with plugins
     runs-on: ubuntu-latest
 

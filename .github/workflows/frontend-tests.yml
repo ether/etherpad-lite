@@ -12,7 +12,7 @@ permissions:
 jobs:
   playwright-chrome:
     env:
-      PNPM_HOME: ${{ env.HOME }}/.pnpm-store
+      PNPM_HOME: ~/.pnpm-store
     name: Playwright Chrome
     runs-on: ubuntu-latest
     steps:
@@ -77,7 +77,7 @@ jobs:
           retention-days: 30
   playwright-firefox:
     env:
-        PNPM_HOME: ${{ env.HOME }}/.pnpm-store
+        PNPM_HOME: ~/.pnpm-store
     name: Playwright Firefox
     runs-on: ubuntu-latest
     steps:
@@ -139,7 +139,7 @@ jobs:
     name: Playwright Webkit
     runs-on: ubuntu-latest
     env:
-      PNPM_HOME: ${{ env.HOME }}/.pnpm-store
+      PNPM_HOME: ~/.pnpm-store
     steps:
       -
         name: Generate Sauce Labs strings
@@ -155,7 +155,7 @@ jobs:
         if: always()
         with:
           path: |
-            ${{ env.STORE_PATH }}
+            ${{ env.PNPM_HOME }}
             ~/.local/share/gnpm
             ~/.cache/ms-playwright
             /usr/local/bin/gnpm
