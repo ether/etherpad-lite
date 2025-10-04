@@ -4,6 +4,9 @@ permissions:
 on:
   workflow_dispatch:
 
+env:
+  PNPM_HOME: ~/.pnpm-store
+
 jobs:
   release:
     runs-on: ubuntu-latest
@@ -22,16 +25,14 @@ jobs:
               ${{ env.STORE_PATH }}
               ~/.local/share/gnpm
               /usr/local/bin/gnpm
-              /usr/local/bin/gnpm-0.0.7
+              /usr/local/bin/gnpm-0.0.8
             key: ${{ runner.os }}-gnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
             restore-keys: |
               ${{ runner.os }}-gnpm-store-
         - name: Setup gnpm
           uses: SamTV12345/gnpm-setup@main
           with:
-            version: 0.0.7
-        - name: Only install direct dependencies
-          run: gnpm config set auto-install-peers false
+            version: 0.0.8
         - name: Install dependencies
           run: gnpm install --frozen-lockfile
         - name: Rename etherpad

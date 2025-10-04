@@ -19,7 +19,7 @@ jobs:
   docker:
     runs-on: ubuntu-latest
     env:
-      PNPM_HOME: ${{ env.HOME }}/.pnpm-store
+      PNPM_HOME: ~/.pnpm-store
     steps:
       -
         name: Check out
