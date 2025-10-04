@@ -41,7 +41,7 @@ jobs:
              ${{ env.STORE_PATH }}
              ~/.local/share/gnpm
              /usr/local/bin/gnpm
-             /usr/local/bin/gnpm-0.0.7
+             /usr/local/bin/gnpm-0.0.8
           key: ${{ runner.os }}-gnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
                   ${{ runner.os }}-gnpm-store-
@@ -87,9 +87,6 @@ jobs:
       -
         name: Checkout repository
         uses: actions/checkout@v5
-      - name: Replace node version
-        run: |
-          jq '.engines.node = "${{ matrix.node }}"' package.json > package.json
       - uses: actions/cache@v4
         name: Setup pnpm cache
         if: always()
@@ -98,14 +95,14 @@ jobs:
             ${{ env.STORE_PATH }}
             ~/.local/share/gnpm
             /usr/local/bin/gnpm
-            /usr/local/bin/gnpm-0.0.7
+            /usr/local/bin/gnpm-0.0.8
           key: ${{ runner.os }}-gnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
             ${{ runner.os }}-gnpm-store-
       - name: Setup gnpm
         uses: SamTV12345/gnpm-setup@main
         with:
-          version: 0.0.7
+          version: 0.0.8
       -
         name: Install libreoffice
         uses: awalsh128/cache-apt-pkgs-action@v1.5.3
@@ -114,13 +111,10 @@ jobs:
           version: 1.0
       -
         name: Install all dependencies and symlink for ep_etherpad-lite
-        run: bin/installDeps.sh
-      - name: Install admin ui
-        working-directory: admin
-        run: gnpm install
+        run: gnpm install --frozen-lockfile --runtimeVersion="${{ matrix.node }}"
       - name: Build admin ui
         working-directory: admin
-        run: gnpm build
+        run: gnpm build   --runtimeVersion="${{ matrix.node }}"
       -
         name: Install Etherpad plugins
         run: >
@@ -136,13 +130,13 @@ jobs:
           ep_set_title_on_pad
           ep_spellcheck
           ep_subscript_and_superscript
-          ep_table_of_contents
+          ep_table_of_contents   --runtimeVersion="${{ matrix.node }}"
       -
         name: Run the backend tests
-        run: gnpm test
+        run: gnpm test   --runtimeVersion="${{ matrix.node }}"
       - name: Run the new vitest tests
         working-directory: src
-        run: gnpm run test:vitest
+        run: gnpm run test:vitest   --runtimeVersion="${{ matrix.node }}"
 
   withoutpluginsWindows:
     # run on pushes to any branch
@@ -160,9 +154,6 @@ jobs:
       -
         name: Checkout repository
         uses: actions/checkout@v5
-      - name: Replace node version
-        run: |
-          jq '.engines.node = "${{ matrix.node }}"' package.json > package.json
       - name: Get pnpm store directory
         shell: bash
         run: |
@@ -175,20 +166,20 @@ jobs:
             ${{ env.STORE_PATH }}
             ~/.local/share/gnpm
             /usr/local/bin/gnpm
-            /usr/local/bin/gnpm-0.0.7
+            /usr/local/bin/gnpm-0.0.8
           key: ${{ runner.os }}-gnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
             ${{ runner.os }}-gnpm-store-
       - name: Setup gnpm
         uses: SamTV12345/gnpm-setup@main
         with:
-          version: 0.0.7
+          version: 0.0.8
       -
         name: Install all dependencies and symlink for ep_etherpad-lite
-        run: gnpm install --frozen-lockfile
+        run: gnpm install --frozen-lockfile   --runtimeVersion="${{ matrix.node }}"
       - name: Build admin ui
         working-directory: admin
-        run: gnpm build
+        run: gnpm build   --runtimeVersion="${{ matrix.node }}"
       -
         name:  Fix up the settings.json
         run: |
@@ -197,10 +188,10 @@ jobs:
       -
         name: Run the backend tests
         working-directory: src
-        run: gnpm test
+        run: gnpm test  --runtimeVersion="${{ matrix.node }}"
       - name: Run the new vitest tests
         working-directory: src
-        run: gnpm run test:vitest
+        run: gnpm run test:vitest  --runtimeVersion="${{ matrix.node }}"
 
   withpluginsWindows:
     # run on pushes to any branch
@@ -219,9 +210,6 @@ jobs:
       -
         name: Checkout repository
         uses: actions/checkout@v5
-      - name: Replace node version
-        run: |
-          jq '.engines.node = "${{ matrix.node }}"' package.json > package.json
       - name: Get pnpm store directory
         shell: bash
         run: |
@@ -234,20 +222,19 @@ jobs:
             ${{ env.STORE_PATH }}
             ~/.local/share/gnpm
             /usr/local/bin/gnpm
-            /usr/local/bin/gnpm-0.0.7
+            /usr/local/bin/gnpm-0.0.8
           key: ${{ runner.os }}-gnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
             ${{ runner.os }}-gnpm-store-
       - name: Setup gnpm
         uses: SamTV12345/gnpm-setup@main
         with:
-          version: 0.0.7
-      - name: Install admin ui
-        working-directory: admin
-        run: gnpm install
+          version: 0.0.8
+      - name: Install dependencies
+        run: gnpm install --runtimeVersion="${{ matrix.node }}"
       - name: Build admin ui
         working-directory: admin
-        run: gnpm build
+        run: gnpm build --runtimeVersion="${{ matrix.node }}"
       -
         name: Install Etherpad plugins
         # The --legacy-peer-deps flag is required to work around a bug in npm
@@ -265,7 +252,7 @@ jobs:
           ep_set_title_on_pad
           ep_spellcheck
           ep_subscript_and_superscript
-          ep_table_of_contents
+          ep_table_of_contents   --runtimeVersion="${{ matrix.node }}"
       # Etherpad core dependencies must be installed after installing the
       # plugin's dependencies, otherwise npm will try to hoist common
       # dependencies by removing them from src/node_modules and installing them
@@ -277,7 +264,7 @@ jobs:
       # rules.
       -
         name: Install all dependencies and symlink for ep_etherpad-lite
-        run: gnpm install --frozen-lockfile
+        run: gnpm install --frozen-lockfile   --runtimeVersion="${{ matrix.node }}"
       -
         name:  Fix up the settings.json
         run: |
@@ -286,7 +273,7 @@ jobs:
       -
         name: Run the backend tests
         working-directory: src
-        run: gnpm test
+        run: gnpm test   --runtimeVersion="${{ matrix.node }}"
       - name: Run the new vitest tests
         working-directory: src
-        run: gnpm run test:vitest
+        run: gnpm run test:vitest   --runtimeVersion="${{ matrix.node }}"
