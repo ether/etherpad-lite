@@ -33,8 +33,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v5
-      - name: Setup Pages
-        uses: actions/configure-pages@v5
       - uses: actions/cache@v4
         name: Setup gnpm cache
         if: always()
@@ -43,16 +41,16 @@ jobs:
             ${{ env.STORE_PATH }}
             ~/.local/share/gnpm
             /usr/local/bin/gnpm
-            /usr/local/bin/gnpm-0.0.7
+            /usr/local/bin/gnpm-0.0.8
           key: ${{ runner.os }}-gnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
             ${{ runner.os }}-gnpm-store-
       - name: Setup gnpm
         uses: SamTV12345/gnpm-setup@main
         with:
-          version: 0.0.7
-      - name: Only install direct dependencies
-        run: gnpm config set auto-install-peers false
+          version: 0.0.8
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
       - name: Install dependencies
         run: gnpm install
       - name: Build app

@@ -12,8 +12,11 @@ on:
 permissions:
   contents: read
 
+
 jobs:
   withoutpluginsLinux:
+    env:
+      PNPM_HOME: ${{ env.HOME }}/.pnpm-store
     # run on pushes to any branch
     # run on PRs from external forks
     if: |
@@ -29,16 +32,12 @@ jobs:
       -
         name: Checkout repository
         uses: actions/checkout@v5
-      - name: Get pnpm store directory
-        shell: bash
-        run: |
-            echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
       - uses: actions/cache@v4
         name: Setup gnpm cache
         if: always()
         with:
           path: |
-             ${{ env.STORE_PATH }}
+             ${{ env.PNPM_HOME }}
              ~/.local/share/gnpm
              /usr/local/bin/gnpm
              /usr/local/bin/gnpm-0.0.8
@@ -72,6 +71,8 @@ jobs:
         run: gnpm run test:vitest  --runtimeVersion="${{ matrix.node }}"
 
   withpluginsLinux:
+    env:
+      PNPM_HOME: ${{ env.HOME }}/.pnpm-store
     # run on pushes to any branch
     # run on PRs from external forks
     if: |
@@ -92,7 +93,7 @@ jobs:
         if: always()
         with:
           path: |
-            ${{ env.STORE_PATH }}
+            ${{ env.PNPM_HOME }}
             ~/.local/share/gnpm
             /usr/local/bin/gnpm
             /usr/local/bin/gnpm-0.0.8
@@ -139,6 +140,8 @@ jobs:
         run: gnpm run test:vitest   --runtimeVersion="${{ matrix.node }}"
 
   withoutpluginsWindows:
+    env:
+      PNPM_HOME: ${{ env.HOME }}\\.pnpm-store
     # run on pushes to any branch
     # run on PRs from external forks
     if: |
@@ -154,19 +157,14 @@ jobs:
       -
         name: Checkout repository
         uses: actions/checkout@v5
-      - name: Get pnpm store directory
-        shell: bash
-        run: |
-          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
       - uses: actions/cache@v4
         name: Setup pnpm cache
         if: always()
         with:
           path: |
-            ${{ env.STORE_PATH }}
-            ~/.local/share/gnpm
-            /usr/local/bin/gnpm
-            /usr/local/bin/gnpm-0.0.8
+            ${{ env.PNPM_HOME }}
+            C:\gnpm\
+            C:\Users\runneradmin\AppData\Roaming\gnpm\
           key: ${{ runner.os }}-gnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
             ${{ runner.os }}-gnpm-store-
@@ -194,6 +192,8 @@ jobs:
         run: gnpm run test:vitest  --runtimeVersion="${{ matrix.node }}"
 
   withpluginsWindows:
+    env:
+      PNPM_HOME: ${{ env.HOME }}\\.pnpm-store
     # run on pushes to any branch
     # run on PRs from external forks
     if: |
@@ -210,19 +210,14 @@ jobs:
       -
         name: Checkout repository
         uses: actions/checkout@v5
-      - name: Get pnpm store directory
-        shell: bash
-        run: |
-          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
       - uses: actions/cache@v4
         name: Setup pnpm cache
         if: always()
         with:
           path: |
-            ${{ env.STORE_PATH }}
-            ~/.local/share/gnpm
-            /usr/local/bin/gnpm
-            /usr/local/bin/gnpm-0.0.8
+            ${{ env.PNPM_HOME }}
+            C:\gnpm\
+            C:\Users\runneradmin\AppData\Roaming\gnpm\
           key: ${{ runner.os }}-gnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
             ${{ runner.os }}-gnpm-store-
