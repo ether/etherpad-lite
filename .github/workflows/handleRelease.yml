@@ -4,11 +4,7 @@ name: "Handle release"
 on:
   workflow_run:
     workflows:
-      - "Backend tests"
-      - "Perform type checks"
-      - "rate limit"
       - "Docker"
-      - "Frontend admin tests"
 
 permissions:
   contents: read
@@ -17,7 +13,7 @@ env:
   PNPM_HOME: ~/.pnpm-store
 
 jobs:
-  build-zip:
+  create-release:
     permissions: write-all
     # run on pushes to any branch
     # run on PRs from external forks
