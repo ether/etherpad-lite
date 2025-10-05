@@ -1,5 +1,5 @@
 # Leave the powered by Sauce Labs bit in as this means we get additional concurrency
-name: "Frontend admin tests powered by Sauce Labs"
+name: "Frontend admin tests"
 
 on:
   push:
@@ -11,6 +11,8 @@ permissions:
 
 jobs:
   withplugins:
+    env:
+      PNPM_HOME: ~/.pnpm-store
     name: with plugins
     runs-on: ubuntu-latest
 
@@ -29,26 +31,22 @@ jobs:
       -
         name: Checkout repository
         uses: actions/checkout@v5
-      -
-        uses: actions/setup-node@v5
-        with:
-          node-version: ${{ matrix.node }}
-      - uses: pnpm/action-setup@v4
-        name: Install pnpm
-        with:
-          version: 10
-          run_install: false
-      - name: Get pnpm store directory
-        shell: bash
-        run: |
-          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
       - uses: actions/cache@v4
-        name: Setup pnpm cache
+        name: Setup gnpm cache
+        if: always()
         with:
-          path: ${{ env.STORE_PATH }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          path: |
+            ${{ env.PNPM_HOME }}
+            ~/.local/share/gnpm
+            /usr/local/bin/gnpm
+            /usr/local/bin/gnpm-0.0.12
+          key: ${{ runner.os }}-gnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
-            ${{ runner.os }}-pnpm-store-
+            ${{ runner.os }}-gnpm-store-
+      - name: Setup gnpm
+        uses: SamTV12345/gnpm-setup@main
+        with:
+          version: 0.0.12
       - name: Cache playwright binaries
         uses: actions/cache@v4
         id: playwright-cache
@@ -56,8 +54,6 @@ jobs:
           path: |
             ~/.cache/ms-playwright
           key: ${{ runner.os }}-playwright-${{ env.PLAYWRIGHT_VERSION }}
-      - name: Only install direct dependencies
-        run: pnpm config set auto-install-peers false
       #-
       #  name: Install etherpad plugins
       #  # We intentionally install an old ep_align version to test upgrades to
@@ -75,7 +71,7 @@ jobs:
       # rules.
       -
         name: Install all dependencies and symlink for ep_etherpad-lite
-        run: pnpm i
+        run: gnpm i --runtimeVersion="${{ matrix.node }}"
       #-
       #  name: Install etherpad plugins
       #  run: rm -Rf node_modules/ep_align/static/tests/*
@@ -99,7 +95,7 @@ jobs:
       - name: Build admin frontend
         working-directory: admin
         run: |
-            pnpm run build
+            gnpm run build --runtimeVersion="${{ matrix.node }}"
       #  name: Run the frontend admin tests
       #  shell: bash
       #  env:
@@ -130,7 +126,7 @@ jobs:
       - name: Run the frontend admin tests
         shell: bash
         run: |
-          pnpm run prod &
+          gnpm run prod --runtimeVersion="${{ matrix.node }}" &
           connected=false
           can_connect() {
           curl -sSfo /dev/null http://localhost:9001/ || return 1
@@ -142,9 +138,9 @@ jobs:
           sleep 1
           done
           cd src
-          pnpm exec playwright install
-          pnpm exec playwright install-deps
-          pnpm run test-admin
+          gnpm exec playwright install --runtimeVersion="${{ matrix.node }}"
+          gnpm exec playwright install-deps --runtimeVersion="${{ matrix.node }}"
+          gnpm run test-admin --runtimeVersion="${{ matrix.node }}"
       - uses: actions/upload-artifact@v4
         if: always()
         with:

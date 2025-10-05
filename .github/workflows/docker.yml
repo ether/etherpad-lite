@@ -1,4 +1,4 @@
-name: Docker
+name: "Docker"
 on:
   pull_request:
     paths-ignore:
@@ -18,6 +18,8 @@ permissions:
 jobs:
   docker:
     runs-on: ubuntu-latest
+    env:
+      PNPM_HOME: ~/.pnpm-store
     steps:
       -
         name: Check out
@@ -42,27 +44,22 @@ jobs:
           tags: ${{ env.TEST_TAG }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
-      -
-        name: Set up Node.js
-        uses: actions/setup-node@v5
-        with:
-          node-version: 'lts/*'
-      - uses: pnpm/action-setup@v4
-        name: Install pnpm
-        with:
-          version: 10
-          run_install: false
-      - name: Get pnpm store directory
-        shell: bash
-        run: |
-          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
       - uses: actions/cache@v4
-        name: Setup pnpm cache
+        name: Setup gnpm cache
+        if: always()
         with:
-          path: ${{ env.STORE_PATH }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          path: |
+            ${{ env.PNPM_HOME }}
+            ~/.local/share/gnpm
+            /usr/local/bin/gnpm
+            /usr/local/bin/gnpm-0.0.12
+          key: ${{ runner.os }}-gnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
-            ${{ runner.os }}-pnpm-store-
+            ${{ runner.os }}-gnpm-store-
+      - name: Setup gnpm
+        uses: SamTV12345/gnpm-setup@main
+        with:
+          version: 0.0.12
       -
         name: Test
         working-directory: etherpad
@@ -79,7 +76,7 @@ jobs:
               *) printf %s\\n "unexpected status: ${status}" >&2; exit 1;;
             esac
           done
-          (cd src && pnpm run test-container)
+          (cd src && gnpm run test-container)
           git clean -dxf .
       -
         name: Docker meta

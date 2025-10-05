@@ -11,6 +11,8 @@ permissions:
 
 jobs:
   playwright-chrome:
+    env:
+      PNPM_HOME: ~/.pnpm-store
     name: Playwright Chrome
     runs-on: ubuntu-latest
     steps:
@@ -23,32 +25,26 @@ jobs:
       -
         name: Checkout repository
         uses: actions/checkout@v5
-      -
-        uses: actions/setup-node@v5
-        with:
-          node-version: 22
-      - uses: pnpm/action-setup@v4
-        name: Install pnpm
-        with:
-          version: 10
-          run_install: false
-      - name: Get pnpm store directory
-        shell: bash
-        run: |
-          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
       - uses: actions/cache@v4
-        name: Setup pnpm cache
+        name: Setup gnpm cache
         if: always()
         with:
-          path: ${{ env.STORE_PATH }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          path: |
+            ${{ env.PNPM_HOME }}
+            ~/.cache/ms-playwright
+            ~/.local/share/gnpm
+            /usr/local/bin/gnpm
+            /usr/local/bin/gnpm-0.0.12
+          key: ${{ runner.os }}-gnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
-            ${{ runner.os }}-pnpm-store-
-      - name: Only install direct dependencies
-        run: pnpm config set auto-install-peers false
+            ${{ runner.os }}-gnpm-store-
+      - name: Setup gnpm
+        uses: SamTV12345/gnpm-setup@main
+        with:
+          version: 0.0.12
       -
         name: Install all dependencies and symlink for ep_etherpad-lite
-        run: bin/installDeps.sh
+        run: gnpm install --frozen-lockfile
       -
         name: export GIT_HASH to env
         id: environment
@@ -56,17 +52,10 @@ jobs:
       -
         name: Create settings.json
         run: cp ./src/tests/settings.json settings.json
-      - name: Cache playwright binaries
-        uses: actions/cache@v4
-        id: playwright-cache
-        with:
-          path: |
-            ~/.cache/ms-playwright
-          key: ${{ runner.os }}-playwright-${{ env.PLAYWRIGHT_VERSION }}
       - name: Run the frontend tests
         shell: bash
         run: |
-          pnpm run prod &
+          gnpm run prod  &
           connected=false
           can_connect() {
           curl -sSfo /dev/null http://localhost:9001/ || return 1
@@ -78,8 +67,8 @@ jobs:
           sleep 1
           done
           cd src
-          pnpm exec playwright install chromium  --with-deps
-          pnpm run test-ui --project=chromium
+          gnpm exec playwright install chromium  --with-deps
+          gnpm run test-ui --project=chromium
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -87,6 +76,8 @@ jobs:
           path: src/playwright-report/
           retention-days: 30
   playwright-firefox:
+    env:
+        PNPM_HOME: ~/.pnpm-store
     name: Playwright Firefox
     runs-on: ubuntu-latest
     steps:
@@ -97,46 +88,34 @@ jobs:
           printf %s\\n '::set-output name=tunnel_id::${{ github.run_id }}-${{ github.run_number }}-${{ github.job }}'
       - name: Checkout repository
         uses: actions/checkout@v5
-      - uses: actions/setup-node@v5
-        with:
-          node-version: 22
-      - uses: pnpm/action-setup@v4
-        name: Install pnpm
-        with:
-          version: 10
-          run_install: false
-      - name: Get pnpm store directory
-        shell: bash
-        run: |
-          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
       - uses: actions/cache@v4
-        name: Setup pnpm cache
+        name: Setup gnpm cache
         if: always()
         with:
-          path: ${{ env.STORE_PATH }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          path: |
+            ${{ env.PNPM_HOME }}
+            ~/.local/share/gnpm
+            ~/.cache/ms-playwright
+            /usr/local/bin/gnpm
+            /usr/local/bin/gnpm-0.0.12
+          key: ${{ runner.os }}-gnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
-            ${{ runner.os }}-pnpm-store-
-      - name: Only install direct dependencies
-        run: pnpm config set auto-install-peers false
+            ${{ runner.os }}-gnpm-store-
+      - name: Setup gnpm
+        uses: SamTV12345/gnpm-setup@main
+        with:
+          version: 0.0.12
       - name: Install all dependencies and symlink for ep_etherpad-lite
-        run: bin/installDeps.sh
+        run: gnpm install --frozen-lockfile
       - name: export GIT_HASH to env
         id: environment
         run: echo "::set-output name=sha_short::$(git rev-parse --short ${{ github.sha }})"
       - name: Create settings.json
         run: cp ./src/tests/settings.json settings.json
-      - name: Cache playwright binaries
-        uses: actions/cache@v4
-        id: playwright-cache
-        with:
-          path: |
-            ~/.cache/ms-playwright
-          key: ${{ runner.os }}-playwright-${{ env.PLAYWRIGHT_VERSION }}
       - name: Run the frontend tests
         shell: bash
         run: |
-          pnpm run prod &
+          gnpm run prod &
           connected=false
           can_connect() {
           curl -sSfo /dev/null http://localhost:9001/ || return 1
@@ -148,8 +127,8 @@ jobs:
           sleep 1
           done
           cd src
-          pnpm exec playwright install firefox  --with-deps
-          pnpm run test-ui --project=firefox
+          gnpm exec playwright install firefox  --with-deps
+          gnpm run test-ui --project=firefox
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -159,7 +138,8 @@ jobs:
   playwright-webkit:
     name: Playwright Webkit
     runs-on: ubuntu-latest
-
+    env:
+      PNPM_HOME: ~/.pnpm-store
     steps:
       -
         name: Generate Sauce Labs strings
@@ -170,39 +150,25 @@ jobs:
       -
         name: Checkout repository
         uses: actions/checkout@v5
-      -
-        uses: actions/setup-node@v5
-        with:
-          node-version: 22
-      - name: Cache playwright binaries
-        uses: actions/cache@v4
-        id: playwright-cache
-        with:
-          path: |
-            ~/.cache/ms-playwright
-          key: ${{ runner.os }}-playwright-${{ env.PLAYWRIGHT_VERSION }}
-      - uses: pnpm/action-setup@v4
-        name: Install pnpm
-        with:
-          version: 10
-          run_install: false
-      - name: Get pnpm store directory
-        shell: bash
-        run: |
-          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
       - uses: actions/cache@v4
-        name: Setup pnpm cache
+        name: Setup gnpm cache
         if: always()
         with:
-          path: ${{ env.STORE_PATH }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-store-
-      - name: Only install direct dependencies
-        run: pnpm config set auto-install-peers false
+          path: |
+            ${{ env.PNPM_HOME }}
+            ~/.local/share/gnpm
+            ~/.cache/ms-playwright
+            /usr/local/bin/gnpm
+            /usr/local/bin/gnpm-0.0.12
+          key: ${{ runner.os }}-gnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: ${{ runner.os }}-gnpm-store-
+      - name: Setup gnpm
+        uses: SamTV12345/gnpm-setup@main
+        with:
+          version: 0.0.12
       -
         name: Install all dependencies and symlink for ep_etherpad-lite
-        run: bin/installDeps.sh
+        run: gnpm install --frozen-lockfile
       -
         name: export GIT_HASH to env
         id: environment
@@ -213,7 +179,7 @@ jobs:
       - name: Run the frontend tests
         shell: bash
         run: |
-          pnpm run prod &
+          gnpm run prod &
           connected=false
           can_connect() {
           curl -sSfo /dev/null http://localhost:9001/ || return 1
@@ -225,8 +191,8 @@ jobs:
           sleep 1
           done
           cd src
-          pnpm exec playwright install webkit --with-deps
-          pnpm run test-ui --project=webkit || true
+          gnpm exec playwright install webkit --with-deps
+          gnpm run test-ui --project=webkit || true
       - uses: actions/upload-artifact@v4
         if: always()
         with:
