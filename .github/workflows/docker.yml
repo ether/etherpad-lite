@@ -52,14 +52,14 @@ jobs:
             ${{ env.PNPM_HOME }}
             ~/.local/share/gnpm
             /usr/local/bin/gnpm
-            /usr/local/bin/gnpm-0.0.8
+            /usr/local/bin/gnpm-0.0.12
           key: ${{ runner.os }}-gnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
             ${{ runner.os }}-gnpm-store-
       - name: Setup gnpm
         uses: SamTV12345/gnpm-setup@main
         with:
-          version: 0.0.8
+          version: 0.0.12
       -
         name: Test
         working-directory: etherpad
