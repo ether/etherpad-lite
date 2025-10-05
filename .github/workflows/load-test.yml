@@ -38,14 +38,14 @@ jobs:
             ~/.local/share/gnpm
             ~/.cache/ms-playwright
             /usr/local/bin/gnpm
-            /usr/local/bin/gnpm-0.0.10
+            /usr/local/bin/gnpm-0.0.11
           key: ${{ runner.os }}-gnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
             ${{ runner.os }}-gnpm-store-
       - name: Setup gnpm
         uses: SamTV12345/gnpm-setup@main
         with:
-          version: 0.0.10
+          version: 0.0.11
       -
         name: Install all dependencies and symlink for ep_etherpad-lite
         run: gnpm install --frozen-lockfile
@@ -81,14 +81,14 @@ jobs:
             ~/.local/share/gnpm
             ~/.cache/ms-playwright
             /usr/local/bin/gnpm
-            /usr/local/bin/gnpm-0.0.10
+            /usr/local/bin/gnpm-0.0.11
           key: ${{ runner.os }}-gnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
             ${{ runner.os }}-gnpm-store-
       - name: Setup gnpm
         uses: SamTV12345/gnpm-setup@main
         with:
-          version: 0.0.10
+          version: 0.0.11
       -
         name: Install etherpad-load-test
         run:  sudo npm install -g etherpad-load-test-socket-io
@@ -149,14 +149,14 @@ jobs:
             ~/.local/share/gnpm
             ~/.cache/ms-playwright
             /usr/local/bin/gnpm
-            /usr/local/bin/gnpm-0.0.10
+            /usr/local/bin/gnpm-0.0.11
           key: ${{ runner.os }}-gnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
             ${{ runner.os }}-gnpm-store-
       - name: Setup gnpm
         uses: SamTV12345/gnpm-setup@main
         with:
-          version: 0.0.10
+          version: 0.0.11
       -
         name: Install all dependencies and symlink for ep_etherpad-lite
         run: gnpm install --frozen-lockfile
