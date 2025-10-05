@@ -121,7 +121,7 @@ jobs:
       # rules.
       -
         name: Install all dependencies and symlink for ep_etherpad-lite
-        run: bin/installDeps.sh
+        run: gnpm install --frozen-lockfile
       -
         name: Run load test
         run: |
