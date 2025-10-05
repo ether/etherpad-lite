@@ -1,13 +1,14 @@
-name: "Windows Build"
+name: "Handle release"
 
 # any branch is useful for testing before a PR is submitted
 on:
-  push:
-    paths-ignore:
-      - "doc/**"
-  pull_request:
-    paths-ignore:
-      - "doc/**"
+  workflow_run:
+    workflows:
+      - "Backend tests"
+      - "Perform type checks"
+      - "rate limit"
+      - "Docker"
+      - "Frontend admin tests"
 
 permissions:
   contents: read
@@ -23,15 +24,9 @@ jobs:
     if: |
       (github.event_name != 'pull_request')
       || (github.event.pull_request.head.repo.id != github.event.pull_request.base.repo.id)
-    name: Build .zip
-    runs-on: windows-latest
+    name: Handle the release
+    runs-on: ubuntu-latest
     steps:
-      -
-        uses: msys2/setup-msys2@v2
-        with:
-          path-type: inherit
-          install: >-
-            zip
       -
         name: Checkout repository
         uses: actions/checkout@v5
@@ -52,25 +47,10 @@ jobs:
         uses: SamTV12345/gnpm-setup@main
         with:
           version: 0.0.12
-      -
-        name: Install all dependencies and symlink for ep_etherpad-lite
-        shell: msys2 {0}
+      - name: Install all dependencies and symlink for ep_etherpad-lite
         run: gnpm install --frozen-lockfile
-      -
-        name: Run the backend tests
-        shell: msys2 {0}
-        working-directory: src
-        run: gnpm test
-      -
-        name: Run Etherpad
-        working-directory: src
-        run: |
-          gnpm i
-          gnpm exec playwright install --with-deps
-          gnpm run prod &
-          curl --connect-timeout 10 --max-time 20 --retry 5 --retry-delay 10 --retry-max-time 60 --retry-connrefused http://127.0.0.1:9001/p/test
-          gnpm exec playwright install chromium  --with-deps
-          gnpm run test-ui --project=chromium
+      - name: Build etherpad
+        run: gnpm run build:etherpad
       # On release, create release
       - name: Generate Changelog
         if: ${{startsWith(github.ref, 'refs/tags/v') }}
