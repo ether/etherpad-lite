@@ -83,7 +83,7 @@
     "etherpad-lite": "node/server.ts"
   },
   "devDependencies": {
-    "@playwright/test": "^1.55.0",
+    "@playwright/test": "^1.55.1",
     "@types/async": "^3.2.25",
     "@types/cookie-parser": "^1.4.9",
     "@types/cross-spawn": "^6.0.6",
@@ -99,7 +99,7 @@
     "@types/jsonwebtoken": "^9.0.10",
     "@types/mime-types": "^3.0.1",
     "@types/mocha": "^10.0.9",
-    "@types/node": "^24.3.1",
+    "@types/node": "^24.6.2",
     "@types/oidc-provider": "^9.5.0",
     "@types/semver": "^7.7.1",
     "@types/sinon": "^17.0.3",
@@ -108,10 +108,10 @@
     "@types/underscore": "^1.13.0",
     "@types/whatwg-mimetype": "^3.0.2",
     "chokidar": "^4.0.3",
-    "eslint": "^9.35.0",
+    "eslint": "^9.36.0",
     "eslint-config-etherpad": "^4.0.4",
     "etherpad-cli-client": "^3.0.5",
-    "mocha": "^11.7.2",
+    "mocha": "^11.7.4",
     "mocha-froth": "^0.2.10",
     "nodeify": "^1.0.1",
     "openapi-schema-validation": "^0.4.2",
@@ -119,7 +119,7 @@
     "sinon": "^21.0.0",
     "split-grid": "^1.0.11",
     "supertest": "^7.1.3",
-    "typescript": "^5.9.2",
+    "typescript": "^5.9.3",
     "vitest": "^3.2.4"
   },
   "engines": {
