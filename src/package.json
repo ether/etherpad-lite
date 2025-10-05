@@ -33,7 +33,7 @@
     "async": "^3.2.6",
     "axios": "^1.12.1",
     "cookie-parser": "^1.4.7",
-    "cross-env": "^10.0.0",
+    "cross-env": "^10.1.0",
     "cross-spawn": "^7.0.6",
     "ejs": "^3.1.10",
     "esbuild": "^0.25.10",
