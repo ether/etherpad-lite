@@ -14,6 +14,7 @@ permissions:
 
 env:
   PNPM_HOME: ~/.pnpm-store
+  LOG_LEVEL: DEBUG
 
 jobs:
   withoutplugins:
@@ -54,7 +55,9 @@ jobs:
       -
         name: Run load test
         run: |
+          gnpm --gnpmEnv
           eval "$(gnpm --gnpmEnv)"
+          echo $PATH
           src/tests/frontend/travis/runnerLoadTest.sh 25 50
 
   withplugins:
@@ -94,7 +97,7 @@ jobs:
         # The --legacy-peer-deps flag is required to work around a bug in npm v7:
         # https://github.com/npm/cli/issues/2199
         run: >
-          pnpm install --workspace-root
+          gnpm install --workspace-root
           ep_align
           ep_author_hover
           ep_cursortrace
@@ -163,5 +166,7 @@ jobs:
       -
         name: Run load test
         run: |
+          gnpm --gnpmEnv
           eval "$(gnpm --gnpmEnv)"
+          echo $PATH
           src/tests/frontend/travis/runnerLoadTest.sh 5000 5
