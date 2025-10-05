@@ -37,14 +37,14 @@ jobs:
             ~/.local/share/gnpm
             ~/.cache/ms-playwright
             /usr/local/bin/gnpm
-            /usr/local/bin/gnpm-0.0.8
+            /usr/local/bin/gnpm-0.0.9
           key: ${{ runner.os }}-gnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
             ${{ runner.os }}-gnpm-store-
       - name: Setup gnpm
         uses: SamTV12345/gnpm-setup@main
         with:
-          version: 0.0.8
+          version: 0.0.9
       -
         name: Install all dependencies and symlink for ep_etherpad-lite
         run: gnpm install --frozen-lockfile
@@ -53,7 +53,9 @@ jobs:
         run: sudo npm install -g etherpad-load-test-socket-io
       -
         name: Run load test
-        run: src/tests/frontend/travis/runnerLoadTest.sh 25 50
+        run: |
+          eval "$(gnpm --gnpmEnv)"
+          src/tests/frontend/travis/runnerLoadTest.sh 25 50
 
   withplugins:
     # run on pushes to any branch
@@ -76,17 +78,17 @@ jobs:
             ~/.local/share/gnpm
             ~/.cache/ms-playwright
             /usr/local/bin/gnpm
-            /usr/local/bin/gnpm-0.0.8
+            /usr/local/bin/gnpm-0.0.9
           key: ${{ runner.os }}-gnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
             ${{ runner.os }}-gnpm-store-
       - name: Setup gnpm
         uses: SamTV12345/gnpm-setup@main
         with:
-          version: 0.0.8
+          version: 0.0.9
       -
         name: Install etherpad-load-test
-        run:  pnpm install -g etherpad-load-test-socket-io
+        run:  sudo npm install -g etherpad-load-test-socket-io
       -
         name: Install etherpad plugins
         # The --legacy-peer-deps flag is required to work around a bug in npm v7:
@@ -119,7 +121,9 @@ jobs:
         run: bin/installDeps.sh
       -
         name: Run load test
-        run: src/tests/frontend/travis/runnerLoadTest.sh 25 50
+        run: |
+          eval "$(gnpm --gnpmEnv)"
+          src/tests/frontend/travis/runnerLoadTest.sh 25 50
 
   long:
     # run on pushes to any branch
@@ -142,14 +146,14 @@ jobs:
             ~/.local/share/gnpm
             ~/.cache/ms-playwright
             /usr/local/bin/gnpm
-            /usr/local/bin/gnpm-0.0.8
+            /usr/local/bin/gnpm-0.0.9
           key: ${{ runner.os }}-gnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
             ${{ runner.os }}-gnpm-store-
       - name: Setup gnpm
         uses: SamTV12345/gnpm-setup@main
         with:
-          version: 0.0.8
+          version: 0.0.9
       -
         name: Install all dependencies and symlink for ep_etherpad-lite
         run: gnpm install --frozen-lockfile
@@ -158,4 +162,6 @@ jobs:
         run: sudo npm install -g etherpad-load-test-socket-io
       -
         name: Run load test
-        run: src/tests/frontend/travis/runnerLoadTest.sh 5000 5
+        run: |
+          eval "$(gnpm --gnpmEnv)"
+          src/tests/frontend/travis/runnerLoadTest.sh 5000 5
