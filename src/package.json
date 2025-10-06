@@ -76,7 +76,7 @@
     "ueberdb2": "^5.0.22",
     "underscore": "1.13.7",
     "unorm": "1.6.0",
-    "wtfnode": "^0.10.0"
+    "wtfnode": "^0.10.1"
   },
   "bin": {
     "etherpad-healthcheck": "../bin/etherpad-healthcheck",
