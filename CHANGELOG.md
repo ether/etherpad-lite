@@ -1,3 +1,11 @@
+# 2.5.2
+
+### Notable enhancements and fixes
+
+- fixed exposeVersion causing the pad panel to not load correctly
+- fixed admin manage pad url to also take base path into account
+
+
 # 2.5.1
 
 ### Notable enhancements and fixes
