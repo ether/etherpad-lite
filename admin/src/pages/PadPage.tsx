@@ -255,7 +255,7 @@ export const PadPage = ()=>{
                                 <IconButton icon={<FileStack/>} title={<Trans i18nKey="ep_admin_pads:ep_adminpads2_cleanup"/>} onClick={()=>{
                                   cleanupPad(pad.padName)
                                 }}/>
-                                <IconButton icon={<Eye/>} title="view" onClick={()=>window.open(`/p/${pad.padName}`, '_blank')}/>
+                                <IconButton icon={<Eye/>} title={<Trans i18nKey="index.createOpenPad"/>} onClick={()=>window.open(`../../p/${pad.padName}`, '_blank')}/>
                             </div>
                         </td>
                     </tr>
