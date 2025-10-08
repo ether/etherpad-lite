@@ -82,6 +82,7 @@ jobs:
         working-directory: etherpad
         run: |
           cd bin
+          gnpm install
           gnpm run release ${{ inputs.release_type }}
       - name: Push after release
         working-directory: etherpad
