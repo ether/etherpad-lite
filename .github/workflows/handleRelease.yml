@@ -1,13 +1,10 @@
-name: "Perform type checks"
+name: "Handle release"
 
 # any branch is useful for testing before a PR is submitted
 on:
-  push:
-    paths-ignore:
-      - "doc/**"
-  pull_request:
-    paths-ignore:
-      - "doc/**"
+  workflow_run:
+    workflows:
+      - "Docker"
 
 permissions:
   contents: read
@@ -16,14 +13,18 @@ env:
   PNPM_HOME: ~/.pnpm-store
 
 jobs:
-  performTypeCheck:
+  create-release:
+    permissions: write-all
+    # run on pushes to any branch
+    # run on PRs from external forks
     if: |
       (github.event_name != 'pull_request')
       || (github.event.pull_request.head.repo.id != github.event.pull_request.base.repo.id)
-    name: perform type check
+    name: Handle the release
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
+      -
+        name: Checkout repository
         uses: actions/checkout@v5
       - uses: actions/cache@v4
         name: Setup gnpm cache
@@ -42,9 +43,18 @@ jobs:
         uses: SamTV12345/gnpm-setup@main
         with:
           version: 0.0.12
-      -
-        name: Install all dependencies and symlink for ep_etherpad-lite
+      - name: Install all dependencies and symlink for ep_etherpad-lite
         run: gnpm install --frozen-lockfile
-      - name: Perform type check
-        working-directory: ./src
-        run: gnpm run ts-check
+      - name: Build etherpad
+        run: gnpm run build:etherpad
+      # On release, create release
+      - name: Generate Changelog
+        if: ${{startsWith(github.ref, 'refs/tags/v') }}
+        working-directory: bin
+        run: gnpm run generateChangelog ${{ github.ref }} > ${{ github.workspace }}-CHANGELOG.txt
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        if: ${{startsWith(github.ref, 'refs/tags/v') }}
+        with:
+          body_path: ${{ github.workspace }}-CHANGELOG.txt
+          make_latest: true

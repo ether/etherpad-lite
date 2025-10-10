@@ -1,9 +1,16 @@
 {
 	"@metadata": {
 		"authors": [
-			"Belkacem77"
+			"Belkacem77",
+			"ButterflyOfFire"
 		]
 	},
+	"admin_plugins.name": "Isem",
+	"admin_plugins.version": "Lqem",
+	"admin_settings": "Iɣewwaren",
+	"admin_settings.current": "Tawila tamirant",
+	"admin_settings.current_save.value": "Sekles iɣewwaren",
+	"admin_settings.page-title": "Iɣewwaren - Etherpad",
 	"index.newPad": "Apad amaynut",
 	"index.createOpenPad": "neɣ rnu/ldi apad s yisem:",
 	"pad.toolbar.bold.title": "Zur (Ctrl+B)",
@@ -24,7 +31,7 @@
 	"pad.toolbar.embed.title": "Bḍu sakin seddu apad-agi",
 	"pad.toolbar.showusers.title": "Sken iseqdacen ɣef upad-agi",
 	"pad.colorpicker.save": "Sekles",
-	"pad.colorpicker.cancel": "Sefsex",
+	"pad.colorpicker.cancel": "Semmet",
 	"pad.loading": "Asali...",
 	"pad.noCookie": "Anagi n tuqqna ulac-it. Sireg inagan n tuqqna deg iminig-ik!",
 	"pad.permissionDenied": "Ur ɣur-k ara tasiregt akken ad tkecmeḍ ar upad-agi",
@@ -37,6 +44,7 @@
 	"pad.settings.rtlcheck": "Ɣeṛ agbur seg uyeffus s azelmaḍ?",
 	"pad.settings.fontType": "Anaw n tsefsit:",
 	"pad.settings.language": "Tutlayt:",
+	"pad.settings.about": "Ɣef",
 	"pad.importExport.import_export": "Kter/Sifeḍ",
 	"pad.importExport.import": "Sali aḍris neɣ isemli",
 	"pad.importExport.importSuccessful": "Yedda!",
@@ -52,7 +60,7 @@
 	"pad.modals.reconnecting": "Tulsa n tuqqna ar upad-ik.",
 	"pad.modals.forcereconnect": "Ḥettem tulsa n tuqqna",
 	"pad.modals.reconnecttimer": "Ɛreḍ tikelt-nniḍen tuqqna",
-	"pad.modals.cancel": "Sefsex",
+	"pad.modals.cancel": "Semmet",
 	"pad.modals.userdup": "Yeldi deg usfaylu-nniḍen",
 	"pad.modals.userdup.explanation": "Apad-agi yettban yeldi deg isfuyla-nniḍen deg uselkim-agi.",
 	"pad.modals.userdup.advice": "Ales tuqqna akken ad tesqedceḍ asfaylu-agi.",

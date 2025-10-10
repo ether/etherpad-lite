@@ -9,7 +9,7 @@ export default defineConfig({
       transformMixedEsModules: true,
     },
         outDir: resolve(__dirname, '../src/static/oidc'),
-        rollupOptions: {
+        rolldownOptions: {
             input: {
                 main: resolve(__dirname, 'consent.html'),
                 nested: resolve(__dirname, 'login.html'),

@@ -12,6 +12,9 @@ on:
 permissions:
   contents: read
 
+env:
+  PNPM_HOME: ~/.pnpm-store
+
 jobs:
   withpluginsLinux:
     # run on pushes to any branch
@@ -31,35 +34,28 @@ jobs:
         uses: actions/checkout@v5
         with:
           ref: develop #FIXME change to master when doing release
-      -
-        uses: actions/setup-node@v4
+      - uses: actions/cache@v4
+        name: Setup gnpm cache
+        if: always()
         with:
-          node-version: ${{ matrix.node }}
-      - uses: pnpm/action-setup@v4
-        name: Install pnpm
+          path: |
+            ${{ env.STORE_PATH }}
+            ~/.local/share/gnpm
+            ~/.cache/ms-playwright
+            /usr/local/bin/gnpm
+            /usr/local/bin/gnpm-0.0.12
+          key: ${{ runner.os }}-gnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-gnpm-store-
+      - name: Setup gnpm
+        uses: SamTV12345/gnpm-setup@main
         with:
-          version: 10
-          run_install: false
-      - name: Only install direct dependencies
-        run: pnpm config set auto-install-peers false
+          version: 0.0.12
       - name: Install libreoffice
         uses: awalsh128/cache-apt-pkgs-action@v1.5.3
         with:
           packages: libreoffice libreoffice-pdfimport
           version: 1.0
-      - name: Get pnpm store directory
-        shell: bash
-        run: |
-          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
-      - uses: actions/cache@v4
-        name: Setup pnpm cache
-        with:
-          path: ${{ env.STORE_PATH }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-store-
-      - name: Only install direct dependencies
-        run: pnpm config set auto-install-peers false
       -
         name: Install libreoffice
         uses: awalsh128/cache-apt-pkgs-action@v1.5.3
@@ -68,17 +64,14 @@ jobs:
           version: 1.0
       -
         name: Install all dependencies and symlink for ep_etherpad-lite
-        run: bin/installDeps.sh
-      - name: Install admin ui
-        working-directory: admin
-        run: pnpm install
+        run: gnpm install --frozen-lockfile --runtimeVersion="${{ matrix.node }}"
       - name: Build admin ui
         working-directory: admin
-        run: pnpm build
+        run: gnpm build --runtimeVersion="${{ matrix.node }}"
       -
         name: Install Etherpad plugins
         run: >
-          pnpm run install-plugins
+          gnpm run install-plugins
           ep_align
           ep_author_hover
           ep_cursortrace
@@ -90,13 +83,13 @@ jobs:
           ep_set_title_on_pad
           ep_spellcheck
           ep_subscript_and_superscript
-          ep_table_of_contents
+          ep_table_of_contents --runtimeVersion="${{ matrix.node }}"
       -
         name: Run the backend tests
-        run: pnpm run test
+        run: gnpm run test --runtimeVersion="${{ matrix.node }}"
       -
         name: Install all dependencies and symlink for ep_etherpad-lite
-        run: ./bin/installDeps.sh
+        run: gnpm install --frozen-lockfile --runtimeVersion="${{ matrix.node }}"
       # Because actions/checkout@v5 is called with "ref: master" and without
       # "fetch-depth: 0", the local clone does not have the ${GITHUB_SHA}
       # commit. Fetch ${GITHUB_REF} to get the ${GITHUB_SHA} commit. Note that a
@@ -113,4 +106,4 @@ jobs:
         # commit that merges the PR's source branch to its destination branch.
         run: git checkout "${GITHUB_SHA}"
       - name: Run the backend tests
-        run: pnpm run test
+        run: gnpm run test --runtimeVersion="${{ matrix.node }}"

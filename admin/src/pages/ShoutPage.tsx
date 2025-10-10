@@ -20,7 +20,6 @@ export const ShoutPage = ()=>{
                 setShouts([...shouts, shout])
             })
           pluginSocket.on('results:stats', (statData) => {
-            console.log('Shoutdata', statData);
             setTotalUsers(statData.totalUsers);
           })
         }

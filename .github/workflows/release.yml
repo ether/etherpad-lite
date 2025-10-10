@@ -1,3 +1,5 @@
+permissions:
+  contents: read
 name: Release etherpad
 on:
   workflow_dispatch:
@@ -11,6 +13,9 @@ on:
           - patch
           - minor
           - major
+
+env:
+  PNPM_HOME: ~/.pnpm-store
 
 jobs:
   releases:
@@ -42,24 +47,25 @@ jobs:
           repository: ether/ether.github.com
           path: ether.github.com
           token: '${{ secrets.ETHER_RELEASE_TOKEN }}'
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/cache@v4
+        name: Setup gnpm cache
+        if: always()
         with:
-          node-version: '20'
-      - uses: pnpm/action-setup@v4
-        name: Install pnpm
+          path: |
+            ${{ env.STORE_PATH }}
+            ~/.local/share/gnpm
+            ~/.cache/ms-playwright
+            /usr/local/bin/gnpm
+            /usr/local/bin/gnpm-0.0.12
+          key: ${{ runner.os }}-gnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-gnpm-store-
+      - name: Setup gnpm
+        uses: SamTV12345/gnpm-setup@main
         with:
-          version: 10
-          run_install: false
-      - name: Get pnpm store directory
-        shell: bash
-        run: |
-          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
-      - name: Install dependencies etherpad
-        run: pnpm install --frozen-lockfile
-        working-directory: etherpad
+          version: 0.0.12
       - name: Install dependencies ether.github.com
-        run: pnpm install --frozen-lockfile
+        run: gnpm install --frozen-lockfile
         working-directory: ether.github.com
       - name: Set git user
         run: |
@@ -76,7 +82,8 @@ jobs:
         working-directory: etherpad
         run: |
           cd bin
-          pnpm run release ${{ inputs.release_type }}
+          gnpm install
+          gnpm run release ${{ inputs.release_type }}
       - name: Push after release
         working-directory: etherpad
         run: |

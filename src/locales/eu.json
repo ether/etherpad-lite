@@ -3,6 +3,7 @@
 		"authors": [
 			"Alexgabi",
 			"An13sa",
+			"Atzerritik",
 			"HairyFotr",
 			"Izendegi",
 			"Mikel Ibaiba",
@@ -45,7 +46,7 @@
 	"admin_settings.current_save.value": "Gorde Ezarpenak",
 	"admin_settings.page-title": "Ezarpenak - Etherpad",
 	"index.newPad": "Pad berria",
-	"index.createOpenPad": "edo sortu/ireki Pad bat honako izenarekin:",
+	"index.createOpenPad": "Ireki Pad bat honako izenarekin:",
 	"index.openPad": "ireki existitzen den eta hurrengo izena duen Pad-a:",
 	"index.recentPadsEmpty": "Ez da aurkitu duela gutxiko pad-ik",
 	"index.generateNewPad": "Sortu pad izen aleatorioa",

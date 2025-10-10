@@ -40,6 +40,7 @@
 	"pad.settings.fontType": "Fonta tips:",
 	"pad.settings.fontType.normal": "Normāls",
 	"pad.settings.language": "Valoda:",
+	"pad.settings.about": "Par",
 	"pad.importExport.import_export": "Importet/Eksportet",
 	"pad.importExport.import": "Augšupielādēt jebkuru teksta failu vai dokumentu",
 	"pad.importExport.importSuccessful": "Veiksmīgi!",

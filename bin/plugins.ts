@@ -24,7 +24,7 @@ const possibleActions = [
 
 const install = ()=> {
   const argsAsString: string = args.join(" ");
-  const regexRegistryPlugins = /(?<=i\s)(.*?)(?=--github|--path|$)/;
+  const regexRegistryPlugins = /(?<=(?:i|install)\s)(.*?)(?=--github|--path|$)/;
   const regexLocalPlugins = /(?<=--path\s)(.*?)(?=--github|$)/;
   const regexGithubPlugins = /(?<=--github\s)(.*?)(?=--path|$)/;
   const registryPlugins = argsAsString.match(regexRegistryPlugins)?.[0]?.split(" ")?.filter(s => s) || [];
@@ -107,6 +107,9 @@ switch (action) {
     list();
     break;
   case "rm":
+    remove(args.slice(1));
+    break;
+  case "remove":
     remove(args.slice(1));
     break;
   default:

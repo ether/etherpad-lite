@@ -85,3 +85,43 @@
 #delete-pad {
   background-color: #ff7b72;
 }
+
+#theme-switcher div {
+  position: relative;
+  width: 30px;
+  background-color: white;
+  height: 10px;
+  border-radius: 5px;
+  align-self: center;
+}
+
+#theme-switcher {
+  display: flex;
+  margin-top: 20px;
+  flex-direction: row;
+}
+
+#theme-switcher div span {
+  width: 15px;
+  display: block;
+  height: 15px;
+  border-radius: 20px;
+  position: absolute;
+  top: -2px;
+  background-color: white;
+  transition: background-color 0.25s;
+}
+
+html.super-light-editor #theme-switcher div {
+  background-color: #ccc;
+}
+
+html.super-light-editor #theme-switcher div span {
+  left: 0;
+  background-color: var(--primary-color);;
+}
+
+html.super-dark-editor #theme-switcher div span {
+  right: 0;
+  background-color: var(--primary-color);;
+}

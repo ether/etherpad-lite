@@ -12,8 +12,11 @@ on:
 permissions:
   contents: read
 
+
 jobs:
   withoutpluginsLinux:
+    env:
+      PNPM_HOME: ~/.pnpm-store
     # run on pushes to any branch
     # run on PRs from external forks
     if: |
@@ -24,33 +27,27 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node: [20, 22, 24]
+        node: [">=20.0.0 <21.0.0", ">=22.0.0 <23.0.0", ">=24.0.0 <25.0.0"]
     steps:
       -
         name: Checkout repository
         uses: actions/checkout@v5
-      -
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ matrix.node }}
-      - uses: pnpm/action-setup@v4
-        name: Install pnpm
-        with:
-            version: 10
-            run_install: false
-      - name: Get pnpm store directory
-        shell: bash
-        run: |
-            echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
       - uses: actions/cache@v4
-        name: Setup pnpm cache
+        name: Setup gnpm cache
+        if: always()
         with:
-          path: ${{ env.STORE_PATH }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          path: |
+             ${{ env.PNPM_HOME }}
+             ~/.local/share/gnpm
+             /usr/local/bin/gnpm
+             /usr/local/bin/gnpm-0.0.12
+          key: ${{ runner.os }}-gnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
-            ${{ runner.os }}-pnpm-store-
-      - name: Only install direct dependencies
-        run: pnpm config set auto-install-peers false
+                  ${{ runner.os }}-gnpm-store-
+      - name: Setup gnpm
+        uses: SamTV12345/gnpm-setup@main
+        with:
+          version: 0.0.12
       -
         name: Install libreoffice
         uses: awalsh128/cache-apt-pkgs-action@v1.5.3
@@ -59,21 +56,23 @@ jobs:
           version: 1.0
       -
         name: Install all dependencies and symlink for ep_etherpad-lite
-        run: bin/installDeps.sh
+        run: gnpm i --frozen-lockfile --runtimeVersion="${{ matrix.node }}"
       - name: Install admin ui
         working-directory: admin
-        run: pnpm install
+        run: gnpm install  --runtimeVersion="${{ matrix.node }}"
       - name: Build admin ui
         working-directory: admin
-        run: pnpm build
+        run: gnpm build  --runtimeVersion="${{ matrix.node }}"
       -
         name: Run the backend tests
-        run: pnpm test
+        run: gnpm test  --runtimeVersion="${{ matrix.node }}"
       - name: Run the new vitest tests
         working-directory: src
-        run: pnpm run test:vitest
+        run: gnpm run test:vitest  --runtimeVersion="${{ matrix.node }}"
 
   withpluginsLinux:
+    env:
+      PNPM_HOME: ~/.pnpm-store
     # run on pushes to any branch
     # run on PRs from external forks
     if: |
@@ -84,33 +83,27 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node: [20, 22, 24]
+        node: [">=20.0.0 <21.0.0", ">=22.0.0 <23.0.0", ">=24.0.0 <25.0.0"]
     steps:
       -
         name: Checkout repository
         uses: actions/checkout@v5
-      -
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ matrix.node }}
-      - uses: pnpm/action-setup@v4
-        name: Install pnpm
-        with:
-          version: 10
-          run_install: false
-      - name: Get pnpm store directory
-        shell: bash
-        run: |
-          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
       - uses: actions/cache@v4
         name: Setup pnpm cache
+        if: always()
         with:
-          path: ${{ env.STORE_PATH }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          path: |
+            ${{ env.PNPM_HOME }}
+            ~/.local/share/gnpm
+            /usr/local/bin/gnpm
+            /usr/local/bin/gnpm-0.0.12
+          key: ${{ runner.os }}-gnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
-            ${{ runner.os }}-pnpm-store-
-      - name: Only install direct dependencies
-        run: pnpm config set auto-install-peers false
+            ${{ runner.os }}-gnpm-store-
+      - name: Setup gnpm
+        uses: SamTV12345/gnpm-setup@main
+        with:
+          version: 0.0.12
       -
         name: Install libreoffice
         uses: awalsh128/cache-apt-pkgs-action@v1.5.3
@@ -119,17 +112,14 @@ jobs:
           version: 1.0
       -
         name: Install all dependencies and symlink for ep_etherpad-lite
-        run: bin/installDeps.sh
-      - name: Install admin ui
-        working-directory: admin
-        run: pnpm install
+        run: gnpm install --frozen-lockfile --runtimeVersion="${{ matrix.node }}"
       - name: Build admin ui
         working-directory: admin
-        run: pnpm build
+        run: gnpm build   --runtimeVersion="${{ matrix.node }}"
       -
         name: Install Etherpad plugins
         run: >
-          pnpm install --workspace-root
+          gnpm install --workspace-root
           ep_align
           ep_author_hover
           ep_cursortrace
@@ -141,57 +131,53 @@ jobs:
           ep_set_title_on_pad
           ep_spellcheck
           ep_subscript_and_superscript
-          ep_table_of_contents
+          ep_table_of_contents   --runtimeVersion="${{ matrix.node }}"
       -
         name: Run the backend tests
-        run: pnpm test
+        run: gnpm test   --runtimeVersion="${{ matrix.node }}"
       - name: Run the new vitest tests
         working-directory: src
-        run: pnpm run test:vitest
+        run: gnpm run test:vitest   --runtimeVersion="${{ matrix.node }}"
 
   withoutpluginsWindows:
+    env:
+      PNPM_HOME: ~\\.pnpm-store
     # run on pushes to any branch
     # run on PRs from external forks
     if: |
       (github.event_name != 'pull_request')
       || (github.event.pull_request.head.repo.id != github.event.pull_request.base.repo.id)
+    strategy:
+      fail-fast: false
+      matrix:
+        node: [">=20.0.0 <21.0.0", ">=22.0.0 <23.0.0", ">=24.0.0 <25.0.0"]
     name: Windows without plugins
     runs-on: windows-latest
     steps:
       -
         name: Checkout repository
         uses: actions/checkout@v5
-      -
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-      - uses: pnpm/action-setup@v4
-        name: Install pnpm
-        with:
-          version: 10
-          run_install: false
-      - name: Get pnpm store directory
-        shell: bash
-        run: |
-          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
       - uses: actions/cache@v4
         name: Setup pnpm cache
+        if: always()
         with:
-          path: ${{ env.STORE_PATH }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          path: |
+            ${{ env.PNPM_HOME }}
+            C:\gnpm\
+            C:\Users\runneradmin\AppData\Roaming\gnpm\
+          key: ${{ runner.os }}-gnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
-            ${{ runner.os }}-pnpm-store-
-      - name: Only install direct dependencies
-        run: pnpm config set auto-install-peers false
+            ${{ runner.os }}-gnpm-store-
+      - name: Setup gnpm
+        uses: SamTV12345/gnpm-setup@main
+        with:
+          version: 0.0.12
       -
         name: Install all dependencies and symlink for ep_etherpad-lite
-        run: bin/installOnWindows.bat
-      - name: Install admin ui
-        working-directory: admin
-        run: pnpm install
+        run: gnpm install --frozen-lockfile   --runtimeVersion="${{ matrix.node }}"
       - name: Build admin ui
         working-directory: admin
-        run: pnpm build
+        run: gnpm build   --runtimeVersion="${{ matrix.node }}"
       -
         name:  Fix up the settings.json
         run: |
@@ -200,17 +186,23 @@ jobs:
       -
         name: Run the backend tests
         working-directory: src
-        run: pnpm test
+        run: gnpm test  --runtimeVersion="${{ matrix.node }}"
       - name: Run the new vitest tests
         working-directory: src
-        run: pnpm run test:vitest
+        run: gnpm run test:vitest  --runtimeVersion="${{ matrix.node }}"
 
   withpluginsWindows:
+    env:
+      PNPM_HOME: ~\\.pnpm-store
     # run on pushes to any branch
     # run on PRs from external forks
     if: |
       (github.event_name != 'pull_request')
       || (github.event.pull_request.head.repo.id != github.event.pull_request.base.repo.id)
+    strategy:
+      fail-fast: false
+      matrix:
+        node: [">=20.0.0 <21.0.0", ">=22.0.0 <23.0.0", ">=24.0.0 <25.0.0"]
     name: Windows with Plugins
     runs-on: windows-latest
 
@@ -218,40 +210,32 @@ jobs:
       -
         name: Checkout repository
         uses: actions/checkout@v5
-      -
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-      - uses: pnpm/action-setup@v4
-        name: Install pnpm
-        with:
-          version: 10
-          run_install: false
-      - name: Get pnpm store directory
-        shell: bash
-        run: |
-          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
       - uses: actions/cache@v4
         name: Setup pnpm cache
+        if: always()
         with:
-          path: ${{ env.STORE_PATH }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          path: |
+            ${{ env.PNPM_HOME }}
+            C:\gnpm\
+            C:\Users\runneradmin\AppData\Roaming\gnpm\
+          key: ${{ runner.os }}-gnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
-            ${{ runner.os }}-pnpm-store-
-      - name: Only install direct dependencies
-        run: pnpm config set auto-install-peers false
-      - name: Install admin ui
-        working-directory: admin
-        run: pnpm install
+            ${{ runner.os }}-gnpm-store-
+      - name: Setup gnpm
+        uses: SamTV12345/gnpm-setup@main
+        with:
+          version: 0.0.12
+      - name: Install dependencies
+        run: gnpm install --runtimeVersion="${{ matrix.node }}"
       - name: Build admin ui
         working-directory: admin
-        run: pnpm build
+        run: gnpm build --runtimeVersion="${{ matrix.node }}"
       -
         name: Install Etherpad plugins
         # The --legacy-peer-deps flag is required to work around a bug in npm
         # v7: https://github.com/npm/cli/issues/2199
         run: >
-          pnpm install --workspace-root
+          gnpm install --workspace-root
           ep_align
           ep_author_hover
           ep_cursortrace
@@ -263,7 +247,7 @@ jobs:
           ep_set_title_on_pad
           ep_spellcheck
           ep_subscript_and_superscript
-          ep_table_of_contents
+          ep_table_of_contents   --runtimeVersion="${{ matrix.node }}"
       # Etherpad core dependencies must be installed after installing the
       # plugin's dependencies, otherwise npm will try to hoist common
       # dependencies by removing them from src/node_modules and installing them
@@ -275,7 +259,7 @@ jobs:
       # rules.
       -
         name: Install all dependencies and symlink for ep_etherpad-lite
-        run: bin/installOnWindows.bat
+        run: gnpm install --frozen-lockfile   --runtimeVersion="${{ matrix.node }}"
       -
         name:  Fix up the settings.json
         run: |
@@ -284,7 +268,7 @@ jobs:
       -
         name: Run the backend tests
         working-directory: src
-        run: pnpm test
+        run: gnpm test   --runtimeVersion="${{ matrix.node }}"
       - name: Run the new vitest tests
         working-directory: src
-        run: pnpm run test:vitest
+        run: gnpm run test:vitest   --runtimeVersion="${{ matrix.node }}"

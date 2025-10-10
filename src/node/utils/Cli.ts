@@ -25,7 +25,7 @@
 export const argv: Record<string, string> = {};
 
 const argvInternal = process.argv.slice(2);
-let arg, prevArg;
+let arg, prevArg = "";
 
 // Loop through args
 for (let i = 0; i < argvInternal.length; i++) {
@@ -33,22 +33,26 @@ for (let i = 0; i < argvInternal.length; i++) {
 
   // Override location of settings.json file
   if (prevArg && prevArg === '--settings' || prevArg === '-s') {
+    console.log("Using specified settings from command line");
     argv.settings = arg;
   }
 
   // Override location of credentials.json file
   if (prevArg && prevArg === '--credentials') {
-    exports.argv.credentials = arg;
+    console.log("Using specified credentials from command line");
+    argv.credentials = arg;
   }
 
   // Override location of settings.json file
   if (prevArg && prevArg === '--sessionkey') {
-    exports.argv.sessionkey = arg;
+    console.log("Using specified session key from command line");
+    argv.sessionkey = arg;
   }
 
   // Override location of APIKEY.txt file
   if (prevArg && prevArg === '--apikey') {
-    exports.argv.apikey = arg;
+    console.log("Using specified API key from command line");
+    argv.apikey = arg;
   }
 
   prevArg = arg;
