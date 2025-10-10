@@ -1,10 +1,12 @@
 name: "Handle release"
 
-# any branch is useful for testing before a PR is submitted
+
 on:
-  workflow_run:
-    workflows:
-      - "Docker"
+  push:
+    tags:
+      - 'v*.*.*'
+  # allow manual triggering of the workflow
+  workflow_dispatch:
 
 permissions:
   contents: read
