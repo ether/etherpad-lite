@@ -50,6 +50,6 @@
   },
   "packageManager": "pnpm@10.18.0",
   "engineStrict": true,
-  "version": "2.5.0",
+  "version": "2.5.1",
   "license": "Apache-2.0"
 }
