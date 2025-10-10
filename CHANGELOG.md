@@ -1,17 +1,11 @@
-# 2.5.2
-
-### Notable enhancements and fixes
-
-- fixed exposeVersion causing the pad panel to not load correctly
-- fixed admin manage pad url to also take base path into account
-
-
 # 2.5.1
 
 ### Notable enhancements and fixes
 
 - Added endpoint for prometheus scraping. You can now scrape the metrics endpoint with prometheus. It is available at /stats/prometheus if you have enableMetrics set to true in your settings.json
 
+- fixed exposeVersion causing the pad panel to not load correctly
+- fixed admin manage pad url to also take the base path into account
 
 # 2.5.0
 
