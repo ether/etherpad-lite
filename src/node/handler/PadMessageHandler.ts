@@ -94,14 +94,25 @@ exports.socketio = () => {
 const sessioninfos:MapArrayType<any> = {};
 exports.sessioninfos = sessioninfos;
 
-stats.gauge('totalUsers', () => socketio ? socketio.engine.clientsCount : 0);
-stats.gauge('activePads', () => {
+function getTotalActiveUsers() {
+  return socketio ? socketio.engine.clientsCount : 0;
+}
+
+exports.getTotalActiveUsers = getTotalActiveUsers;
+
+function getActivePadCountFromSessionInfos() {
   const padIds = new Set();
   for (const {padId} of Object.values(sessioninfos)) {
     if (!padId) continue;
     padIds.add(padId);
   }
   return padIds.size;
+}
+exports.getActivePadCountFromSessionInfos = getActivePadCountFromSessionInfos;
+
+stats.gauge('totalUsers', () => getTotalActiveUsers());
+stats.gauge('activePads', () => {
+  return getActivePadCountFromSessionInfos();
 });
 
 /**
