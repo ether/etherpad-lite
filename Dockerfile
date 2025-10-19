@@ -19,9 +19,8 @@ RUN gnpm run build:ui
 
 FROM alpine:3.22.2 AS build
 RUN apk add --no-cache wget tar
-RUN wget https://github.com/SamTV12345/gnpm/releases/download/v0.1.0/gnpm_0.1.0_linux_amd64.tar.gz
-RUN tar -xvzf gnpm_0.1.0_linux_amd64.tar.gz
-RUN mv gnpm /usr/local/bin/
+RUN wget https://github.com/SamTV12345/gnpm/releases/download/v0.1.0/gnpm_0.1.0_linux_amd64.tar.gz && tar -xvzf gnpm_0.1.0_linux_amd64.tar.gz && mv gnpm /usr/local/bin
+
 LABEL maintainer="Etherpad team, https://github.com/ether/etherpad-lite"
 
 # Set these arguments when building the image from behind a proxy
@@ -131,11 +130,9 @@ COPY --chown=etherpad:etherpad ./pnpm-workspace.yaml ./package.json ./
 FROM build AS build_git
 ONBUILD COPY --chown=etherpad:etherpad ./.git/HEA[D] ./.git/HEAD
 ONBUILD COPY --chown=etherpad:etherpad ./.git/ref[s] ./.git/refs
-RUN wget https://github.com/SamTV12345/gnpm/releases/download/v0.1.0/gnpm_0.1.0_linux_amd64.tar.gz && tar -xvzf gnpm_0.1.0_linux_amd64.tar.gz && mv gnpm /usr/local/bin
-
+COPY --from="adminbuild" /root/.local/share ~/.local/share
 
 FROM build AS build_copy
-RUN wget https://github.com/SamTV12345/gnpm/releases/download/v0.1.0/gnpm_0.1.0_linux_amd64.tar.gz && tar -xvzf gnpm_0.1.0_linux_amd64.tar.gz && mv gnpm /usr/local/bin
 COPY --from="adminbuild" /root/.local/share ~/.local/share
 
 
