@@ -15,6 +15,9 @@ env:
 permissions:
   contents: read
 
+env:
+  GNPM_VERSION: 0.1.0
+
 jobs:
   docker:
     runs-on: ubuntu-latest
@@ -52,14 +55,14 @@ jobs:
             ${{ env.PNPM_HOME }}
             ~/.local/share/gnpm
             /usr/local/bin/gnpm
-            /usr/local/bin/gnpm-0.0.12
+            /usr/local/bin/gnpm-$GNPM_VERSION
           key: ${{ runner.os }}-gnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
             ${{ runner.os }}-gnpm-store-
       - name: Setup gnpm
         uses: SamTV12345/gnpm-setup@main
         with:
-          version: 0.0.12
+          version: $GNPM_VERSION
       -
         name: Test
         working-directory: etherpad
