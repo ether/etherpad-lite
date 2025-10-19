@@ -57,14 +57,14 @@ jobs:
             ~/.local/share/gnpm
             ~/.cache/ms-playwright
             /usr/local/bin/gnpm
-            /usr/local/bin/gnpm-$GNPM_VERSION
+            /usr/local/bin/gnpm-${{ env.GNPM_VERSION }}
           key: ${{ runner.os }}-gnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
             ${{ runner.os }}-gnpm-store-
       - name: Setup gnpm
         uses: SamTV12345/gnpm-setup@main
         with:
-          version: $GNPM_VERSION
+          version: ${{ env.GNPM_VERSION }}
       - name: Install dependencies ether.github.com
         run: gnpm install --frozen-lockfile
         working-directory: ether.github.com
