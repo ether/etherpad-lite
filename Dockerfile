@@ -5,15 +5,22 @@
 # Author: muxator
 ARG BUILD_ENV=git
 
-FROM node:lts-alpine AS adminbuild
-RUN npm install -g pnpm@latest
-WORKDIR /opt/etherpad-lite
+FROM alpine:3.22.2 AS adminbuild
+RUN apk add --no-cache wget tar
+RUN wget https://github.com/SamTV12345/gnpm/releases/download/v0.1.0/gnpm_0.1.0_linux_amd64.tar.gz
+RUN tar -xvzf gnpm_0.1.0_linux_amd64.tar.gz
+RUN mv gnpm /usr/local/bin/
+ARG EP_DIR=/opt/etherpad-lite
 COPY . .
-RUN pnpm install
-RUN pnpm run build:ui
+RUN gnpm install
+RUN gnpm run build:ui
 
 
-FROM node:lts-alpine AS build
+FROM alpine:3.22.2 AS build
+RUN apk add --no-cache wget tar
+RUN wget https://github.com/SamTV12345/gnpm/releases/download/v0.1.0/gnpm_0.1.0_linux_amd64.tar.gz
+RUN tar -xvzf gnpm_0.1.0_linux_amd64.tar.gz
+RUN mv gnpm /usr/local/bin/
 LABEL maintainer="Etherpad team, https://github.com/ether/etherpad-lite"
 
 # Set these arguments when building the image from behind a proxy
@@ -100,8 +107,6 @@ RUN mkdir -p "${EP_DIR}" && chown etherpad:etherpad "${EP_DIR}"
 # https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=863199
 RUN  \
     mkdir -p /usr/share/man/man1 && \
-    npm install pnpm@latest -g  && \
-    apk update && apk upgrade && \
     apk add --no-cache \
         ca-certificates \
         curl \
@@ -125,9 +130,12 @@ COPY --chown=etherpad:etherpad ./pnpm-workspace.yaml ./package.json ./
 FROM build AS build_git
 ONBUILD COPY --chown=etherpad:etherpad ./.git/HEA[D] ./.git/HEAD
 ONBUILD COPY --chown=etherpad:etherpad ./.git/ref[s] ./.git/refs
+RUN wget https://github.com/SamTV12345/gnpm/releases/download/v0.1.0/gnpm_0.1.0_linux_amd64.tar.gz && tar -xvzf gnpm_0.1.0_linux_amd64.tar.gz && mv gnpm /usr/local/bin
+
 
 FROM build AS build_copy
-
+RUN wget https://github.com/SamTV12345/gnpm/releases/download/v0.1.0/gnpm_0.1.0_linux_amd64.tar.gz && tar -xvzf gnpm_0.1.0_linux_amd64.tar.gz && mv gnpm /usr/local/bin
+COPY --from="adminbuild" /root/.local/share ~/.local/share
 
 
 
@@ -163,18 +171,19 @@ ENV NODE_ENV=production
 ENV ETHERPAD_PRODUCTION=true
 
 COPY --chown=etherpad:etherpad ./src ./src
+COPY --chown=etherpad:etherpad --from=adminbuild /opt/etherpad-lite/src/ templates/admin./src/templates/admin
 COPY --chown=etherpad:etherpad --from=adminbuild /opt/etherpad-lite/src/templates/admin ./src/templates/admin
 COPY --chown=etherpad:etherpad --from=adminbuild /opt/etherpad-lite/src/static/oidc ./src/static/oidc
 
 COPY --chown=etherpad:etherpad ./local_plugin[s] ./local_plugins/
 
-RUN bash -c ./bin/installLocalPlugins.sh
+RUN eval "$(gnpm --gnpmEnv)" && bash -c ./bin/installLocalPlugins.sh
 
-RUN bin/installDeps.sh && \
+RUN gnpm install && \
   if [ ! -z "${ETHERPAD_PLUGINS}" ] || [ ! -z "${ETHERPAD_GITHUB_PLUGINS}" ]; then \
-      pnpm run plugins i ${ETHERPAD_PLUGINS} ${ETHERPAD_GITHUB_PLUGINS:+--github ${ETHERPAD_GITHUB_PLUGINS}}; \
+      gnpm run plugins i ${ETHERPAD_PLUGINS} ${ETHERPAD_GITHUB_PLUGINS:+--github ${ETHERPAD_GITHUB_PLUGINS}}; \
   fi && \
-    pnpm store prune
+    gnpm store prune
 
 # Copy the configuration file.
 COPY --chown=etherpad:etherpad ${SETTINGS} "${EP_DIR}"/settings.json
@@ -189,4 +198,4 @@ HEALTHCHECK --interval=5s --timeout=3s \
   CMD curl --silent http://localhost:9001/health | grep -E "pass|ok|up" > /dev/null || exit 1
 
 EXPOSE 9001
-CMD ["pnpm", "run", "prod"]
+CMD ["gnpm", "run", "prod"]
