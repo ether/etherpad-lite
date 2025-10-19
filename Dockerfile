@@ -11,6 +11,7 @@ RUN wget https://github.com/SamTV12345/gnpm/releases/download/v0.1.0/gnpm_0.1.0_
 RUN tar -xvzf gnpm_0.1.0_linux_amd64.tar.gz
 RUN mv gnpm /usr/local/bin/
 ARG EP_DIR=/opt/etherpad-lite
+WORKDIR ${EP_DIR}
 COPY . .
 RUN gnpm install
 RUN gnpm run build:ui
