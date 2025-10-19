@@ -98,7 +98,7 @@
 	"pad.settings.deletePad": "Pad löschen",
 	"pad.delete.confirm": "Möchtest du dieses Pad wirklich löschen?",
 	"pad.settings.about": "Über",
-	"pad.settings.poweredBy": "Betrieben von",
+	"pad.settings.poweredBy": "Betrieben mit",
 	"pad.importExport.import_export": "Import/Export",
 	"pad.importExport.import": "Textdatei oder Dokument hochladen",
 	"pad.importExport.importSuccessful": "Erfolgreich!",
