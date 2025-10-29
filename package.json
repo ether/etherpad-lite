@@ -48,7 +48,6 @@
     "type": "git",
     "url": "https://github.com/ether/etherpad-lite.git"
   },
-  "packageManager": "pnpm@10.18.0",
   "engineStrict": true,
   "version": "2.5.1",
   "license": "Apache-2.0"
