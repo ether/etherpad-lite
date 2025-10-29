@@ -41,14 +41,14 @@ jobs:
             ${{ env.STORE_PATH }}
             ~/.local/share/gnpm
             /usr/local/bin/gnpm
-            /usr/local/bin/gnpm-0.0.12
+            /usr/local/bin/gnpm-0.1.0
           key: ${{ runner.os }}-gnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
             ${{ runner.os }}-gnpm-store-
       - name: Setup gnpm
         uses: SamTV12345/gnpm-setup@main
         with:
-          version: 0.0.12
+          version: 0.1.0
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Install dependencies

@@ -42,7 +42,7 @@
     "ui": "link:ui"
   },
   "engines": {
-    "node": ">=20.0.0"
+    "node": ">=20.0.0 <25.0.0"
   },
   "repository": {
     "type": "git",
