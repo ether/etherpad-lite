@@ -34,12 +34,12 @@
     "makeDocs": "pnpm --filter bin run makeDocs"
   },
   "dependencies": {
-    "ep_etherpad-lite": "workspace:./src"
+    "ep_etherpad-lite": "link:src"
   },
   "devDependencies": {
-    "admin": "workspace:./admin",
-    "docs": "workspace:./doc",
-    "ui": "workspace:./ui"
+    "admin": "link:admin",
+    "docs": "link:doc",
+    "ui": "link:ui"
   },
   "engines": {
     "node": ">=20.0.0"
@@ -48,8 +48,7 @@
     "type": "git",
     "url": "https://github.com/ether/etherpad-lite.git"
   },
-  "packageManager": "pnpm@10.18.0",
   "engineStrict": true,
-  "version": "2.5.1",
+  "version": "2.5.2",
   "license": "Apache-2.0"
 }

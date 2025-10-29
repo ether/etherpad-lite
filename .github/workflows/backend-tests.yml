@@ -50,7 +50,7 @@ jobs:
           version: 0.0.12
       -
         name: Install libreoffice
-        uses: awalsh128/cache-apt-pkgs-action@v1.5.3
+        uses: awalsh128/cache-apt-pkgs-action@v1.6.0
         with:
           packages: libreoffice libreoffice-pdfimport
           version: 1.0
@@ -106,7 +106,7 @@ jobs:
           version: 0.0.12
       -
         name: Install libreoffice
-        uses: awalsh128/cache-apt-pkgs-action@v1.5.3
+        uses: awalsh128/cache-apt-pkgs-action@v1.6.0
         with:
           packages: libreoffice libreoffice-pdfimport
           version: 1.0
