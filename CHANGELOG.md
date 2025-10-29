@@ -1,3 +1,11 @@
+# 2.5.2
+
+### Notable enhancements and fixes
+
+- Fixes the no skin theme having an overlapping
+- Adds a new setting to disable recent pads to be shown. By setting `showRecentPads` to false in the `settings.json` file you can disable the recent pads feature on the home screen.
+- Sets the oidc-provider version to 9.5.1 as 9.5.2 crashes Etherpad on startup.
+
 # 2.5.1
 
 ### Notable enhancements and fixes
