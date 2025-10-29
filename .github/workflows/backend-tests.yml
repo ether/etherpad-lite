@@ -12,6 +12,8 @@ on:
 permissions:
   contents: read
 
+env:
+  GNPM_VERSION: 0.1.0
 
 jobs:
   withoutpluginsLinux:
@@ -40,14 +42,14 @@ jobs:
              ${{ env.PNPM_HOME }}
              ~/.local/share/gnpm
              /usr/local/bin/gnpm
-             /usr/local/bin/gnpm-0.0.12
+             /usr/local/bin/gnpm-${{ env.GNPM_VERSION }}
           key: ${{ runner.os }}-gnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
                   ${{ runner.os }}-gnpm-store-
       - name: Setup gnpm
         uses: SamTV12345/gnpm-setup@main
         with:
-          version: 0.0.12
+          version: ${{ env.GNPM_VERSION }}
       -
         name: Install libreoffice
         uses: awalsh128/cache-apt-pkgs-action@v1.6.0
@@ -96,14 +98,14 @@ jobs:
             ${{ env.PNPM_HOME }}
             ~/.local/share/gnpm
             /usr/local/bin/gnpm
-            /usr/local/bin/gnpm-0.0.12
+            /usr/local/bin/gnpm-${{ env.GNPM_VERSION }}
           key: ${{ runner.os }}-gnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
             ${{ runner.os }}-gnpm-store-
       - name: Setup gnpm
         uses: SamTV12345/gnpm-setup@main
         with:
-          version: 0.0.12
+          version: ${{ env.GNPM_VERSION }}
       -
         name: Install libreoffice
         uses: awalsh128/cache-apt-pkgs-action@v1.6.0
@@ -171,7 +173,7 @@ jobs:
       - name: Setup gnpm
         uses: SamTV12345/gnpm-setup@main
         with:
-          version: 0.0.12
+          version: ${{ env.GNPM_VERSION }}
       -
         name: Install all dependencies and symlink for ep_etherpad-lite
         run: gnpm install --frozen-lockfile   --runtimeVersion="${{ matrix.node }}"
@@ -224,7 +226,7 @@ jobs:
       - name: Setup gnpm
         uses: SamTV12345/gnpm-setup@main
         with:
-          version: 0.0.12
+          version: ${{ env.GNPM_VERSION }}
       - name: Install dependencies
         run: gnpm install --runtimeVersion="${{ matrix.node }}"
       - name: Build admin ui

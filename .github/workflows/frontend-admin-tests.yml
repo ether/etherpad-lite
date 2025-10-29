@@ -9,6 +9,10 @@ on:
 permissions:
   contents: read # to fetch code (actions/checkout)
 
+
+env:
+  GNPM_VERSION: 0.1.0
+
 jobs:
   withplugins:
     env:
@@ -39,14 +43,14 @@ jobs:
             ${{ env.PNPM_HOME }}
             ~/.local/share/gnpm
             /usr/local/bin/gnpm
-            /usr/local/bin/gnpm-0.0.12
+            /usr/local/bin/gnpm-${{ env.GNPM_VERSION }}
           key: ${{ runner.os }}-gnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
             ${{ runner.os }}-gnpm-store-
       - name: Setup gnpm
         uses: SamTV12345/gnpm-setup@main
         with:
-          version: 0.0.12
+          version: ${{ env.GNPM_VERSION }}
       - name: Cache playwright binaries
         uses: actions/cache@v4
         id: playwright-cache

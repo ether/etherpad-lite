@@ -4,9 +4,10 @@
 #
 # Author: muxator
 ARG BUILD_ENV=git
+ARG PNPM_VERSION=10.18.3
 
 FROM node:lts-alpine AS adminbuild
-RUN npm install -g pnpm@latest
+RUN npm install -g pnpm@$PNPM_VERSION
 WORKDIR /opt/etherpad-lite
 COPY . .
 RUN pnpm install
@@ -100,7 +101,7 @@ RUN mkdir -p "${EP_DIR}" && chown etherpad:etherpad "${EP_DIR}"
 # https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=863199
 RUN  \
     mkdir -p /usr/share/man/man1 && \
-    npm install pnpm@latest -g  && \
+    npm install pnpm@$PNPM_VERSION -g  && \
     apk update && apk upgrade && \
     apk add --no-cache \
         ca-certificates \
