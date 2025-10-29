@@ -305,6 +305,9 @@ const settings: SettingsType = {
    */
   title: 'Etherpad',
 
+  /**
+   * Whether to show recent pads on the homepage
+   */
   showRecentPads: true,
 
   /**
