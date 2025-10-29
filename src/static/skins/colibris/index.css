@@ -1,3 +1,5 @@
+@import url("./src/components/buttons.css");
+
 :root {
   --etherpad-color: #64d29b;
   --etherpad-color-dark: #4a5d5c;
@@ -232,6 +234,11 @@ a, a:visited, a:hover, a:active {
   border-bottom-width: 1px;
   border-bottom-style: solid;
   border-bottom-color: #e5e7eb;
+}
+
+#settings-dialog::backdrop {
+    background: rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(2px);
 }
 
 .card-content {
