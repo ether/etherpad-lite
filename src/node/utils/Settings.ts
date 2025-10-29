@@ -161,6 +161,7 @@ export type SettingsType = {
   settingsFilename: string,
   credentialsFilename: string,
   title: string,
+  showRecentPads: boolean,
   favicon: string | null,
   ttl: {
     AccessToken: number,
@@ -303,6 +304,12 @@ const settings: SettingsType = {
    * The app title, visible e.g. in the browser window
    */
   title: 'Etherpad',
+
+  /**
+   * Whether to show recent pads on the homepage
+   */
+  showRecentPads: true,
+
   /**
    * Pathname of the favicon you want to use. If null, the skin's favicon is
    * used if one is provided by the skin, otherwise the default Etherpad favicon

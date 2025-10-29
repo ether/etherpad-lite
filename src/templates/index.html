@@ -33,7 +33,7 @@
               background: -moz-linear-gradient(#fff,#ccc);
               background: -ms-linear-gradient(#fff,#ccc);
               background: -o-linear-gradient(#fff,#ccc);
-              box-shadow: 0px 1px 8px rgba(0,0,0,0.3);
+              box-shadow: 0 1px 8px rgba(0,0,0,0.3);
             }
             #inner {
               position:relative;
@@ -43,7 +43,6 @@
             #button {
               margin: 0 auto;
               text-align: center;
-              font: 36px verdana,arial,sans-serif;
               width:300px;
               border:none;
               color: white;
@@ -76,7 +75,6 @@
               display:block;
             }
             #padname{
-              height:38px;
               max-width:280px;
             }
             form {
@@ -106,8 +104,6 @@
             button[type="submit"] {
               position: absolute;
               left:253px;
-              width: 45px;
-              height: 38px;
             }
             nav, .mission-statement, .pad-datalist {
               display: none;
@@ -168,11 +164,13 @@
         <% e.end_block(); %>
         </div>
         <div style="display: none" data-l10n-id="index.placeholderPadEnter"></div>
+          <% if (settings.showRecentPads) { %>
         <div class="pad-datalist">
           <h2 data-l10n-id="index.recentPads"></h2>
           <ul id="recent-pads">
           </ul>
         </div>
+          <% } %>
         </div>
         <script src="<%=entrypoint%>"></script>
 
