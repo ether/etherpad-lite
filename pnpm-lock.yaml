@@ -9,17 +9,17 @@ importers:
   .:
     dependencies:
       ep_etherpad-lite:
-        specifier: workspace:./src
+        specifier: link:src
         version: link:src
     devDependencies:
       admin:
-        specifier: workspace:./admin
+        specifier: link:admin
         version: link:admin
       docs:
-        specifier: workspace:./doc
+        specifier: link:doc
         version: link:doc
       ui:
-        specifier: workspace:./ui
+        specifier: link:ui
         version: link:ui
 
   admin:
@@ -222,7 +222,7 @@ importers:
         specifier: ^3.0.1
         version: 3.0.1
       oidc-provider:
-        specifier: ^9.5.1
+        specifier: 9.5.1
         version: 9.5.1
       openapi-backend:
         specifier: ^5.15.0
@@ -8681,7 +8681,7 @@ snapshots:
     dependencies:
       '@koa/cors': 5.0.0
       '@koa/router': 14.0.0
-      debug: 4.4.1
+      debug: 4.4.3(supports-color@8.1.1)
       eta: 3.5.0
       jose: 6.1.0
       jsesc: 3.1.0
