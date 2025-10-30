@@ -55,6 +55,8 @@
 	"index.newPad": "Neues Pad",
 	"index.createOpenPad": "Pad öffnen",
   "index.settings": "Einstellungen",
+  "index.receiveSessionTitle": "Sitzung empfangen",
+  "index.transferSessionTitle": "Sitzung übertragen",
   "index.transferSession": "1. Sitzung übertragen",
   "index.copyLink": "2. Link kopieren",
   "index.copyLinkButton": "Übertragungslink kopieren",

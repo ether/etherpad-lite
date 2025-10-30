@@ -73,7 +73,22 @@ const handleSettingsButtonClick = () => {
 };
 
 
+const handleMenuBarClicked = () => {
+  const menuBar = document.getElementById('button-bar')!;
+  menuBar.querySelectorAll('button').forEach((button, index)=>{
+    button.addEventListener('click', ()=>{
+      menuBar.querySelectorAll('button').forEach((btn)=>btn.classList.remove('active-btn'));
+      button.classList.add('active-btn');
+
+      const sections: NodeListOf<HTMLDivElement> = document.querySelectorAll('#settings-dialog > div');
+      sections.forEach((section, index)=>index >= 1 && (section.style.display = 'none'));
+      (sections[index +1] as HTMLElement).style.display = 'block';
+    });
+  })
+}
+
 window.addEventListener('load', () => {
   handleSettingsButtonClick();
+  handleMenuBarClicked();
   handleTransferOfSession();
 });
