@@ -125,12 +125,15 @@
               padding: 20px;
             }
 
-            @media only screen and (min-device-width: 320px) and (max-device-width: 800px) {
+            @media (min-device-width: 320px) and (min-device-width: 800px) {
               body {
                 background: #bbb;
                 background: -webkit-linear-gradient(#aaa,#eee 60%) center fixed;
                 background: -moz-linear-gradient(#aaa,#eee 60%) center fixed;
                 background: -ms-linear-gradient(#aaa,#eee 60%) center fixed;
+              }
+              #settings-dialog {
+                max-width: 50%;
               }
               #wrapper {
                 margin-top: 0;
@@ -167,16 +170,23 @@
           <form>
             <h2 data-l10n-id="index.settings"></h2>
 
-            <!-- Initial linkk button -->
+            <!-- Initial link button -->
             <h3 data-l10n-id="index.transferSession"></h3>
             <div data-l10n-id="index.transferSessionDescription"></div>
-            <button class="btn-secondary" style="margin-top: 20px" data-l10n-id="index.transferSessionNow"></button>
+            <button type="button" class="btn-secondary" style="margin-top: 20px" data-l10n-id="index.transferSessionNow"></button>
 
-            <div style="display: none">
+            <!-- Copy link button -->
+            <div style="display: none" id="copy-link-section">
               <h3 data-l10n-id="index.copyLink"></h3>
               <div data-l10n-id="index.copyLinkDescription"></div>
-              <button class="btn-secondary" style="margin-top: 20px" data-l10n-id="index.copyLinkButton"></button>
+              <button type="button" class="btn-secondary" style="margin-top: 20px" data-l10n-id="index.copyLinkButton"></button>
             </div>
+
+            <div id="transfer-to-system-section" style="display: none; margin-top: 30px;">
+              <h3 data-l10n-id="index.transferToSystem"></h3>
+              <div data-l10n-id="index.transferToSystemDescription"></div>
+            </div>
+
           </form>
         </dialog>
 

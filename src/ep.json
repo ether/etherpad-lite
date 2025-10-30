@@ -59,6 +59,12 @@
       }
     },
     {
+      "name": "transferToken",
+      "hooks": {
+        "expressCreateServer": "ep_etherpad-lite/node/hooks/express/tokenTransfer"
+      }
+    },
+    {
       "name": "pwa",
       "hooks": {
         "expressCreateServer": "ep_etherpad-lite/node/hooks/express/pwa"

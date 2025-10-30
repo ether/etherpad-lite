@@ -1,17 +1,56 @@
 const checkmark = '<svg width="28" height="28" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor"><path vector-effect="non-scaling-stroke" stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg>';
 
+function getCookie(name: string) {
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) { // @ts-ignore
+    return parts.pop().split(';').shift();
+  }
+}
+
+
 function handleTransferOfSession() {
   const transferNowButton = document.querySelector('[data-l10n-id="index.transferSessionNow"]')! as HTMLButtonElement;
 
-  transferNowButton.addEventListener('click', () => {
+  transferNowButton.addEventListener('click', async () => {
     transferNowButton.style.display = 'inline-flex';
     transferNowButton.style.alignItems = 'center';
     transferNowButton.style.justifyContent = 'center';
     transferNowButton.innerHTML = `${checkmark}`;
     transferNowButton.disabled = true;
 
-    fetch("pluginfw/")
+    const responseWithId = await fetch("./tokenTransfer", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        prefsHttp: getCookie('prefsHttp'),
+        token: getCookie('token'),
+      })
+    })
 
+    const copyLinkSection = document.getElementById('copy-link-section')
+    if (!copyLinkSection) return;
+    copyLinkSection.style.display = 'block';
+
+    const copyButton = document.querySelector('#copy-link-section .btn-secondary') as HTMLButtonElement
+    const responseData = await responseWithId.json();
+    const transferLink = `${window.location.origin}/tokenTransfer/${responseData.id}`;
+    copyButton.addEventListener('click', async ()=>{
+      await navigator.clipboard.writeText(transferLink);
+      copyButton.style.display = 'inline-flex';
+      copyButton.style.alignItems = 'center';
+      copyButton.style.justifyContent = 'center';
+      copyButton.innerHTML = `${checkmark}`;
+      copyButton.disabled = true;
+
+
+      // Show the new section
+      const linkDisplay = document.getElementById('transfer-to-system-section')
+      if (!linkDisplay) return;
+      linkDisplay.style.display = 'block';
+    })
   });
 }
 
