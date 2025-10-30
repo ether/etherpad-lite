@@ -36,9 +36,8 @@ function handleTransferOfSession() {
 
     const copyButton = document.querySelector('#copy-link-section .btn-secondary') as HTMLButtonElement
     const responseData = await responseWithId.json();
-    const transferLink = `${window.location.origin}/tokenTransfer/${responseData.id}`;
     copyButton.addEventListener('click', async ()=>{
-      await navigator.clipboard.writeText(transferLink);
+      await navigator.clipboard.writeText(responseData.id);
       copyButton.style.display = 'inline-flex';
       copyButton.style.alignItems = 'center';
       copyButton.style.justifyContent = 'center';

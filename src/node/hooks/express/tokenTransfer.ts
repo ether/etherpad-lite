@@ -5,7 +5,8 @@ import crypto from 'crypto'
 
 type TokenTransferRequest = {
   token: string;
-  prefsHttp: string
+  prefsHttp: string,
+  createdAt?: number;
 }
 
 const tokenTransferKey = "tokenTransfer:";
