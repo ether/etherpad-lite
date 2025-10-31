@@ -1,6 +1,6 @@
 import {readFileSync} from "node:fs";
 
-const changelog = readFileSync('../changelog.md')
+const changelog = readFileSync('../CHANGELOG.md')
 const changelogText = changelog.toString()
 const changelogLines = changelogText.split('\n')
 
