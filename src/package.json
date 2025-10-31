@@ -45,7 +45,7 @@
     "http-errors": "^2.0.0",
     "jose": "^6.1.0",
     "js-cookie": "^3.0.5",
-    "jsdom": "^27.0.1",
+    "jsdom": "^27.1.0",
     "jsonminify": "0.4.2",
     "jsonwebtoken": "^9.0.2",
     "jwt-decode": "^4.0.0",
