@@ -1,3 +1,8 @@
+# 2.5.3
+
+### Notable enhancements and fixes
+- Fixed an issue with the release script that caused the release to not be created correctly.
+
 # 2.5.2
 
 ### Notable enhancements and fixes
