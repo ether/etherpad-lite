@@ -183,8 +183,8 @@ importers:
         specifier: ^2.0.0
         version: 2.0.0
       jose:
-        specifier: ^6.1.0
-        version: 6.1.0
+        specifier: ^6.1.1
+        version: 6.1.1
       js-cookie:
         specifier: ^3.0.5
         version: 3.0.5
@@ -3569,8 +3569,8 @@ packages:
     engines: {node: '>=10'}
     hasBin: true
 
-  jose@6.1.0:
-    resolution: {integrity: sha512-TTQJyoEoKcC1lscpVDCSsVgYzUDg/0Bt3WE//WiTPK6uOCQC2KZS4MpugbMWt/zyjkopgZoXhZuCi00gLudfUA==}
+  jose@6.1.1:
+    resolution: {integrity: sha512-GWSqjfOPf4cWOkBzw5THBjtGPhXKqYnfRBzh4Ni+ArTrQQ9unvmsA3oFLqaYKoKe5sjWmGu5wVKg9Ft1i+LQfg==}
 
   js-cookie@3.0.5:
     resolution: {integrity: sha512-cEiJEAEoIbWfCZYKWhVwFuvPX1gETRYPw6LlaTKoxD3s2AkXzkCjnp6h0V77ozyqj0jakteJ4YqDJT830+lVGw==}
@@ -8470,7 +8470,7 @@ snapshots:
       filelist: 1.0.4
       minimatch: 3.1.2
 
-  jose@6.1.0: {}
+  jose@6.1.1: {}
 
   js-cookie@3.0.5: {}
 
@@ -8946,7 +8946,7 @@ snapshots:
       '@koa/router': 14.0.0
       debug: 4.4.3(supports-color@8.1.1)
       eta: 3.5.0
-      jose: 6.1.0
+      jose: 6.1.1
       jsesc: 3.1.0
       koa: 3.0.1
       nanoid: 5.1.5
