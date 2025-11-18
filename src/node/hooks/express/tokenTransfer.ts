@@ -37,6 +37,9 @@ export const expressCreateServer =  (hookName:string, {app}:ArgsExpressType) => 
     }
 
     const token = await db.get(`${tokenTransferKey}:${id}`)
+
+    res.cookie('token', tokenData.token, {path: '/', maxAge: 1000*60*60*24*365});
+    res.cookie('prefsHttp', tokenData.prefsHttp, {path: '/', maxAge: 1000*60*60*24*365});
     res.send(token);
   })
 }

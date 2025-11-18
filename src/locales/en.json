@@ -37,6 +37,7 @@
   "index.settings": "Settings",
   "index.transferSessionTitle": "Transfer session",
   "index.receiveSessionTitle": "Receive session",
+  "index.receiveSessionDescription": "Here you can receive an Etherpad session from another browser or device. Please note, however, that this will delete your current session, if any.",
   "index.transferSession": "1. Transfer session",
   "index.transferSessionNow": "Transfer session now",
   "index.copyLink": "2. Copy link",

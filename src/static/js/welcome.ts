@@ -43,12 +43,6 @@ function handleTransferOfSession() {
       copyButton.style.justifyContent = 'center';
       copyButton.innerHTML = `${checkmark}`;
       copyButton.disabled = true;
-
-
-      // Show the new section
-      const linkDisplay = document.getElementById('transfer-to-system-section')
-      if (!linkDisplay) return;
-      linkDisplay.style.display = 'block';
     })
   });
 }
@@ -63,6 +57,8 @@ const handleSettingsButtonClick = () => {
     if (e.target === settingsDialog) {
       settingsDialog.close();
       settingsDialog.innerHTML = initialSettingsHtml;
+      handleMenuBarClicked();
+      handleTransferOfSession();
     }
   });
 
@@ -85,6 +81,32 @@ const handleMenuBarClicked = () => {
       (sections[index +1] as HTMLElement).style.display = 'block';
     });
   })
+
+  const transferSessionButton = document.getElementById('transferSessionButton')
+  const codeInputField = document.getElementById('codeInput') as HTMLInputElement
+  if (transferSessionButton) {
+    transferSessionButton.addEventListener('click', ()=>{
+      const code = codeInputField.value
+      fetch("./tokenTransfer/"+code, {
+        method: 'GET'
+      })
+        .then(res => res.json())
+        .then(()=>{
+          window.location.reload()
+        })
+    });
+  }
+
+  if (codeInputField) {
+    codeInputField.addEventListener('input', (e)=>{
+      if (e.target.value.length === 36) {
+          transferSessionButton?.removeAttribute('disabled');
+      } else {
+          transferSessionButton?.setAttribute('disabled', 'true');
+      }
+    })
+  }
+
 }
 
 window.addEventListener('load', () => {
