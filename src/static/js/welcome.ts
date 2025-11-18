@@ -99,7 +99,7 @@ const handleMenuBarClicked = () => {
 
   if (codeInputField) {
     codeInputField.addEventListener('input', (e)=>{
-      if (e.target.value.length === 36) {
+      if ((e.target as HTMLInputElement).value?.length === 36) {
           transferSessionButton?.removeAttribute('disabled');
       } else {
           transferSessionButton?.setAttribute('disabled', 'true');
