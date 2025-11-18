@@ -21,7 +21,7 @@ export const SettingsPage = ()=>{
                     settingsSocket!.emit('saveSettings', settings!);
                     useStore.getState().setToastState({
                         open: true,
-                        title: "Succesfully saved settings",
+                        title: "Successfully saved settings",
                         success: true
                     })
                 } else {
