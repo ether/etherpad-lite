@@ -11,24 +11,25 @@ window.addEventListener('pageshow', (event) => {
 });
 
 window.customStart = () => {
-  document.getElementById('recent-pads').replaceChildren()
+  const recentPadList = document.getElementById('recent-pads');
+  if (recentPadList) {
+    recentPadList.replaceChildren();
+  }
   // define your javascript here
   // jquery is available - except index.js
   // you can load extra scripts with $.getScript http://api.jquery.com/jQuery.getScript/
   const divHoldingPlaceHolderLabel = document
-    .querySelector('[data-l10n-id="index.placeholderPadEnter"]');
+      .querySelector('[data-l10n-id="index.placeholderPadEnter"]');
 
   const observer = new MutationObserver(() => {
     document.querySelector('#go2Name input')
-      .setAttribute('placeholder', divHoldingPlaceHolderLabel.textContent);
+        .setAttribute('placeholder', divHoldingPlaceHolderLabel.textContent);
   });
 
   observer
-    .observe(divHoldingPlaceHolderLabel, {childList: true, subtree: true, characterData: true});
+      .observe(divHoldingPlaceHolderLabel, {childList: true, subtree: true, characterData: true});
 
 
-  const recentPadList = document.getElementById('recent-pads');
-  const parentStyle = recentPadList.parentElement.style;
   const recentPadListHeading = document.querySelector('[data-l10n-id="index.recentPads"]');
   const recentPadsFromLocalStorage = localStorage.getItem('recentPads');
   let recentPadListData = [];
@@ -38,18 +39,18 @@ window.customStart = () => {
 
   // Remove duplicates based on pad name and sort by timestamp
   recentPadListData = recentPadListData.filter(
-    (pad, index, self) =>
-      index === self.findIndex((p) => p.name === pad.name)
+      (pad, index, self) => index === self.findIndex((p) => p.name === pad.name)
   ).sort((a, b) => new Date(a.timestamp) > new Date(b.timestamp) ? -1 : 1);
 
-  if (recentPadListData.length === 0) {
+  if (recentPadList && recentPadListData.length === 0) {
+    const parentStyle = recentPadList.parentElement.style;
     recentPadListHeading.setAttribute('data-l10n-id', 'index.recentPadsEmpty');
     parentStyle.display = 'flex';
     parentStyle.justifyContent = 'center';
     parentStyle.alignItems = 'center';
     parentStyle.maxHeight = '100%';
     recentPadList.remove();
-  } else {
+  } else if (recentPadList) {
     /**
      * @typedef {Object} Pad
      * @property {string} name

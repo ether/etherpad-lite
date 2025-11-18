@@ -1,3 +1,5 @@
+@import url("./src/components/buttons.css");
+
 :root {
   --etherpad-color: #64d29b;
   --etherpad-color-dark: #4a5d5c;
@@ -100,7 +102,7 @@ h1 {
   border-radius: 5px;
 }
 
-#button, #button:hover, #go2Name [type="submit"] {
+#button, #button:hover, #go2Name [type="submit"], #transferSessionButton {
   order: 2;
   margin-top: 0.5rem;
   line-height: 1.25rem;
@@ -115,8 +117,12 @@ h1 {
   cursor: pointer;
 }
 
-#go2Name [type="submit"]:hover {
+#go2Name [type="submit"]:hover, #transferSessionButton {
   background-color: oklch(52.7% 0.154 150.069)
+}
+
+#transferSessionButton:disabled {
+  opacity: 0.5;
 }
 
 #button, #button:hover {
@@ -132,7 +138,7 @@ h1 {
 }
 
 
-#go2Name [type="submit"] {
+#go2Name [type="submit"], #transferSessionButton {
   display: block;
   background-color: var(--ep-color);
   color: white;
@@ -234,8 +240,23 @@ a, a:visited, a:hover, a:active {
   border-bottom-color: #e5e7eb;
 }
 
+#settings-dialog::backdrop {
+    background: rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(2px);
+}
+
 .card-content {
   padding: 1.5rem;
+}
+
+#codeInput {
+  height: auto;
+  position: static;
+  border: 1px solid var(--muted-border);
+  border-radius: 0.375rem;
+  font-size: 1rem;
+  outline: none;
+  transition: border 0.2s;
 }
 
 @media (max-width: 640px) {
