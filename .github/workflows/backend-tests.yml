@@ -31,7 +31,7 @@ jobs:
     steps:
       -
         name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - uses: actions/cache@v4
         name: Setup gnpm cache
         if: always()
@@ -87,7 +87,7 @@ jobs:
     steps:
       -
         name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - uses: actions/cache@v4
         name: Setup pnpm cache
         if: always()
@@ -156,7 +156,7 @@ jobs:
     steps:
       -
         name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - uses: actions/cache@v4
         name: Setup pnpm cache
         if: always()
@@ -209,7 +209,7 @@ jobs:
     steps:
       -
         name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - uses: actions/cache@v4
         name: Setup pnpm cache
         if: always()

@@ -24,7 +24,7 @@ jobs:
           printf %s\\n '::set-output name=tunnel_id::${{ github.run_id }}-${{ github.run_number }}-${{ github.job }}'
       -
         name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - uses: actions/cache@v4
         name: Setup gnpm cache
         if: always()
@@ -87,7 +87,7 @@ jobs:
           printf %s\\n '::set-output name=name::${{ github.workflow }} - ${{ github.job }}'
           printf %s\\n '::set-output name=tunnel_id::${{ github.run_id }}-${{ github.run_number }}-${{ github.job }}'
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - uses: actions/cache@v4
         name: Setup gnpm cache
         if: always()
@@ -149,7 +149,7 @@ jobs:
           printf %s\\n '::set-output name=tunnel_id::${{ github.run_id }}-${{ github.run_number }}-${{ github.job }}'
       -
         name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - uses: actions/cache@v4
         name: Setup gnpm cache
         if: always()
