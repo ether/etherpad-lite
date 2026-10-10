@@ -16,6 +16,10 @@ import {
   isOriginAllowedForOidcClient,
   verifyInteractiveLogin,
 } from '../../../node/security/OidcProviderSecurity';
+import {exportedForTestingOnly} from '../../../node/utils/Settings';
+import fs from 'fs';
+import os from 'os';
+import path from 'path';
 
 describe(__filename, function () {
   describe('resolveOidcCookieKeys', function () {
@@ -184,6 +188,27 @@ describe(__filename, function () {
       assert.equal(verifyInteractiveLogin(u, 'num', '12345'), null);
       assert.equal(verifyInteractiveLogin(u, 'bool', 'false'), null);
     });
+
+    // End to end through the real settings loader, the way the Docker image
+    // configures the admin account (`settings.json.docker`).
+    for (const [envVal, submitted] of [['123456', '123456'], ['true', 'true'], ['s3cret', 's3cret']]) {
+      it(`logs in with ADMIN_PASSWORD=${envVal} substituted by the settings loader`, function () {
+        const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'ep-8263-'));
+        const file = path.join(dir, 'settings.json');
+        fs.writeFileSync(file, JSON.stringify({
+          users: {admin: {password: '${EP_TEST_8263_PASSWORD:null}', is_admin: true}},
+        }));
+        process.env.EP_TEST_8263_PASSWORD = envVal;
+        try {
+          const s: any = exportedForTestingOnly.parseSettings(file, true);
+          assert.equal(verifyInteractiveLogin(s.users, 'admin', submitted)!.username, 'admin');
+          assert.equal(verifyInteractiveLogin(s.users, 'admin', 'wrong'), null);
+        } finally {
+          delete process.env.EP_TEST_8263_PASSWORD;
+          fs.rmSync(dir, {recursive: true, force: true});
+        }
+      });
+    }
 
     it('rejects non-scalar passwords', function () {
       const u = {obj: {password: {}}, arr: {password: []}, nan: {password: NaN}};
