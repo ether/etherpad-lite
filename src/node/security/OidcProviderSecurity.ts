@@ -140,10 +140,16 @@ export const verifyInteractiveLogin = (
   if (!Object.prototype.hasOwnProperty.call(users, loginStr)) return null;
   const user = users[loginStr] as {password?: unknown} | null | undefined;
   if (user == null) return null;
-  // Fail closed unless the account has a real string password to compare.
+  // Fail closed unless the account has a real scalar password to compare.
+  // Numbers and booleans are accepted because the settings loader coerces
+  // env-var values (`ADMIN_PASSWORD=123456` arrives as the number 123456,
+  // #8263); HTTP Basic in webaccess.ts compares those via toString() too.
   // An empty string is not a usable password: it authenticates anyone who
   // submits nothing, which is never what an operator means by `"password": ""`.
-  if (typeof user.password !== 'string' || user.password === '') return null;
-  if (!constantTimeEquals(passwordStr, user.password)) return null;
+  const stored = user.password;
+  const storedOk = typeof stored === 'string' || typeof stored === 'boolean' ||
+      (typeof stored === 'number' && Number.isFinite(stored));
+  if (!storedOk || String(stored) === '') return null;
+  if (!constantTimeEquals(passwordStr, String(stored))) return null;
   return {...(user as Record<string, unknown>), username: loginStr};
 };

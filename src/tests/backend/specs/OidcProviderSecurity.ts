@@ -172,6 +172,26 @@ describe(__filename, function () {
       assert.equal(verifyInteractiveLogin(u, 'empty', 'anything'), null);
     });
 
+    // #8263: the settings loader coerces env-var values, so
+    // `"password": "${ADMIN_PASSWORD:null}"` with ADMIN_PASSWORD=123456 yields
+    // the number 123456 (and "true"/"false" yield booleans). HTTP Basic always
+    // compared via toString(); the interactive login must accept them too.
+    it('accepts a password the settings loader coerced to a number or boolean', function () {
+      const u = {num: {password: 123456}, zero: {password: 0}, bool: {password: true}};
+      assert.equal(verifyInteractiveLogin(u, 'num', '123456')!.username, 'num');
+      assert.equal(verifyInteractiveLogin(u, 'zero', '0')!.username, 'zero');
+      assert.equal(verifyInteractiveLogin(u, 'bool', 'true')!.username, 'bool');
+      assert.equal(verifyInteractiveLogin(u, 'num', '12345'), null);
+      assert.equal(verifyInteractiveLogin(u, 'bool', 'false'), null);
+    });
+
+    it('rejects non-scalar passwords', function () {
+      const u = {obj: {password: {}}, arr: {password: []}, nan: {password: NaN}};
+      assert.equal(verifyInteractiveLogin(u, 'obj', '[object Object]'), null);
+      assert.equal(verifyInteractiveLogin(u, 'arr', ''), null);
+      assert.equal(verifyInteractiveLogin(u, 'nan', 'NaN'), null);
+    });
+
     it('rejects an unknown user', function () {
       assert.equal(verifyInteractiveLogin(users(), 'nobody', 'correct horse'), null);
     });
