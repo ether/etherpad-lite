@@ -8,8 +8,7 @@ import {IncomingForm} from 'formidable'
 import express from 'express';
 import {format} from 'url'
 import {ParsedUrlQuery} from "node:querystring";
-import {MapArrayType} from "../types/MapType";
-import {verifyInteractiveLogin, resolveOidcCookieKeys, isOriginAllowedForOidcClient} from "./OidcProviderSecurity";
+import {verifyInteractiveLogin, resolveOidcCookieKeys, isOriginAllowedForOidcClient, clientCredentialsClaims} from "./OidcProviderSecurity";
 import SecretRotator from "./SecretRotator";
 
 // Held at module scope so the rotator (and its refresh timer) is not garbage
@@ -184,18 +183,9 @@ export const expressCreateServer = async (hookName: string, args: ArgsExpressTyp
                     admin: account?.is_admin
                 };
             } else if (token.kind === "ClientCredentials") {
-                let extraParams: MapArrayType<string> = {}
-
-                settings.sso.clients && settings.sso.clients
-                    .filter((client:any) => client.client_id === token.clientId)
-                    .forEach((client:any) => {
-                    if(client.extraParams !== undefined) {
-                        client.extraParams.forEach((param:any) => {
-                            extraParams[param.name] = param.value
-                        })
-                    }
-                })
-                return extraParams
+                // Marks the token as client_credentials for the HTTP API; see
+                // isApiTokenAuthorized().
+                return clientCredentialsClaims(settings.sso.clients, token.clientId)
             }
         },
         clients: settings.sso.clients
