@@ -15,6 +15,9 @@ import {
   resolveOidcCookieKeys,
   isOriginAllowedForOidcClient,
   verifyInteractiveLogin,
+  clientCredentialsClaims,
+  isApiTokenAuthorized,
+  GRANT_CLAIM,
 } from '../../../node/security/OidcProviderSecurity';
 import {exportedForTestingOnly} from '../../../node/utils/Settings';
 import fs from 'fs';
@@ -236,6 +239,60 @@ describe(__filename, function () {
     it('rejects when there are no users configured', function () {
       assert.equal(verifyInteractiveLogin(null, 'withPassword', 'correct horse'), null);
       assert.equal(verifyInteractiveLogin(undefined, 'withPassword', 'undefined'), null);
+    });
+  });
+  describe('isApiTokenAuthorized', function () {
+    const clientIds = ['admin_client', 'user'];
+
+    it('accepts an admin user token', function () {
+      assert.equal(isApiTokenAuthorized({sub: 'admin', admin: true}, clientIds), true);
+    });
+
+    it('rejects a non-admin user token whose sub collides with a client_id', function () {
+      assert.equal(isApiTokenAuthorized({sub: 'user', admin: false}, clientIds), false);
+      assert.equal(isApiTokenAuthorized({sub: 'user'}, clientIds), false);
+    });
+
+    it('accepts a marked client_credentials token for a configured client', function () {
+      assert.equal(isApiTokenAuthorized(
+          {sub: 'admin_client', [GRANT_CLAIM]: 'client_credentials'}, clientIds), true);
+    });
+
+    it('rejects a marked token whose sub is not a configured client', function () {
+      assert.equal(isApiTokenAuthorized(
+          {sub: 'admin', [GRANT_CLAIM]: 'client_credentials'}, clientIds), false);
+      assert.equal(isApiTokenAuthorized({[GRANT_CLAIM]: 'client_credentials'}, clientIds), false);
+    });
+
+    it('treats any other marker value as a user token', function () {
+      assert.equal(isApiTokenAuthorized(
+          {sub: 'admin_client', [GRANT_CLAIM]: 'other'}, clientIds), false);
+    });
+
+    it('rejects a missing payload', function () {
+      assert.equal(isApiTokenAuthorized(null, clientIds), false);
+    });
+  });
+
+  describe('clientCredentialsClaims', function () {
+    const clients = [
+      {client_id: 'a', extraParams: [{name: 'scope', value: 'x'}]},
+      {client_id: 'b', extraParams: [{name: GRANT_CLAIM, value: 'forged'}]},
+    ];
+
+    it('adds the matching client extraParams and the grant marker', function () {
+      assert.deepEqual(clientCredentialsClaims(clients, 'a'),
+          {scope: 'x', [GRANT_CLAIM]: 'client_credentials'});
+    });
+
+    it('does not let a configured extraParam override the marker', function () {
+      assert.deepEqual(clientCredentialsClaims(clients, 'b'),
+          {[GRANT_CLAIM]: 'client_credentials'});
+    });
+
+    it('tolerates missing client configuration', function () {
+      assert.deepEqual(clientCredentialsClaims(undefined, 'a'),
+          {[GRANT_CLAIM]: 'client_credentials'});
     });
   });
 });

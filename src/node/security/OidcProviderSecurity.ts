@@ -153,3 +153,57 @@ export const verifyInteractiveLogin = (
   if (!constantTimeEquals(passwordStr, String(stored))) return null;
   return {...(user as Record<string, unknown>), username: loginStr};
 };
+
+/**
+ * Private claim the embedded provider stamps on client_credentials access
+ * tokens. The HTTP API used to infer the grant from the token's `sub`: any
+ * token whose `sub` equalled a configured `client_id` was treated as a
+ * client_credentials token and skipped the `admin === true` check. A user
+ * whose username collided with a client ID therefore got admin API access
+ * with a non-admin authorization_code token. Reported by Yves Soete of
+ * Blacksight LLC.
+ */
+export const GRANT_CLAIM = 'etherpad_grant';
+export const CLIENT_CREDENTIALS_GRANT = 'client_credentials';
+
+/**
+ * Extra claims for a client_credentials token: the operator-configured
+ * `extraParams` of the matching client, plus the grant marker. The marker is
+ * set last so a configured extraParam cannot override or forge it.
+ */
+export const clientCredentialsClaims = (
+  clients: unknown,
+  clientId: string | undefined,
+): Record<string, unknown> => {
+  const claims: Record<string, unknown> = {};
+  if (Array.isArray(clients)) {
+    for (const client of clients) {
+      if (client == null || client.client_id !== clientId) continue;
+      if (!Array.isArray(client.extraParams)) continue;
+      for (const param of client.extraParams) {
+        if (param == null || param.name === GRANT_CLAIM) continue;
+        claims[param.name] = param.value;
+      }
+    }
+  }
+  claims[GRANT_CLAIM] = CLIENT_CREDENTIALS_GRANT;
+  return claims;
+};
+
+/**
+ * Decide whether a signature-verified API access token may call the HTTP API.
+ *
+ * A client_credentials token is recognised only by the grant marker that the
+ * provider itself signs in, and its `sub` must still name a configured client.
+ * Every other token is a user token and needs `admin` to be strictly `true`.
+ */
+export const isApiTokenAuthorized = (
+  payload: Record<string, unknown> | null | undefined,
+  clientIds: readonly string[],
+): boolean => {
+  if (payload == null) return false;
+  if (payload[GRANT_CLAIM] === CLIENT_CREDENTIALS_GRANT) {
+    return typeof payload.sub === 'string' && clientIds.includes(payload.sub);
+  }
+  return payload.admin === true;
+};
