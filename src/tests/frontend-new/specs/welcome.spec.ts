@@ -300,8 +300,8 @@ test.describe('Session Transfer Functionality', () => {
       await expect(transferButton).toBeDisabled();
       await codeInput.fill('12345678-1234-5678-1234-567812345678-extra');
       await expect(transferButton).toBeDisabled();
-      // Right length, but not a v4 UUID.
-      await codeInput.fill('12345678-1234-5678-1234-567812345678');
+      // Right length and shape, but not hex.
+      await codeInput.fill('zzzzzzzz-zzzz-zzzz-zzzz-zzzzzzzzzzzz');
       await expect(transferButton).toBeDisabled();
       await codeInput.fill('');
       await expect(transferButton).toBeDisabled();
