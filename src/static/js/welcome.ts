@@ -1,5 +1,3 @@
-import html10n from './vendors/html10n';
-
 const checkmark = '<svg width="28" height="28" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor"><path vector-effect="non-scaling-stroke" stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg>';
 
 function getCookie(name: string) {
@@ -13,8 +11,15 @@ function getCookie(name: string) {
 
 const cp = (window as any).clientVars?.cookiePrefix || '';
 
-const sessionTransferErrorFallback = () =>
-  html10n.get('index.sessionTransferError') || 'Unable to transfer the session. Please try again.';
+const transferNowSelector = '[data-l10n-id="index.transferSessionNow"]';
+
+// The error elements carry data-l10n-id="index.sessionTransferError", so the
+// message is always localized by html10n. Server-supplied error strings are
+// English-only and are deliberately never shown to the user.
+const setSessionTransferErrorVisible = (id: string, visible: boolean) => {
+  const element = document.getElementById(id);
+  if (element) element.style.display = visible ? 'block' : 'none';
+};
 
 const safeJson = async (response: Response): Promise<unknown> => {
   try {
@@ -24,129 +29,122 @@ const safeJson = async (response: Response): Promise<unknown> => {
   }
 };
 
-const responseErrorMessage = (responseData: unknown): string => {
-  const data = responseData as Record<string, unknown>;
-  if (
-    responseData &&
-    typeof responseData === 'object' &&
-    'error' in responseData &&
-    typeof data.error === 'string' &&
-    data.error.trim() !== ''
-  ) {
-    return data.error;
-  }
-  return sessionTransferErrorFallback();
-};
-
-const showSessionTransferError = (element: HTMLElement | null, message: string) => {
-  if (!element) return;
-  element.textContent = message;
-  element.style.display = 'block';
-};
-
-const hideSessionTransferError = (element: HTMLElement | null) => {
-  if (!element) return;
-  element.textContent = '';
-  element.style.display = 'none';
-};
-
 const isValidTransferId = (id: unknown): id is string =>
   typeof id === 'string' &&
-  /^([0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12})$/i.test(id);
+  /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(id);
+
+// Resolves to the transfer id, or null if the request failed in any way
+// (network error, non-2xx status, malformed body, invalid id).
+const createTransferId = async (): Promise<string | null> => {
+  try {
+    // The author token is HttpOnly (ether/etherpad#6701 PR3) so we cannot
+    // read it via document.cookie. Send only the JS-readable prefsHttp; the
+    // server reads the token off the request's own cookie jar.
+    const response = await fetch('./tokenTransfer', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        prefsHttp: getCookie(`${cp}prefsHttp`) || getCookie('prefsHttp'),
+      }),
+    });
+    const data = await safeJson(response) as {id?: unknown} | null;
+    if (!response.ok || data == null || typeof data !== 'object') return null;
+    return isValidTransferId(data.id) ? data.id : null;
+  } catch {
+    return null;
+  }
+};
 
 function handleTransferOfSession() {
-  const transferNowButton = document.querySelector('[data-l10n-id="index.transferSessionNow"]')! as HTMLButtonElement;
+  const transferNowButton = document.querySelector(transferNowSelector)! as HTMLButtonElement;
 
   transferNowButton.addEventListener('click', async () => {
     const originalButtonContent = transferNowButton.innerHTML;
-    const copyLinkSection = document.getElementById('copy-link-section');
-    const errorElement = document.getElementById('transfer-session-error');
-    hideSessionTransferError(errorElement);
-    if (copyLinkSection) copyLinkSection.style.display = 'none';
+    setSessionTransferErrorVisible('transfer-session-error', false);
+    const copyLinkSectionBefore = document.getElementById('copy-link-section');
+    if (copyLinkSectionBefore) copyLinkSectionBefore.style.display = 'none';
     transferNowButton.style.display = 'inline-flex';
     transferNowButton.style.alignItems = 'center';
     transferNowButton.style.justifyContent = 'center';
     transferNowButton.disabled = true;
 
-    try {
-      // The author token is HttpOnly (ether/etherpad#6701 PR3) so we cannot
-      // read it via document.cookie. Send only the JS-readable prefsHttp; the
-      // server reads the token off the request's own cookie jar.
-      const responseWithId = await fetch("./tokenTransfer", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          prefsHttp: getCookie(`${cp}prefsHttp`) || getCookie('prefsHttp'),
-        })
-      });
+    const transferId = await createTransferId();
 
-      const responseData = await safeJson(responseWithId);
-      if (!responseWithId.ok) {
-        throw new Error(responseErrorMessage(responseData));
-      }
-      const transferData = responseData as Record<string, unknown>;
-      if (!responseData || typeof responseData !== 'object' ||
-          !('id' in responseData) || !isValidTransferId(transferData.id)) {
-        throw new Error(sessionTransferErrorFallback());
-      }
+    // Closing the settings dialog rebuilds its contents, so the nodes
+    // captured before the request may now be detached. Re-query them so
+    // the result lands in the dialog the user will actually see.
+    const currentButton =
+        document.querySelector(transferNowSelector) as HTMLButtonElement | null;
+    const copyLinkSection = document.getElementById('copy-link-section');
+    const copyButton =
+        document.querySelector('#copy-link-section .btn-secondary') as HTMLButtonElement | null;
 
-      if (!copyLinkSection) throw new Error(sessionTransferErrorFallback());
-      copyLinkSection.style.display = 'block';
-
-      const copyButton = document.querySelector('#copy-link-section .btn-secondary') as HTMLButtonElement;
-      copyButton.disabled = false;
-      copyButton.onclick = async () => {
-        await navigator.clipboard.writeText(transferData.id as string);
-        copyButton.style.display = 'inline-flex';
-        copyButton.style.alignItems = 'center';
-        copyButton.style.justifyContent = 'center';
-        copyButton.innerHTML = `${checkmark}`;
-        copyButton.disabled = true;
-      };
-      transferNowButton.innerHTML = `${checkmark}`;
-    } catch (err) {
+    if (transferId == null || !copyLinkSection || !copyButton) {
       if (copyLinkSection) copyLinkSection.style.display = 'none';
       transferNowButton.innerHTML = originalButtonContent;
       transferNowButton.disabled = false;
-      showSessionTransferError(
-          errorElement,
-          err instanceof Error && err.message ? err.message : sessionTransferErrorFallback());
+      setSessionTransferErrorVisible('transfer-session-error', true);
+      return;
     }
+
+    copyLinkSection.style.display = 'block';
+    copyButton.disabled = false;
+    copyButton.onclick = async () => {
+      await navigator.clipboard.writeText(transferId);
+      copyButton.style.display = 'inline-flex';
+      copyButton.style.alignItems = 'center';
+      copyButton.style.justifyContent = 'center';
+      copyButton.innerHTML = `${checkmark}`;
+      copyButton.disabled = true;
+    };
+    const button = currentButton ?? transferNowButton;
+    button.style.display = 'inline-flex';
+    button.style.alignItems = 'center';
+    button.style.justifyContent = 'center';
+    button.innerHTML = `${checkmark}`;
+    button.disabled = true;
   });
 }
 
-const isValidTransferCode = (code: string) => isValidTransferId(code);
+// True while a redemption request is in flight. Module-level so it survives
+// the settings dialog being rebuilt, and so input events cannot re-enable the
+// button and start an overlapping request.
+let redeemPending = false;
 
-async function redeemTransferCode(
-    code: string,
-    codeInputField: HTMLInputElement,
-    transferSessionButton: HTMLButtonElement,
-    errorElement: HTMLElement | null) {
-  hideSessionTransferError(errorElement);
-  transferSessionButton.disabled = true;
+const updateRedeemButtonState = () => {
+  const button = document.getElementById('transferSessionButton') as HTMLButtonElement | null;
+  const input = document.getElementById('codeInput') as HTMLInputElement | null;
+  if (!button) return;
+  button.disabled = redeemPending || !isValidTransferId(input?.value);
+};
 
+async function redeemTransferCode(code: string) {
+  if (redeemPending || !isValidTransferId(code)) return;
+  redeemPending = true;
+  setSessionTransferErrorVisible('receive-session-error', false);
+  updateRedeemButtonState();
+
+  let redeemed = false;
   try {
-    const response = await fetch("./tokenTransfer/"+code, {
-      method: 'GET'
+    const response = await fetch(`./tokenTransfer/${encodeURIComponent(code)}`, {
+      method: 'GET',
     });
-    const responseData = await safeJson(response);
-    if (!response.ok) {
-      throw new Error(responseErrorMessage(responseData));
-    }
-    const transferData = responseData as Record<string, unknown>;
-    if (!responseData || typeof responseData !== 'object' ||
-        !('ok' in responseData) || transferData.ok !== true) {
-      throw new Error(sessionTransferErrorFallback());
-    }
-    window.location.reload()
-  } catch (err) {
-    transferSessionButton.disabled = !isValidTransferCode(codeInputField.value);
-    showSessionTransferError(
-        errorElement,
-        err instanceof Error && err.message ? err.message : sessionTransferErrorFallback());
+    const data = await safeJson(response) as {ok?: unknown} | null;
+    redeemed = response.ok && data != null && typeof data === 'object' && data.ok === true;
+  } catch {
+    redeemed = false;
   }
+
+  if (redeemed) {
+    // Leave redeemPending set so the button stays disabled until reload.
+    window.location.reload();
+    return;
+  }
+  redeemPending = false;
+  updateRedeemButtonState();
+  setSessionTransferErrorVisible('receive-session-error', true);
 }
 
 const handleSettingsButtonClick = () => {
@@ -183,29 +181,21 @@ const handleMenuBarClicked = () => {
     });
   })
 
-  const transferSessionButton = document.getElementById('transferSessionButton') as HTMLButtonElement | null;
-  const codeInputField = document.getElementById('codeInput') as HTMLInputElement
-  if (transferSessionButton) {
-    transferSessionButton.addEventListener('click', ()=>{
-      const code = codeInputField.value;
-      redeemTransferCode(
-          code,
-          codeInputField,
-          transferSessionButton,
-          document.getElementById('receive-session-error'));
+  const transferSessionButton = document.getElementById('transferSessionButton');
+  const codeInputField = document.getElementById('codeInput') as HTMLInputElement | null;
+  if (transferSessionButton && codeInputField) {
+    transferSessionButton.addEventListener('click', () => {
+      redeemTransferCode(codeInputField.value);
     });
   }
 
   if (codeInputField) {
-    codeInputField.addEventListener('input', (e)=>{
-      hideSessionTransferError(document.getElementById('receive-session-error'));
-      if (isValidTransferCode((e.target as HTMLInputElement).value)) {
-          transferSessionButton?.removeAttribute('disabled');
-      } else {
-          transferSessionButton?.setAttribute('disabled', 'true');
-      }
-    })
+    codeInputField.addEventListener('input', () => {
+      setSessionTransferErrorVisible('receive-session-error', false);
+      updateRedeemButtonState();
+    });
   }
+  updateRedeemButtonState();
 
 }
 
