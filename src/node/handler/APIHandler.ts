@@ -26,6 +26,7 @@ import settings from '../utils/Settings';
 import createHTTPError from 'http-errors';
 import {Http2ServerRequest} from "node:http2";
 import {publicKeyExported} from "../security/OAuth2Provider";
+import {isApiTokenAuthorized} from "../security/OidcProviderSecurity";
 import {jwtVerify} from "jose";
 import {APIFields, apikey} from './APIKeyHandler'
 import crypto from 'node:crypto';
@@ -199,17 +200,12 @@ exports.handle = async function (apiVersion: string, functionName: string, field
       // payload only.
       const {payload: verified} = await jwtVerify(
           jwtToCheck, publicKeyExported!, {algorithms: ['RS256']});
-      const isClientCredentials =
-          clientIds.includes(verified.sub as string);
-      if (!isClientCredentials) {
-        // authorization_code branch: require the admin claim to be
-        // strictly true. Checking only that the claim is present is not
-        // sufficient — the provider issues it as `admin: is_admin`, so
-        // non-admin users would have it set to false.
-        if (verified.admin !== true) {
-          throw new createHTTPError.Unauthorized(
-              'admin claim missing or not true');
-        }
+      // The grant is identified by a marker the provider signs into
+      // client_credentials tokens, never by comparing `sub` to client IDs:
+      // a username equal to a client ID would otherwise skip the admin check.
+      if (!isApiTokenAuthorized(verified, clientIds)) {
+        throw new createHTTPError.Unauthorized(
+            'admin claim missing or not true');
       }
     } catch (e) {
       // Single error string regardless of the underlying failure so we

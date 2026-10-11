@@ -223,6 +223,31 @@ test.describe('creator-owned pad settings', () => {
     await expect(fontDropdown).not.toHaveClass(/open/);
   });
 
+  // #8290: under prefers-reduced-motion the popup kept `transform: scale(1)`.
+  // Any transform makes .popup-content the containing block for the
+  // position:fixed list above, so the list was laid out relative to the popup
+  // instead of the viewport and never appeared. The test above runs without
+  // reduced motion, so it never saw this.
+  for (const id of ['padsettings-viewfontmenu', 'padsettings-languagemenu']) {
+    test(`#${id} dropdown opens under prefers-reduced-motion`, async ({page}) => {
+      await page.emulateMedia({reducedMotion: 'reduce'});
+      await page.setViewportSize({width: 900, height: 500});
+      await goToNewPad(page);
+      await showSettings(page);
+      await page.locator('#settings > .popup-content').evaluate((el) => {
+        el.scrollTop = el.scrollHeight;
+      });
+      const dropdown = page.locator(`#${id} + .nice-select`);
+      await expect(dropdown).toBeInViewport();
+      await dropdown.click();
+      const list = dropdown.locator('.list');
+      await expect(list).toBeVisible();
+      await expect(list).toBeInViewport();
+      await dropdown.locator('.option').first().click();
+      await expect(dropdown).not.toHaveClass(/open/);
+    });
+  }
+
   // #7592: ticking "Disable chat" must visibly disable the dependent
   // "Chat always on screen" / "Show Chat and Users" toggles, not just
   // make the underlying inputs non-interactive.

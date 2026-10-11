@@ -140,10 +140,70 @@ export const verifyInteractiveLogin = (
   if (!Object.prototype.hasOwnProperty.call(users, loginStr)) return null;
   const user = users[loginStr] as {password?: unknown} | null | undefined;
   if (user == null) return null;
-  // Fail closed unless the account has a real string password to compare.
+  // Fail closed unless the account has a real scalar password to compare.
+  // Numbers and booleans are accepted because the settings loader coerces
+  // env-var values (`ADMIN_PASSWORD=123456` arrives as the number 123456,
+  // #8263); HTTP Basic in webaccess.ts compares those via toString() too.
   // An empty string is not a usable password: it authenticates anyone who
   // submits nothing, which is never what an operator means by `"password": ""`.
-  if (typeof user.password !== 'string' || user.password === '') return null;
-  if (!constantTimeEquals(passwordStr, user.password)) return null;
+  const stored = user.password;
+  const storedOk = typeof stored === 'string' || typeof stored === 'boolean' ||
+      (typeof stored === 'number' && Number.isFinite(stored));
+  if (!storedOk || String(stored) === '') return null;
+  if (!constantTimeEquals(passwordStr, String(stored))) return null;
   return {...(user as Record<string, unknown>), username: loginStr};
+};
+
+/**
+ * Private claim the embedded provider stamps on client_credentials access
+ * tokens. The HTTP API used to infer the grant from the token's `sub`: any
+ * token whose `sub` equalled a configured `client_id` was treated as a
+ * client_credentials token and skipped the `admin === true` check. A user
+ * whose username collided with a client ID therefore got admin API access
+ * with a non-admin authorization_code token. Reported by Yves Soete of
+ * Blacksight LLC.
+ */
+export const GRANT_CLAIM = 'etherpad_grant';
+export const CLIENT_CREDENTIALS_GRANT = 'client_credentials';
+
+/**
+ * Extra claims for a client_credentials token: the operator-configured
+ * `extraParams` of the matching client, plus the grant marker. The marker is
+ * set last so a configured extraParam cannot override or forge it.
+ */
+export const clientCredentialsClaims = (
+  clients: unknown,
+  clientId: string | undefined,
+): Record<string, unknown> => {
+  const claims: Record<string, unknown> = {};
+  if (Array.isArray(clients)) {
+    for (const client of clients) {
+      if (client == null || client.client_id !== clientId) continue;
+      if (!Array.isArray(client.extraParams)) continue;
+      for (const param of client.extraParams) {
+        if (param == null || param.name === GRANT_CLAIM) continue;
+        claims[param.name] = param.value;
+      }
+    }
+  }
+  claims[GRANT_CLAIM] = CLIENT_CREDENTIALS_GRANT;
+  return claims;
+};
+
+/**
+ * Decide whether a signature-verified API access token may call the HTTP API.
+ *
+ * A client_credentials token is recognised only by the grant marker that the
+ * provider itself signs in, and its `sub` must still name a configured client.
+ * Every other token is a user token and needs `admin` to be strictly `true`.
+ */
+export const isApiTokenAuthorized = (
+  payload: Record<string, unknown> | null | undefined,
+  clientIds: readonly string[],
+): boolean => {
+  if (payload == null) return false;
+  if (payload[GRANT_CLAIM] === CLIENT_CREDENTIALS_GRANT) {
+    return typeof payload.sub === 'string' && clientIds.includes(payload.sub);
+  }
+  return payload.admin === true;
 };

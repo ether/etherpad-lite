@@ -15,7 +15,14 @@ import {
   resolveOidcCookieKeys,
   isOriginAllowedForOidcClient,
   verifyInteractiveLogin,
+  clientCredentialsClaims,
+  isApiTokenAuthorized,
+  GRANT_CLAIM,
 } from '../../../node/security/OidcProviderSecurity';
+import {exportedForTestingOnly} from '../../../node/utils/Settings';
+import fs from 'fs';
+import os from 'os';
+import path from 'path';
 
 describe(__filename, function () {
   describe('resolveOidcCookieKeys', function () {
@@ -172,6 +179,47 @@ describe(__filename, function () {
       assert.equal(verifyInteractiveLogin(u, 'empty', 'anything'), null);
     });
 
+    // #8263: the settings loader coerces env-var values, so
+    // `"password": "${ADMIN_PASSWORD:null}"` with ADMIN_PASSWORD=123456 yields
+    // the number 123456 (and "true"/"false" yield booleans). HTTP Basic always
+    // compared via toString(); the interactive login must accept them too.
+    it('accepts a password the settings loader coerced to a number or boolean', function () {
+      const u = {num: {password: 123456}, zero: {password: 0}, bool: {password: true}};
+      assert.equal(verifyInteractiveLogin(u, 'num', '123456')!.username, 'num');
+      assert.equal(verifyInteractiveLogin(u, 'zero', '0')!.username, 'zero');
+      assert.equal(verifyInteractiveLogin(u, 'bool', 'true')!.username, 'bool');
+      assert.equal(verifyInteractiveLogin(u, 'num', '12345'), null);
+      assert.equal(verifyInteractiveLogin(u, 'bool', 'false'), null);
+    });
+
+    // End to end through the real settings loader, the way the Docker image
+    // configures the admin account (`settings.json.docker`).
+    for (const [envVal, submitted] of [['123456', '123456'], ['true', 'true'], ['s3cret', 's3cret']]) {
+      it(`logs in with ADMIN_PASSWORD=${envVal} substituted by the settings loader`, function () {
+        const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'ep-8263-'));
+        const file = path.join(dir, 'settings.json');
+        fs.writeFileSync(file, JSON.stringify({
+          users: {admin: {password: '${EP_TEST_8263_PASSWORD:null}', is_admin: true}},
+        }));
+        process.env.EP_TEST_8263_PASSWORD = envVal;
+        try {
+          const s: any = exportedForTestingOnly.parseSettings(file, true);
+          assert.equal(verifyInteractiveLogin(s.users, 'admin', submitted)!.username, 'admin');
+          assert.equal(verifyInteractiveLogin(s.users, 'admin', 'wrong'), null);
+        } finally {
+          delete process.env.EP_TEST_8263_PASSWORD;
+          fs.rmSync(dir, {recursive: true, force: true});
+        }
+      });
+    }
+
+    it('rejects non-scalar passwords', function () {
+      const u = {obj: {password: {}}, arr: {password: []}, nan: {password: NaN}};
+      assert.equal(verifyInteractiveLogin(u, 'obj', '[object Object]'), null);
+      assert.equal(verifyInteractiveLogin(u, 'arr', ''), null);
+      assert.equal(verifyInteractiveLogin(u, 'nan', 'NaN'), null);
+    });
+
     it('rejects an unknown user', function () {
       assert.equal(verifyInteractiveLogin(users(), 'nobody', 'correct horse'), null);
     });
@@ -191,6 +239,60 @@ describe(__filename, function () {
     it('rejects when there are no users configured', function () {
       assert.equal(verifyInteractiveLogin(null, 'withPassword', 'correct horse'), null);
       assert.equal(verifyInteractiveLogin(undefined, 'withPassword', 'undefined'), null);
+    });
+  });
+  describe('isApiTokenAuthorized', function () {
+    const clientIds = ['admin_client', 'user'];
+
+    it('accepts an admin user token', function () {
+      assert.equal(isApiTokenAuthorized({sub: 'admin', admin: true}, clientIds), true);
+    });
+
+    it('rejects a non-admin user token whose sub collides with a client_id', function () {
+      assert.equal(isApiTokenAuthorized({sub: 'user', admin: false}, clientIds), false);
+      assert.equal(isApiTokenAuthorized({sub: 'user'}, clientIds), false);
+    });
+
+    it('accepts a marked client_credentials token for a configured client', function () {
+      assert.equal(isApiTokenAuthorized(
+          {sub: 'admin_client', [GRANT_CLAIM]: 'client_credentials'}, clientIds), true);
+    });
+
+    it('rejects a marked token whose sub is not a configured client', function () {
+      assert.equal(isApiTokenAuthorized(
+          {sub: 'admin', [GRANT_CLAIM]: 'client_credentials'}, clientIds), false);
+      assert.equal(isApiTokenAuthorized({[GRANT_CLAIM]: 'client_credentials'}, clientIds), false);
+    });
+
+    it('treats any other marker value as a user token', function () {
+      assert.equal(isApiTokenAuthorized(
+          {sub: 'admin_client', [GRANT_CLAIM]: 'other'}, clientIds), false);
+    });
+
+    it('rejects a missing payload', function () {
+      assert.equal(isApiTokenAuthorized(null, clientIds), false);
+    });
+  });
+
+  describe('clientCredentialsClaims', function () {
+    const clients = [
+      {client_id: 'a', extraParams: [{name: 'scope', value: 'x'}]},
+      {client_id: 'b', extraParams: [{name: GRANT_CLAIM, value: 'forged'}]},
+    ];
+
+    it('adds the matching client extraParams and the grant marker', function () {
+      assert.deepEqual(clientCredentialsClaims(clients, 'a'),
+          {scope: 'x', [GRANT_CLAIM]: 'client_credentials'});
+    });
+
+    it('does not let a configured extraParam override the marker', function () {
+      assert.deepEqual(clientCredentialsClaims(clients, 'b'),
+          {[GRANT_CLAIM]: 'client_credentials'});
+    });
+
+    it('tolerates missing client configuration', function () {
+      assert.deepEqual(clientCredentialsClaims(undefined, 'a'),
+          {[GRANT_CLAIM]: 'client_credentials'});
     });
   });
 });
