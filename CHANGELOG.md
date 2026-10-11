@@ -1,3 +1,16 @@
+# 3.3.8
+
+3.3.8 is a security release. It closes an HTTP API privilege escalation for instances using the built-in OIDC provider with API clients (GHSA-38vj-95q4-gwvx).
+
+### Security
+
+- **HTTP API — client_credentials tokens are identified by a signed grant marker (GHSA-38vj-95q4-gwvx).** The API decided whether a bearer JWT came from the OAuth2 `client_credentials` grant by checking whether its `sub` claim equalled a configured `client_id`, and `client_credentials` tokens skip the `admin === true` claim check. A non-admin user whose account name collided with a configured client ID could therefore use an ordinary login token to get admin access to the HTTP API. This is a variant of GHSA-qfmh-fph3-mw8q. The provider now signs an `etherpad_grant: "client_credentials"` marker into client_credentials access tokens, and `extraParams` cannot override it. The API trusts that marker instead of comparing `sub` to client IDs. **Upgrade note:** client_credentials tokens issued before the upgrade don't carry the marker and are refused with 401 until they are re-issued. These tokens are short-lived. Reported by Yves Soete of Blacksight LLC (@yssoe).
+
+### Notable fixes
+
+- **OIDC — numeric and boolean admin passwords work again (#8263, #8327).** The settings loader coerces environment-variable values, so `ADMIN_PASSWORD=123456` (for example via `settings.json.docker`) arrives as the number `123456`. The 3.3.6 login check (GHSA-62cj-9j72-mfrh) only accepted string passwords, so these admins could no longer log in. Finite numbers and booleans are now compared as strings. Missing, empty, NaN and non-scalar values are still refused.
+- **Settings — dropdowns open under `prefers-reduced-motion` (#8290, #8328).** With reduced motion enabled, the settings popup kept `transform: scale(1)`. That made the popup the containing block for the dropdown list, so the font and language lists rendered out of view. The popup now uses `transform: none`. Thanks to @kfogel.
+
 # 3.3.7
 
 3.3.7 is a security release. It closes a stored XSS in the pad and timeslider renderer (GHSA-4mx2-rqx5-2pp6).
