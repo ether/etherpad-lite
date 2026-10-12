@@ -341,7 +341,7 @@
 	"pad.gritter.unacceptedCommit.title": "Modifica non salvata",
 	"pad.gritter.unacceptedCommit.text": "La tua ultima modifica non è ancora stata salvata. Riconnettiti e riprova.",
 	"pad.share": "Condividi questo Pad",
-	"pad.share.readonly": "Sola lettura",
+	"pad.share.readonly": "Utilizza il collegamento di sola lettura",
 	"pad.share.link": "Collegamento",
 	"pad.share.emebdcode": "Incorpora URL",
 	"pad.chat": "Chat",
