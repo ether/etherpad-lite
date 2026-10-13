@@ -463,8 +463,8 @@ importers:
         specifier: ^11.0.7
         version: 11.0.7
       nodemailer:
-        specifier: ^10.0.16
-        version: 10.0.16
+        specifier: ^10.1.0
+        version: 10.1.0
       oidc-provider:
         specifier: 9.12.2
         version: 9.12.2(supports-color@8.1.1)
@@ -4569,8 +4569,8 @@ packages:
   nodeify@1.0.1:
     resolution: {integrity: sha512-n7C2NyEze8GCo/z73KdbjRsBiLbv6eBn1FxwYKQ23IqGo7pQY3mhQan61Sv7eEDJCiyUjTVrVkXTzJCo1dW7Aw==}
 
-  nodemailer@10.0.16:
-    resolution: {integrity: sha512-VL9xKErxN+el77o8eBOuYKUPMyEx7F9hfnDCuiUKJRp9v3wnWMOudYgP/SWbwSHy8rUL4cylobuXtki1LpQS7A==}
+  nodemailer@10.1.0:
+    resolution: {integrity: sha512-fXW8AulB25aOTuwfRYV6lqHyfz2VM4rr4SGXH03mE7x5znEUpzL5mu6anARUpZN7744Ziwkmr4AxSLPJsBQspg==}
     engines: {node: '>=20.0.0'}
 
   object-assign@4.1.1:
@@ -10054,7 +10054,7 @@ snapshots:
       is-promise: 1.0.1
       promise: 1.3.0
 
-  nodemailer@10.0.16: {}
+  nodemailer@10.1.0: {}
 
   object-assign@4.1.1: {}
 
