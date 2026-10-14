@@ -158,8 +158,9 @@ describe(__filename, function () {
       const report = await padRetention.sweep(cfgFor());
       assert(report.deleted >= 1);
       assert.equal(await padManager.doesPadExist(oldPad), false);
-      assert.equal(await db.get(`pad:${oldPad}:revs:0`), null);
-      assert.equal(await db.get(`readonly2pad:${roId}`), null);
+      // Missing keys come back as null or undefined depending on the database.
+      assert((await db.get(`pad:${oldPad}:revs:0`)) == null);
+      assert((await db.get(`readonly2pad:${roId}`)) == null);
       assert(await padManager.doesPadExist(freshPad));
     });
 
