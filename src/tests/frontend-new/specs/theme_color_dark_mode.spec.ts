@@ -73,4 +73,20 @@ test.describe('dark color scheme', () => {
           getComputedStyle(document.documentElement).backgroundColor))
         .toBe('rgb(72, 83, 101)');
     });
+
+  test('root colour variables follow the dark background, not the light :root defaults',
+    async ({page}) => {
+      await goToNewPad(page);
+      // pad.css declares the light --bg-color / --text-color on :root after
+      // pad-variants.css is imported, so `.dark-background` on <html> lost to
+      // it at equal specificity and anything inheriting from the root (body
+      // text, the history banner's "Return to live" button) used light-mode
+      // colours in dark mode (#8271).
+      const rootVar = (name: string) => page.evaluate(
+          (n) => getComputedStyle(document.documentElement).getPropertyValue(n).trim(), name);
+      await expect.poll(() => rootVar('--bg-color')).toBe('#576273');
+      await expect.poll(() => rootVar('--text-color')).toBe('white');
+      await expect.poll(() => page.evaluate(() => getComputedStyle(document.body).color))
+        .toBe('rgb(255, 255, 255)');
+    });
 });
