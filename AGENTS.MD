@@ -65,6 +65,14 @@ pnpm --filter ep_etherpad-lite run prod         # Start production server
 - **Don't drop existing affordances when restyling.** A UI refresh that removes `<a href="https://npmjs.com/{plugin}">` links, removes a sort-direction control, or replaces semantic elements with non-focusable divs is a regression even if it looks nicer. Audit the before/after for: focus order, keyboard reachability, external links, aria-labels, alt text.
 - **Tests assert rendered strings + structural affordances.** For UI changes, the Playwright spec must assert at least one rendered translated string (catches broken i18n loading) and one structural affordance you added/preserved (links, toggles, headings).
 
+### UI changes need a human click-through — Mandatory
+Automated tests are not enough for UI. If an AI tool wrote or changed anything a user can see or interact with (a button, popup, form, setting, layout, wording, styling), a human must run it and use it before the PR is opened.
+
+- **Agents: stop and ask before opening the PR.** Start a local instance with the change, tell the human the URL and exactly what to click, and wait for them to say they tried it and are happy with how it looks and behaves. Do not open the PR until they do.
+- **Never tick the click-through checkbox in the PR template yourself.** Only the human who did the click-through ticks it. If they haven't, leave it unticked and say so in the PR description.
+- **Fix what they find first.** Layout, placement, wording and "this should be one click" feedback is the point of the click-through. Address it before the PR, not in review.
+- **A Playwright spec is still required** (see Accessibility above). It covers regressions, not whether the UI is any good.
+
 ### Development Workflow
 - **Branching:** Work in feature branches. Issue PRs against the `develop` branch. Never PR directly to `master`.
 - **Commits:** Maintain a linear history (no merge commits). Use meaningful messages in the format: `submodule: description`.
