@@ -114,3 +114,101 @@ test.describe('pad deletion token', () => {
     await context2.close();
   });
 });
+
+// suppressPadDeletionTokenModal (#7996). The CI server runs with it off, so
+// these flip the flag in clientVars as it arrives, which is all the server
+// setting does. The token itself is the real one the server issued.
+test.describe('pad deletion token with the modal suppressed', () => {
+  test.use({locale: 'en-US'});
+
+  const newPadWithModalSuppressed = async (page: Page) => {
+    await page.addInitScript(() => {
+      let stored: unknown;
+      Object.defineProperty(window, 'clientVars', {
+        configurable: true,
+        get() { return stored; },
+        set(v) {
+          if (v != null && typeof v === 'object') {
+            (v as {suppressPadDeletionTokenModal?: boolean}).suppressPadDeletionTokenModal = true;
+          }
+          stored = v;
+        },
+      });
+    });
+    return await newPadKeepingModal(page);
+  };
+
+  test.beforeEach(async ({context}) => {
+    await context.clearCookies();
+  });
+
+  const toggleRow = (page: Page) => page.locator('#delete-pad-token-reveal');
+  const turnToggle = (page: Page) =>
+    page.locator('label[for="delete-pad-token-toggle"]').click();
+
+  test('no modal; the settings toggle shows and copies a working token, across reloads',
+      async ({page, browser, browserName, context}) => {
+    if (browserName === 'chromium') {
+      await context.grantPermissions(['clipboard-read', 'clipboard-write']);
+    }
+    const padId = await newPadWithModalSuppressed(page);
+    await expect(page.locator('#deletiontoken-modal')).toBeHidden();
+
+    await showSettings(page);
+    // A user setting like the others, not next to the delete buttons.
+    await expect(page.locator('#user-settings-section #delete-pad-token-reveal')).toBeVisible();
+    await expect(page.locator('label[for="delete-pad-token-toggle"]'))
+        .toHaveText('Show and copy deletion token');
+    const panel = page.locator('#delete-pad-token-reveal-panel');
+    const value = page.locator('#delete-pad-token-reveal-value');
+    await expect(panel).toBeHidden();
+
+    await turnToggle(page);
+    await expect(page.locator('#delete-pad-token-toggle')).toBeChecked();
+    await expect(panel).toBeVisible();
+    await expect(page.locator('#delete-pad-token-reveal-status')).toHaveText('Copied');
+    await expect(panel.locator('p')).toHaveText(
+        'This token is the only way to delete this pad if you lose your browser session ' +
+        'or switch device. It is only kept in this browser, so save it somewhere safe.');
+    const token = await value.inputValue();
+    expect(token.length).toBeGreaterThanOrEqual(32);
+    if (browserName === 'chromium') {
+      expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(token);
+    }
+
+    await turnToggle(page);
+    await expect(panel).toBeHidden();
+
+    // The server only sends the token once; it is still offered after a reload.
+    await page.reload();
+    await page.waitForSelector('#editorcontainer.initialized');
+    await showSettings(page);
+    await turnToggle(page);
+    await expect(value).toHaveValue(token);
+
+    // The token shown is the real one: another browser can delete with it.
+    const context2 = await browser.newContext();
+    const page2 = await context2.newPage();
+    await goToPad(page2, padId);
+    await showSettings(page2);
+    await expect(toggleRow(page2)).toBeHidden();
+    await page2.locator('#delete-pad-with-token > summary').click();
+    await page2.locator('#delete-pad-token-input').fill(token);
+    page2.once('dialog', (d) => d.accept());
+    await page2.locator('#delete-pad-token-submit').click();
+    await page2.waitForURL((url) => url.pathname === '/' || url.pathname.endsWith('/index.html'),
+        {timeout: 10000});
+    await context2.close();
+
+    // The creator's browser drops the saved token once the pad is deleted.
+    await expect.poll(() => page.evaluate(
+        (id) => localStorage.getItem(`padDeletionToken:${id}`), padId)).toBeNull();
+  });
+
+  test('not offered when the modal is not suppressed', async ({page}) => {
+    await newPadKeepingModal(page);
+    await page.locator('#deletiontoken-ack').click();
+    await showSettings(page);
+    await expect(toggleRow(page)).toBeHidden();
+  });
+});

@@ -256,11 +256,84 @@ const normalizeChatOptions = (options) => {
   return options;
 };
 
+// When suppressPadDeletionTokenModal is on (#7996) the creator still receives
+// the token in clientVars on first arrival, but the modal that would normally
+// display it is hidden. The server keeps only a hash and never sends the token
+// again, so this browser keeps it (see saveDeletionToken) and offers it as a
+// toggle in the user settings instead: turning it on shows the token and
+// copies it to the clipboard.
+const revealDeletionTokenInSettings = (token: string) => {
+  const $row = $('#delete-pad-token-reveal');
+  if ($row.length === 0) return;
+  const $toggle = $('#delete-pad-token-toggle');
+  const $panel = $('#delete-pad-token-reveal-panel');
+  const $input = $('#delete-pad-token-reveal-value');
+  const $status = $('#delete-pad-token-reveal-status');
+  $row.prop('hidden', false);
+  $toggle.prop('checked', false).off('change.gdpr').on('change.gdpr', async () => {
+    $status.text('');
+    if (!$toggle.prop('checked')) {
+      $input.val('');
+      $panel.prop('hidden', true);
+      return;
+    }
+    $input.val(token);
+    $panel.prop('hidden', false);
+    const input = $input[0] as HTMLInputElement;
+    // Select the value so it can still be copied by hand if the clipboard
+    // write below is refused (e.g. on a non-secure origin).
+    input.select();
+    let copied = false;
+    try {
+      await navigator.clipboard.writeText(token);
+      copied = true;
+    } catch (_e) {
+      input.select();
+      copied = document.execCommand('copy');
+    }
+    if (copied) $status.text(html10n.get('pad.deletionToken.copied'));
+  });
+};
+
+// Under suppressPadDeletionTokenModal the creator may want the token long after
+// the one load it was sent on, so keep it in this browser, keyed by pad. Anyone
+// able to read this storage could already delete the pad as the creator.
+const deletionTokenStorageKey = () => `padDeletionToken:${clientVars.padId}`;
+const saveDeletionToken = (token: string) => {
+  try {
+    localStorage.setItem(deletionTokenStorageKey(), token);
+  } catch (_e) { /* storage unavailable: the toggle lasts this page load only */ }
+};
+const savedDeletionToken = (): string | null => {
+  try {
+    return localStorage.getItem(deletionTokenStorageKey());
+  } catch (_e) {
+    return null;
+  }
+};
+const forgetDeletionToken = () => {
+  try {
+    localStorage.removeItem(deletionTokenStorageKey());
+  } catch (_e) { /* nothing stored */ }
+};
+
 // Surfaces the one-time pad deletion token when the server sends it in
 // clientVars (creator session, first CLIENT_READY). The token is cleared from
 // clientVars on acknowledgement so it is not re-exposed to later code paths.
 const showDeletionTokenModalIfPresent = () => {
-  const token: string | null = (window as any).clientVars?.padDeletionToken;
+  const cv = (window as any).clientVars;
+  // Operators can hide the interrupting modal without widening deletion rights
+  // (issue #7996): the token is still issued and still works, it is offered
+  // from the user settings instead of pushed in the creator's face on arrival.
+  if (cv?.suppressPadDeletionTokenModal) {
+    if (cv.padDeletionToken) saveDeletionToken(cv.padDeletionToken);
+    const saved = cv.padDeletionToken || savedDeletionToken();
+    // Only where this browser can delete the pad, so a token saved for a pad
+    // that was since deleted and recreated by someone else is not offered.
+    if (saved && cv.canDeletePad) revealDeletionTokenInSettings(saved);
+    return;
+  }
+  const token: string | null = cv?.padDeletionToken;
   if (!token) return;
   const $modal = $('#deletiontoken-modal');
   const $input = $('#deletiontoken-value');
@@ -505,7 +578,10 @@ const handshake = async () => {
       }
 
     } else if (obj.disconnect) {
-      if (obj.disconnect === 'deleted') forgetRecentPad();
+      if (obj.disconnect === 'deleted') {
+        forgetRecentPad();
+        forgetDeletionToken();
+      }
       padconnectionstatus.disconnected(obj.disconnect);
       socket.disconnect();
 

@@ -139,6 +139,22 @@
   user-select: all;
 }
 
+#delete-pad-token-reveal-panel p {
+  margin: 0.5rem 0;
+}
+
+#delete-pad-token-reveal-status {
+  display: block;
+  font-weight: bold;
+}
+
+#delete-pad-token-reveal-value {
+  width: 100%;
+  font-family: monospace;
+  padding: 0.4rem;
+  user-select: all;
+}
+
 #delete-pad-with-token {
   margin-top: 0.5rem;
 }
