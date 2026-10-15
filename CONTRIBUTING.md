@@ -8,6 +8,7 @@
 * PRs MUST include a non-empty description explaining what the change does and why
 * PRs without a description should be flagged as incomplete
 * the commit series in the PR should be _linear_ (it **should not contain merge commits**). This is necessary because we want to be able to [bisect](https://en.wikipedia.org/wiki/Bisection_(software_engineering)) bugs easily. Rewrite history/perform a rebase if necessary
+* PRs that add or change UI MUST be clicked through in a browser by the person opening the PR before it is opened, and they tick the "UI changes" checkbox in the PR template to say so. This applies especially when an AI tool wrote the change: passing tests do not show that the UI makes sense
 * PRs should be issued against the **develop** branch: we never pull directly into **master**
 * PRs **should not have conflicts** with develop. If there are, please resolve them rebasing and force-pushing
 * when preparing your PR, please make sure that you have included the relevant **changes to the documentation** (preferably with usage examples)
