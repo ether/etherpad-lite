@@ -139,12 +139,13 @@
   user-select: all;
 }
 
-#delete-pad-token-reveal {
-  margin-bottom: 1rem;
-}
-
 #delete-pad-token-reveal-panel p {
   margin: 0.5rem 0;
+}
+
+#delete-pad-token-reveal-status {
+  display: block;
+  font-weight: bold;
 }
 
 #delete-pad-token-reveal-value {

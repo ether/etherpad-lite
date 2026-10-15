@@ -304,6 +304,24 @@
                 <input type="checkbox" id="options-darkmode">
                 <label for="options-darkmode" data-l10n-id="pad.settings.darkMode">Dark mode</label>
             </p>
+            <!-- When suppressPadDeletionTokenModal is on (#7996) the token is
+                 still issued but the modal that shows it is not. The server
+                 sends the plaintext once and keeps only a hash, so pad.ts keeps
+                 it in this browser and unhides this toggle wherever this
+                 browser can delete the pad. Turning it on shows the token and
+                 copies it to the clipboard. -->
+            <p id="delete-pad-token-reveal" hidden>
+                <input type="checkbox" id="delete-pad-token-toggle"
+                       aria-controls="delete-pad-token-reveal-panel">
+                <label for="delete-pad-token-toggle" data-l10n-id="pad.deletionToken.reveal">Show and copy deletion token</label>
+            </p>
+            <div id="delete-pad-token-reveal-panel" hidden>
+                <p data-l10n-id="pad.deletionToken.revealHelp">This token is the only way to delete this pad if you lose your browser session or switch device. It is only kept in this browser, so save it somewhere safe.</p>
+                <label for="delete-pad-token-reveal-value" class="sr-only"
+                       data-l10n-id="pad.deletionToken.tokenValueLabel">Your pad deletion token (read-only)</label>
+                <input type="text" id="delete-pad-token-reveal-value" readonly>
+                <span id="delete-pad-token-reveal-status" role="status" aria-live="polite"></span>
+            </div>
             <% if (settings.enablePadWideSettings) { %><p id="enforce-settings-notice" class="settings-notice" hidden
                data-l10n-id="pad.settings.enforcedNotice">
               These settings are locked for you by this pad's creator. Ask the pad creator if you need them changed.
@@ -392,22 +410,6 @@
                 <% e.end_block(); %>
               </div>
             </div><% } %>
-          </div>
-          <!-- When suppressPadDeletionTokenModal is on (#7996) the token is
-               still issued but the modal that shows it is not. The server sends
-               the plaintext once and keeps only a hash, so pad.ts unhides this
-               for the session that received it: one click shows the token and
-               copies it to the clipboard. -->
-          <div id="delete-pad-token-reveal" hidden>
-            <button id="delete-pad-token-reveal-button" type="button" class="btn btn-secondary"
-                    aria-controls="delete-pad-token-reveal-panel" aria-expanded="false"
-                    data-l10n-id="pad.deletionToken.reveal">Show and Copy Deletion Token</button>
-            <div id="delete-pad-token-reveal-panel" hidden>
-              <p data-l10n-id="pad.deletionToken.revealHelp">This token is the only way to delete this pad if you lose your browser session or switch device. It is shown only during this session, so save it somewhere safe.</p>
-              <label for="delete-pad-token-reveal-value" class="sr-only"
-                     data-l10n-id="pad.deletionToken.tokenValueLabel">Your pad deletion token (read-only)</label>
-              <input type="text" id="delete-pad-token-reveal-value" readonly>
-            </div>
           </div>
           <!-- Pad deletion is independent of pad-wide settings (issue #7959):
                both controls are always rendered and pad_editor.ts shows exactly
