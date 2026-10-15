@@ -139,4 +139,70 @@ describe(__filename, function () {
       assert(msg.includes('nonexistent'), 'error should mention the path');
     });
   });
+
+  // GHSA-g9xm-3pqr-wcph: uninstalling a plugin whose package.json declares a
+  // dependency key like "zzz/../../../../tmp/x" made LinkInstaller rmSync() /
+  // unlinkSync() a path outside pluginInstallPath / node_modules. Importing
+  // installer first lets the real LinkInstaller instance load despite the
+  // circular import.
+  describe('uninstall path traversal (GHSA-g9xm-3pqr-wcph)', function () {
+    let installer: any;
+    let li: any;
+    let victimDir: string;
+    let victimFile: string;
+    const traversal = (from: string, to: string) =>
+      `zzz/${path.relative(path.join(from, 'zzz'), to)}`;
+
+    before(async function () {
+      installer = await import('../../../static/js/pluginfw/installer');
+      li = installer.linkInstaller;
+    });
+
+    beforeEach(function () {
+      victimDir = path.join(tmpDir, 'victim-dir');
+      fs.mkdirSync(victimDir);
+      fs.writeFileSync(path.join(victimDir, 'marker.txt'), 'keep me');
+      victimFile = path.join(tmpDir, 'victim-file.txt');
+      fs.writeFileSync(victimFile, 'keep me');
+      sinon.stub(console, 'error');
+      sinon.stub(console, 'debug');
+    });
+
+    it('uninstallPlugin does not delete a directory outside pluginInstallPath', async function () {
+      const evil = traversal(installer.pluginInstallPath, victimDir);
+      // This is the path the vulnerable code handed to rmSync().
+      assert.equal(path.join(installer.pluginInstallPath, evil), victimDir);
+      sinon.stub(li.livePluginManager, 'getInfo').returns({
+        name: 'ep_g9xm_poc',
+        version: '1.0.0',
+        location: path.join(installer.pluginInstallPath, 'ep_g9xm_poc'),
+        mainFile: 'index.js',
+        dependencies: {[evil]: 'jashkenas/underscore'},
+        dependencyDetails: {},
+      });
+      sinon.stub(li.livePluginManager, 'uninstall').resolves();
+
+      await li.uninstallPlugin('ep_g9xm_poc');
+
+      assert(fs.existsSync(path.join(victimDir, 'marker.txt')), 'victim dir was deleted');
+    });
+
+    it('sub-dependency removal does not follow a traversal name', async function () {
+      const evil = traversal(installer.pluginInstallPath, victimDir);
+      await li.removeSubDependency('ep_x', evil);
+      await li.unlinkSubDependency('ep_x', evil);
+      li.uninstallDependency(evil);
+
+      assert(fs.existsSync(path.join(victimDir, 'marker.txt')), 'victim dir was deleted');
+    });
+
+    it('unlinkDependency does not unlink a file outside node_modules', function () {
+      const evil = traversal(installer.node_modules, victimFile);
+      assert.equal(path.join(installer.node_modules, evil), victimFile);
+
+      li.unlinkDependency(evil);
+
+      assert(fs.existsSync(victimFile), 'victim file was unlinked');
+    });
+  });
 });
