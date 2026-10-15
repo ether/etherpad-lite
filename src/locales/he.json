@@ -51,7 +51,7 @@
 	"index.transferSessionNow": "העברת הפעלה כעת",
 	"index.copyLink": "2. להעתיק קישור",
 	"index.copyLinkDescription": "לחיצה על הכפתור להלן תעתיק את הקישור ללוח הגזירים שלך.",
-	"index.copyLinkButton": "העתקת קישור ללוח",
+	"index.copyLinkButton": "העתקת קוד ללוח",
 	"index.transferToSystem": "3. העתקת הפעלה למערכת חדשה",
 	"index.transferToSystemDescription": "יש לפתוח את הקישור שהועתק בדפדפן או מכשיר היעד כדי להעביר את ההפעלה שלך.",
 	"index.transferSessionDescription": "אפשר להעביר את ההתחברות הנוכחית שלך לדפדפן או למכשיר בלחיצה על הכפתור שלהלן. הפעולה הזאת תעתיק את הקישור לדף שיעביר את ההפעלה שלך כשייפתח בדפדפן או מכשיר היעד.",

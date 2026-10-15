@@ -43,8 +43,10 @@ test.describe('indentation button', function () {
 
     // type a bit, make a line break and type again. writeToPad uses
     // insertText (one input event per line) which is reliable in
-    // Firefox under WITH_PLUGINS load.
-    await padBody.focus()
+    // Firefox under WITH_PLUGINS load. writeToPad clicks into the pad
+    // first; don't call padBody.focus() before it: in Playwright 1.64's
+    // Firefox, locator.focus() on the editor body leaves later typing on
+    // an indented line with no effect.
     await writeToPad(page, 'line 1\nline 2\n');
 
     const $newSecondLine = padBody.locator('div span').nth(1)

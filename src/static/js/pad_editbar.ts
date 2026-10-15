@@ -144,6 +144,7 @@ exports.padeditbar = new class {
     this.commands = {};
     this.dropdowns = [];
     this._lastTrigger = null;
+    this._openedPopup = false;
   }
 
   init() {
@@ -240,10 +241,14 @@ exports.padeditbar = new class {
     });
   }
   triggerCommand(cmd, item) {
+    this._openedPopup = false;
     if (this.isEnabled() && this.commands[cmd]) {
       this.commands[cmd](cmd, padeditor.ace, item);
     }
-    if (padeditor.ace) padeditor.ace.focus();
+    // A command that opened a popup has already moved focus into it (see
+    // toggleDropDown). Sending focus back to the editor here would undo that,
+    // and Escape and typing would then go to the editor instead of the popup.
+    if (padeditor.ace && !this._openedPopup) padeditor.ace.focus();
   }
 
   // cb is deprecated (this function is synchronous so a callback is unnecessary).
@@ -305,6 +310,7 @@ exports.padeditbar = new class {
       }
 
       if (openedModule) {
+        this._openedPopup = true;
         // Move focus into the now-visible popup so keyboard users land inside the dialog.
         // Skip if a command handler already placed focus inside this popup — the Embed
         // command focuses #linkinput deliberately, which is different from the first

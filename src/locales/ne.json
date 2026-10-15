@@ -353,7 +353,7 @@
 	"pad.gritter.unacceptedCommit.title": "बचत नगरिएको सम्पादन",
 	"pad.gritter.unacceptedCommit.text": "तपाईँको हालको सम्पादन अझै पनि बचत गरिएको छैन । पुन: जडान गर्नुहोस् र फेरि प्रयास गर्नुहोस् ।",
 	"pad.share": "यस प्यडलाई बाड्ने",
-	"pad.share.readonly": "पढ्ने मात्र",
+	"pad.share.readonly": "पढ्ने-मात्र लिङ्क प्रयोग गर्नुहोस्",
 	"pad.share.link": "कडी",
 	"pad.share.emebdcode": "URL थप्ने",
 	"pad.chat": "कुराकानी",
