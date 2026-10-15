@@ -63,6 +63,18 @@ describe(__filename, function () {
       const fp = computeFingerprint('rule.x', SAMPLE, lines.length, lines);
       assert.match(fp, /^[0-9a-f]{64}$/);
     });
+
+    it('does not collide when there is no context to hash', function () {
+      // Missing file: no lines at all.
+      assert.notEqual(
+          computeFingerprint('rule.x', 'gone.ts', 3, []),
+          computeFingerprint('rule.x', 'gone.ts', 9, []));
+      // Lines past the end of the file.
+      const lines = readLines(SAMPLE);
+      assert.notEqual(
+          computeFingerprint('rule.x', SAMPLE, lines.length + 10, lines),
+          computeFingerprint('rule.x', SAMPLE, lines.length + 20, lines));
+    });
   });
 
   describe('aggregate', function () {
@@ -129,6 +141,25 @@ describe(__filename, function () {
       assert.match(out[0].source, /auth-sessions/);
     });
 
+    it('on a severity tie, keeps the higher category whatever order the sources come in', function () {
+      const {aggregate} = require('../../../node/utils/releaseReview/aggregate');
+      const fp = 'a'.repeat(64);
+      const cve = mkFinding({fingerprint: fp, severity: 'high', category: 'cve', message: 'cve'});
+      const bug = mkFinding({fingerprint: fp, severity: 'high', category: 'bug', message: 'bug'});
+      for (const order of [[[cve], [bug]], [[bug], [cve]]]) {
+        const out = aggregate(order, [], 'medium');
+        assert.equal(out.length, 1);
+        assert.equal(out[0].category, 'cve');
+        assert.equal(out[0].message, 'cve');
+      }
+    });
+
+    it('rejects an unknown severity floor instead of dropping everything', function () {
+      const {aggregate} = require('../../../node/utils/releaseReview/aggregate');
+      assert.throws(() => aggregate([[mkFinding({severity: 'high'})]], [], 'meduim'),
+          /severity floor must be one of/);
+    });
+
     it('sorts by severity (high first) then category (cve > bug > perf > supply-chain)', function () {
       const {aggregate} = require('../../../node/utils/releaseReview/aggregate');
       const out = aggregate(
@@ -143,6 +174,39 @@ describe(__filename, function () {
       );
       assert.deepEqual(out.map((f: any) => f.fingerprint[0]), ['c', 'b', 'd', 'a']);
     });
+  });
+
+  describe('prepareFinding', function () {
+    const {prepareFinding} = require('../../../node/utils/releaseReview/aggregate');
+    const raw = (over: any) => ({
+      source: 'auth-sessions', severity: 'high', category: 'bug', line: 6,
+      ruleId: 'auth-sessions.x', message: 'm', ...over,
+    });
+    const reads: string[] = [];
+    const readLinesSpy = (abs: string) => { reads.push(abs); return readLines(abs); };
+    beforeEach(function () { reads.length = 0; });
+
+    it('gives the same file and fingerprint for absolute and repo-relative paths', function () {
+      const fromAbs = prepareFinding(raw({file: SAMPLE}), FIXTURE_DIR, readLinesSpy);
+      const fromRel = prepareFinding(raw({file: 'sample-source.ts'}), FIXTURE_DIR, readLinesSpy);
+      assert.equal(fromAbs.file, 'sample-source.ts');
+      assert.equal(fromRel.file, 'sample-source.ts');
+      assert.equal(fromAbs.fingerprint, fromRel.fingerprint);
+    });
+
+    it('always computes the fingerprint, ignoring one supplied in the input', function () {
+      const out = prepareFinding(
+          raw({file: 'sample-source.ts', fingerprint: 'f'.repeat(64)}), FIXTURE_DIR, readLinesSpy);
+      assert.equal(out.fingerprint,
+          computeFingerprint('auth-sessions.x', 'sample-source.ts', 6, readLines(SAMPLE)));
+    });
+
+    for (const file of ['../../../../package.json', '/etc/passwd', '', undefined]) {
+      it(`refuses ${JSON.stringify(file)} without reading it`, function () {
+        assert.equal(prepareFinding(raw({file}), FIXTURE_DIR, readLinesSpy), null);
+        assert.deepEqual(reads, []);
+      });
+    }
   });
 
   describe('triage', function () {
@@ -343,6 +407,33 @@ describe(__filename, function () {
       const merged = JSON.parse(fs.readFileSync(path.join(runDir, 'merged.json'), 'utf8'));
       assert.equal(merged.length, 1);
       assert.match(merged[0].fingerprint, /^[0-9a-f]{64}$/);
+    });
+
+    it('aggregate exits with an error on an unknown severity floor', function () {
+      this.timeout(15000);
+      const runDir = path.join(tmpDir, 'run-2026-05-09-4');
+      fs.mkdirSync(runDir);
+      const supPath = path.join(tmpDir, 'sup-floor.yml');
+      fs.writeFileSync(supPath, 'findings: []\n');
+      assert.throws(() => execFileSync('node', ['--import', 'tsx', cliPath,
+        'aggregate', runDir, supPath, 'meduim', FIXTURE_DIR], {encoding: 'utf8', stdio: 'pipe'}),
+      (err: any) => err.status === 2 && /severity floor must be/.test(String(err.stderr)));
+      assert.equal(fs.existsSync(path.join(runDir, 'merged.json')), false);
+    });
+
+    it('aggregate skips findings that point outside repoRoot', function () {
+      this.timeout(15000);
+      const runDir = path.join(tmpDir, 'run-2026-05-09-5');
+      fs.mkdirSync(runDir);
+      fs.writeFileSync(path.join(runDir, 'auth-sessions.json'), JSON.stringify({findings: [
+        {source: 'auth-sessions', severity: 'high', category: 'bug', file: '../../../../package.json', line: 1, ruleId: 'x', message: 'escape'},
+        {source: 'auth-sessions', severity: 'high', category: 'bug', file: 'sample-source.ts', line: 6, ruleId: 'x', message: 'inside'},
+      ]}));
+      const supPath = path.join(tmpDir, 'sup-escape.yml');
+      fs.writeFileSync(supPath, 'findings: []\n');
+      runCli(['aggregate', runDir, supPath, 'medium', FIXTURE_DIR]);
+      const merged = JSON.parse(fs.readFileSync(path.join(runDir, 'merged.json'), 'utf8'));
+      assert.deepEqual(merged.map((f: any) => f.message), ['inside']);
     });
 
     it('aggregate resolves repo-relative file paths against repoRoot', function () {

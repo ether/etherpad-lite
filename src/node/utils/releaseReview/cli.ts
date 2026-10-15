@@ -4,10 +4,9 @@ import * as fs from 'fs';
 import * as path from 'path';
 import {nextRunId, todayIso} from './runDir';
 import {loadSuppression, appendSuppression} from './suppression';
-import {aggregate} from './aggregate';
+import {aggregate, isSeverity, prepareFinding} from './aggregate';
 import {classify} from './triage';
 import {writeSummary} from './summary';
-import {computeFingerprint} from './fingerprint';
 import {Finding, Severity, SuppressionEntry} from './types';
 
 const die = (msg: string): never => {
@@ -31,9 +30,11 @@ const cmds: Record<string, (args: string[]) => void> = {
   aggregate: (args) => {
     const [runDir, supPath, floor, repoRoot] = args;
     if (!runDir || !supPath || !floor || !repoRoot) die('usage: aggregate <runDir> <suppressionPath> <severityFloor> <repoRoot>');
+    const severityFloor: Severity = isSeverity(floor)
+      ? floor
+      : die(`severity floor must be high, medium, low or info, got ${floor}`);
     const fileLineCache = new Map<string, string[]>();
-    const readLines = (file: string): string[] => {
-      const abs = path.isAbsolute(file) ? file : path.join(repoRoot, file);
+    const readLines = (abs: string): string[] => {
       if (!fileLineCache.has(abs)) {
         fileLineCache.set(
           abs,
@@ -42,22 +43,26 @@ const cmds: Record<string, (args: string[]) => void> = {
       }
       return fileLineCache.get(abs)!;
     };
-    const enrich = (raw: any): Finding => {
-      // Subagent JSON may be top-level array OR {findings: [...]}.
-      if (raw.fingerprint) return raw;
-      const lines = readLines(raw.file);
-      const fp = computeFingerprint(raw.ruleId, raw.file, raw.line, lines);
-      return {...raw, fingerprint: fp};
-    };
     const findingsArrays: Finding[][] = [];
     for (const name of fs.readdirSync(runDir)) {
       if (!name.endsWith('.json') || name === 'merged.json' || name === 'triage.json') continue;
       const parsed = readJson<any>(path.join(runDir, name));
+      // Subagent JSON may be top-level array OR {findings: [...]}.
       const arr: any[] = Array.isArray(parsed) ? parsed : (parsed.findings ?? []);
-      findingsArrays.push(arr.map(enrich));
+      const prepared: Finding[] = [];
+      for (const raw of arr) {
+        const finding = prepareFinding(raw, repoRoot, readLines);
+        if (finding == null) {
+          process.stderr.write(`release-review-cli: ${name}: skipping finding with file ` +
+              `${JSON.stringify(raw?.file)}: not a path inside ${repoRoot}\n`);
+          continue;
+        }
+        prepared.push(finding);
+      }
+      findingsArrays.push(prepared);
     }
     const sup = loadSuppression(supPath);
-    const merged = aggregate(findingsArrays, sup, floor as Severity);
+    const merged = aggregate(findingsArrays, sup, severityFloor);
     fs.writeFileSync(path.join(runDir, 'merged.json'), JSON.stringify(merged, null, 2));
     process.stdout.write(`wrote ${merged.length} findings to merged.json\n`);
   },

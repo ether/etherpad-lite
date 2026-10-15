@@ -7,7 +7,7 @@ import {createHash} from 'crypto';
  *
  * Inputs:
  *   - ruleId: tool rule or AI rule slug
- *   - file:   repo-relative path (or absolute — caller decides; just be consistent)
+ *   - file:   repo-relative POSIX path (see prepareFinding in aggregate.ts)
  *   - line:   1-indexed line number of the finding
  *   - lines:  full file contents split by '\n'; used to extract a 5-line window
  *             centered on `line` (2 above + the line + 2 below; clamped at edges)
@@ -25,7 +25,11 @@ export const computeFingerprint = (
   const idx = line - 1;
   const start = Math.max(0, idx - 2);
   const end = Math.min(lines.length, idx + 3);
-  const context = lines.slice(start, end).map((l) => l.trim()).join('\n');
+  // With no context to hash (missing file, or a line past the end) fall back to
+  // the line number, so distinct findings in the same file don't collide.
+  const context = start < end
+    ? lines.slice(start, end).map((l) => l.trim()).join('\n')
+    : `no-context:${line}`;
   const payload = `${ruleId}::${file}::${context}`;
   return createHash('sha256').update(payload).digest('hex');
 };
