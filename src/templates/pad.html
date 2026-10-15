@@ -393,6 +393,22 @@
               </div>
             </div><% } %>
           </div>
+          <!-- When suppressPadDeletionTokenModal is on (#7996) the token is
+               still issued but the modal that shows it is not. The server sends
+               the plaintext once and keeps only a hash, so pad.ts unhides this
+               for the session that received it: one click shows the token and
+               copies it to the clipboard. -->
+          <div id="delete-pad-token-reveal" hidden>
+            <button id="delete-pad-token-reveal-button" type="button" class="btn btn-secondary"
+                    aria-controls="delete-pad-token-reveal-panel" aria-expanded="false"
+                    data-l10n-id="pad.deletionToken.reveal">Show and Copy Deletion Token</button>
+            <div id="delete-pad-token-reveal-panel" hidden>
+              <p data-l10n-id="pad.deletionToken.revealHelp">This token is the only way to delete this pad if you lose your browser session or switch device. It is shown only during this session, so save it somewhere safe.</p>
+              <label for="delete-pad-token-reveal-value" class="sr-only"
+                     data-l10n-id="pad.deletionToken.tokenValueLabel">Your pad deletion token (read-only)</label>
+              <input type="text" id="delete-pad-token-reveal-value" readonly>
+            </div>
+          </div>
           <!-- Pad deletion is independent of pad-wide settings (issue #7959):
                both controls are always rendered and pad_editor.ts shows exactly
                the one that applies. #delete-pad (token-less) is shown when
@@ -408,20 +424,6 @@
             <input type="password" id="delete-pad-token-input" autocomplete="off" spellcheck="false">
             <button id="delete-pad-token-submit" type="button" class="btn btn-danger"
                     data-l10n-id="pad.settings.deletePad">Delete pad</button>
-          </details>
-          <!-- When the modal is suppressed (#7996) the token is still issued
-               but never pushed in the creator's face. The server only ever
-               sends the plaintext once and keeps a hash, so offer the value
-               this session already holds on demand. Shown by pad.ts only for
-               the session that received a token under suppression. -->
-          <details id="delete-pad-token-reveal" hidden>
-            <summary data-l10n-id="pad.deletionToken.reveal">Show the pad deletion token</summary>
-            <p data-l10n-id="pad.deletionToken.revealHelp">This token is the only way to delete this pad if you lose your browser session or switch device. It is shown only during this session, so save it somewhere safe.</p>
-            <div class="deletiontoken-row">
-              <input type="text" id="delete-pad-token-reveal-value" readonly>
-              <button id="delete-pad-token-reveal-copy" type="button" aria-live="polite"
-                      data-l10n-id="pad.deletionToken.copy">Copy</button>
-            </div>
           </details>
         <h2 data-l10n-id="pad.settings.about">About</h2>
           <span data-l10n-id="pad.settings.poweredBy">Powered by</span>

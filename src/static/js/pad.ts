@@ -259,24 +259,33 @@ const normalizeChatOptions = (options) => {
 // When suppressPadDeletionTokenModal is on (#7996) the creator still receives
 // the token in clientVars on first arrival, but the modal that would normally
 // display it is hidden. The server keeps only a hash, so if the creator does
-// not save it during this session it can never be recovered. Expose it in the
-// pad settings panel instead of interrupting them: fill the reveal input and
-// unhide the disclosure so it can be opened, read and copied on demand. Only
-// the session that actually received a token under suppression gets this.
+// not save it during this session it can never be recovered. Offer it in the
+// pad settings panel instead: one click shows the token and copies it to the
+// clipboard. Only the session that received a token under suppression gets
+// this.
 const revealDeletionTokenInSettings = (token: string) => {
-  const $details = $('#delete-pad-token-reveal');
-  if ($details.length === 0) return;
-  $('#delete-pad-token-reveal-value').val(token);
-  $details.prop('hidden', false);
-  $('#delete-pad-token-reveal-copy').off('click.gdpr').on('click.gdpr', async () => {
-    const $copy = $('#delete-pad-token-reveal-copy');
+  const $reveal = $('#delete-pad-token-reveal');
+  if ($reveal.length === 0) return;
+  const $button = $('#delete-pad-token-reveal-button');
+  const $input = $('#delete-pad-token-reveal-value');
+  $reveal.prop('hidden', false);
+  $button.off('click.gdpr').on('click.gdpr', async () => {
+    $input.val(token);
+    $('#delete-pad-token-reveal-panel').prop('hidden', false);
+    $button.attr('aria-expanded', 'true');
+    const input = $input[0] as HTMLInputElement;
+    // Select the value so it can still be copied by hand if the clipboard
+    // write below is refused (e.g. on a non-secure origin).
+    input.select();
+    let copied = false;
     try {
       await navigator.clipboard.writeText(token);
+      copied = true;
     } catch (_e) {
-      ($('#delete-pad-token-reveal-value')[0] as HTMLInputElement).select();
-      document.execCommand('copy');
+      input.select();
+      copied = document.execCommand('copy');
     }
-    $copy.text(html10n.get('pad.deletionToken.copied'));
+    if (copied) $button.text(html10n.get('pad.deletionToken.copied'));
   });
 };
 

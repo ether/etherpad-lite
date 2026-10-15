@@ -34,7 +34,7 @@ describe(__filename, function () {
       plugins.hooks[hookName] = [];
     }
     backups.settings = {};
-    for (const setting of ['editOnly', 'requireAuthentication', 'requireAuthorization', 'users', 'enablePadWideSettings', 'allowPadDeletionByAllUsers']) {
+    for (const setting of ['editOnly', 'requireAuthentication', 'requireAuthorization', 'users', 'enablePadWideSettings', 'allowPadDeletionByAllUsers', 'suppressPadDeletionTokenModal']) {
       // @ts-ignore
       backups.settings[setting] = settings[setting];
     }
