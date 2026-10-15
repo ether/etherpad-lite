@@ -357,3 +357,14 @@ spec:
         h2UpgradePolicy: UPGRADE
         http1MaxPendingRequests: 1000
 ```
+
+## One-click template on Pethost
+
+[Pethost](https://pethost.dev) has a one-click template for Etherpad:
+https://pethost.dev/templates/etherpad/
+
+It follows the [ready to use Docker Compose](./docker.md#ready-to-use-docker-compose)
+file: the `etherpad/etherpad` image with `DB_TYPE=postgres` and a PostgreSQL
+container, volumes for `src/plugin_packages` and `var`, and `TRUST_PROXY=true`,
+since Pethost's proxy terminates HTTPS and forwards WebSockets. It asks for the
+admin password at deploy; `admin` signs in to `/admin` with it.
