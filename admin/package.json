@@ -14,7 +14,7 @@
     "test": "pnpm gen:api && tsx --test 'src/**/__tests__/*.test.ts' 'src/**/__tests__/*.test.tsx'"
   },
   "dependencies": {
-    "@radix-ui/react-switch": "^1.4.0",
+    "@radix-ui/react-switch": "^1.4.1",
     "@tanstack/react-query": "^5.104.2",
     "@tanstack/react-query-devtools": "^5.104.2",
     "jsonc-parser": "^3.3.1",
