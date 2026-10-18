@@ -38,7 +38,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v7
         with:
-            repository: ether/etherpad-lite
+            repository: ether/etherpad
             path: etherpad
             token: ${{ steps.app-token.outputs.token || secrets.ETHER_RELEASE_TOKEN }}
             fetch-depth: '0'
