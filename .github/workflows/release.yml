@@ -21,12 +21,26 @@ jobs:
   releases:
     runs-on: ubuntu-latest
     steps:
+      # Prefer a short-lived token from the "Etherpad Release Bot" GitHub App:
+      # app credentials don't expire, unlike the ETHER_RELEASE_TOKEN PAT. Until
+      # the RELEASE_APP_ID variable is set this step is skipped and the PAT is
+      # used. The built-in GITHUB_TOKEN won't do: tags pushed with it don't
+      # trigger the Docker, .deb, snap and GitHub Release workflows.
+      - name: Get release token from GitHub App
+        id: app-token
+        if: vars.RELEASE_APP_ID != ''
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ vars.RELEASE_APP_ID }}
+          private-key: ${{ secrets.RELEASE_APP_PRIVATE_KEY }}
+          owner: ether
+          repositories: etherpad,ether.github.com
       - name: Checkout repository
         uses: actions/checkout@v7
         with:
-            repository: ether/etherpad-lite
+            repository: ether/etherpad
             path: etherpad
-            token: '${{ secrets.ETHER_RELEASE_TOKEN }}'
+            token: ${{ steps.app-token.outputs.token || secrets.ETHER_RELEASE_TOKEN }}
             fetch-depth: '0'
             fetch-tags: 'true'
       - name: Checkout master
@@ -46,7 +60,7 @@ jobs:
         with:
           repository: ether/ether.github.com
           path: ether.github.com
-          token: '${{ secrets.ETHER_RELEASE_TOKEN }}'
+          token: ${{ steps.app-token.outputs.token || secrets.ETHER_RELEASE_TOKEN }}
       - uses: actions/cache@v6
         name: Cache pnpm store
         with:
