@@ -148,6 +148,7 @@ describe(__filename, function () {
   describe('uninstall path traversal (GHSA-g9xm-3pqr-wcph)', function () {
     let installer: any;
     let li: any;
+    let victimRoot: string;
     let victimDir: string;
     let victimFile: string;
     const traversal = (from: string, to: string) =>
@@ -159,13 +160,22 @@ describe(__filename, function () {
     });
 
     beforeEach(function () {
-      victimDir = path.join(tmpDir, 'victim-dir');
+      // Keep the victims next to the plugin folder rather than in os.tmpdir():
+      // on Windows CI the temp dir is on a different drive, so no relative
+      // traversal path to it exists.
+      victimRoot = fs.mkdtempSync(
+          path.join(path.dirname(installer.pluginInstallPath), '.g9xm-victim-'));
+      victimDir = path.join(victimRoot, 'victim-dir');
       fs.mkdirSync(victimDir);
       fs.writeFileSync(path.join(victimDir, 'marker.txt'), 'keep me');
-      victimFile = path.join(tmpDir, 'victim-file.txt');
+      victimFile = path.join(victimRoot, 'victim-file.txt');
       fs.writeFileSync(victimFile, 'keep me');
       sinon.stub(console, 'error');
       sinon.stub(console, 'debug');
+    });
+
+    afterEach(function () {
+      fs.rmSync(victimRoot, {recursive: true, force: true});
     });
 
     it('uninstallPlugin does not delete a directory outside pluginInstallPath', async function () {
