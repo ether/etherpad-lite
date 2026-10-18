@@ -39,6 +39,7 @@ import settings, {
 import {anonymizeIp} from '../utils/anonymizeIp';
 import {isAcceptingConnections} from '../updater/SessionDrainer';
 import {SYSTEM_AUTHOR_ID, isSystemAuthor} from '../utils/SystemAuthor';
+import {checkOnOpen as checkPadRetentionOnOpen} from '../utils/PadRetention';
 const logIp = (ip: string | null | undefined) => anonymizeIp(ip, settings.ipLogging);
 const securityManager = require('../db/SecurityManager');
 const plugins = require('../../static/js/pluginfw/plugin_defs');
@@ -1164,6 +1165,10 @@ const handleClientReady = async (socket:any, message: ClientReadyMessage) => {
   ]);
   ({colorId: authorColorId, name: authorName} = await authorManager.getAuthor(sessionInfo.author));
 
+  // Pad retention: an overdue pad is deleted here, before it loads, so the
+  // client gets a new pad rather than content that should already be gone.
+  const padRetention = await checkPadRetentionOnOpen(sessionInfo.padId);
+
   const padExisted = await padManager.doesPadExist(sessionInfo.padId);
   // load the pad-object from the database
   const pad = await padManager.getPad(sessionInfo.padId, null, sessionInfo.author);
@@ -1393,10 +1398,17 @@ const handleClientReady = async (socket:any, message: ClientReadyMessage) => {
       // "Delete with token" (issue #7926). See showDeletionTokenModalIfPresent.
       canDeleteWithoutToken,
       canDeletePad,
+      // When true the client skips the one-time "Save your pad deletion token"
+      // modal even though a token was issued (issue #7996). The token stays in
+      // padDeletionToken below so a client that wants to surface it elsewhere
+      // (e.g. a settings panel) still can; only the interrupting modal is
+      // suppressed.
+      suppressPadDeletionTokenModal: settings.suppressPadDeletionTokenModal,
       // Allow-listed copy — settings.privacyBanner could carry extra nested
       // keys from a hand-edited settings.json; sending those by reference
       // would leak them to every browser. See getPublicPrivacyBanner().
       privacyBanner: getPublicPrivacyBanner(),
+      padRetention,
       automaticReconnectionTimeout: settings.automaticReconnectionTimeout,
       initialRevisionList: [],
       initialOptions: pad.getPadSettings(),

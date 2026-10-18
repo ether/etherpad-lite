@@ -69,6 +69,10 @@ export type ClientVarPayload = {
     learnMoreUrl: string | null,
     dismissal: 'dismissible' | 'sticky',
   },
+  // Set by pad retention (settings.padRetention); null when there's nothing to tell the user.
+  padRetention?: null |
+    {state: 'expiring', msRemaining: number} |
+    {state: 'expired', deleteAfterDays: number},
   padId: string,
   colorPalette: string[],
   accountPrivs: {
@@ -96,6 +100,7 @@ export type ClientVarPayload = {
   numConnectedUsers: number
   canDeletePad?: boolean,
   padDeletionToken?: string | null,
+  suppressPadDeletionTokenModal?: boolean,
   sofficeAvailable: string
   plugins: {
     plugins:  MapArrayType<any>

@@ -11,3 +11,8 @@ If you're making a big change, please explain what problem it solves:
 - Show the current vs desired behavior with screenshots/GIFs.
 
 -->
+
+### UI changes
+
+- [ ] This PR doesn't add or change anything users see or interact with.
+- [ ] This PR changes the UI, and I clicked through it myself in a browser and I'm happy with the UI/UX. If an AI tool wrote any of it, only tick this after you've tried it yourself.

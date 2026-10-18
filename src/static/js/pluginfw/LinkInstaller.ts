@@ -5,6 +5,7 @@ import {accessSync, constants, rmSync, symlinkSync, unlinkSync} from "node:fs";
 import {dependencies, name} from '../../../package.json'
 import settings from '../../../node/utils/Settings';
 import {readFileSync} from "fs";
+import {isValidDependencyName, resolveDependencyPath} from "./dependencyPath";
 
 export class LinkInstaller {
   private livePluginManager: PluginManager;
@@ -92,6 +93,11 @@ export class LinkInstaller {
   }
 
   private async removeSubDependency(_name: string, dependency:string) {
+    const dependencyPath = resolveDependencyPath(pluginInstallPath, dependency)
+    if (dependencyPath == null) {
+      console.error(`Skipping plugin dependency with invalid name: ${dependency}`)
+      return
+    }
     if (this.dependenciesMap.has(dependency)) {
       console.debug(`Dependency ${dependency} is still being used by other plugins`)
       return
@@ -99,7 +105,7 @@ export class LinkInstaller {
     // Read sub dependencies
     try {
       const json:IPluginInfo = JSON.parse(
-        readFileSync(path.join(pluginInstallPath, dependency, 'package.json'), 'utf-8'));
+        readFileSync(path.join(dependencyPath, 'package.json'), 'utf-8'));
       if(json.dependencies){
         for (let [subDependency] of Object.entries(json.dependencies)) {
           await this.removeSubDependency(dependency, subDependency)
@@ -110,11 +116,16 @@ export class LinkInstaller {
   }
 
   private uninstallDependency(dependency: string) {
+    const dependencyPath = resolveDependencyPath(pluginInstallPath, dependency)
+    if (dependencyPath == null) {
+      console.error(`Skipping plugin dependency with invalid name: ${dependency}`)
+      return
+    }
     try {
       console.debug(`Uninstalling dependency ${dependency}`)
       // Check if the dependency is already installed
-      accessSync(path.join(pluginInstallPath, dependency), constants.F_OK)
-      rmSync(path.join(pluginInstallPath, dependency), {
+      accessSync(dependencyPath, constants.F_OK)
+      rmSync(dependencyPath, {
         force: true,
         recursive: true
       })
@@ -146,6 +157,11 @@ export class LinkInstaller {
   }
 
   private async unlinkSubDependency(plugin: string, dependency: string) {
+    const dependencyPath = resolveDependencyPath(pluginInstallPath, dependency)
+    if (dependencyPath == null) {
+      console.error(`Skipping plugin dependency with invalid name: ${dependency}`)
+      return
+    }
     if (this.dependenciesMap.has(dependency)) {
       this.dependenciesMap.get(dependency)?.delete(plugin)
       if (this.dependenciesMap.get(dependency)!.size > 0) {
@@ -157,7 +173,7 @@ export class LinkInstaller {
     // Read sub dependencies
     try {
       const json:IPluginInfo = JSON.parse(
-        readFileSync(path.join(pluginInstallPath, dependency, 'package.json'), 'utf-8'));
+        readFileSync(path.join(dependencyPath, 'package.json'), 'utf-8'));
       if(json.dependencies){
         for (let [subDependency] of Object.entries(json.dependencies)) {
           await this.unlinkSubDependency(dependency, subDependency)
@@ -177,17 +193,8 @@ export class LinkInstaller {
     }
   }
 
-  // A dependency name comes from a plugin's package.json and is used to build
-  // filesystem paths (readFileSync / symlinkSync), so validate it is a plain npm
-  // package name (optional scope, no path separators or "..") before use.
-  private isValidDependencyName(dependency: string): boolean {
-    return typeof dependency === 'string' &&
-      !dependency.includes('..') &&
-      /^(@[a-z0-9-._~]+\/)?[a-z0-9-._~]+$/i.test(dependency);
-  }
-
   private async addSubDependency(plugin: string, dependency: string) {
-    if (!this.isValidDependencyName(dependency)) {
+    if (!isValidDependencyName(dependency)) {
       console.error(`Skipping plugin dependency with invalid name: ${dependency}`)
       return
     }
@@ -214,7 +221,7 @@ export class LinkInstaller {
   }
 
   private linkDependency(dependency: string) {
-    if (!this.isValidDependencyName(dependency)) {
+    if (!isValidDependencyName(dependency)) {
       console.error(`Skipping plugin dependency with invalid name: ${dependency}`)
       return
     }
@@ -236,10 +243,15 @@ export class LinkInstaller {
   }
 
   private unlinkDependency(dependency: string) {
+    const linkPath = resolveDependencyPath(node_modules, dependency)
+    if (linkPath == null) {
+      console.error(`Skipping plugin dependency with invalid name: ${dependency}`)
+      return
+    }
     try {
       // Check if the dependency is already installed
-      accessSync(path.join(node_modules, dependency), constants.F_OK)
-      unlinkSync(path.join(node_modules, dependency))
+      accessSync(linkPath, constants.F_OK)
+      unlinkSync(linkPath)
     } catch (err) {
       // Symlink does not exist
       // So nothing to do
