@@ -1,3 +1,30 @@
+# 3.3.9
+
+3.3.9 is a security and feature release. It closes a path traversal in plugin uninstall (GHSA-g9xm-3pqr-wcph), adds built-in pad retention, and ships a batch of fixes.
+
+### Security
+
+- **Plugins — dependency names are validated on uninstall as well as install (GHSA-g9xm-3pqr-wcph).** GHSA-92hr-gmr6-h8cp made the plugin installer validate dependency names on install, but the uninstall path still passed the raw `package.json` dependency key to `rmSync`/`unlinkSync`. A plugin declaring a dependency named like `zzz/../../..` could therefore delete a directory outside the plugin folder when an admin uninstalled it. Every install and uninstall path now resolves dependency paths through one helper that refuses names that escape the plugin directory. Exploiting it needs an admin to install and then uninstall the malicious plugin. Reported by @baeseungwon1010.
+
+### New features
+
+- **Pad retention — delete pads nobody has edited for N days (#8340).** A new `padRetention` setting replaces the unmaintained `ep_delete_after_delay` plugin without its HTML archive copies or tombstone pads. It is off by default and, once enabled, only logs `would delete pad <id>` until `dryRun` is set to `false`. A periodic sweep reads each pad's last-edit time straight from the database without loading pads into the cache, and an overdue pad is also deleted when someone opens it instead of showing stale content. Deletion uses the same path as the `deletePad` API. Options: `deleteAfterDays`, `warnBeforeDays`, `sweepIntervalHours`, `excludeGroupPads` and `excludePattern`.
+- **Settings — hide the deletion-token modal without widening deletion rights (#7996, #8319).** The new `suppressPadDeletionTokenModal` setting (`SUPPRESS_PAD_DELETION_TOKEN_MODAL` in the container image) stops the one-time "Save your pad deletion token" modal from appearing. Until now the only way to hide it was `allowPadDeletionByAllUsers: true`, which also let any editor delete the pad. The token is still issued and still works, and non-creators still can't delete. Thanks to @sirsqm.
+
+### Notable fixes
+
+- **Performance — fonts are no longer inlined into the minified CSS (#8268, #8314).** The pad stylesheet embedded every editor and icon font as base64, so `pad.css` was about 1.7 MB and every visitor downloaded all of it before the pad rendered. Fonts are now fetched separately and only when used, and `pad.css` is about 61 KB. Thanks to @sirsqm.
+- **Toolbar — a popup opened from the toolbar keeps focus (#8345).** The editor grabbed focus back after every toolbar command, so in current Firefox Escape didn't close the settings or users popup and typing a name didn't reach the name field.
+- **Colibris — dark mode colours apply everywhere (#8271).** The light `--text-color` and `--bg-color` values could override the dark ones on elements outside the editor, such as the history banner. Thanks to @bobmullut.
+- **Session transfer — failed requests are reported as failures (#8172, #8273).** Errors from the session transfer endpoint were treated as success. They now show a localized error, and a retry clears it. Thanks to @toashu123.
+- **Share dialog — "Read only" is now "Use read-only link" (#8181, #8326).** The checkbox switches which link and embed code you copy; it never locked the pad. The new label and an accessible description say so. Thanks to @jum-apzn.
+- **Docker — `--build-arg PnpmVersion` is honoured again (#8210, #8320).** Thanks to @sirsqm.
+
+### Other changes
+
+- Localisation updates from translatewiki.net.
+- Dependency updates, including express 5.3.0, ejs 7.0.1, nodemailer 10.1.1, surrealdb 2.1.1, mssql 12.7.9 and ueberdb2 6.1.18.
+
 # 3.3.8
 
 3.3.8 is a security release. It closes an HTTP API privilege escalation for instances using the built-in OIDC provider with API clients (GHSA-38vj-95q4-gwvx).
