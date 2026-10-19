@@ -112,6 +112,7 @@
 	"pad.settings.language": "اللغة:",
 	"pad.settings.deletePad": "حذف الوسادة",
 	"pad.delete.confirm": "هل تريد حقا حذف هذه الوسادة؟",
+	"pad.deletionToken.reveal": "عرض ونسخ رمز الحذف",
 	"pad.settings.about": "حول",
 	"pad.settings.poweredBy": "مدعوم من",
 	"pad.importExport.import_export": "استيراد/تصدير",
