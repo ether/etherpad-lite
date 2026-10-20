@@ -107,12 +107,11 @@ describe(__filename, function () {
     });
 
     it('points every external font URL at a file that exists', function () {
-      // The URLs are authored in src/static/css/pad/*.css (fonts.css,
-      // icons.css) and esbuild emits them verbatim. Browsers resolve them from
-      // the served location /static/css/pad.css to /static/font/..., which the
-      // server maps back to src/static/font/... — the same file this resolves
-      // to from the authoring directory.
-      const cssDir = path.join(repoRoot, 'src/static/css/pad');
+      // The URLs are rebased onto the directory of src/static/css/pad.css, the
+      // bundled stylesheet, and esbuild emits them as-is. Browsers resolve
+      // them from the served location /static/css/pad.css to /static/font/...,
+      // which the server maps back to src/static/font/....
+      const cssDir = path.join(repoRoot, 'src/static/css');
       const urls = [...css.matchAll(externalFontPattern)].map((m) => m[1]);
       assert.ok(urls.length > 0, 'expected at least one external font URL');
       for (const url of urls) {
@@ -120,6 +119,22 @@ describe(__filename, function () {
         assert.ok(
             fs.existsSync(resolved),
             `font URL ${url} does not resolve to an existing file (${resolved})`);
+      }
+    });
+
+    it('keeps every external font URL under the served static root', function () {
+      // A deployment behind a subpath (x-proxy-path / X-Forwarded-Prefix)
+      // serves the stylesheet at e.g. /etherpad/static/css/pad.css. Only URLs
+      // relative to the stylesheet stay under that prefix; the authored
+      // ../../../static/font URLs escaped it and 404ed every font.
+      const stylesheet = 'http://localhost/etherpad/static/css/pad.css';
+      const urls = [...css.matchAll(externalFontPattern)].map((m) => m[1]);
+      assert.ok(urls.length > 0, 'expected at least one external font URL');
+      for (const url of urls) {
+        const {pathname} = new URL(url, stylesheet);
+        assert.ok(
+            pathname.startsWith('/etherpad/static/'),
+            `font URL ${url} resolves to ${pathname}, outside the served static root`);
       }
     });
   });
