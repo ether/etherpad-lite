@@ -362,7 +362,7 @@
 	"pad.gritter.unacceptedCommit.title": "저장되지 않은 편집",
 	"pad.gritter.unacceptedCommit.text": "최근 편집이 아직 저장되지 않았습니다. 다시 연결하고 다시 시도하세요.",
 	"pad.share": "이 패드 공유하기",
-	"pad.share.readonly": "읽기 전용",
+	"pad.share.readonly": "읽기 전용 링크 사용하기",
 	"pad.share.link": "링크",
 	"pad.share.emebdcode": "URL 포함",
 	"pad.chat": "대화",

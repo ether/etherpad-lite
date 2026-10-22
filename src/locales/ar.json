@@ -159,7 +159,7 @@
 	"pad.gritter.unacceptedCommit.title": "تعديل غير محفوظ",
 	"pad.gritter.unacceptedCommit.text": "لم يتم حفظ تعديلك الأخير بعد. أعد الاتصال وحاول مرة أخرى.",
 	"pad.share": "شارك هذه الباد",
-	"pad.share.readonly": "للقراءة فقط",
+	"pad.share.readonly": "استخدم رابط القراءة فقط",
 	"pad.share.link": "وصلة",
 	"pad.share.emebdcode": "URL للتضمين",
 	"pad.chat": "دردشة",
