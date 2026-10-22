@@ -116,7 +116,7 @@
     "@types/oidc-provider": "^9.12.1",
     "@types/pdfkit": "^0.17.6",
     "@types/semver": "^7.8.0",
-    "@types/sinon": "^22.0.0",
+    "@types/sinon": "^22.0.1",
     "@types/supertest": "^7.2.1",
     "@types/underscore": "^1.13.0",
     "@types/whatwg-mimetype": "^5.0.0",
