@@ -3,6 +3,7 @@
  * Worker thread to minify JS & CSS files out of the main NodeJS thread
  */
 
+import path from 'node:path';
 import {build, transform} from 'esbuild';
 import type {Plugin} from 'esbuild';
 
@@ -27,29 +28,44 @@ const fontUrlPattern = /\.(ttf|otf|woff2?|eot)(\?.*)?$/i;
   * had to download (and re-download on each upgrade) before the pad could
   * render. Keeping the URLs external lets the browser fetch only the fonts it
   * actually uses, lazily, and cache them separately from the CSS.
- */
-const externalFonts: Plugin = {
+  *
+  * External URLs are emitted verbatim, so relative paths are rebased onto the
+  * directory of the bundled stylesheet: the authored paths are relative to the
+  * importing file, which only resolves correctly when the bundle happens to be
+  * served from the document root. Rebased URLs stay correct under a subpath
+  * prefix because served files mirror their layout under `src/static`. Query
+  * strings and fragments (`?2`, `#iefix`) are part of the last path segment,
+  * so rebasing keeps them.
+  */
+const externalFonts = (entryDir: string): Plugin => ({
   name: 'external-fonts',
   setup: (b) => {
-    b.onResolve({filter: fontUrlPattern}, (args) => ({
-      path: args.path,
-      external: true,
-    }));
+    const root = new URL('http://url.invalid/');
+    b.onResolve({filter: fontUrlPattern}, (args) => {
+      const url = URL.parse(args.path, root);
+      // Absolute URLs (`http://…`, `//host/…`, `/root-relative`) are emitted as-is.
+      if (url == null || url.origin !== root.origin || path.isAbsolute(args.path)) {
+        return {path: args.path, external: true};
+      }
+      const rebased = path
+        .relative(entryDir, path.resolve(args.resolveDir, args.path))
+        .split(path.sep).join('/');
+      return {path: rebased, external: true};
+    });
   },
-};
+});
 
 /*
   * Minify CSS content
   * @param {string} filename - name of the file
-  * @param {string} ROOT_DIR - the root dir of Etherpad
  */
-export const compressCSS = async (content: string) => {
+export const compressCSS = async (filename: string) => {
   const transformedCSS = await build(
     {
-      entryPoints: [content],
+      entryPoints: [filename],
       minify: true,
       bundle: true,
-      plugins: [externalFonts],
+      plugins: [externalFonts(path.dirname(path.resolve(filename)))],
       loader:{
         '.jpg': 'dataurl',
         '.png': 'dataurl',
