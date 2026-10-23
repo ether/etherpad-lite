@@ -53,6 +53,24 @@ const run = (cmd: string, opts = {}) => childProcess.execSync(cmd, {stdio: 'inhe
 
 const readJson = (filename: string) => JSON.parse(fs.readFileSync(filename, {encoding: 'utf8', flag: 'r'}));
 
+const releasePackageFiles = ['package.json', 'src/package.json', 'admin/package.json', 'bin/package.json'];
+
+const mergeDevelopIntoMaster = () => {
+  try {
+    run('git merge --no-ff --no-edit develop');
+  } catch (err) {
+    const conflicts = runc('git diff --name-only --diff-filter=U')
+        .split('\n')
+        .filter(Boolean);
+    if (conflicts.length === 0 || conflicts.some((file) => !releasePackageFiles.includes(file))) throw err;
+
+    console.warn('Resolving release version conflicts in favor of develop...');
+    const files = conflicts.join(' ');
+    run(`git checkout --theirs -- ${files}`);
+    run(`git add -- ${files}`);
+    run('git commit --no-edit');
+  }
+};
 const assertWorkDirClean = (opts:{
     cwd?: string;
 } = {}) => {
@@ -172,7 +190,7 @@ try {
   console.log('Updating master branch...');
   run('git pull --ff-only');
   console.log('Merging develop into master...');
-  run('git merge --no-ff --no-edit develop');
+  mergeDevelopIntoMaster();
   console.log(`Creating ${newVersion} tag...`);
   run(`git tag -a '${newVersion}' -m '${newVersion}'`);
   run(`git tag -a 'v${newVersion}' -m 'v${newVersion}'`);
