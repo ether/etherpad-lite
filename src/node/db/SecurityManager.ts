@@ -123,6 +123,10 @@ exports.checkAccess = async (padID:string, sessionCookie:string, token:string, u
     return DENY;
   }
 
+  // Never look up a missing token: `token2author:null` would be one author
+  // shared by every client without a token cookie.
+  if (token == null) token = padutils.generateAuthorToken();
+
   const grant = {
     accessStatus: 'grant',
     authorID: sessionAuthorID || await authorManager.getAuthorId(token, userSettings),
