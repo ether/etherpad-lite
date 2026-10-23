@@ -1,3 +1,9 @@
+# 3.3.10
+
+### Security
+
+- This is a security release to mitigate some CVEs recently discovered in Node (https://nodejs.org/en/blog/vulnerability/october-2026-security-releases). The recommended version is Node 24.22.1 and above
+
 # 3.3.9
 
 3.3.9 is a security and feature release. It closes a path traversal in plugin uninstall (GHSA-g9xm-3pqr-wcph), adds built-in pad retention, and ships a batch of fixes.
