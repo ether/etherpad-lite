@@ -114,7 +114,7 @@
     "@types/node": "^26.6.5",
     "@types/nodemailer": "^8.0.2",
     "@types/oidc-provider": "^9.12.1",
-    "@types/pdfkit": "^0.17.6",
+    "@types/pdfkit": "^0.17.7",
     "@types/semver": "^7.8.0",
     "@types/sinon": "^22.0.1",
     "@types/supertest": "^7.2.1",
