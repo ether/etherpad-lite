@@ -1,3 +1,11 @@
+# 3.3.11
+
+3.3.11 is a security release. It stops clients that connect without an author token from all sharing one author (GHSA-746x-9w89-7xv6).
+
+### Security
+
+- **Pads — clients without an author token no longer share one author (GHSA-746x-9w89-7xv6).** Since the author token moved to an HttpOnly cookie, a pad connection that carried neither the cookie nor a legacy token resolved its token to `null`, and every such client was mapped to the same `token2author:null` author. Unrelated users (for example behind cookie blockers or in cross-site embeds) then appeared as one author and kicked each other off, and any of them counted as the creator of a pad another one had created, so they could delete it or change its pad-wide settings. A connection without a token now gets a fresh one for that session, and the access check does the same for HTTP callers such as import. Reported by @MaBeFHDW.
+
 # 3.3.10
 
 ### Security
