@@ -161,7 +161,11 @@ const getAuthor4Token = async (token: string) => {
 exports.getAuthorId = async (token: string, user: object) => {
   const context = {dbKey: token, token, user};
   let [authorId] = await hooks.aCallFirst('getAuthorId', context);
-  if (!authorId) authorId = await getAuthor4Token(context.dbKey);
+  if (!authorId) {
+    // Never look up a missing token: `token2author:null` would be one author
+    // shared by every client that has no token.
+    authorId = await getAuthor4Token(context.dbKey ?? padutils.generateAuthorToken());
+  }
   return authorId;
 };
 

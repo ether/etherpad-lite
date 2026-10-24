@@ -123,14 +123,16 @@ exports.checkAccess = async (padID:string, sessionCookie:string, token:string, u
     return DENY;
   }
 
-  const grant = {
+  // Resolve the author only once access is granted, so a denied request does
+  // not leave an author record behind.
+  const grant = async () => ({
     accessStatus: 'grant',
     authorID: sessionAuthorID || await authorManager.getAuthorId(token, userSettings),
-  };
+  });
 
   if (!padID.includes('$')) {
     // Only group pads can be private, so there is nothing more to check for this non-group pad.
-    return grant;
+    return await grant();
   }
 
   if (!padExists) {
@@ -139,7 +141,7 @@ exports.checkAccess = async (padID:string, sessionCookie:string, token:string, u
       return DENY;
     }
     // Creating a group pad, so there is no public status to check.
-    return grant;
+    return await grant();
   }
 
   const pad = await padManager.getPad(padID);
@@ -149,5 +151,5 @@ exports.checkAccess = async (padID:string, sessionCookie:string, token:string, u
     return DENY;
   }
 
-  return grant;
+  return await grant();
 };

@@ -453,7 +453,10 @@ exports.handleMessage = async (socket:any, message: ClientVarMessage) => {
     };
     const cookieToken = readCookie(`${cookiePrefix}token`);
     const legacyToken = typeof message.token === 'string' ? message.token : null;
-    const resolvedToken = cookieToken || legacyToken;
+    // A connection with neither the cookie nor a legacy token gets a fresh
+    // token for this session only. Falling through with null would map every
+    // such connection to the same `token2author:null` author.
+    const resolvedToken = cookieToken || legacyToken || padutils.generateAuthorToken();
     if (!cookieToken && legacyToken && !thisSession.legacyTokenWarned) {
       messageLogger.warn(
           'client sent author token via CLIENT_READY message; cookie migration ' +
