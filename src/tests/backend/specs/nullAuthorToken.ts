@@ -5,6 +5,7 @@ import {strict as assert} from 'assert';
 const common = require('../common');
 const padManager = require('../../../node/db/PadManager');
 const securityManager = require('../../../node/db/SecurityManager');
+const plugins = require('../../../static/js/pluginfw/plugin_defs');
 
 // A socket.io connection that carries neither the token cookie nor a legacy
 // CLIENT_READY token must not be mapped to a shared `token2author:null` author.
@@ -58,5 +59,17 @@ describe(__filename, function () {
     assert.equal(a.accessStatus, 'grant');
     assert.equal(b.accessStatus, 'grant');
     assert.notEqual(a.authorID, b.authorID);
+  });
+
+  it('still passes a missing token to getAuthorId hooks as null', async function () {
+    const seen: any[] = [];
+    const hook = {hook_fn: (hookName: string, {token}: any) => { seen.push(token); }};
+    plugins.hooks.getAuthorId = [hook];
+    try {
+      await securityManager.checkAccess(padId, null, null, undefined);
+    } finally {
+      delete plugins.hooks.getAuthorId;
+    }
+    assert.deepEqual(seen, [null]);
   });
 });
